@@ -2,7 +2,6 @@ name: Signed release
 on:
   push:
     tags: ['v*']
-  pull_request:
 permissions:
   contents: read
 concurrency:
@@ -13,8 +12,8 @@ env:
   REGISTRY_IMAGE: registry:3.0.0@sha256:6c5666b861f3505b116bb9aa9b25175e71210414bd010d92035ff64018f9457e
   TRIVY_IMAGE: aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
 jobs:
-  # PRs already run both workflows separately. Tags must complete the exact
-  # same checks before their images/artifacts are prepared for publication.
+  # Tags validate application and dependencies before preparing signed artifacts.
+  # Change-driven dry runs are selected separately by the CI coordinator.
   checks:
     if: github.event_name == 'push'
     uses: ./.github/workflows/package.yml
@@ -23,7 +22,7 @@ jobs:
     uses: ./.github/workflows/audit.yml
   prepare:
     needs: [checks, dependency-audit]
-    if: ${{ !cancelled() && (github.event_name == 'pull_request' || (needs.checks.result == 'success' && needs['dependency-audit'].result == 'success')) }}
+    if: ${{ !cancelled() && needs.checks.result == 'success' && needs['dependency-audit'].result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     outputs:
@@ -45,16 +44,8 @@ jobs:
         run: python -B tools/release_workflow.py preflight
       - name: Capture the verified source bundle
         run: python -B tools/package_release.py --output "$RUNNER_TEMP/release-bundle"
-      - name: Verify Chromium extension packaging without publication
-        if: github.event_name == 'pull_request'
-        run: python -B tools/package_extension.py --output "$RUNNER_TEMP/extension-preview"
       - name: Create isolated builder
         run: docker buildx create --name leti-cook-release --driver docker-container --driver-opt "image=$BUILDKIT_IMAGE" --use
-      - name: Dry run with an ephemeral key and loopback registry
-        if: github.event_name == 'pull_request'
-        run: |
-          python -B tools/release_ci.py dry-run --bundle "$RUNNER_TEMP/release-bundle" \
-            --output "$RUNNER_TEMP/release-dry-run" --builder leti-cook-release --registry-image "$REGISTRY_IMAGE"
       - name: Prepare immutable OCI images and unsigned release artifacts
         if: github.event_name == 'push'
         run: |
@@ -68,15 +59,9 @@ jobs:
             --output "$RUNNER_TEMP/release-packet/release/install-release.py"
           python -B tools/package_extension.py --output "$RUNNER_TEMP/release-packet/release"
       - name: Scan the exact prepared OCI images
-        env:
-          IS_DRY_RUN: ${{ github.event_name == 'pull_request' }}
         run: |
           set -euo pipefail
-          if [ "$IS_DRY_RUN" = true ]; then
-            images="$RUNNER_TEMP/release-dry-run/images"
-          else
-            images="$RUNNER_TEMP/release-packet/images"
-          fi
+          images="$RUNNER_TEMP/release-packet/images"
           for image in backend db; do
             docker run --rm --mount "type=bind,src=$images,dst=/images,readonly" \
               "$TRIVY_IMAGE" image --input "/images/$image" --no-progress --scanners vuln \

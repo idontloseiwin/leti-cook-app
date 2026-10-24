@@ -32,11 +32,15 @@ class ImageScanTests(unittest.TestCase):
         for exclusion in ('--skip-files', '--skip-dirs', '--ignorefile', '--ignore-policy'):
             self.assertNotIn(exclusion, WORKFLOW)
 
-    def test_it_runs_weekly_and_when_a_pin_changes(self):
+    def test_scheduled_scan_and_reusable_ci_entry_remain_available(self):
         self.assertIn("cron: '41 6 * * 1'", WORKFLOW)
-        for path in ('database/compose.yaml', 'database/Dockerfile', 'tools/schema_ci_postgres_image.sh', 'application/Dockerfile', 'application/requirements.lock'):
-            self.assertEqual(WORKFLOW.count(f'      - {path}\n'), 2, path)
+        self.assertIn('  workflow_call:', WORKFLOW)
+        self.assertIn('  workflow_dispatch:', WORKFLOW)
         self.assertIn('permissions:\n  contents: read\n', WORKFLOW)
+        self.assertNotIn('pull_request_target', WORKFLOW)
+        coordinator = (ROOT / '.github/workflows/ci.yml').read_text(encoding='utf-8')
+        self.assertIn('uses: ./.github/workflows/images.yml', coordinator)
+        self.assertIn("if: needs.scope.outputs.profile == 'full'", coordinator)
 
 
 if __name__ == '__main__':

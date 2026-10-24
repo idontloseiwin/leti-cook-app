@@ -41,6 +41,24 @@ and [upgrade test guide](tests/schema_upgrades/README.md). Never run fixtures
 against a user's database. Live collection checks need a separate disposable
 installation and your own API key.
 
+## Pull request checks
+
+`CI result` is the required merge check. The same routing runs on pull requests
+and pushes to `main`. Changes limited to the explicit documentation allowlist in
+`tools/ci_policy.py` receive local link/anchor checks and source-package validation.
+They do not start Docker, PostgreSQL tests or frontend builds.
+
+Every other change, including mixed code/documentation changes, generated SQL
+documentation and CI changes, runs the full application, schema, dependency,
+image and signed-delivery checks. Incomplete change detection selects full CI;
+missing, failed or unexpectedly skipped checks cannot pass the final result.
+Weekly dependency and image audits run independently of file changes.
+
+Run the documentation check locally with `python3 -B tools/check_docs.py`.
+The checks use no live installation or YouTube requests. Delivery checks use an
+ephemeral signing key and a local registry; publication remains a separate tag
+workflow.
+
 ## Changing the web app
 
 Edit `application/frontend/src/`, then rebuild:
