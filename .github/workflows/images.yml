@@ -1,6 +1,6 @@
 name: Image scan
-# Pinned images freeze their operating-system packages, so they are scanned
-# weekly and whenever a pin or the backend image changes.
+# Required on every pull request, including documentation-only changes.
+# Main image changes and the weekly schedule also scan the pinned packages.
 on:
   push:
     branches: [main]
@@ -12,13 +12,6 @@ on:
       - database/Dockerfile
       - tools/schema_ci_postgres_image.sh
   pull_request:
-    paths:
-      - database/compose.yaml
-      - application/Dockerfile
-      - application/requirements.lock
-      - .github/workflows/images.yml
-      - database/Dockerfile
-      - tools/schema_ci_postgres_image.sh
   schedule:
     - cron: '41 6 * * 1'
   workflow_dispatch:
