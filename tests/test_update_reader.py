@@ -3,6 +3,7 @@ from contextlib import ExitStack
 import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import sys
 import tempfile
@@ -12,6 +13,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 from ops.release_verification import VerifiedRelease
+from ops.update_candidate import CandidateError
 from ops.update_host import Host, UpdateError
 from ops.update_reader import validate_reader_source
 from ops import updater
@@ -31,16 +33,35 @@ PROJECT = 'leti-cook-0123456789ab'
 class ReaderSourceTests(unittest.TestCase):
     def test_exact_captured_application_bytes_are_required(self):
         with tempfile.TemporaryDirectory() as temporary:
-            root = Path(temporary)
+            # The captured tree and installed inputs have private parents;
+            # the shared system temporary directory is only an ancestor.
+            base = Path(temporary)
+            root = base / 'captured' / 'application'
+            installed = base / 'installed'
             for name, data in APP.items():
                 target = root / name
-                target.parent.mkdir(parents=True, exist_ok=True)
+                target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                 target.write_bytes(data)
-            plan = SimpleNamespace(**vars(PLAN), installed=root.parent)
-            with patch('ops.update_reader._safe_path', return_value=root):
-                self.assertEqual(validate_reader_source(root, RELEASE, plan), root)
+            for name in ('requirements.lock', 'Dockerfile'):
+                target = installed / 'application' / name
+                target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+                target.write_bytes(APP[name])
+            plan = SimpleNamespace(**vars(PLAN), installed=installed)
+            self.assertEqual(validate_reader_source(root, RELEASE, plan), root)
             (root / 'VERSION').write_bytes(b'changed')
             with self.assertRaisesRegex(UpdateError, 'source_changed'):
+                validate_reader_source(root, RELEASE, plan)
+
+    @unittest.skipUnless(os.name == 'posix' and os.geteuid() == 0,
+                         'requires native Linux ownership checks as root')
+    def test_captured_source_under_shared_writable_parent_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            shared = Path(temporary) / 'shared'
+            shared.mkdir()
+            shared.chmod(0o777)
+            root = shared / 'application'
+            root.mkdir(mode=0o700)
+            with self.assertRaisesRegex(CandidateError, 'update_path_permissions'):
                 validate_reader_source(root, RELEASE, PLAN)
 
     def test_different_old_image_dependency_inputs_are_rejected(self):
