@@ -32,20 +32,15 @@ class ImageScanTests(unittest.TestCase):
         for exclusion in ('--skip-files', '--skip-dirs', '--ignorefile', '--ignore-policy'):
             self.assertNotIn(exclusion, WORKFLOW)
 
-    def test_it_runs_weekly_and_when_a_pin_changes(self):
+    def test_scheduled_scan_and_reusable_ci_entry_remain_available(self):
         self.assertIn("cron: '41 6 * * 1'", WORKFLOW)
-        push = WORKFLOW.split('\n  push:\n', 1)[1].split('\n  pull_request:', 1)[0]
-        for path in ('database/compose.yaml', 'database/Dockerfile', 'tools/schema_ci_postgres_image.sh', 'application/Dockerfile', 'application/requirements.lock'):
-            self.assertIn(f'      - {path}\n', push + '\n', path)
+        self.assertIn('  workflow_call:', WORKFLOW)
+        self.assertIn('  workflow_dispatch:', WORKFLOW)
         self.assertIn('permissions:\n  contents: read\n', WORKFLOW)
-
-    def test_required_scan_runs_for_every_pull_request(self):
-        # A workflow-level path filter leaves required checks pending on docs-only PRs.
-        pull_request = WORKFLOW.split('\n  pull_request:\n', 1)[1].split('  schedule:\n', 1)[0]
-        self.assertEqual(pull_request.strip(), '')
         self.assertNotIn('pull_request_target', WORKFLOW)
-        jobs = WORKFLOW.split('\njobs:\n', 1)[1]
-        self.assertNotRegex(jobs, r'(?m)^    if:')
+        coordinator = (ROOT / '.github/workflows/ci.yml').read_text(encoding='utf-8')
+        self.assertIn('uses: ./.github/workflows/images.yml', coordinator)
+        self.assertIn("if: needs.scope.outputs.profile == 'full'", coordinator)
 
 
 if __name__ == '__main__':
