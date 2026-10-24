@@ -1,0 +1,144 @@
+name: Signed release
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  BUILDKIT_IMAGE: moby/buildkit:v0.33.1@sha256:cec9f139f45e93c5c69c60f8b07cfad9f43f4ef6b6a6cd917527fea5ff2e3dea
+  REGISTRY_IMAGE: registry:3.0.0@sha256:6c5666b861f3505b116bb9aa9b25175e71210414bd010d92035ff64018f9457e
+  TRIVY_IMAGE: aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+jobs:
+  # PRs already run both workflows separately. Tags must complete the exact
+  # same checks before their images/artifacts are prepared for publication.
+  checks:
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/package.yml
+  dependency-audit:
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/audit.yml
+  prepare:
+    needs: [checks, dependency-audit]
+    if: ${{ !cancelled() && (github.event_name == 'pull_request' || (needs.checks.result == 'success' && needs['dependency-audit'].result == 'success')) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    outputs:
+      artifact-id: ${{ steps.packet.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Install locked release tooling
+        run: |
+          python -m pip install --require-hashes --no-deps -r application/requirements.lock
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes skopeo
+      - name: Validate configured tag and owner public key
+        if: github.event_name == 'push'
+        run: python -B tools/release_workflow.py preflight
+      - name: Capture the verified source bundle
+        run: python -B tools/package_release.py --output "$RUNNER_TEMP/release-bundle"
+      - name: Verify Chromium extension packaging without publication
+        if: github.event_name == 'pull_request'
+        run: python -B tools/package_extension.py --output "$RUNNER_TEMP/extension-preview"
+      - name: Create isolated builder
+        run: docker buildx create --name leti-cook-release --driver docker-container --driver-opt "image=$BUILDKIT_IMAGE" --use
+      - name: Dry run with an ephemeral key and loopback registry
+        if: github.event_name == 'pull_request'
+        run: |
+          python -B tools/release_ci.py dry-run --bundle "$RUNNER_TEMP/release-bundle" \
+            --output "$RUNNER_TEMP/release-dry-run" --builder leti-cook-release --registry-image "$REGISTRY_IMAGE"
+      - name: Prepare immutable OCI images and unsigned release artifacts
+        if: github.event_name == 'push'
+        run: |
+          mkdir "$RUNNER_TEMP/release-packet"
+          python -B tools/release_ci.py prepare-images --bundle "$RUNNER_TEMP/release-bundle" \
+            --output "$RUNNER_TEMP/release-packet/images" --builder leti-cook-release
+          python -B tools/release_ci.py build-artifacts --bundle "$RUNNER_TEMP/release-bundle" \
+            --prepared "$RUNNER_TEMP/release-packet/images" --output "$RUNNER_TEMP/release-packet/release" \
+            --minimum-upgrade-version 0.1.0
+          python -B tools/build_release_bootstrap.py --root "$RUNNER_TEMP/release-bundle" \
+            --output "$RUNNER_TEMP/release-packet/release/install-release.py"
+          python -B tools/package_extension.py --output "$RUNNER_TEMP/release-packet/release"
+      - name: Scan the exact prepared OCI images
+        env:
+          IS_DRY_RUN: ${{ github.event_name == 'pull_request' }}
+        run: |
+          set -euo pipefail
+          if [ "$IS_DRY_RUN" = true ]; then
+            images="$RUNNER_TEMP/release-dry-run/images"
+          else
+            images="$RUNNER_TEMP/release-packet/images"
+          fi
+          for image in backend db; do
+            docker run --rm --mount "type=bind,src=$images,dst=/images,readonly" \
+              "$TRIVY_IMAGE" image --input "/images/$image" --no-progress --scanners vuln \
+              --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+          done
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        id: packet
+        if: github.event_name == 'push'
+        with:
+          name: release-packet-${{ github.sha }}
+          path: ${{ runner.temp }}/release-packet/
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+      - name: Remove this runner's builder
+        if: always()
+        run: |
+          if docker buildx inspect leti-cook-release >/dev/null 2>&1; then
+            docker buildx rm leti-cook-release
+          fi
+  publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Install locked signing tooling
+        run: |
+          python -m pip install --require-hashes --no-deps -r application/requirements.lock
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends --yes skopeo
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.prepare.outputs.artifact-id }}
+          path: ${{ runner.temp }}/release-packet
+          merge-multiple: true
+          digest-mismatch: error
+      - name: Sign and verify before publication
+        env:
+          LETI_COOK_RELEASE_SIGNING_KEY: ${{ secrets.LETI_COOK_RELEASE_SIGNING_KEY }}
+        run: python -B tools/release_workflow.py sign --directory "$RUNNER_TEMP/release-packet/release"
+      - name: Publish the signed immutable image manifests
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          umask 077
+          auth="$RUNNER_TEMP/leti-cook-ghcr-auth.json"
+          trap 'python3 -c "import os; p=os.environ[\"RUNNER_TEMP\"]+\"/leti-cook-ghcr-auth.json\"; os.unlink(p) if os.path.exists(p) else None"' EXIT
+          printf '%s' "$GH_TOKEN" | skopeo login --authfile "$auth" --username "$GITHUB_ACTOR" --password-stdin ghcr.io
+          python -B tools/release_ci.py publish-images --prepared "$RUNNER_TEMP/release-packet/images" \
+            --release-directory "$RUNNER_TEMP/release-packet/release" --authfile "$auth"
+      - name: Create draft only; the owner publishes it
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -B tools/release_workflow.py draft --directory "$RUNNER_TEMP/release-packet/release"

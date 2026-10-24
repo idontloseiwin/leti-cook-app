@@ -1,0 +1,1691 @@
+{
+  "status": "source_topology_only_no_query_edits",
+  "source_sha256": "1985364b1316c914add1fc6ce529c100926f5ad224e93223b655ce91c29cd715",
+  "queries": {
+    "assert_channel_discovery_paging_schema": {
+      "constant": "_ASSERT_CHANNEL_DISCOVERY_PAGING_SCHEMA_SQL",
+      "query_sha256": "492aad204c4e36143b8d47fb2bbb18e5d8774c25eede966f31651903dc33e8a3",
+      "slots": [
+        {
+          "index": 0,
+          "error": "channel discovery schema mismatch: token=%, started_at=%, streak=%, streak_not_null=%",
+          "sql": "((SELECT page_token_type FROM observed_1) IS DISTINCT FROM 'text'\n        OR (SELECT started_at_type FROM observed_2) IS DISTINCT FROM 'timestamp with time zone'\n        OR (SELECT no_new_streak_type FROM observed_3) IS DISTINCT FROM 'integer'\n        OR (SELECT no_new_streak_not_null FROM observed_3) IS DISTINCT FROM true) IS TRUE",
+          "ctes": [
+            "observed_1",
+            "observed_2",
+            "observed_3"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "channel discovery schema contains a negative no-new streak",
+          "sql": "(EXISTS (\n        SELECT 1\n        FROM public.channel_playlist_state\n        WHERE no_new_streak < 0\n    )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "observed_1": "SELECT pg_catalog.format_type(attribute.atttypid, attribute.atttypmod) AS page_token_type FROM pg_catalog.pg_attribute AS attribute\n    JOIN pg_catalog.pg_class AS relation\n        ON relation.oid = attribute.attrelid\n    JOIN pg_catalog.pg_namespace AS namespace\n        ON namespace.oid = relation.relnamespace\n    WHERE namespace.nspname = 'public'\n        AND relation.relname = 'channel_playlist_state'\n        AND attribute.attname = 'resume_page_token'\n        AND attribute.attnum > 0\n        AND NOT attribute.attisdropped",
+        "observed_2": "SELECT pg_catalog.format_type(attribute.atttypid, attribute.atttypmod) AS started_at_type FROM pg_catalog.pg_attribute AS attribute\n    JOIN pg_catalog.pg_class AS relation\n        ON relation.oid = attribute.attrelid\n    JOIN pg_catalog.pg_namespace AS namespace\n        ON namespace.oid = relation.relnamespace\n    WHERE namespace.nspname = 'public'\n        AND relation.relname = 'channel_playlist_state'\n        AND attribute.attname = 'resume_started_at'\n        AND attribute.attnum > 0\n        AND NOT attribute.attisdropped",
+        "observed_3": "SELECT pg_catalog.format_type(attribute.atttypid, attribute.atttypmod) AS no_new_streak_type, attribute.attnotnull AS no_new_streak_not_null FROM pg_catalog.pg_attribute AS attribute\n    JOIN pg_catalog.pg_class AS relation\n        ON relation.oid = attribute.attrelid\n    JOIN pg_catalog.pg_namespace AS namespace\n        ON namespace.oid = relation.relnamespace\n    WHERE namespace.nspname = 'public'\n        AND relation.relname = 'channel_playlist_state'\n        AND attribute.attname = 'no_new_streak'\n        AND attribute.attnum > 0\n        AND NOT attribute.attisdropped"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'status', 'ok',\n        'table', 'channel_playlist_state',\n        'resume_page_token_type', (SELECT page_token_type FROM observed_1),\n        'resume_started_at_type', (SELECT started_at_type FROM observed_2),\n        'no_new_streak_type', (SELECT no_new_streak_type FROM observed_3),\n        'no_new_streak_not_null', (SELECT no_new_streak_not_null FROM observed_3),\n        'policy', 'balanced',\n        'max_periodic_hours', 24\n    ) AS value\n",
+      "value_sha256": "f0494fa74928b71829b1cbe1057c50bc57e08c14dbc69341b9c8878c32ce9bdb",
+      "value_ctes": [
+        "observed_1",
+        "observed_2",
+        "observed_3"
+      ],
+      "fields": [
+        "status",
+        "table",
+        "resume_page_token_type",
+        "resume_started_at_type",
+        "no_new_streak_type",
+        "no_new_streak_not_null",
+        "policy",
+        "max_periodic_hours"
+      ]
+    },
+    "assert_channel_discovery_queue_schema": {
+      "constant": "_ASSERT_CHANNEL_DISCOVERY_QUEUE_SCHEMA_SQL",
+      "query_sha256": "0202444fbfca023d7364611ba50d84bcb86958b4592d11cdf20d6c8b9d3ed20b",
+      "slots": [],
+      "ctes": {
+        "schema_columns": "\n    SELECT ns.nspname AS table_schema, relation.relname AS table_name,\n           attribute.attname AS column_name,\n           pg_catalog.format_type(CASE WHEN type_row.typtype='d' THEN type_row.typbasetype\n               ELSE attribute.atttypid END, NULL) AS data_type,\n           base_type.typname AS udt_name,\n           CASE WHEN attribute.attnotnull OR (type_row.typtype='d' AND type_row.typnotnull)\n               THEN 'NO' ELSE 'YES' END AS is_nullable\n    FROM pg_catalog.pg_attribute attribute\n    JOIN pg_catalog.pg_class relation ON relation.oid=attribute.attrelid\n    JOIN pg_catalog.pg_namespace ns ON ns.oid=relation.relnamespace\n    JOIN pg_catalog.pg_type type_row ON type_row.oid=attribute.atttypid\n    JOIN pg_catalog.pg_type base_type ON base_type.oid=CASE WHEN type_row.typtype='d'\n        THEN type_row.typbasetype ELSE type_row.oid END\n    WHERE ns.nspname IN ('public','operator_private') AND attribute.attnum>0\n      AND NOT attribute.attisdropped AND relation.relkind IN ('r','v','f','p')\n",
+        "observed_1": "SELECT array_agg(required.column_name ORDER BY required.column_name) AS v_missing FROM (\n        VALUES\n            ('channel_id', 'text'),\n            ('next_due_at', 'timestamp with time zone'),\n            ('lease_token', 'uuid'),\n            ('lease_channel_epoch', 'bigint'),\n            ('lease_expires_at', 'timestamp with time zone'),\n            ('resume_pending', 'boolean'),\n            ('no_new_streak', 'integer')\n    ) AS required(column_name, data_type)\n    WHERE NOT EXISTS (\n        SELECT 1\n        FROM schema_columns AS schema_column\n        WHERE schema_column.table_schema = 'public'\n          AND schema_column.table_name = 'channel_playlist_state'\n          AND schema_column.column_name = required.column_name\n          AND schema_column.data_type = required.data_type\n    )",
+        "observed_2": "SELECT control.reconciliation_required AS v_reconciliation_required FROM public.channel_discovery_queue_control AS control\n    WHERE control.singleton"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'table', 'channel_playlist_state',\n        'status', CASE\n            WHEN COALESCE(array_length((SELECT v_missing FROM observed_1), 1), 0) = 0 THEN 'ok'\n            ELSE 'error'\n        END,\n        'missing_or_wrong_type', COALESCE(to_jsonb((SELECT v_missing FROM observed_1)), '[]'::jsonb),\n        'reconciliation_required', COALESCE((SELECT v_reconciliation_required FROM observed_2), true),\n        'claim_contract', 'for_update_skip_locked',\n        'completion_idempotent', true\n    ) AS value\n",
+      "value_sha256": "0dcbb25f50bdb4aa54aaa9e44136f5fce86cd74b2bf7afab7b2c60d958b95106",
+      "value_ctes": [
+        "observed_1",
+        "observed_2",
+        "schema_columns"
+      ],
+      "fields": [
+        "table",
+        "status",
+        "missing_or_wrong_type",
+        "reconciliation_required",
+        "claim_contract",
+        "completion_idempotent"
+      ]
+    },
+    "assert_channel_sync_control_ready": {
+      "constant": "_ASSERT_CHANNEL_SYNC_CONTROL_READY_SQL",
+      "query_sha256": "205c53ec4d7ba0568f8a044c60c791912ad0b3c3b7c944fa07d26a12cf7c81cd",
+      "slots": [
+        {
+          "index": 0,
+          "error": "channel sync control RPC contract is incomplete",
+          "sql": "(to_regprocedure('public.channel_sync_mode(text)') is null\n       or to_regprocedure(\n           'public.get_channel_sync_control_health()'\n       ) is null) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "channel sync safe error columns are incomplete",
+          "sql": "(not exists (\n        select 1\n        from schema_columns\n        where table_schema = 'public'\n          and table_name = 'channels'\n          and column_name = 'initial_long_inventory_error_code'\n    )) IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "channel_collection_control_contract_missing",
+          "sql": "(to_regclass('public.channel_collection_state') is null\n      or to_regclass('public.channel_collection_control') is null\n      or to_regclass('public.channels_with_control') is null\n      or to_regclass('public.channel_collection_epoch_seq') is null\n      or to_regprocedure('public.assert_channel_collection_scope(jsonb)') is null) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "channel_collection_control_acl_invalid",
+          "sql": "(not exists(select 1 from pg_catalog.pg_class\n         where oid=to_regclass('public.channel_collection_state') and relkind='r' and relrowsecurity\n           and pg_catalog.pg_get_userbyid(relowner)='postgres')\n      or not exists(select 1 from pg_catalog.pg_roles where rolname='service_role' and rolbypassrls and not rolsuper and not rolcanlogin)\n      or not pg_catalog.has_table_privilege('service_role','public.channel_collection_state','SELECT')\n      or pg_catalog.has_table_privilege('service_role','public.channel_collection_state','INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN')\n      or pg_catalog.has_any_column_privilege('service_role','public.channel_collection_state','REFERENCES')\n      or exists(select 1 from unnest(ARRAY['channel_id','user_work_id','owner_permission','is_hidden','hidden_at','control_epoch','initial_job_id']) required(column_name)\n           where not exists(select 1 from pg_catalog.pg_attribute a\n             where a.attrelid=to_regclass('public.channel_collection_state') and a.attnum>0 and not a.attisdropped and a.attname=required.column_name))\n      or exists(select 1 from pg_catalog.pg_attribute a\n           where a.attrelid=to_regclass('public.channel_collection_state') and a.attnum>0 and not a.attisdropped\n             and pg_catalog.has_column_privilege('service_role',a.attrelid,a.attnum,'INSERT')\n                 is distinct from (a.attname=ANY(ARRAY['channel_id','user_work_id','owner_permission','is_hidden','hidden_at'])))\n      or exists(select 1 from pg_catalog.pg_attribute a\n           where a.attrelid=to_regclass('public.channel_collection_state') and a.attnum>0 and not a.attisdropped\n             and pg_catalog.has_column_privilege('service_role',a.attrelid,a.attnum,'UPDATE')\n                 is distinct from (a.attname=ANY(ARRAY['owner_permission','is_hidden','hidden_at','control_epoch','initial_job_id'])))\n      or exists(select 1 from (VALUES ('anon'),('authenticated')) denied(role_name)\n           where pg_catalog.has_table_privilege(denied.role_name,'public.channel_collection_state','SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER,MAINTAIN')\n              or pg_catalog.has_any_column_privilege(denied.role_name,'public.channel_collection_state','SELECT,INSERT,UPDATE,REFERENCES'))\n      or exists(select 1 from pg_catalog.pg_class c\n           cross join lateral pg_catalog.aclexplode(coalesce(c.relacl,pg_catalog.acldefault('r',c.relowner))) acl\n           where c.oid=to_regclass('public.channel_collection_state') and acl.grantee<>c.relowner\n             and (acl.grantee<>'service_role'::regrole or acl.privilege_type<>'SELECT' or acl.is_grantable))\n      or exists(select 1 from pg_catalog.pg_attribute a join pg_catalog.pg_class c on c.oid=a.attrelid\n           cross join lateral pg_catalog.aclexplode(a.attacl) acl\n           where c.oid=to_regclass('public.channel_collection_state') and a.attnum>0 and not a.attisdropped\n             and acl.grantee<>c.relowner\n             and (acl.grantee<>'service_role'::regrole or acl.is_grantable\n               or not ((acl.privilege_type='UPDATE' and a.attname=ANY(ARRAY['owner_permission','is_hidden','hidden_at','control_epoch','initial_job_id']))\n                    or (acl.privilege_type='INSERT' and a.attname=ANY(ARRAY['channel_id','user_work_id','owner_permission','is_hidden','hidden_at'])))))\n      or not exists(select 1 from pg_catalog.pg_class c\n           where c.oid=to_regclass('public.channel_collection_epoch_seq') and c.relkind='S'\n             and pg_catalog.pg_get_userbyid(c.relowner)='postgres')\n      or not pg_catalog.has_sequence_privilege('service_role','public.channel_collection_epoch_seq','USAGE')\n      or pg_catalog.has_sequence_privilege('service_role','public.channel_collection_epoch_seq','SELECT,UPDATE')\n      or exists(select 1 from (VALUES ('anon'),('authenticated')) denied(role_name)\n           where pg_catalog.has_sequence_privilege(denied.role_name,'public.channel_collection_epoch_seq','USAGE,SELECT,UPDATE'))\n      or exists(select 1 from pg_catalog.pg_class c\n           cross join lateral pg_catalog.aclexplode(coalesce(c.relacl,pg_catalog.acldefault('S',c.relowner))) acl\n           where c.oid=to_regclass('public.channel_collection_epoch_seq') and acl.grantee<>c.relowner\n             and (acl.grantee<>'service_role'::regrole or acl.privilege_type<>'USAGE' or acl.is_grantable))) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 4,
+          "error": "channel_collection_control_reconciliation_incomplete",
+          "sql": "(exists(select 1 from public.channels c left join public.channel_collection_state control\n         on control.channel_id=c.channel_id\n       where control.channel_id is null or control.user_work_id is distinct from c.user_work_id\n         or control.control_epoch is null or control.control_epoch<=0)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        },
+        {
+          "index": 5,
+          "error": "channel_collection_scope_writer_acl_invalid",
+          "sql": "(exists(select 1 from pg_catalog.pg_proc routine\n        cross join lateral pg_catalog.aclexplode(coalesce(routine.proacl,pg_catalog.acldefault('f',routine.proowner))) acl\n       where routine.oid=pg_catalog.to_regprocedure('public.assert_channel_collection_scope(jsonb)')\n         and acl.grantee not in (routine.proowner,'service_role'::regrole))\n      or not exists(select 1 from pg_catalog.pg_proc\n        where oid=pg_catalog.to_regprocedure('public.assert_channel_collection_scope(jsonb)')\n          and prosecdef and pg_catalog.pg_get_userbyid(proowner)='postgres'\n          and proconfig=array['search_path=pg_catalog, public, pg_temp'])) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "schema_columns": "\n    SELECT ns.nspname AS table_schema, relation.relname AS table_name,\n           attribute.attname AS column_name,\n           pg_catalog.format_type(CASE WHEN type_row.typtype='d' THEN type_row.typbasetype\n               ELSE attribute.atttypid END, NULL) AS data_type,\n           base_type.typname AS udt_name,\n           CASE WHEN attribute.attnotnull OR (type_row.typtype='d' AND type_row.typnotnull)\n               THEN 'NO' ELSE 'YES' END AS is_nullable\n    FROM pg_catalog.pg_attribute attribute\n    JOIN pg_catalog.pg_class relation ON relation.oid=attribute.attrelid\n    JOIN pg_catalog.pg_namespace ns ON ns.oid=relation.relnamespace\n    JOIN pg_catalog.pg_type type_row ON type_row.oid=attribute.atttypid\n    JOIN pg_catalog.pg_type base_type ON base_type.oid=CASE WHEN type_row.typtype='d'\n        THEN type_row.typbasetype ELSE type_row.oid END\n    WHERE ns.nspname IN ('public','operator_private') AND attribute.attnum>0\n      AND NOT attribute.attisdropped AND relation.relkind IN ('r','v','f','p')\n"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'ready', true,\n        'schema_version', 3,\n        'quota_neutral', true,\n        'canonical_channel_control', true,\n        'scheduling_projection_is_diagnostic', true,\n        'health', NULL::jsonb\n    ) AS value\n",
+      "value_sha256": "4741097183fcb70c52168b08194b0aea7f5e95f810c9f999e66a2e4193e35da7",
+      "value_ctes": [],
+      "fields": [
+        "ready",
+        "schema_version",
+        "quota_neutral",
+        "canonical_channel_control",
+        "scheduling_projection_is_diagnostic",
+        "health"
+      ]
+    },
+    "assert_full_initial_schema": {
+      "constant": "_ASSERT_FULL_INITIAL_SCHEMA_SQL",
+      "query_sha256": "5764610fe101be61702efe70b3e1df354bd3e68b692e8039ce7f44297ca50139",
+      "slots": [
+        {
+          "index": 0,
+          "error": "full_initial_function_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS x WHERE ( (to_regprocedure(x.signature)) IS NULL OR NOT EXISTS(SELECT 1 FROM pg_proc p WHERE p.oid=(to_regprocedure(x.signature)) AND p.proowner=(SELECT oid FROM pg_roles WHERE rolname='postgres')\n    AND p.prosecdef=x.security_definer AND md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=x.body_md5)\n  ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "full_initial_function_acl_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS x WHERE ( EXISTS(SELECT 1 FROM pg_proc p CROSS JOIN LATERAL aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a\n     WHERE p.oid=(to_regprocedure(x.signature)) AND (a.grantee=0 OR (a.grantee<>p.proowner AND (a.grantee<>(SELECT oid FROM pg_roles WHERE rolname='service_role') OR NOT x.service_access OR a.is_grantable))))\n    OR has_function_privilege('anon',(to_regprocedure(x.signature)),'EXECUTE') OR has_function_privilege('authenticated',(to_regprocedure(x.signature)),'EXECUTE')\n    OR (x.service_access AND NOT has_function_privilege('service_role',(to_regprocedure(x.signature)),'EXECUTE'))\n  ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "full_initial_columns_invalid",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid=pg_catalog.to_regclass('public.operator_jobs') AND attname='initial_scope_version' AND attnotnull AND atttypid='int2'::regtype)\n  OR NOT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid=pg_catalog.to_regclass('public.operator_jobs') AND attname='targets_frozen_at' AND NOT attnotnull AND atttypid='timestamptz'::regtype)\n  OR EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid=pg_catalog.to_regclass('public.operator_jobs') AND attname IN('max_items','max_pages','max_quota_units') AND attnotnull)\n  OR NOT EXISTS(SELECT 1 FROM pg_attribute WHERE attrelid=pg_catalog.to_regclass('public.operator_job_targets') AND attname='video_type' AND NOT attnotnull)\n  OR NOT EXISTS(SELECT 1 FROM pg_index WHERE indexrelid=pg_catalog.to_regclass('public.operator_job_targets_unresolved_idx') AND indisvalid AND indisready)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "full_initial_constraint_missing",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_2 AS q WHERE ( NOT EXISTS(SELECT 1 FROM pg_constraint WHERE conrelid=to_regclass(q.rel) AND conname=q.name AND convalidated)\n  ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_2"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "requirements_1": "VALUES\n('public.channel_inventory_estimate_count(jsonb,text)','16388c9f0cf31155d56c3e2c0c574c8e',false,true),\n('public.normalize_channel_inventory_estimate()','b85a22f627b217e53ff581971b8389e2',false,false),\n('public.estimate_channel_initial_inventory_job(text)','574f75b87fdba055950d1c8599f8ebf4',true,true),\n('public.enqueue_channel_initial_inventory_job(text,integer,integer,integer,integer,integer,integer,integer,boolean,bigint)','99356f301820e0d06994503ae6c9b978',true,true),\n('public.enqueue_channel_current_stats_backfill(text,integer,integer,integer,bigint)','4ba92e1624cc866a70f32a1f44c06c66',true,true),\n('operator_private.assert_full_initial_scope(public.operator_jobs,boolean)','6fd1a0ab22273ee4abf9ec95d5c5b0c6',false,false),\n('operator_private.full_initial_target_type(text,text)','0b472f2f19d6e2533183d87079384722',false,false),\n('operator_private.claim_inventory_states(integer,text[],text[],text,text,integer,jsonb,boolean,jsonb,boolean,uuid,uuid)','8203c4db629647a189e6f2d6eaf388b2',false,false),\n('operator_private.claim_inventory_states(integer,text[],text[],text,text,integer,jsonb,boolean,jsonb,boolean)','c222d664bfbdc14dcde52e353e5c1cd9',false,false),\n('public.claim_initial_inventory_source(uuid,uuid,text,text,integer)','a8ea31bec1d64e92544f9c7653525b9f',true,true),\n('public.settle_typed_inventory_page(text,text,uuid,uuid,uuid,text,text,text,jsonb,timestamp with time zone)','8650a522d9f52b200a0b544543797c2e',true,true),\n('public.bind_initial_inventory_scan(uuid,uuid,uuid,uuid,uuid)','8cc5208ec703e4085a843226744ec696',true,true),\n('operator_private.initial_inventory_checkpoint_evidence(public.operator_jobs)','7817db70f9b89836ef1b92b00c4192ca',false,false),\n('operator_private.finish_full_initial_inventory(uuid)','070be5a1d86bbbbabb2076b2c2f4b3dc',false,false),\n('operator_private.settle_full_initial_inventory(public.operator_jobs,jsonb,jsonb,integer,integer,integer,integer,integer,integer)','e73a9835a041b1cd924d46e55af2e58d',false,false),\n('public.settle_initial_inventory_job_chunk(uuid,uuid,integer,integer,integer,integer,integer,text,jsonb)','b6106514a7c7d428a9d3985441a50828',true,true),\n('operator_private.reconcile_full_initial_targets(uuid,integer)','4ff378c7280db1b647a4e2a8aeed338f',false,false),\n('public.prepare_initial_inventory_job_chunk(uuid,uuid,integer,integer)','e5e69cf7e6bb0928cd079673f5dba7a8',true,true),\n('operator_private.retry_full_initial_inventory(public.operator_jobs,uuid,integer,integer,integer,boolean,bigint)','72f610524868c9b35223d7d08570d06d',false,false),\n('public.retry_channel_initial_inventory_job_v5(uuid,uuid,integer,integer,integer,boolean,bigint)','e6471b2a8262aaf76dc20ae9d04b0310',true,true),\n('public.guard_hot_operator_target_scope()','6d224d5075e65a755c8d21f5ecc3efb6',true,true),\n('operator_private.repair_full_initial_target_chunk(public.operator_jobs,integer)','3cbc4523517cae5261ab8e8a4c4bad05',false,false),\n('operator_private.prepare_operator_job_chunk_provisional(uuid,uuid,integer,integer)','79524248e8b28b6b629170ee322021cb',true,false),\n('operator_private.settle_operator_job_chunk_provisional(uuid,uuid,integer,text,jsonb)','d9c85eb02e56c1207b57582dc61c7c8e',true,false),\n('public.claim_initial_video_collection_batch(uuid,text[],text,uuid,integer)','4480251c8f38e9136933ada2e1fb3002',true,true),\n('public.verify_initial_hydration_job(uuid,uuid)','b34dd4538490d8a930fcbf400bdace61',true,true),\n('public.pause_ineligible_typed_inventory_runtime()','17afb2bbd59c1533dd7c24f4e116e90b',false,true),\n('public.cleanup_hot_operational_copies(text,text,integer)','ba1671e9fee4a2d404bc011cb32c6280',true,true),\n('public.fail_typed_inventory_scan(text,text,uuid,uuid,uuid,text,text,text,timestamp with time zone)','4feebe6592d08be7256f0b5e27ca5c07',true,true),\n('public.fail_initial_inventory_job_chunk(uuid,uuid,text,boolean)','70409b6743599de5cd33e1ea08eabba8',true,true),\n('public.assert_video_collection_queue_schema()','1ad51f0840487b8311d23909c77868fa',true,true)",
+        "requirements_2": "VALUES('public.operator_jobs','operator_jobs_initial_scope_check'),\n   ('public.operator_jobs','operator_jobs_phase_check'),('public.operator_jobs','operator_jobs_counts_check'),\n   ('public.operator_job_targets','operator_job_targets_unresolved_check'),\n   ('operator_private.operator_job_retry_requests','operator_job_retry_requests_scope_check')"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object('ready',true,'initial_scope_version',1,'workset','observed_three_scan_union','page_target_limit',50) AS value\n",
+      "value_sha256": "9bca0eabaeffcaeead73c7768702f7ef7469869e5369b7f2f2f73593f84b9a74",
+      "value_ctes": [],
+      "fields": [
+        "ready",
+        "initial_scope_version",
+        "workset",
+        "page_target_limit"
+      ]
+    },
+    "assert_inventory_receipts_schema": {
+      "constant": "_ASSERT_INVENTORY_RECEIPTS_SCHEMA_SQL",
+      "query_sha256": "147a9e06da98f939d9f793d692961ea40267a3ce438de0aa8755ee61b03bc157",
+      "slots": [
+        {
+          "index": 0,
+          "error": "inventory_receipts_storage_missing",
+          "sql": "(not exists(select 1 from pg_catalog.pg_class c\n   where c.oid=to_regclass('public.typed_inventory_receipts') and c.relkind='r'\n     and c.relrowsecurity and pg_catalog.pg_get_userbyid(c.relowner)='postgres')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "inventory_receipts_storage_acl_invalid",
+          "sql": "(NOT coalesce((SELECT roles_valid AND relations_valid AND privileges_valid FROM (\nWITH required_tables(table_name,privileges) AS (VALUES\n ('typed_inventory_receipts',ARRAY['SELECT','DELETE']::text[])\n), required_columns(table_name,column_name,privilege) AS (VALUES\n ('typed_inventory_receipts','receipt_scope','INSERT'),\n ('typed_inventory_receipts','transition_id','INSERT'),\n ('typed_inventory_receipts','scan_id','INSERT'),\n ('typed_inventory_receipts','transition_kind','INSERT'),\n ('typed_inventory_receipts','result','INSERT'),\n ('typed_inventory_receipts','source_checked_at','INSERT'),\n ('typed_inventory_receipts','created_at','INSERT'),\n ('typed_inventory_receipts','next_page_token_hash','INSERT'),\n ('typed_inventory_receipts','claims','INSERT'),\n ('typed_inventory_receipts','claims','UPDATE'),\n ('typed_inventory_receipts','result','UPDATE'),\n ('typed_inventory_receipts','next_page_token_hash','UPDATE')\n), roles AS (\n SELECT (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='service_role') AS service_oid,\n coalesce((SELECT rolbypassrls AND NOT rolsuper AND NOT rolcanlogin FROM pg_catalog.pg_roles WHERE rolname='service_role'),false) AS valid\n), relations AS MATERIALIZED (\n SELECT expected.*,relation.oid,relation.relowner,relation.relacl,relation.relkind,relation.relrowsecurity\n FROM required_tables expected LEFT JOIN pg_catalog.pg_class relation\n ON relation.oid=pg_catalog.to_regclass('public.'||expected.table_name)\n), table_privileges(privilege) AS (VALUES ('SELECT'),('INSERT'),('UPDATE'),('DELETE'),('TRUNCATE'),('REFERENCES'),('TRIGGER'),('MAINTAIN')),\n column_privileges(privilege) AS (VALUES ('SELECT'),('INSERT'),('UPDATE'),('REFERENCES'))\nSELECT roles.valid AS roles_valid,\n NOT EXISTS(SELECT 1 FROM relations r WHERE r.oid IS NULL OR r.relkind<>'r' OR NOT r.relrowsecurity\n  OR pg_catalog.pg_get_userbyid(r.relowner)<>'postgres')\n AND NOT EXISTS(SELECT 1 FROM required_columns required LEFT JOIN relations r USING(table_name)\n  WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid=r.oid\n   AND a.attnum>0 AND NOT a.attisdropped AND a.attname=required.column_name)) AS relations_valid,\n NOT EXISTS(SELECT 1 FROM relations r CROSS JOIN table_privileges p\n  WHERE pg_catalog.has_table_privilege(roles.service_oid,r.oid,p.privilege)\n    IS DISTINCT FROM (p.privilege=ANY(r.privileges)))\n AND NOT EXISTS(SELECT 1 FROM relations r JOIN pg_catalog.pg_attribute a ON a.attrelid=r.oid\n  CROSS JOIN column_privileges p WHERE a.attnum>0 AND NOT a.attisdropped\n  AND pg_catalog.has_column_privilege(roles.service_oid,r.oid,a.attnum,p.privilege)\n   IS DISTINCT FROM (p.privilege=ANY(r.privileges) OR EXISTS(SELECT 1 FROM required_columns required\n    WHERE required.table_name=r.table_name AND required.column_name=a.attname AND required.privilege=p.privilege)))\n AND NOT EXISTS(SELECT 1 FROM relations r\n  CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(r.relacl,pg_catalog.acldefault('r',r.relowner))) acl\n  WHERE acl.grantee<>r.relowner AND (acl.grantee IS DISTINCT FROM roles.service_oid OR acl.is_grantable\n   OR NOT(acl.privilege_type=ANY(r.privileges))))\n AND NOT EXISTS(SELECT 1 FROM relations r JOIN pg_catalog.pg_attribute a ON a.attrelid=r.oid\n  CROSS JOIN LATERAL pg_catalog.aclexplode(a.attacl) acl\n  WHERE a.attnum>0 AND NOT a.attisdropped AND acl.grantee<>r.relowner\n  AND (acl.grantee IS DISTINCT FROM roles.service_oid OR acl.is_grantable OR NOT EXISTS(\n   SELECT 1 FROM required_columns required WHERE required.table_name=r.table_name\n    AND required.column_name=a.attname AND required.privilege=acl.privilege_type))) AS privileges_valid\nFROM roles\n) direct_receipt_rights),false)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "inventory_receipts_constraints_invalid",
+          "sql": "(exists(select 1 from (values\n   ('typed_inventory_receipts_pkey','b6374e13a4908286ff9d295f17621e70'),\n   ('typed_inventory_receipts_scan_id_fkey','d806295b1cac711d0f801d131112ce05'),\n   ('typed_inventory_receipts_result_check','b8558f8e9fd998ff27ee4488f6723c81'),\n   ('typed_inventory_receipts_scope_check','83f32fefa4a6436d7fce31e469361cfd')\n ) expected(name,definition_md5) left join pg_catalog.pg_constraint c\n   on c.conrelid=pg_catalog.to_regclass('public.typed_inventory_receipts') and c.conname=expected.name\n where c.oid is null or not c.convalidated\n   or md5(pg_catalog.pg_get_constraintdef(c.oid))<>expected.definition_md5)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "inventory_receipts_writer_security_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n   'public.settle_typed_inventory_page(text,text,uuid,uuid,uuid,text,text,text,jsonb,timestamp with time zone)',\n   'public.fail_typed_inventory_scan(text,text,uuid,uuid,uuid,text,text,text,timestamp with time zone)',\n   'public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)'\n ]::text[]) AS expected(v_signature) WHERE ( not EXISTS(SELECT 1 from pg_catalog.pg_proc where oid=to_regprocedure(expected.v_signature)) or not (SELECT prosecdef from pg_catalog.pg_proc where oid=to_regprocedure(expected.v_signature)) or pg_catalog.pg_get_userbyid((SELECT proowner from pg_catalog.pg_proc where oid=to_regprocedure(expected.v_signature)))<>'postgres'\n     or (SELECT proacl from pg_catalog.pg_proc where oid=to_regprocedure(expected.v_signature)) is distinct from '{postgres=X/postgres,service_role=X/postgres}'::aclitem[]\n     or (SELECT proconfig from pg_catalog.pg_proc where oid=to_regprocedure(expected.v_signature)) is distinct from (case when (SELECT proname from pg_catalog.pg_proc where oid=to_regprocedure(expected.v_signature)) in ('settle_typed_inventory_page','fail_typed_inventory_scan')\n     then array['search_path=pg_catalog, public, extensions, pg_temp']\n     else array['search_path=pg_catalog, public, pg_temp'] end)\n   ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {},
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object('status','ok','inventory_receipt_scopes',2,'service_direct_writes',true) AS value\n",
+      "value_sha256": "53af6f5eedd67ca4789b482cafe59b8139ec3c4acdc2ab34e1a163311656db5c",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "inventory_receipt_scopes",
+        "service_direct_writes"
+      ]
+    },
+    "assert_inventory_switch_schema": {
+      "constant": "_ASSERT_INVENTORY_SWITCH_SCHEMA_SQL",
+      "query_sha256": "b1bc541316336551dbeea77bee1f0fbfa466c57e0cdaaff27fc6adf06cbc70b6",
+      "slots": [
+        {
+          "index": 0,
+          "error": "inventory_switch_function_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS contract WHERE ( (to_regprocedure(contract.signature)) IS NULL OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_proc p WHERE p.oid=(to_regprocedure(contract.signature))\n    AND p.proowner=(SELECT oid FROM pg_catalog.pg_roles WHERE rolname='postgres') AND p.prokind='f'\n    AND p.prosecdef=contract.security_definer AND p.provolatile::text=contract.volatility AND p.proconfig IS NOT DISTINCT FROM contract.config\n    AND p.prorettype=to_regtype(contract.result_type) AND p.proretset=contract.returns_set\n    AND coalesce(p.proargnames,ARRAY[]::text[]) IS NOT DISTINCT FROM contract.argnames\n    AND p.pronargdefaults=contract.defaults\n    AND lower(regexp_replace(coalesce(pg_get_expr(p.proargdefaults,0),''),'[[:space:]]+','','g'))=contract.default_expression\n    AND md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=contract.source_md5)\n  ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "inventory_switch_function_acl_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS contract WHERE ( EXISTS(SELECT 1 FROM pg_catalog.pg_proc p CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) acl\n    WHERE p.oid=(to_regprocedure(contract.signature)) AND (acl.grantee=0 OR (acl.grantee<>p.proowner AND (acl.grantee<>(SELECT oid FROM pg_roles WHERE rolname='service_role') OR contract.access<>'service' OR acl.is_grantable))))\n    OR has_function_privilege('anon',(to_regprocedure(contract.signature)),'EXECUTE') OR has_function_privilege('authenticated',(to_regprocedure(contract.signature)),'EXECUTE')\n    OR (contract.access<>'trigger' AND has_function_privilege('service_role',(to_regprocedure(contract.signature)),'EXECUTE') IS DISTINCT FROM (contract.access='service'))\n  ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "inventory_switch_old_claim_owner_present",
+          "sql": "(to_regprocedure('operator_private.claim_inventory_states(integer,text[],text[],text,text,integer,jsonb,boolean)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "inventory_dispatch_sequence_contract_invalid",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_sequence s ON s.seqrelid=c.oid\n   WHERE c.oid=to_regclass('operator_private.inventory_dispatch_seq') AND c.relkind='S'\n     AND c.relowner=(SELECT oid FROM pg_catalog.pg_roles WHERE rolname='postgres') AND s.seqtypid='int8'::regtype AND s.seqmin=1 AND NOT s.seqcycle)\n   OR EXISTS(SELECT 1 FROM pg_catalog.pg_class c CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(c.relacl,pg_catalog.acldefault('S',c.relowner))) a\n      WHERE c.oid=to_regclass('operator_private.inventory_dispatch_seq') AND a.grantee<>c.relowner AND (a.grantee IS DISTINCT FROM (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='service_role')\n       OR a.is_grantable OR a.privilege_type<>'USAGE'))\n   OR has_sequence_privilege('service_role',to_regclass('operator_private.inventory_dispatch_seq'),'USAGE') IS DISTINCT FROM true\n   OR has_sequence_privilege('service_role',to_regclass('operator_private.inventory_dispatch_seq'),'SELECT,UPDATE')\n   OR has_sequence_privilege('anon',to_regclass('operator_private.inventory_dispatch_seq'),'USAGE,SELECT,UPDATE')\n   OR has_sequence_privilege('authenticated',to_regclass('operator_private.inventory_dispatch_seq'),'USAGE,SELECT,UPDATE')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 4,
+          "error": "inventory_switch_column_contract_invalid: %.%",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_2 AS cols WHERE ( NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid=to_regclass('public.'||cols.table_name)\n    AND a.attname=cols.column_name AND NOT a.attisdropped AND a.atttypid=to_regtype(cols.type_name) AND a.attnotnull=cols.not_null)\n  ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_2"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 5,
+          "error": "inventory_dispatch_default_invalid",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attrdef d JOIN pg_catalog.pg_attribute a ON a.attrelid=d.adrelid AND a.attnum=d.adnum\n    WHERE a.attrelid=pg_catalog.to_regclass('public.channel_playlist_state') AND a.attname='dispatch_ordinal'\n      AND pg_get_expr(d.adbin,d.adrelid)='nextval(''operator_private.inventory_dispatch_seq''::regclass)')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 6,
+          "error": "inventory_switch_constraint_missing: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_3 AS checks WHERE ( NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid=to_regclass('public.'||checks.table_name)\n    AND c.conname=checks.constraint_name AND c.contype::text=checks.kind AND c.convalidated)\n  ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_3"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 7,
+          "error": "inventory_job_scan_fk_invalid",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid=pg_catalog.to_regclass('public.operator_jobs')\n    AND c.conname='operator_jobs_inventory_scan_fkey' AND c.confrelid=pg_catalog.to_regclass('public.channel_video_inventory_scans')\n    AND c.condeferrable AND c.condeferred AND c.confdeltype='a' AND c.confupdtype='a')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 8,
+          "error": "inventory_switch_index_missing",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_index i WHERE i.indexrelid=to_regclass('public.channel_playlist_dispatch_idx') AND i.indisvalid AND i.indisready)\n   OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_index i WHERE i.indexrelid=to_regclass('public.typed_inventory_receipt_token_hash_idx') AND i.indisvalid AND i.indisready)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 9,
+          "error": "inventory_switch_table_security_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(ARRAY['channel_playlist_state','channel_video_inventory_scans','typed_inventory_receipts','operator_jobs']::text[]) AS expected(relation_name) WHERE ( NOT EXISTS(SELECT 1 FROM pg_catalog.pg_class c WHERE c.oid=to_regclass('public.'||expected.relation_name) AND c.relrowsecurity\n    AND c.relowner=(SELECT oid FROM pg_catalog.pg_roles WHERE rolname='postgres'))\n    OR has_table_privilege('anon',to_regclass('public.'||expected.relation_name),'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')\n    OR has_table_privilege('authenticated',to_regclass('public.'||expected.relation_name),'SELECT,INSERT,UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER')\n  ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 10,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid=pg_catalog.to_regclass('public.channel_playlist_state') AND c.conname='channel_playlist_dispatch_ordinal_check' AND c.convalidated AND md5(pg_get_constraintdef(c.oid))='6b727ba118f653ba42af9e4c6f77177a')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 11,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid=pg_catalog.to_regclass('public.channel_playlist_state') AND c.conname='channel_playlist_inventory_active_scan_check' AND c.convalidated AND md5(pg_get_constraintdef(c.oid))='6d57efe928d80e3eeb1baa8e63c86660')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 12,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid=pg_catalog.to_regclass('public.operator_jobs') AND c.conname='operator_jobs_inventory_ack_check' AND c.convalidated AND md5(pg_get_constraintdef(c.oid))='103c34979dda5b770f6e18c68b35943c')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 13,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid=pg_catalog.to_regclass('public.operator_jobs') AND c.conname='operator_jobs_inventory_checkpoint_check' AND c.convalidated AND md5(pg_get_constraintdef(c.oid))='f2ea0a95a8e10462831bea1b5e9aa2e5')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 14,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid=pg_catalog.to_regclass('public.operator_jobs') AND c.conname='operator_jobs_inventory_scan_fkey' AND c.convalidated AND md5(pg_get_constraintdef(c.oid))='949cf0bd7b23b580da53b41533a5c7a4')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 15,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c WHERE c.conrelid=pg_catalog.to_regclass('public.typed_inventory_receipts') AND c.conname='typed_inventory_receipt_token_hash_check' AND c.convalidated AND md5(pg_get_constraintdef(c.oid))='74d52b1736e2557a1eac58dcb646731e')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 16,
+          "error": "inventory_index_fingerprint_invalid: %",
+          "sql": "(md5(pg_get_indexdef(pg_catalog.to_regclass('public.channel_playlist_dispatch_idx'))) IS DISTINCT FROM '8613c7218c442144edffec8349ba2797') IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 17,
+          "error": "inventory_index_fingerprint_invalid: %",
+          "sql": "(md5(pg_get_indexdef(pg_catalog.to_regclass('public.typed_inventory_receipt_token_hash_idx'))) IS DISTINCT FROM 'f77b30c9be62453f1024b96dd757d233') IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 18,
+          "error": "retired_inventory_rpc_present",
+          "sql": "(to_regprocedure('public.begin_long_inventory_reconciliation(text,uuid)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 19,
+          "error": "retired_inventory_rpc_present",
+          "sql": "(to_regprocedure('public.settle_long_inventory_reconciliation_page(text,uuid,uuid,uuid,text,text,text,jsonb,timestamp with time zone,boolean,text)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 20,
+          "error": "retired_inventory_rpc_present",
+          "sql": "(to_regprocedure('public.claim_due_channel_discovery(integer,text,text,integer)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 21,
+          "error": "retired_inventory_rpc_present",
+          "sql": "(to_regprocedure('public.claim_channel_discovery_ids(text[],text,text,integer)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 22,
+          "error": "retired_inventory_rpc_present",
+          "sql": "(to_regprocedure('public.complete_channel_discovery_claim(text,uuid,uuid,jsonb)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 23,
+          "error": "retired_inventory_rpc_present",
+          "sql": "(to_regprocedure('public.fail_channel_discovery_claim(text,uuid,uuid,text,timestamp with time zone)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 24,
+          "error": "retired_inventory_rpc_present",
+          "sql": "(to_regprocedure('public.update_channel_discovery_state(text,jsonb,jsonb,bigint)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 25,
+          "error": "retired_inventory_rpc_present",
+          "sql": "(to_regprocedure('public.insert_long_video_inventory_if_absent(text,jsonb,timestamp with time zone,bigint)') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 26,
+          "error": "retired_inventory_column_present",
+          "sql": "(EXISTS(SELECT 1 FROM pg_catalog.pg_attribute WHERE attrelid=pg_catalog.to_regclass('public.channels')\n   AND attname='deep_inventory_page_token' AND NOT attisdropped)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 27,
+          "error": "retired_inventory_null_projection_invalid",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute WHERE attrelid=pg_catalog.to_regclass('public.channels_with_control')\n   AND attname='deep_inventory_page_token' AND NOT attisdropped AND atttypid='text'::regtype)\n   OR position('NULL::text AS deep_inventory_page_token' in pg_get_viewdef(pg_catalog.to_regclass('public.channels_with_control'),true))=0) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "requirements_1": "VALUES\n('operator_private.claim_inventory_states(integer,text[],text[],text,text,integer,jsonb,boolean,jsonb,boolean)','c222d664bfbdc14dcde52e353e5c1cd9',false,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'owner','record',true,ARRAY['p_limit','p_channel_ids','p_video_types','p_worker_id','p_run_id','p_lease_seconds','p_expected_channel_scopes','p_only_due','p_continuations','p_include_due','channel_id','video_type','playlist_id','lease_token','lease_expires_at','no_new_streak','active_scan_id','resume_page_token','scan_kind','scan_boundary_at','lease_channel_epoch']::text[],0,'','v'),\n('operator_private.initial_inventory_checkpoint_evidence(public.operator_jobs)','7817db70f9b89836ef1b92b00c4192ca',false,ARRAY['search_path=pg_catalog, public, operator_private, pg_temp']::text[],'owner','jsonb',false,ARRAY['p_job']::text[],0,'','v'),\n('operator_private.inventory_scan_is_hot(public.channel_video_inventory_scans,timestamptz)','a920bbdbad1fd8e9741a3e55ae12858a',false,ARRAY['search_path=pg_catalog, public, pg_temp']::text[],'owner','boolean',false,ARRAY['p_scan','p_at']::text[],0,'','i'),\n('operator_private.inventory_source_policy(text,text,text,integer,integer,integer,integer,text,timestamptz)','eaf9de4a88d5bcfca3876a04cb2b40fd',false,ARRAY['search_path=pg_catalog, public, pg_temp']::text[],'owner','record',true,ARRAY['p_video_type','p_scan_kind','p_outcome','p_new_count','p_no_new_streak','p_attempt_count','p_error_count','p_error_code','p_now','next_due_at','no_new_streak','retain_scan']::text[],0,'','i'),\n('operator_private.prepare_channel_initial_typed_inventory_provisional(text)','fb8bc5e79557582eed4a590851c0fd31',false,ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=5s']::text[],'owner','jsonb',false,ARRAY['p_channel_id']::text[],0,'','v'),\n('operator_private.restart_initial_inventory_discovery(public.operator_jobs,boolean)','d1a7664071cdf87f190110be11525801',false,ARRAY['search_path=pg_catalog, public, operator_private, pg_temp']::text[],'owner','boolean',false,ARRAY['p_job','p_format_finished']::text[],0,'','v'),\n('operator_private.sync_channel_discovery_control(text)','3e539fd2804bc30d193efde556e9ffb6',true,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'owner','jsonb',false,ARRAY['p_channel_id']::text[],0,'','v'),\n('public.begin_typed_inventory_scan(text,text,uuid,uuid,text,timestamp with time zone)','a95e16590f679a05d056b0e0b316035e',false,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','jsonb',false,ARRAY['p_channel_id','p_video_type','p_lease_token','p_scan_id','p_scan_kind','p_scan_boundary_at']::text[],0,'','v'),\n('public.bind_initial_inventory_scan(uuid,uuid,uuid,uuid,uuid)','8cc5208ec703e4085a843226744ec696',true,ARRAY['search_path=pg_catalog, public, operator_private, pg_temp']::text[],'service','jsonb',false,ARRAY['p_job_id','p_job_lease_token','p_playlist_lease_token','p_scan_id','p_transition_id']::text[],0,'','v'),\n('public.claim_due_typed_inventory(integer,text,text,integer)','6dd211dd18dd7593b2681b1e3aa5a1a9',true,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','record',true,ARRAY['p_limit','p_worker_id','p_run_id','p_lease_seconds','channel_id','video_type','playlist_id','lease_token','lease_expires_at','no_new_streak','active_scan_id','resume_page_token','scan_kind','scan_boundary_at','lease_channel_epoch']::text[],1,'900','v'),\n('public.claim_inventory_pass(jsonb,integer,text,text,integer,boolean)','fb535b9694867ef32add83c1e8dbf1a0',true,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','record',true,ARRAY['p_continuations','p_limit','p_worker_id','p_run_id','p_lease_seconds','p_include_due','channel_id','video_type','playlist_id','lease_token','lease_expires_at','no_new_streak','active_scan_id','resume_page_token','scan_kind','scan_boundary_at','lease_channel_epoch']::text[],2,'900,true','v'),\n('public.claim_typed_inventory_channels(text[],text[],text,text,integer,jsonb)','b74e428db0a50abca2a465e05dd40813',true,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','record',true,ARRAY['p_channel_ids','p_video_types','p_worker_id','p_run_id','p_lease_seconds','p_expected_channel_scopes','channel_id','video_type','playlist_id','lease_token','lease_expires_at','no_new_streak','active_scan_id','resume_page_token','scan_kind','scan_boundary_at','lease_channel_epoch']::text[],2,'900,null::jsonb','v'),\n('public.cleanup_hot_inventory_copies(text,text,integer)','7f599c79acb94fa33b84ce00d02ad097',true,ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=5s','lock_timeout=250ms']::text[],'service','jsonb',false,ARRAY['p_target','p_after_id','p_limit']::text[],2,'null::text,100','v'),\n('public.cleanup_hot_operational_copies(text,text,integer)','ba1671e9fee4a2d404bc011cb32c6280',true,ARRAY['search_path=pg_catalog, public, operator_private, pg_temp','statement_timeout=5s','lock_timeout=250ms']::text[],'service','jsonb',false,ARRAY['p_target','p_after_id','p_limit']::text[],2,'null::text,100','v'),\n('public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)','12366bc61552e20cc962145a11864c87',true,ARRAY['search_path=pg_catalog, public, pg_temp']::text[],'service','jsonb',false,ARRAY['p_transition_id','p_claims','p_source_checked_at']::text[],0,'','v'),\n('public.fail_initial_inventory_job_chunk(uuid,uuid,text,boolean)','70409b6743599de5cd33e1ea08eabba8',true,ARRAY['search_path=pg_catalog, public, operator_private, pg_temp']::text[],'service','jsonb',false,ARRAY['p_job_id','p_lease_token','p_error_code','p_playlist_not_found']::text[],1,'false','v'),\n('public.fail_typed_inventory_scan(text,text,uuid,uuid,uuid,text,text,text,timestamp with time zone)','4feebe6592d08be7256f0b5e27ca5c07',true,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','jsonb',false,ARRAY['p_channel_id','p_video_type','p_lease_token','p_scan_id','p_transition_id','p_expected_page_token','p_outcome','p_error_code','p_source_checked_at']::text[],0,'','v'),\n('public.get_channel_initial_typed_hydration(text)','5271d1a3de30804b0f5bd4951bc1bbbf',false,ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=5s']::text[],'service','jsonb',false,ARRAY['p_channel_id']::text[],0,'','s'),\n('public.guard_typed_inventory_quota_claim_floor()','601a9be3b7fd5234edf60c4172045cda',false,ARRAY['search_path=pg_catalog, public, pg_temp']::text[],'trigger','trigger',false,ARRAY[]::text[],0,'','v'),\n('public.pause_ineligible_typed_inventory_runtime()','17afb2bbd59c1533dd7c24f4e116e90b',false,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','integer',false,ARRAY[]::text[],0,'','v'),\n('public.pause_typed_inventory_runtime(integer)','b52651f11c660c774a2ea87c1d46417f',false,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','jsonb',false,ARRAY['p_limit']::text[],1,'1000','v'),\n('public.prepare_channel_initial_typed_inventory(text)','18d3c273df4f45f6b686b3c2a095bbfb',true,ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=5s']::text[],'service','jsonb',false,ARRAY['p_channel_id']::text[],0,'','v'),\n('public.prepare_initial_inventory_job_chunk(uuid,uuid,integer,integer)','e5e69cf7e6bb0928cd079673f5dba7a8',true,ARRAY['search_path=pg_catalog, public, operator_private, pg_temp']::text[],'service','jsonb',false,ARRAY['p_job_id','p_lease_token','p_page_limit','p_lease_seconds']::text[],2,'5,1200','v'),\n('public.prepare_typed_inventory_runtime(integer,boolean)','c780df509d60f9d8a3eae282579bc4f6',true,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','jsonb',false,ARRAY['p_limit','p_enable']::text[],2,'500,false','v'),\n('public.prioritize_typed_inventory_channels(text[],jsonb)','41ff06398db591416c4618bc4faf4de1',false,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','integer',false,ARRAY['p_channel_ids','p_expected_channel_scopes']::text[],1,'null::jsonb','v'),\n('public.settle_initial_inventory_job_chunk(uuid,uuid,integer,integer,integer,integer,integer,text,jsonb)','b6106514a7c7d428a9d3985441a50828',true,ARRAY['search_path=pg_catalog, public, operator_private, pg_temp']::text[],'service','jsonb',false,ARRAY['p_job_id','p_lease_token','p_reserved_units','p_pages_processed','p_items_processed','p_inserted','p_updated','p_next_page_token','p_summary']::text[],1,'''{}''::jsonb','v'),\n('public.settle_typed_inventory_page(text,text,uuid,uuid,uuid,text,text,text,jsonb,timestamp with time zone)','8650a522d9f52b200a0b544543797c2e',true,ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[],'service','jsonb',false,ARRAY['p_channel_id','p_video_type','p_lease_token','p_scan_id','p_transition_id','p_expected_page_token','p_next_page_token','p_page_status','p_items','p_source_checked_at']::text[],0,'','v'),\n('public.typed_inventory_quota_claim_allowed(text,timestamp with time zone,timestamp with time zone,timestamp with time zone)','592a752e5e48abf34cd8a25d13de42b0',false,ARRAY['search_path=pg_catalog, public, pg_temp']::text[],'service','boolean',false,ARRAY['p_last_error_code','p_next_due_at','p_source_next_after','p_checked_at']::text[],0,'','i')\n ",
+        "requirements_2": "VALUES\n  ('channel_playlist_state','dispatch_ordinal','bigint',true),\n  ('channel_video_inventory_scans','token_history_verified','boolean',true),\n  ('typed_inventory_receipts','next_page_token_hash','bytea',false),\n  ('operator_jobs','inventory_scan_id','uuid',false),('operator_jobs','inventory_checkpoint','jsonb',true)\n ",
+        "requirements_3": "VALUES\n  ('channel_playlist_state','channel_playlist_dispatch_ordinal_check','c'),\n  ('channel_playlist_state','channel_playlist_inventory_active_scan_check','c'),\n  ('typed_inventory_receipts','typed_inventory_receipt_token_hash_check','c'),\n  ('operator_jobs','operator_jobs_inventory_scan_fkey','f'),\n  ('operator_jobs','operator_jobs_inventory_checkpoint_check','c'),\n  ('operator_jobs','operator_jobs_inventory_ack_check','c')\n "
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object('status','ok','schema_version',2,'shared_page_owner',true,'lease_owner','channel_playlist_state',\n   'durable_fairness','dispatch_ordinal','token_history','retained_receipts','page_limit',50,'continuation_proof_limit',500,'initial_chunk_pages',1) AS value\n",
+      "value_sha256": "b782433dd3677c17eb8e0f771ac961c824c3a9871d32c19a7d9e4821aa54b19a",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "schema_version",
+        "shared_page_owner",
+        "lease_owner",
+        "durable_fairness",
+        "token_history",
+        "page_limit",
+        "continuation_proof_limit",
+        "initial_chunk_pages"
+      ]
+    },
+    "assert_operator_jobs_ready": {
+      "constant": "_ASSERT_OPERATOR_JOBS_READY_SQL",
+      "query_sha256": "cfc75ada4b0f86888e32ea10d8742a175f803dc83625b98dac91a0fe54b553e1",
+      "slots": [
+        {
+          "index": 0,
+          "error": "durable initial hydration RPC contract is incomplete",
+          "sql": "(to_regclass('public.operator_jobs') is null\n        or to_regclass('public.operator_job_targets') is null\n        or to_regclass('operator_private.operator_job_retry_requests') is null\n        or to_regprocedure('public.enqueue_channel_initial_inventory_job(text,integer,integer,integer,integer,integer,integer,integer,boolean,bigint)') is null\n        or to_regprocedure('public.claim_operator_job(text,integer)') is null\n        or to_regprocedure('public.claim_channel_initial_hydration_job(text,text,integer)') is null\n        or to_regprocedure('public.prepare_initial_inventory_job_chunk(uuid,uuid,integer,integer)') is null\n        or to_regprocedure('public.settle_initial_inventory_job_chunk(uuid,uuid,integer,integer,integer,integer,integer,text,jsonb)') is null\n        or to_regprocedure('public.fail_initial_inventory_job_chunk(uuid,uuid,text,boolean)') is null\n        or to_regprocedure('public.prepare_initial_hydration_job_chunk(uuid,uuid,integer,integer)') is null\n        or to_regprocedure('public.settle_initial_hydration_job_chunk(uuid,uuid,integer,text,jsonb)') is null\n        or to_regprocedure('public.verify_initial_hydration_job(uuid,uuid)') is null\n        or to_regprocedure('public.retry_channel_initial_inventory_job_v5(uuid,uuid,integer,integer,integer,boolean,bigint)') is null\n        or to_regprocedure('public.capture_successful_channel_snapshot()') is null\n        or to_regprocedure('public.claim_initial_video_collection_batch(uuid,text[],text,uuid,integer)') is null) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "durable initial hydration columns are incomplete",
+          "sql": "(not exists (\n        select 1 from schema_columns\n        where table_schema = 'public' and table_name = 'operator_jobs'\n            and column_name = 'resume_page_token'\n    )) IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "all_format_initial_hydration_columns_missing",
+          "sql": "((select count(*) from schema_columns where table_schema='public'\n        and ((table_name='operator_jobs' and column_name in ('initial_video_types','inventory_video_type'))\n          or (table_name='operator_job_targets' and column_name='video_type')\n          or (table_name='channels' and column_name='initial_inventory_estimate')))<>4) IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "operator_job_channel_scope_contract_missing",
+          "sql": "((select count(*) from schema_columns\n        where table_schema='public' and table_name='operator_jobs'\n          and column_name in ('accepted_epoch','lease_channel_epoch')\n          and data_type='bigint') <> 2\n      or not exists(select 1 from schema_columns\n        where table_schema='operator_private' and table_name='operator_job_retry_requests'\n          and column_name='request_control_epoch' and data_type='bigint')\n      or to_regprocedure('public.mark_completed_initial_hydration_failed(uuid,text,integer,bigint)') is null\n      or to_regprocedure('public.enqueue_channel_current_stats_backfill(text,integer,integer,integer,bigint)') is null) IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "schema_columns": "\n    SELECT ns.nspname AS table_schema, relation.relname AS table_name,\n           attribute.attname AS column_name,\n           pg_catalog.format_type(CASE WHEN type_row.typtype='d' THEN type_row.typbasetype\n               ELSE attribute.atttypid END, NULL) AS data_type,\n           base_type.typname AS udt_name,\n           CASE WHEN attribute.attnotnull OR (type_row.typtype='d' AND type_row.typnotnull)\n               THEN 'NO' ELSE 'YES' END AS is_nullable\n    FROM pg_catalog.pg_attribute attribute\n    JOIN pg_catalog.pg_class relation ON relation.oid=attribute.attrelid\n    JOIN pg_catalog.pg_namespace ns ON ns.oid=relation.relnamespace\n    JOIN pg_catalog.pg_type type_row ON type_row.oid=attribute.atttypid\n    JOIN pg_catalog.pg_type base_type ON base_type.oid=CASE WHEN type_row.typtype='d'\n        THEN type_row.typbasetype ELSE type_row.oid END\n    WHERE ns.nspname IN ('public','operator_private') AND attribute.attnum>0\n      AND NOT attribute.attisdropped AND relation.relkind IN ('r','v','f','p')\n"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'ready', true,\n        'schema_version', 9,\n        'full_initial_scope_version',1,'initial_total_limits_enforced',false,\n        'initial_inventory_scan_bridge',true,'initial_chunk_pages',1,\n        'initial_quota_limit_enforced', false,\n        'full_profile_request_units_per_batch', 2,\n        'unknown_completion_preserves_pending', true,\n        'job_table', 'operator_jobs',\n        'target_table', 'operator_job_targets',\n        'retry_request_table', 'operator_private.operator_job_retry_requests',\n        'initial_inventory_job_type', true,\n        'initial_full_hydration', true,\n        'auto_hydration_max_items',10000,\n        'legacy_auto_hydration_max_items',2500,\n        'initial_video_types',jsonb_build_array('long','short','stream'),\n        'channel_epoch_required',true,'frozen_initial_scope',true,'mixed_initial_claim',true,'unfinished_stream_checked',true,\n        'verify_lease_seconds', 60,\n        'idempotent_verify', true,\n        'atomic_workset_materialization', true,\n        'repairable_target_count_mismatch', true,\n        'retry_idempotency_key', true,\n        'mismatch_repair_source', 'verified_frozen_operator_job_targets',\n        'quota_neutral_migration', true\n    ) AS value\n",
+      "value_sha256": "5bf14f4fcaf038ffd622780cc0c07a476075bdac4dbdbc99164c756ed0794d9f",
+      "value_ctes": [],
+      "fields": [
+        "ready",
+        "schema_version",
+        "full_initial_scope_version",
+        "initial_total_limits_enforced",
+        "initial_inventory_scan_bridge",
+        "initial_chunk_pages",
+        "initial_quota_limit_enforced",
+        "full_profile_request_units_per_batch",
+        "unknown_completion_preserves_pending",
+        "job_table",
+        "target_table",
+        "retry_request_table",
+        "initial_inventory_job_type",
+        "initial_full_hydration",
+        "auto_hydration_max_items",
+        "legacy_auto_hydration_max_items",
+        "initial_video_types",
+        "channel_epoch_required",
+        "frozen_initial_scope",
+        "mixed_initial_claim",
+        "unfinished_stream_checked",
+        "verify_lease_seconds",
+        "idempotent_verify",
+        "atomic_workset_materialization",
+        "repairable_target_count_mismatch",
+        "retry_idempotency_key",
+        "mismatch_repair_source",
+        "quota_neutral_migration"
+      ]
+    },
+    "assert_typed_inventory_canonical_repair_schema": {
+      "constant": "_ASSERT_TYPED_INVENTORY_CANONICAL_REPAIR_SCHEMA_SQL",
+      "query_sha256": "2000aa243bdbe6c8acd0a9a0bdacadd4f33ec6fb7c589d912411d68ddc6d3d4f",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_inventory_canonical_repair_postgres_version_invalid",
+          "sql": "(pg_catalog.current_setting('server_version_num')::integer < 170000) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "typed_inventory_canonical_repair_rpc_missing: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'public.inspect_typed_inventory_canonical_repair(integer)',\n        'public.repair_typed_inventory_canonical_types(integer,text)',\n        'public.assert_typed_inventory_canonical_repair_schema()'\n    ]::text[]) AS expected(v_signature) WHERE ( to_regprocedure(expected.v_signature) is null ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "typed_inventory_canonical_repair_rpc_acl_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'public.inspect_typed_inventory_canonical_repair(integer)',\n        'public.repair_typed_inventory_canonical_types(integer,text)',\n        'public.assert_typed_inventory_canonical_repair_schema()'\n    ]::text[]) AS expected(v_signature) WHERE ( not pg_catalog.has_function_privilege(\n            'service_role', to_regprocedure(expected.v_signature), 'execute'\n        )\n           or pg_catalog.has_function_privilege(\n               'anon', to_regprocedure(expected.v_signature), 'execute'\n           )\n           or pg_catalog.has_function_privilege(\n               'authenticated', to_regprocedure(expected.v_signature), 'execute'\n           )\n        ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "typed_inventory_canonical_repair_rpc_must_be_invoker: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'public.inspect_typed_inventory_canonical_repair(integer)',\n        'public.repair_typed_inventory_canonical_types(integer,text)',\n        'public.assert_typed_inventory_canonical_repair_schema()'\n    ]::text[]) AS expected(v_signature) WHERE ( exists (\n            select 1\n            from pg_catalog.pg_proc as routine\n            where routine.oid = to_regprocedure(expected.v_signature)\n              and routine.prosecdef\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 4,
+          "error": "typed_inventory_canonical_repair_lock_schema_invalid",
+          "sql": "(to_regnamespace('operator_private') is null\n       or pg_catalog.pg_get_userbyid(\n           (\n               select namespace_row.nspowner\n               from pg_catalog.pg_namespace as namespace_row\n               where namespace_row.oid = to_regnamespace('operator_private')\n           )\n       ) <> 'postgres'\n       or not pg_catalog.has_schema_privilege(\n           'service_role', to_regnamespace('operator_private'), 'usage'\n       )\n       or pg_catalog.has_schema_privilege(\n           'service_role', to_regnamespace('operator_private'), 'create'\n       )\n       or pg_catalog.has_schema_privilege(\n           'anon', to_regnamespace('operator_private'), 'usage'\n       )\n       or pg_catalog.has_schema_privilege(\n           'anon', to_regnamespace('operator_private'), 'create'\n       )\n       or pg_catalog.has_schema_privilege(\n           'authenticated', to_regnamespace('operator_private'), 'usage'\n       )\n       or pg_catalog.has_schema_privilege(\n           'authenticated', to_regnamespace('operator_private'), 'create'\n       )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 5,
+          "error": "typed_inventory_canonical_repair_lock_view_invalid",
+          "sql": "((SELECT v_lock_relation FROM observed_1) is null\n       or pg_catalog.pg_relation_is_updatable((SELECT v_lock_relation FROM observed_1), false) <> 0\n       or pg_catalog.pg_relation_is_updatable((SELECT v_lock_relation FROM observed_1), true) <> 0\n       or not coalesce(\n           'security_invoker=false' = any((SELECT v_lock_relation_options FROM observed_1)::text[]),\n           false\n       )) IS TRUE",
+          "ctes": [
+            "observed_1"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 6,
+          "error": "typed_inventory_canonical_repair_lock_view_dependency_invalid",
+          "sql": "(not exists (\n        select 1\n        from pg_catalog.pg_rewrite as rewrite_row\n        join pg_catalog.pg_depend as dependency\n          on dependency.classid = pg_catalog.to_regclass('pg_catalog.pg_rewrite')\n         and dependency.objid = rewrite_row.oid\n         and dependency.refclassid = pg_catalog.to_regclass('pg_catalog.pg_class')\n        where rewrite_row.ev_class = (SELECT v_lock_relation FROM observed_1)\n          and dependency.refobjid = pg_catalog.to_regclass('public.video_collection_state')\n    )\n       or exists (\n           select 1\n           from pg_catalog.pg_rewrite as rewrite_row\n           join pg_catalog.pg_depend as dependency\n             on dependency.classid = pg_catalog.to_regclass('pg_catalog.pg_rewrite')\n            and dependency.objid = rewrite_row.oid\n            and dependency.refclassid = pg_catalog.to_regclass('pg_catalog.pg_class')\n           where rewrite_row.ev_class = (SELECT v_lock_relation FROM observed_1)\n             and dependency.refobjid <> (SELECT v_lock_relation FROM observed_1)\n             and dependency.refobjid <>\n                   pg_catalog.to_regclass('public.video_collection_state')\n       )) IS TRUE",
+          "ctes": [
+            "observed_1"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 7,
+          "error": "typed_inventory_canonical_repair_lock_view_acl_invalid",
+          "sql": "(not pg_catalog.has_table_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'maintain'\n       )\n       or pg_catalog.has_table_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'select'\n       )\n       or pg_catalog.has_table_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'insert'\n       )\n       or pg_catalog.has_table_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'update'\n       )\n       or pg_catalog.has_table_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'delete'\n       )\n       or pg_catalog.has_table_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'truncate'\n       )\n       or pg_catalog.has_table_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'references'\n       )\n       or pg_catalog.has_table_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'trigger'\n       )\n       or pg_catalog.has_any_column_privilege(\n           'service_role', (SELECT v_lock_relation FROM observed_1), 'select,insert,update,references'\n       )\n       or pg_catalog.has_table_privilege(\n           'anon', (SELECT v_lock_relation FROM observed_1), 'maintain'\n       )\n       or pg_catalog.has_table_privilege(\n           'anon', (SELECT v_lock_relation FROM observed_1),\n           'select,insert,update,delete,truncate,references,trigger'\n       )\n       or pg_catalog.has_any_column_privilege(\n           'anon', (SELECT v_lock_relation FROM observed_1), 'select,insert,update,references'\n       )\n       or pg_catalog.has_table_privilege(\n           'authenticated', (SELECT v_lock_relation FROM observed_1), 'maintain'\n       )\n       or pg_catalog.has_table_privilege(\n           'authenticated', (SELECT v_lock_relation FROM observed_1),\n           'select,insert,update,delete,truncate,references,trigger'\n       )\n       or pg_catalog.has_any_column_privilege(\n           'authenticated', (SELECT v_lock_relation FROM observed_1),\n           'select,insert,update,references'\n       )) IS TRUE",
+          "ctes": [
+            "observed_1"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 8,
+          "error": "typed_inventory_canonical_repair_base_state_acl_invalid",
+          "sql": "(not pg_catalog.has_table_privilege('postgres',to_regclass('public.video_collection_state'),'maintain') OR NOT coalesce((SELECT roles_valid AND relations_valid AND privileges_valid FROM (\nWITH required_tables(table_name,privileges) AS (VALUES\n ('video_collection_state',ARRAY['SELECT','DELETE']::text[])\n), required_columns(table_name,column_name,privilege) AS (VALUES\n ('video_collection_state','video_id','INSERT'),\n ('video_collection_state','channel_id','INSERT'),\n ('video_collection_state','stats_due_at','INSERT'),\n ('video_collection_state','metadata_due_at','INSERT'),\n ('video_collection_state','stats_source_checked_at','INSERT'),\n ('video_collection_state','metadata_source_checked_at','INSERT'),\n ('video_collection_state','next_due_at','INSERT'),\n ('video_collection_state','policy_version','INSERT'),\n ('video_collection_state','hydration_needed','INSERT'),\n ('video_collection_state','paused_reason','INSERT'),\n ('video_collection_state','updated_at','INSERT'),\n ('video_collection_state','video_type','INSERT'),\n ('video_collection_state','typed_source_published_at','INSERT'),\n ('video_collection_state','typed_collection_status','INSERT'),\n ('video_collection_state','next_due_at','UPDATE'),\n ('video_collection_state','lease_channel_epoch','UPDATE'),\n ('video_collection_state','lease_token','UPDATE'),\n ('video_collection_state','lease_owner','UPDATE'),\n ('video_collection_state','lease_started_at','UPDATE'),\n ('video_collection_state','lease_expires_at','UPDATE'),\n ('video_collection_state','consecutive_failures','UPDATE'),\n ('video_collection_state','last_error_type','UPDATE'),\n ('video_collection_state','updated_at','UPDATE'),\n ('video_collection_state','metadata_due_at','UPDATE'),\n ('video_collection_state','stats_due_at','UPDATE'),\n ('video_collection_state','attempt_count','UPDATE'),\n ('video_collection_state','last_claim_run_id','UPDATE'),\n ('video_collection_state','last_attempt_at','UPDATE'),\n ('video_collection_state','channel_id','UPDATE'),\n ('video_collection_state','stats_source_checked_at','UPDATE'),\n ('video_collection_state','metadata_source_checked_at','UPDATE'),\n ('video_collection_state','policy_version','UPDATE'),\n ('video_collection_state','hydration_needed','UPDATE'),\n ('video_collection_state','paused_reason','UPDATE'),\n ('video_collection_state','video_type','UPDATE'),\n ('video_collection_state','typed_source_published_at','UPDATE'),\n ('video_collection_state','typed_stream_actual_end_at','UPDATE'),\n ('video_collection_state','last_success_at','UPDATE'),\n ('video_collection_state','profile_metadata_version','UPDATE'),\n ('video_collection_state','typed_collection_status','UPDATE'),\n ('video_collection_state','typed_collection_checked_at','UPDATE')\n), roles AS (\n SELECT (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='service_role') AS service_oid,\n coalesce((SELECT rolbypassrls AND NOT rolsuper AND NOT rolcanlogin FROM pg_catalog.pg_roles WHERE rolname='service_role'),false) AS valid\n), relations AS MATERIALIZED (\n SELECT expected.*,relation.oid,relation.relowner,relation.relacl,relation.relkind,relation.relrowsecurity\n FROM required_tables expected LEFT JOIN pg_catalog.pg_class relation\n ON relation.oid=pg_catalog.to_regclass('public.'||expected.table_name)\n), table_privileges(privilege) AS (VALUES ('SELECT'),('INSERT'),('UPDATE'),('DELETE'),('TRUNCATE'),('REFERENCES'),('TRIGGER'),('MAINTAIN')),\n column_privileges(privilege) AS (VALUES ('SELECT'),('INSERT'),('UPDATE'),('REFERENCES'))\nSELECT roles.valid AS roles_valid,\n NOT EXISTS(SELECT 1 FROM relations r WHERE r.oid IS NULL OR r.relkind<>'r' OR NOT r.relrowsecurity\n  OR pg_catalog.pg_get_userbyid(r.relowner)<>'postgres')\n AND NOT EXISTS(SELECT 1 FROM required_columns required LEFT JOIN relations r USING(table_name)\n  WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid=r.oid\n   AND a.attnum>0 AND NOT a.attisdropped AND a.attname=required.column_name)) AS relations_valid,\n NOT EXISTS(SELECT 1 FROM relations r CROSS JOIN table_privileges p\n  WHERE pg_catalog.has_table_privilege(roles.service_oid,r.oid,p.privilege)\n    IS DISTINCT FROM (p.privilege=ANY(r.privileges)))\n AND NOT EXISTS(SELECT 1 FROM relations r JOIN pg_catalog.pg_attribute a ON a.attrelid=r.oid\n  CROSS JOIN column_privileges p WHERE a.attnum>0 AND NOT a.attisdropped\n  AND pg_catalog.has_column_privilege(roles.service_oid,r.oid,a.attnum,p.privilege)\n   IS DISTINCT FROM (p.privilege=ANY(r.privileges) OR EXISTS(SELECT 1 FROM required_columns required\n    WHERE required.table_name=r.table_name AND required.column_name=a.attname AND required.privilege=p.privilege)))\n AND NOT EXISTS(SELECT 1 FROM relations r\n  CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(r.relacl,pg_catalog.acldefault('r',r.relowner))) acl\n  WHERE acl.grantee<>r.relowner AND (acl.grantee IS DISTINCT FROM roles.service_oid OR acl.is_grantable\n   OR NOT(acl.privilege_type=ANY(r.privileges))))\n AND NOT EXISTS(SELECT 1 FROM relations r JOIN pg_catalog.pg_attribute a ON a.attrelid=r.oid\n  CROSS JOIN LATERAL pg_catalog.aclexplode(a.attacl) acl\n  WHERE a.attnum>0 AND NOT a.attisdropped AND acl.grantee<>r.relowner\n  AND (acl.grantee IS DISTINCT FROM roles.service_oid OR acl.is_grantable OR NOT EXISTS(\n   SELECT 1 FROM required_columns required WHERE required.table_name=r.table_name\n    AND required.column_name=a.attname AND required.privilege=acl.privilege_type))) AS privileges_valid\nFROM roles\n) direct_queue_rights),false)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 9,
+          "error": "typed_inventory_canonical_repair_function_contract_invalid",
+          "sql": "((SELECT v_repair_definition FROM observed_2) is null\n       or pg_catalog.strpos(\n           (SELECT v_repair_definition FROM observed_2),\n           'lock table public.video_collection_state in share mode'\n       ) > 0\n       or pg_catalog.strpos(\n           (SELECT v_repair_definition FROM observed_2),\n           'operator_private.video_collection_state_canonical_repair_lock'\n       ) = 0\n       or coalesce(cardinality((SELECT v_repair_config FROM observed_2)), 0) <> 3\n       or not coalesce(\n           'search_path=pg_catalog, public, pg_temp' =\n               any((SELECT v_repair_config FROM observed_2)::text[]),\n           false\n       )\n       or not coalesce('statement_timeout=60s' = any((SELECT v_repair_config FROM observed_2)::text[]), false)\n       or not coalesce('lock_timeout=5s' = any((SELECT v_repair_config FROM observed_2)::text[]), false)) IS TRUE",
+          "ctes": [
+            "observed_2"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 10,
+          "error": "typed_inventory_canonical_repair_collection_trigger_missing",
+          "sql": "((SELECT v_trigger_function FROM observed_3) is distinct from to_regprocedure(\n           'public.sync_video_collection_state_trigger()'\n       )\n       or not exists (\n           select 1\n           from pg_catalog.pg_proc as routine\n           where routine.oid = (SELECT v_trigger_function FROM observed_3)\n             and routine.prosecdef\n             and pg_catalog.pg_get_userbyid(routine.proowner) = 'postgres'\n             and coalesce(\n                 'search_path=pg_catalog, public, extensions, pg_temp' =\n                     any(routine.proconfig),\n                 false\n             )\n       )) IS TRUE",
+          "ctes": [
+            "observed_3"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": true,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "observed_1": "SELECT relation_row.oid AS v_lock_relation, relation_row.reloptions AS v_lock_relation_options from pg_catalog.pg_class as relation_row\n    where relation_row.oid = to_regclass(\n        'operator_private.video_collection_state_canonical_repair_lock'\n    )\n      and relation_row.relkind = 'v'\n      and pg_catalog.pg_get_userbyid(relation_row.relowner) = 'postgres'",
+        "observed_2": "SELECT pg_catalog.lower(pg_catalog.pg_get_functiondef(routine.oid)) AS v_repair_definition, routine.proconfig AS v_repair_config from pg_catalog.pg_proc as routine\n    where routine.oid = to_regprocedure(\n        'public.repair_typed_inventory_canonical_types(integer,text)'\n    )\n      and pg_catalog.pg_get_userbyid(routine.proowner) = 'postgres'\n      and not routine.prosecdef\n      and routine.provolatile = 'v'",
+        "observed_3": "SELECT trigger_row.tgfoid AS v_trigger_function from pg_catalog.pg_trigger as trigger_row\n    where trigger_row.tgrelid = pg_catalog.to_regclass('public.video_inventory')\n      and trigger_row.tgname = 'video_inventory_collection_state_trigger'\n      and not trigger_row.tgisinternal\n      and trigger_row.tgenabled = 'O'"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'status', 'ok',\n        'schema_version', 2,\n        'authoritative_evidence', 'unique_present_typed_playlist_membership',\n        'canonical_channel_mutation', false,\n        'max_atomic_repairs', 5000,\n        'collection_state_lock_contract',\n            'private_owner_aggregate_view_maintain_only',\n        'minimum_postgres_version', 17,\n        'repair_statement_timeout_seconds', 60\n    ) AS value\n",
+      "value_sha256": "b6500072d78219b1c5eb4180fd2f9ea0fc3c104f3751a9c5d62cd2ffe9dbb84a",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "schema_version",
+        "authoritative_evidence",
+        "canonical_channel_mutation",
+        "max_atomic_repairs",
+        "collection_state_lock_contract",
+        "minimum_postgres_version",
+        "repair_statement_timeout_seconds"
+      ]
+    },
+    "assert_typed_inventory_foundation_schema": {
+      "constant": "_ASSERT_TYPED_INVENTORY_FOUNDATION_SCHEMA_SQL",
+      "query_sha256": "a5a936e8eaf16cd952504a5aae655a8ffaca78ebca0d2a932b6162a837503f1e",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_inventory_table_missing_or_rls_disabled: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'channel_video_inventory_scans',\n        'video_inventory_memberships',\n        'channel_playlist_state'\n    ]::text[]) AS expected(v_table_name) WHERE ( not exists (\n            select 1\n            from pg_catalog.pg_class as relation\n            join pg_catalog.pg_namespace as namespace\n              on namespace.oid = relation.relnamespace\n            where namespace.nspname = 'public'\n              and relation.relname = expected.v_table_name\n              and relation.relkind = 'r'\n              and relation.relrowsecurity\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "typed_inventory_table_publicly_readable: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'channel_video_inventory_scans',\n        'video_inventory_memberships',\n        'channel_playlist_state'\n    ]::text[]) AS expected(v_table_name) WHERE ( pg_catalog.has_table_privilege(\n            'anon',\n            to_regclass('public.' || expected.v_table_name),\n            'select'\n        ) or pg_catalog.has_table_privilege(\n            'authenticated',\n            to_regclass('public.' || expected.v_table_name),\n            'select'\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "typed_inventory_product_exposure_default_invalid",
+          "sql": "(not exists (\n        select 1\n        from pg_catalog.pg_attribute as attribute\n        join pg_catalog.pg_class as relation\n          on relation.oid = attribute.attrelid\n        join pg_catalog.pg_namespace as namespace\n          on namespace.oid = relation.relnamespace\n        join pg_catalog.pg_attrdef as attribute_default\n          on attribute_default.adrelid = attribute.attrelid\n         and attribute_default.adnum = attribute.attnum\n        where namespace.nspname = 'public'\n          and relation.relname = 'channel_playlist_state'\n          and attribute.attname = 'product_exposure_ready'\n          and attribute.atttypid = 'pg_catalog.bool'::regtype\n          and attribute.attnotnull\n          and pg_catalog.pg_get_expr(\n              attribute_default.adbin,\n              attribute_default.adrelid\n          ) = 'false'\n    )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "video_inventory_must_have_one_canonical_row",
+          "sql": "((SELECT v_primary_key FROM observed_1) is distinct from 'PRIMARY KEY (video_id)') IS TRUE",
+          "ctes": [
+            "observed_1"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 4,
+          "error": "video_inventory_resolution_must_be_security_invoker",
+          "sql": "(not exists (\n        select 1\n        from pg_catalog.pg_class as relation\n        join pg_catalog.pg_namespace as namespace\n          on namespace.oid = relation.relnamespace\n        where namespace.nspname = 'public'\n          and relation.relname = 'video_inventory_type_resolution'\n          and relation.relkind = 'v'\n          and coalesce(relation.reloptions, array[]::text[])\n              @> array['security_invoker=true']::text[]\n    )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "observed_1": "SELECT pg_catalog.pg_get_constraintdef(constraint_row.oid) AS v_primary_key from pg_catalog.pg_constraint as constraint_row\n    join pg_catalog.pg_class as relation\n      on relation.oid = constraint_row.conrelid\n    join pg_catalog.pg_namespace as namespace\n      on namespace.oid = relation.relnamespace\n    where namespace.nspname = 'public'\n      and relation.relname = 'video_inventory'\n      and constraint_row.contype = 'p'",
+        "observed_2": "SELECT count(*) AS v_enabled_count from public.channel_playlist_state as discovery\n    where discovery.runtime_enabled and discovery.video_type in ('short','stream')",
+        "observed_3": "SELECT count(*) AS v_product_exposure_count from public.channel_video_inventory_state as inventory_state\n    where inventory_state.product_exposure_ready"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'status', 'ok',\n        'canonical_inventory_key', 'video_id',\n        'product_exposure_default', false,\n        'membership_conflicts', 'explicit',\n        'absence_requires', 'completed_complete_scan_generation',\n        'active_long_discovery_owner', 'channel_playlist_state',\n        'typed_nonlong_runtime_enabled_rows', (SELECT v_enabled_count FROM observed_2),\n        'product_exposure_ready_rows', (SELECT v_product_exposure_count FROM observed_3)\n    ) AS value\n",
+      "value_sha256": "605372daccdacff066a52e858dd66d1bf7b28dd209401444696d146fba2f349c",
+      "value_ctes": [
+        "observed_2",
+        "observed_3"
+      ],
+      "fields": [
+        "status",
+        "canonical_inventory_key",
+        "product_exposure_default",
+        "membership_conflicts",
+        "absence_requires",
+        "active_long_discovery_owner",
+        "typed_nonlong_runtime_enabled_rows",
+        "product_exposure_ready_rows"
+      ]
+    },
+    "assert_typed_inventory_quota_defer_schema": {
+      "constant": "_ASSERT_TYPED_INVENTORY_QUOTA_DEFER_SCHEMA_SQL",
+      "query_sha256": "c67990bc789ea1fe308c7a226f0a8a7d36b6b9bdbcde676203edf0a7177869e6",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_inventory_quota_defer_rpc_security_invalid",
+          "sql": "(to_regprocedure(('public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)')) is null\n       or exists (\n           select 1\n           from pg_catalog.pg_proc as routine\n           cross join lateral pg_catalog.aclexplode(coalesce(\n               routine.proacl,\n               pg_catalog.acldefault('f', routine.proowner)\n           )) as acl\n           where routine.oid = to_regprocedure(('public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)'))\n             and acl.grantee = 0\n             and acl.privilege_type = 'EXECUTE'\n       )\n       or pg_catalog.has_function_privilege('anon', ('public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)'), 'execute')\n       or pg_catalog.has_function_privilege(\n           'authenticated', ('public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)'), 'execute'\n       )\n       or not pg_catalog.has_function_privilege(\n           'service_role', ('public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)'), 'execute'\n       )\n       or not exists (\n           select 1\n           from pg_catalog.pg_proc as routine\n           where routine.oid = to_regprocedure(('public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)'))\n             and pg_catalog.pg_get_userbyid(routine.proowner) = 'postgres'\n             and routine.prosecdef\n             and exists (\n                 select 1\n                 from unnest(coalesce(routine.proconfig, array[]::text[]))\n                     as config(value)\n                 where config.value like 'search_path=%%'\n                   and config.value like '%%pg_catalog%%'\n                   and config.value like '%%pg_temp%%'\n             )\n       )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "typed_inventory_quota_defer_preservation_contract_invalid",
+          "sql": "(pg_catalog.strpos((SELECT v_definition FROM observed_1), 'jsonb_array_length(p_claims) not between 1 and 500') = 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'pg_advisory_xact_lock') = 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'typed_inventory_receipts') = 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'p_source_checked_at + interval ''1 hour''') = 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'public.youtube_quota_reset_at(p_source_checked_at)') = 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'discovery.status = ''leased''') = 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'discovery.lease_token = (v_claim->>''lease_token'')::uuid') = 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), '''active_scan_state_preserved'', true') = 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'active_scan_id =') > 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'resume_page_token =') > 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'resume_started_at =') > 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'scan_boundary_at =') > 0\n       or pg_catalog.strpos((SELECT v_definition FROM observed_1), 'update public.channel_video_inventory_scans') > 0\n       or (SELECT v_definition FROM observed_1) ~ '(^|[[:space:],])(inventory_[a-z_]+|product_exposure_ready|expected_item_count|last_completed_scan_id|source_checked_at)[[:space:]]*=') IS TRUE",
+          "ctes": [
+            "observed_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "typed_inventory_quota_claim_floor_guard_missing",
+          "sql": "(to_regprocedure(\n           'public.guard_typed_inventory_quota_claim_floor()'\n       ) is null\n       or not exists (\n           select 1\n           from pg_catalog.pg_proc as routine\n           where routine.oid =\n               pg_catalog.to_regprocedure('public.guard_typed_inventory_quota_claim_floor()')\n             and pg_catalog.pg_get_userbyid(routine.proowner) = 'postgres'\n             and not routine.prosecdef\n             and exists (\n                 select 1\n                 from unnest(coalesce(routine.proconfig, array[]::text[]))\n                     as config(value)\n                 where config.value like 'search_path=%%'\n                   and config.value like '%%pg_catalog%%'\n                   and config.value like '%%pg_temp%%'\n             )\n       )\n       or not exists (\n           select 1\n           from pg_catalog.pg_trigger as trigger_row\n           where trigger_row.tgrelid =\n               pg_catalog.to_regclass('public.channel_playlist_state')\n             and trigger_row.tgname =\n                 'typed_inventory_quota_claim_floor_guard'\n             and trigger_row.tgfoid =\n                 pg_catalog.to_regprocedure('public.guard_typed_inventory_quota_claim_floor()')\n             and not trigger_row.tgisinternal\n             and trigger_row.tgenabled = 'O'\n       )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": true,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "typed_inventory_quota_claim_floor_truth_table_invalid",
+          "sql": "(to_regprocedure(\n           'public.typed_inventory_quota_claim_allowed(text,timestamp with time zone,timestamp with time zone,timestamp with time zone)'\n       ) is null\n       or public.typed_inventory_quota_claim_allowed(\n           'youtube_daily_quota_exceeded_error',\n           now() + interval '1 hour',\n           now() + interval '1 hour',\n           now()\n       )\n       or not public.typed_inventory_quota_claim_allowed(\n           'youtube_daily_quota_exceeded_error',\n           now() - interval '1 second',\n           now() - interval '1 second',\n           now()\n       )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 4,
+          "error": "typed_video_collection_cadence_or_jitter_invalid",
+          "sql": "((\n        select count(*)\n        from public.video_collection_cadence as policy\n        where policy.collection_kind = 'metadata'\n          and policy.video_type in ('short', 'stream')\n          and policy.enabled\n          and policy.policy_version = 1\n          and policy.jitter_window_seconds = 21600\n          and (\n              (\n                  policy.video_type in ('short', 'stream')\n                  and policy.age_bucket = 'age_0_90d'\n                  and policy.min_age_seconds = 0\n                  and policy.max_age_seconds = 7776000\n                  and policy.cadence_seconds = 604800\n              )\n              or (\n                  policy.video_type in ('short', 'stream')\n                  and policy.age_bucket = 'age_91d_plus'\n                  and policy.min_age_seconds = 7776000\n                  and policy.max_age_seconds is null\n                  and policy.cadence_seconds = 1814400\n              )\n          )\n    ) <> 4) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "observed_1": "SELECT pg_catalog.lower(pg_catalog.pg_get_functiondef(\n        to_regprocedure(('public.defer_typed_inventory_claims_after_daily_quota(uuid,jsonb,timestamp with time zone)'))\n    )) AS v_definition "
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'status', 'ok',\n        'schema_version', 1,\n        'claim_limit', 500,\n        'retry_floor_seconds', 3600,\n        'retry_until', 'youtube_quota_reset',\n        'lost_ack_receipts', true,\n        'active_scan_state_preserved', true,\n        'cadence_jitter_seconds', 21600,\n        'quota_claim_floor_guard', true\n    ) AS value\n",
+      "value_sha256": "23d0127ed00e16e1f79085a74d6b6ced7214d336bb239ceb81d50bc22ff6dc28",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "schema_version",
+        "claim_limit",
+        "retry_floor_seconds",
+        "retry_until",
+        "lost_ack_receipts",
+        "active_scan_state_preserved",
+        "cadence_jitter_seconds",
+        "quota_claim_floor_guard"
+      ]
+    },
+    "assert_typed_inventory_runtime_schema": {
+      "constant": "_ASSERT_TYPED_INVENTORY_RUNTIME_SCHEMA_SQL",
+      "query_sha256": "c771cefe1cdb700956d90273a4011b814b2777fb286c8061c338a45d35d72b88",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_inventory_active_scan_projection_drift",
+          "sql": "(EXISTS(SELECT 1 FROM public.channel_playlist_state d LEFT JOIN public.channel_video_inventory_scans s ON s.scan_id=d.active_scan_id\n   WHERE d.active_scan_id IS NOT NULL AND (s.scan_id IS NULL OR s.status<>'running' OR s.channel_id IS DISTINCT FROM d.channel_id\n      OR s.video_type IS DISTINCT FROM d.video_type OR s.playlist_id IS DISTINCT FROM d.playlist_id\n      OR s.resume_page_token IS DISTINCT FROM d.resume_page_token OR s.started_at IS DISTINCT FROM d.resume_started_at\n      OR s.scan_boundary_at IS DISTINCT FROM d.scan_boundary_at OR NOT s.token_history_verified))) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "observed_1": "SELECT count(*) AS enabled_count FROM public.channel_playlist_state WHERE runtime_enabled",
+        "observed_2": "SELECT count(*) AS exposed_count FROM public.channel_playlist_state WHERE product_exposure_ready"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object('status','ok','schema_version',2,'foundation',NULL::jsonb,'runtime_enabled_rows',(SELECT enabled_count FROM observed_1),\n  'product_exposure_ready_rows',(SELECT exposed_count FROM observed_2),'zero_enabled_rows_allowed',true,'runtime_video_types',jsonb_build_array('long','short','stream'),\n  'canonical_identity','insert_only','page_limit',50,'continuation_delay_minutes',30,'head_cadence_hours',jsonb_build_array(1,2,4,8,24),\n  'full_reconciliation_days',21,'product_exposure_independent_of_active_scan',true,'statistics_collection',false,\n  'separate_current_data_collection',true,'lost_ack_receipts',true,'durable_fairness',true,'initial_chunk_pages',1) AS value\n",
+      "value_sha256": "8fc8a07bd7cc18cff0735c766d798f871589e347b7f7d775dfdca63e64ddeab0",
+      "value_ctes": [
+        "observed_1",
+        "observed_2"
+      ],
+      "fields": [
+        "status",
+        "schema_version",
+        "foundation",
+        "runtime_enabled_rows",
+        "product_exposure_ready_rows",
+        "zero_enabled_rows_allowed",
+        "runtime_video_types",
+        "canonical_identity",
+        "page_limit",
+        "continuation_delay_minutes",
+        "head_cadence_hours",
+        "full_reconciliation_days",
+        "product_exposure_independent_of_active_scan",
+        "statistics_collection",
+        "separate_current_data_collection",
+        "lost_ack_receipts",
+        "durable_fairness",
+        "initial_chunk_pages"
+      ]
+    },
+    "assert_typed_video_collection_schema": {
+      "constant": "_ASSERT_TYPED_VIDEO_COLLECTION_SCHEMA_SQL",
+      "query_sha256": "c4287bf216fbf2d459cffbbe4083b2a36c356b0485b466017a550844947de71a",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_video_collection_relation_missing",
+          "sql": "(to_regclass('public.video_collection_cadence') is null\n       or to_regclass('public.typed_video_collection_runtime') is null\n       or to_regclass('public.typed_video_collection_receipts') is null\n       or to_regclass('public.video_collection_state_format_due_idx') is null) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "typed_video_collection_relation_security_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'video_collection_cadence',\n        'typed_video_collection_runtime',\n        'typed_video_collection_receipts',\n        'typed_video_collection_candidates'\n    ]::text[]) AS expected(v_relation) WHERE ( not exists (\n               select 1\n               from pg_catalog.pg_class as relation\n               join pg_catalog.pg_namespace as namespace\n                 on namespace.oid = relation.relnamespace\n               where namespace.nspname = 'public'\n                 and relation.relname = expected.v_relation\n                 and pg_catalog.pg_get_userbyid(relation.relowner) = 'postgres'\n                 and (\n                     (\n                         expected.v_relation <> 'typed_video_collection_candidates'\n                         and relation.relkind in ('r', 'p')\n                         and relation.relrowsecurity\n                     )\n                     or (\n                         expected.v_relation = 'typed_video_collection_candidates'\n                         and relation.relkind = 'v'\n                         and coalesce(relation.reloptions, array[]::text[])\n                             @> array[\n                                 'security_invoker=true',\n                                 'security_barrier=true'\n                             ]::text[]\n                     )\n                 )\n           )\n           or exists (\n               select 1\n               from pg_catalog.pg_class as relation\n               join pg_catalog.pg_namespace as namespace\n                 on namespace.oid = relation.relnamespace\n               cross join lateral pg_catalog.aclexplode(coalesce(\n                   relation.relacl,\n                   pg_catalog.acldefault('r', relation.relowner)\n               )) as acl\n               where namespace.nspname = 'public'\n                 and relation.relname = expected.v_relation\n                 and acl.grantee = 0\n           )\n           or pg_catalog.has_table_privilege(\n               'anon', to_regclass('public.' || expected.v_relation), 'select'\n           )\n           or pg_catalog.has_table_privilege(\n               'authenticated', to_regclass('public.' || expected.v_relation), 'select'\n           )\n           or not pg_catalog.has_table_privilege(\n               'service_role', to_regclass('public.' || expected.v_relation), 'select'\n           )\n           or pg_catalog.has_table_privilege(\n               'service_role', to_regclass('public.' || expected.v_relation), 'insert'\n           )\n           or pg_catalog.has_table_privilege(\n               'service_role', to_regclass('public.' || expected.v_relation), 'update'\n           )\n           or (pg_catalog.has_table_privilege('service_role',to_regclass('public.'||expected.v_relation),'delete') IS DISTINCT FROM (expected.v_relation='typed_video_collection_receipts'))\n           or (expected.v_relation='typed_video_collection_runtime' AND NOT coalesce((SELECT roles_valid AND relations_valid AND privileges_valid FROM (\nWITH required_tables(table_name,privileges) AS (VALUES\n ('typed_video_collection_runtime',ARRAY['SELECT']::text[]),\n ('video_collection_control',ARRAY['SELECT']::text[])\n), required_columns(table_name,column_name,privilege) AS (VALUES\n ('typed_video_collection_runtime','reconcile_queue_cursor','UPDATE'),\n ('typed_video_collection_runtime','reconcile_inventory_cursor','UPDATE'),\n ('typed_video_collection_runtime','updated_at','UPDATE'),\n ('video_collection_control','reconciliation_required','UPDATE'),\n ('video_collection_control','last_reconciled_at','UPDATE'),\n ('video_collection_control','updated_at','UPDATE'),\n ('video_collection_control','invalidated_at','UPDATE')\n), roles AS (\n SELECT (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='service_role') AS service_oid,\n coalesce((SELECT rolbypassrls AND NOT rolsuper AND NOT rolcanlogin FROM pg_catalog.pg_roles WHERE rolname='service_role'),false) AS valid\n), relations AS MATERIALIZED (\n SELECT expected.*,relation.oid,relation.relowner,relation.relacl,relation.relkind,relation.relrowsecurity\n FROM required_tables expected LEFT JOIN pg_catalog.pg_class relation\n ON relation.oid=pg_catalog.to_regclass('public.'||expected.table_name)\n), table_privileges(privilege) AS (VALUES ('SELECT'),('INSERT'),('UPDATE'),('DELETE'),('TRUNCATE'),('REFERENCES'),('TRIGGER'),('MAINTAIN')),\n column_privileges(privilege) AS (VALUES ('SELECT'),('INSERT'),('UPDATE'),('REFERENCES'))\nSELECT roles.valid AS roles_valid,\n NOT EXISTS(SELECT 1 FROM relations r WHERE r.oid IS NULL OR r.relkind<>'r' OR NOT r.relrowsecurity\n  OR pg_catalog.pg_get_userbyid(r.relowner)<>'postgres')\n AND NOT EXISTS(SELECT 1 FROM required_columns required LEFT JOIN relations r USING(table_name)\n  WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid=r.oid\n   AND a.attnum>0 AND NOT a.attisdropped AND a.attname=required.column_name)) AS relations_valid,\n NOT EXISTS(SELECT 1 FROM relations r CROSS JOIN table_privileges p\n  WHERE pg_catalog.has_table_privilege(roles.service_oid,r.oid,p.privilege)\n    IS DISTINCT FROM (p.privilege=ANY(r.privileges)))\n AND NOT EXISTS(SELECT 1 FROM relations r JOIN pg_catalog.pg_attribute a ON a.attrelid=r.oid\n  CROSS JOIN column_privileges p WHERE a.attnum>0 AND NOT a.attisdropped\n  AND pg_catalog.has_column_privilege(roles.service_oid,r.oid,a.attnum,p.privilege)\n   IS DISTINCT FROM (p.privilege=ANY(r.privileges) OR EXISTS(SELECT 1 FROM required_columns required\n    WHERE required.table_name=r.table_name AND required.column_name=a.attname AND required.privilege=p.privilege)))\n AND NOT EXISTS(SELECT 1 FROM relations r\n  CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(r.relacl,pg_catalog.acldefault('r',r.relowner))) acl\n  WHERE acl.grantee<>r.relowner AND (acl.grantee IS DISTINCT FROM roles.service_oid OR acl.is_grantable\n   OR NOT(acl.privilege_type=ANY(r.privileges))))\n AND NOT EXISTS(SELECT 1 FROM relations r JOIN pg_catalog.pg_attribute a ON a.attrelid=r.oid\n  CROSS JOIN LATERAL pg_catalog.aclexplode(a.attacl) acl\n  WHERE a.attnum>0 AND NOT a.attisdropped AND acl.grantee<>r.relowner\n  AND (acl.grantee IS DISTINCT FROM roles.service_oid OR acl.is_grantable OR NOT EXISTS(\n   SELECT 1 FROM required_columns required WHERE required.table_name=r.table_name\n    AND required.column_name=a.attname AND required.privilege=acl.privilege_type))) AS privileges_valid\nFROM roles\n) direct_completion_rights),false))\n           or (expected.v_relation='typed_video_collection_receipts' AND NOT coalesce((SELECT roles_valid AND relations_valid AND privileges_valid FROM (\nWITH required_tables(table_name,privileges) AS (VALUES\n ('typed_video_collection_receipts',ARRAY['SELECT','DELETE']::text[])\n), required_columns(table_name,column_name,privilege) AS (VALUES\n ('typed_video_collection_receipts','video_id','INSERT'),\n ('typed_video_collection_receipts','collection_attempt_id','INSERT'),\n ('typed_video_collection_receipts','channel_id','INSERT'),\n ('typed_video_collection_receipts','video_type','INSERT'),\n ('typed_video_collection_receipts','lease_token','INSERT'),\n ('typed_video_collection_receipts','receipt_kind','INSERT'),\n ('typed_video_collection_receipts','recorded_at','INSERT'),\n ('typed_video_collection_receipts','payload_fingerprint','INSERT'),\n ('typed_video_collection_receipts','recorded_at','UPDATE')\n), roles AS (\n SELECT (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='service_role') AS service_oid,\n coalesce((SELECT rolbypassrls AND NOT rolsuper AND NOT rolcanlogin FROM pg_catalog.pg_roles WHERE rolname='service_role'),false) AS valid\n), relations AS MATERIALIZED (\n SELECT expected.*,relation.oid,relation.relowner,relation.relacl,relation.relkind,relation.relrowsecurity\n FROM required_tables expected LEFT JOIN pg_catalog.pg_class relation\n ON relation.oid=pg_catalog.to_regclass('public.'||expected.table_name)\n), table_privileges(privilege) AS (VALUES ('SELECT'),('INSERT'),('UPDATE'),('DELETE'),('TRUNCATE'),('REFERENCES'),('TRIGGER'),('MAINTAIN')),\n column_privileges(privilege) AS (VALUES ('SELECT'),('INSERT'),('UPDATE'),('REFERENCES'))\nSELECT roles.valid AS roles_valid,\n NOT EXISTS(SELECT 1 FROM relations r WHERE r.oid IS NULL OR r.relkind<>'r' OR NOT r.relrowsecurity\n  OR pg_catalog.pg_get_userbyid(r.relowner)<>'postgres')\n AND NOT EXISTS(SELECT 1 FROM required_columns required LEFT JOIN relations r USING(table_name)\n  WHERE NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute a WHERE a.attrelid=r.oid\n   AND a.attnum>0 AND NOT a.attisdropped AND a.attname=required.column_name)) AS relations_valid,\n NOT EXISTS(SELECT 1 FROM relations r CROSS JOIN table_privileges p\n  WHERE pg_catalog.has_table_privilege(roles.service_oid,r.oid,p.privilege)\n    IS DISTINCT FROM (p.privilege=ANY(r.privileges)))\n AND NOT EXISTS(SELECT 1 FROM relations r JOIN pg_catalog.pg_attribute a ON a.attrelid=r.oid\n  CROSS JOIN column_privileges p WHERE a.attnum>0 AND NOT a.attisdropped\n  AND pg_catalog.has_column_privilege(roles.service_oid,r.oid,a.attnum,p.privilege)\n   IS DISTINCT FROM (p.privilege=ANY(r.privileges) OR EXISTS(SELECT 1 FROM required_columns required\n    WHERE required.table_name=r.table_name AND required.column_name=a.attname AND required.privilege=p.privilege)))\n AND NOT EXISTS(SELECT 1 FROM relations r\n  CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(r.relacl,pg_catalog.acldefault('r',r.relowner))) acl\n  WHERE acl.grantee<>r.relowner AND (acl.grantee IS DISTINCT FROM roles.service_oid OR acl.is_grantable\n   OR NOT(acl.privilege_type=ANY(r.privileges))))\n AND NOT EXISTS(SELECT 1 FROM relations r JOIN pg_catalog.pg_attribute a ON a.attrelid=r.oid\n  CROSS JOIN LATERAL pg_catalog.aclexplode(a.attacl) acl\n  WHERE a.attnum>0 AND NOT a.attisdropped AND acl.grantee<>r.relowner\n  AND (acl.grantee IS DISTINCT FROM roles.service_oid OR acl.is_grantable OR NOT EXISTS(\n   SELECT 1 FROM required_columns required WHERE required.table_name=r.table_name\n    AND required.column_name=a.attname AND required.privilege=acl.privilege_type))) AS privileges_valid\nFROM roles\n) direct_typed_receipt_rights),false))\n           or pg_catalog.has_table_privilege(\n               'service_role', to_regclass('public.' || expected.v_relation), 'truncate'\n           )\n           or pg_catalog.has_table_privilege(\n               'service_role', to_regclass('public.' || expected.v_relation), 'references'\n           )\n           or pg_catalog.has_table_privilege(\n               'service_role', to_regclass('public.' || expected.v_relation), 'trigger'\n           )\n           or pg_catalog.has_table_privilege(\n               'service_role', to_regclass('public.' || expected.v_relation), 'maintain'\n           )\n        ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": [
+            "typed_video_collection_candidates"
+          ]
+        },
+        {
+          "index": 2,
+          "error": "typed_video_collection_state_columns_missing",
+          "sql": "((\n        select count(*)\n        from schema_columns as column_row\n        where column_row.table_schema = 'public'\n          and column_row.table_name = 'video_collection_state'\n          and column_row.column_name in (\n              'video_type',\n              'typed_source_published_at',\n              'typed_stream_actual_end_at',\n              'typed_collection_status',\n              'typed_collection_checked_at'\n          )\n    ) <> 5) IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "typed_video_collection_receipt_contract_invalid",
+          "sql": "((\n        select count(*)\n        from schema_columns as column_row\n        where column_row.table_schema = 'public'\n          and column_row.table_name = 'typed_video_collection_receipts'\n          and column_row.is_nullable = 'NO'\n          and column_row.column_name in (\n              'video_id',\n              'collection_attempt_id',\n              'channel_id',\n              'video_type',\n              'lease_token',\n              'receipt_kind',\n              'recorded_at',\n              'payload_fingerprint',\n              'created_at'\n          )\n    ) <> 9\n       or not exists (\n            select 1\n            from pg_catalog.pg_constraint as constraint_row\n            where constraint_row.conrelid =\n                pg_catalog.to_regclass('public.typed_video_collection_receipts')\n              and constraint_row.conname =\n                  'typed_video_collection_receipts_fingerprint_check'\n              and pg_catalog.pg_get_constraintdef(constraint_row.oid)\n                  like '%%[0-9a-f]{32}%%'\n       )) IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 4,
+          "error": "typed_video_collection_cadence_invalid",
+          "sql": "((\n        select count(*)\n        from public.video_collection_cadence as policy\n        where policy.collection_kind = 'metadata'\n          and policy.video_type in ('short', 'stream')\n          and policy.enabled\n          and policy.policy_version = 1\n          and (\n              (\n                  policy.age_bucket = 'age_0_90d'\n                  and policy.min_age_seconds = 0\n                  and policy.max_age_seconds = 7776000\n                  and policy.cadence_seconds = 604800\n              )\n              or (\n                  policy.age_bucket = 'age_91d_plus'\n                  and policy.min_age_seconds = 7776000\n                  and policy.max_age_seconds is null\n                  and policy.cadence_seconds = 1814400\n              )\n          )\n    ) <> 4) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        },
+        {
+          "index": 5,
+          "error": "typed_video_collection_rpc_missing: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'public.typed_video_collection_due_at(text,text,timestamp with time zone,timestamp with time zone)',\n        'public.reconcile_typed_video_collection_state(text,integer)',\n        'public.prioritize_typed_video_collection_ids(text,text[],jsonb)',\n        'public.claim_due_typed_video_collection(text,integer,text,uuid,integer)',\n        'public.claim_due_typed_video_collection_batch(text,integer,text,uuid,integer)',\n        'public.fail_typed_video_collection_claims(text,jsonb)',\n        'public.complete_typed_video_metadata_collection(jsonb)',\n        'public.complete_stream_lifecycle_probe(jsonb)',\n        'public.complete_typed_video_missing(jsonb)',\n        'public.get_long_availability_recheck_candidate_ids(text,text[],integer,interval)',\n        'public.get_typed_video_collection_health()',\n        'public.typed_video_collection_identity_eligible(text,text,text)',\n        'public.assert_typed_video_collection_schema()'\n    ]::text[]) AS expected(v_signature) WHERE ( to_regprocedure(expected.v_signature) is null ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 6,
+          "error": "typed_video_collection_rpc_security_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'public.typed_video_collection_due_at(text,text,timestamp with time zone,timestamp with time zone)',\n        'public.reconcile_typed_video_collection_state(text,integer)',\n        'public.prioritize_typed_video_collection_ids(text,text[],jsonb)',\n        'public.claim_due_typed_video_collection(text,integer,text,uuid,integer)',\n        'public.claim_due_typed_video_collection_batch(text,integer,text,uuid,integer)',\n        'public.fail_typed_video_collection_claims(text,jsonb)',\n        'public.complete_typed_video_metadata_collection(jsonb)',\n        'public.complete_stream_lifecycle_probe(jsonb)',\n        'public.complete_typed_video_missing(jsonb)',\n        'public.get_long_availability_recheck_candidate_ids(text,text[],integer,interval)',\n        'public.get_typed_video_collection_health()',\n        'public.typed_video_collection_identity_eligible(text,text,text)',\n        'public.assert_typed_video_collection_schema()'\n    ]::text[]) AS expected(v_signature) WHERE ( exists (\n               select 1\n               from pg_catalog.pg_proc as routine\n               cross join lateral pg_catalog.aclexplode(coalesce(\n                   routine.proacl,\n                   pg_catalog.acldefault('f', routine.proowner)\n               )) as acl\n               where routine.oid = to_regprocedure(expected.v_signature)\n                 and acl.grantee = 0\n                 and acl.privilege_type = 'EXECUTE'\n           )\n           or pg_catalog.has_function_privilege('anon', to_regprocedure(expected.v_signature), 'execute')\n           or pg_catalog.has_function_privilege(\n                'authenticated', to_regprocedure(expected.v_signature), 'execute'\n           )\n           or not pg_catalog.has_function_privilege(\n                'service_role', to_regprocedure(expected.v_signature), 'execute'\n           )\n           or not exists (\n               select 1\n               from pg_catalog.pg_proc as routine\n               where routine.oid = to_regprocedure(expected.v_signature)\n                 and pg_catalog.pg_get_userbyid(routine.proowner) = 'postgres'\n                 and routine.prosecdef = ( expected.v_signature = any(array[\n            'public.reconcile_typed_video_collection_state(text,integer)',\n            'public.prioritize_typed_video_collection_ids(text,text[],jsonb)',\n            'public.claim_due_typed_video_collection(text,integer,text,uuid,integer)',\n        'public.claim_due_typed_video_collection_batch(text,integer,text,uuid,integer)',\n            'public.fail_typed_video_collection_claims(text,jsonb)',\n            'public.complete_typed_video_metadata_collection(jsonb)',\n            'public.complete_stream_lifecycle_probe(jsonb)',\n            'public.complete_typed_video_missing(jsonb)'\n        ]::text[]))\n                 and exists (\n                     select 1\n                     from unnest(coalesce(\n                         routine.proconfig,\n                         array[]::text[]\n                     )) as config(value)\n                     where config.value like 'search_path=%%'\n                       and config.value like '%%pg_catalog%%'\n                       and config.value like '%%pg_temp%%'\n                 )\n           )\n        ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 7,
+          "error": "typed_collection_bounded_repair_schema_missing",
+          "sql": "(not exists (\n        select 1 from pg_catalog.pg_index\n        where indexrelid=to_regclass('public.video_collection_state_typed_reconcile_idx')\n          and indrelid=pg_catalog.to_regclass('public.video_collection_state') and indisvalid\n    ) or not exists (\n        select 1 from pg_catalog.pg_index\n        where indexrelid=to_regclass('public.video_inventory_typed_reconcile_idx')\n          and indrelid=pg_catalog.to_regclass('public.video_inventory') and indisvalid\n    ) or (\n        select count(*) from pg_catalog.pg_attribute\n        where attrelid=pg_catalog.to_regclass('public.typed_video_collection_runtime')\n          and attname in ('reconcile_queue_cursor','reconcile_inventory_cursor')\n          and not attisdropped and atttypid='text'::regtype\n    ) <> 2) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 8,
+          "error": "typed_video_collection_state_drift",
+          "sql": "((SELECT v_long_typed_drift FROM observed_1) > 0\n       or (SELECT v_typed_long_clock_drift FROM observed_2) > 0\n       or (SELECT v_identity_drift FROM observed_3) > 0\n       or (SELECT v_disabled_active_drift FROM observed_4) > 0) IS TRUE",
+          "ctes": [
+            "observed_1",
+            "observed_2",
+            "observed_3",
+            "observed_4"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        },
+        {
+          "index": 9,
+          "error": "typed_video_collection_product_exposure_must_remain_closed",
+          "sql": "((SELECT v_product_exposure_rows FROM observed_5) > 0) IS TRUE",
+          "ctes": [
+            "observed_5"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        },
+        {
+          "index": 10,
+          "error": "video_channel_lease_epoch_contract_invalid",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute\n        WHERE attrelid=pg_catalog.to_regclass('public.video_collection_state') AND attname='lease_channel_epoch'\n          AND attnum>0 AND NOT attisdropped AND atttypid='bigint'::regtype)\n       OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c\n        WHERE c.conrelid=pg_catalog.to_regclass('public.video_collection_state') AND c.contype='c' AND c.convalidated\n          AND pg_catalog.pg_get_constraintdef(c.oid) LIKE '%%lease_channel_epoch > 0%%')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 11,
+          "error": "video_channel_scope_function_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS expected WHERE ( (to_regprocedure(expected.signature)) IS NULL OR NOT EXISTS (\n            SELECT 1 FROM pg_catalog.pg_proc p WHERE p.oid=(to_regprocedure(expected.signature))\n              AND p.proowner=(SELECT oid FROM pg_catalog.pg_roles WHERE rolname='postgres')\n              AND p.prokind='f' AND p.prosecdef=expected.security_definer\n              AND p.proconfig IS NOT DISTINCT FROM expected.config\n              AND p.prorettype=to_regtype(expected.result_type)\n              AND p.proretset=expected.returns_set\n              AND md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=expected.source_md5\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 12,
+          "error": "video_channel_scope_function_acl_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS expected WHERE ( expected.access<>'trigger' AND (\n            EXISTS(SELECT 1 FROM pg_catalog.pg_proc p\n                CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) acl\n                WHERE p.oid=(to_regprocedure(expected.signature)) AND acl.grantee=0 AND acl.privilege_type='EXECUTE')\n            OR has_function_privilege('anon',(to_regprocedure(expected.signature)),'EXECUTE')\n            OR has_function_privilege('authenticated',(to_regprocedure(expected.signature)),'EXECUTE')\n            OR has_function_privilege('service_role',(to_regprocedure(expected.signature)),'EXECUTE') IS DISTINCT FROM (expected.access='service')\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 13,
+          "error": "typed_video_candidates_canonical_control_missing",
+          "sql": "(strpos(pg_catalog.pg_get_viewdef(pg_catalog.to_regclass('public.typed_video_collection_candidates'),true),\n        'typed_inventory_channel_eligible(channel.channel_id)')=0) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": [
+            "typed_video_collection_candidates"
+          ]
+        }
+      ],
+      "ctes": {
+        "schema_columns": "\n    SELECT ns.nspname AS table_schema, relation.relname AS table_name,\n           attribute.attname AS column_name,\n           pg_catalog.format_type(CASE WHEN type_row.typtype='d' THEN type_row.typbasetype\n               ELSE attribute.atttypid END, NULL) AS data_type,\n           base_type.typname AS udt_name,\n           CASE WHEN attribute.attnotnull OR (type_row.typtype='d' AND type_row.typnotnull)\n               THEN 'NO' ELSE 'YES' END AS is_nullable\n    FROM pg_catalog.pg_attribute attribute\n    JOIN pg_catalog.pg_class relation ON relation.oid=attribute.attrelid\n    JOIN pg_catalog.pg_namespace ns ON ns.oid=relation.relnamespace\n    JOIN pg_catalog.pg_type type_row ON type_row.oid=attribute.atttypid\n    JOIN pg_catalog.pg_type base_type ON base_type.oid=CASE WHEN type_row.typtype='d'\n        THEN type_row.typbasetype ELSE type_row.oid END\n    WHERE ns.nspname IN ('public','operator_private') AND attribute.attnum>0\n      AND NOT attribute.attisdropped AND relation.relkind IN ('r','v','f','p')\n",
+        "observed_1": "SELECT count(*) AS v_long_typed_drift from public.video_collection_state as state\n    where state.video_type = 'long'\n      and (\n          state.typed_source_published_at is not null\n          or state.typed_stream_actual_end_at is not null\n          or state.typed_collection_status is not null\n          or state.typed_collection_checked_at is not null\n      )",
+        "observed_2": "SELECT count(*) AS v_typed_long_clock_drift from public.video_collection_state as state\n    where state.video_type in ('short', 'stream')\n      and (\n          state.stats_due_at is not null\n          or state.metadata_due_at is not null\n      )",
+        "observed_3": "SELECT count(*) AS v_identity_drift from public.video_collection_state as state\n    join public.video_inventory as inventory\n      on inventory.video_id = state.video_id\n\n\n\n\n    where state.video_type is distinct from coalesce(inventory.video_type, 'long')\n       or state.channel_id is distinct from inventory.channel_id",
+        "observed_4": "SELECT count(*) AS v_disabled_active_drift from public.video_collection_state as state\n    join public.typed_video_collection_runtime as runtime\n      on runtime.video_type = state.video_type\n    where state.video_type in ('short', 'stream')\n      and not runtime.runtime_enabled\n      and (\n          state.next_due_at is not null\n          or state.lease_token is not null\n      )",
+        "observed_5": "SELECT count(*) AS v_product_exposure_rows from public.channel_video_inventory_state as inventory_state\n    where inventory_state.video_type in ('short', 'stream')\n      and inventory_state.product_exposure_ready",
+        "requirements_1": "VALUES\n        ('public.claim_due_typed_video_collection_batch(text,integer,text,uuid,integer)', 'a91ccf059d669c73fb96dfd8f3d588d2', true, ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[], 'service', 'jsonb', false),\n        ('public.complete_stream_lifecycle_probe(jsonb)', '58f5feb1fa0c7bd27721d2c617cbc0f6', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.complete_typed_video_metadata_collection(jsonb)', 'ec115716ee39e8120ac4b01ec8a6986c', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.complete_typed_video_missing(jsonb)', 'ddf6518ab01d7ef39d791c6a7d5736cb', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.fail_typed_video_collection_claims(text,jsonb)', 'c3255169865f3cf5d506720bb8de953d', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.prioritize_typed_video_collection_ids(text,text[],jsonb)', '896ac006fa341374a0f63604af4c3b20', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('operator_private.prioritize_typed_video_collection_ids_provisional(text,text[])', 'eadf428000088b6baa58f4edef990b6f', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'internal', 'integer', false),\n        ('public.reconcile_typed_video_collection_state(text,integer)', 'f2e48e27d9145d2ffdbc23d1bedf348a', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'jsonb', false)\n    "
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'channel_control_fenced',true,'lease_channel_epoch',true,\n        'status', 'ok',\n        'schema_version', 1,\n        'repair_version', 2,\n        'bounded_claim_batch', true,\n        'operational_eligibility_checked', false,\n        'runtime_video_types', jsonb_build_array('short', 'stream'),\n        'max_request_batch', 50,\n        'fresh_through_days_inclusive', 90,\n        'fresh_cadence_days', 7,\n        'old_cadence_days', 21,\n        'full_metadata_each_refresh', true,\n        'completed_streams_only', true,\n        'exact_receipt_payload_fencing', true,\n        'stream_lifecycle_model', false,\n        'product_exposure_changed', false,\n        'product_exposure_ready_rows', (SELECT v_product_exposure_rows FROM observed_5),\n        'runtime_enabled_rows', (\n            select count(*)\n            from public.typed_video_collection_runtime as runtime\n            where runtime.runtime_enabled\n        ),\n        'long_typed_drift', (SELECT v_long_typed_drift FROM observed_1),\n        'typed_long_clock_drift', (SELECT v_typed_long_clock_drift FROM observed_2),\n        'identity_drift', (SELECT v_identity_drift FROM observed_3),\n        'disabled_active_drift', (SELECT v_disabled_active_drift FROM observed_4),\n        'ineligible_active_drift', ( null),\n        'health', NULL::jsonb\n    ) AS value\n",
+      "value_sha256": "42c02e221e551643981ce04659eca0321b040477809ea78805c662441f738cc9",
+      "value_ctes": [
+        "observed_1",
+        "observed_2",
+        "observed_3",
+        "observed_4",
+        "observed_5"
+      ],
+      "fields": [
+        "channel_control_fenced",
+        "lease_channel_epoch",
+        "status",
+        "schema_version",
+        "repair_version",
+        "bounded_claim_batch",
+        "operational_eligibility_checked",
+        "runtime_video_types",
+        "max_request_batch",
+        "fresh_through_days_inclusive",
+        "fresh_cadence_days",
+        "old_cadence_days",
+        "full_metadata_each_refresh",
+        "completed_streams_only",
+        "exact_receipt_payload_fencing",
+        "stream_lifecycle_model",
+        "product_exposure_changed",
+        "product_exposure_ready_rows",
+        "runtime_enabled_rows",
+        "long_typed_drift",
+        "typed_long_clock_drift",
+        "identity_drift",
+        "disabled_active_drift",
+        "ineligible_active_drift",
+        "health"
+      ]
+    },
+    "assert_video_collection_cadence_schema": {
+      "constant": "_ASSERT_VIDEO_COLLECTION_CADENCE_SCHEMA_SQL",
+      "query_sha256": "bfb67df646d64c23bba8b9368db4235b504f929179ec6bc99ebfa9be232f7cc3",
+      "slots": [
+        {
+          "index": 0,
+          "error": "shared_cadence_function_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS q WHERE ( (to_regprocedure(q.signature)) IS NULL OR NOT EXISTS(SELECT 1 FROM pg_proc p WHERE p.oid=(to_regprocedure(q.signature)) AND NOT p.prosecdef AND p.provolatile='s'\n   AND p.proretset=q.returns_set AND p.proconfig=q.settings\n   AND p.proowner=(SELECT oid FROM pg_roles WHERE rolname='postgres')\n   AND md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=q.body_md5)\n   ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "shared_cadence_acl_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS q WHERE ( EXISTS(SELECT 1 FROM pg_proc p CROSS JOIN LATERAL aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a\n   WHERE p.oid=(to_regprocedure(q.signature)) AND (a.grantee=0 OR(a.grantee<>p.proowner AND\n    (a.grantee<>(SELECT oid FROM pg_roles WHERE rolname='service_role') OR a.is_grantable))))\n   OR NOT has_function_privilege('service_role',(to_regprocedure(q.signature)),'EXECUTE') OR has_function_privilege('anon',(to_regprocedure(q.signature)),'EXECUTE')\n   OR has_function_privilege('authenticated',(to_regprocedure(q.signature)),'EXECUTE')\n   ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "requirements_1": "VALUES\n('public.select_video_collection_policy(text,text,text,timestamp with time zone,timestamp with time zone,timestamp with time zone)','0dd1c8029c7890ccc9a783daac242db8',true,ARRAY['search_path=pg_catalog, public, pg_temp']::text[]),\n('public.video_collection_policy_value(text,text,timestamp with time zone,timestamp with time zone,text)','0a227f55f9fa5f82defcadcc6591d8f3',false,ARRAY['search_path=public, pg_temp']::text[]),\n('public.typed_video_collection_due_at(text,text,timestamp with time zone,timestamp with time zone)','f98eebbf2db534a439ae712b37066165',false,ARRAY['search_path=pg_catalog, public, pg_temp']::text[])"
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object('status','ok','selector','shared','long_bounds','closed_open_rounded_seconds',\n  'typed_bounds','open_closed_unrounded_days','typed_jitter_seconds',21600) AS value\n",
+      "value_sha256": "2b67f42299c10e2f690708a0ac77ddcedb17db5bdb9ffbfa463caff871f0db52",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "selector",
+        "long_bounds",
+        "typed_bounds",
+        "typed_jitter_seconds"
+      ]
+    },
+    "assert_video_collection_common_pool_schema": {
+      "constant": "_ASSERT_VIDEO_COLLECTION_COMMON_POOL_SCHEMA_SQL",
+      "query_sha256": "49c0adcfa346a2f00e1558463579a612bc2fe3d807dd5ed9ba95c9081f556a53",
+      "slots": [
+        {
+          "index": 0,
+          "error": "common_pool_function_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM unnest(array[\n        'public.claim_due_video_collection_batch(integer,text,uuid,integer)',\n        'public.fail_video_collection_batch(jsonb)',\n        'public.enqueue_video_collection_ids(text[],jsonb)',\n        'public.typed_video_collection_identity_eligible(text,text,text)',\n        'public.assert_video_collection_common_pool_schema()'\n    ]::text[]) AS expected(v_signature) WHERE ( (to_regprocedure(expected.v_signature)) is null or has_function_privilege('anon',(to_regprocedure(expected.v_signature)),'EXECUTE')\n           or has_function_privilege('authenticated',(to_regprocedure(expected.v_signature)),'EXECUTE')\n           or not has_function_privilege('service_role',(to_regprocedure(expected.v_signature)),'EXECUTE')\n           or not exists(select 1 from pg_proc as routine\n               where routine.oid=(to_regprocedure(expected.v_signature)) and routine.proowner=(select oid from pg_roles where rolname='postgres')\n                 and routine.prosecdef=(expected.v_signature not in (\n                     'public.typed_video_collection_identity_eligible(text,text,text)',\n                     'public.assert_video_collection_common_pool_schema()'))\n                 and exists(select 1 from unnest(routine.proconfig) as config(value)\n                     where value like 'search_path=pg_catalog, public,%%')) ) IS TRUE)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "common_pool_index_contract_invalid",
+          "sql": "(not exists(select 1 from pg_index where indexrelid=\n        to_regclass('public.video_collection_state_common_due_idx') and indisvalid and indisready\n        and indrelid=pg_catalog.to_regclass('public.video_collection_state') and indnkeyatts=2)) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "typed_long_availability_restore_capability_mismatch",
+          "sql": "((to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)')) is null or has_function_privilege('anon',(to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)')),'EXECUTE')\n       or has_function_privilege('authenticated',(to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)')),'EXECUTE')\n       or not has_function_privilege('service_role',(to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)')),'EXECUTE')\n       or not exists(select 1 from pg_proc p where p.oid=(to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)')) and p.prosecdef\n           and p.proowner=(select oid from pg_roles where rolname='postgres')\n           and p.prokind='f' and p.prorettype='integer'::regtype and not p.proretset\n           and p.proconfig=array['search_path=pg_catalog, pg_temp']\n           and md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=\n               '11835bea59d0952b023ad5b2901adedd')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "video_profile_single_write_capability_mismatch",
+          "sql": "((to_regprocedure('public.complete_video_metadata_collection(jsonb)')) is null or has_function_privilege('anon',(to_regprocedure('public.complete_video_metadata_collection(jsonb)')),'EXECUTE')\n       or has_function_privilege('authenticated',(to_regprocedure('public.complete_video_metadata_collection(jsonb)')),'EXECUTE')\n       or not has_function_privilege('service_role',(to_regprocedure('public.complete_video_metadata_collection(jsonb)')),'EXECUTE')\n       or not exists(select 1 from pg_proc p where p.oid=(to_regprocedure('public.complete_video_metadata_collection(jsonb)')) and p.prosecdef\n           and p.proowner=(select oid from pg_roles where rolname='postgres')\n           and p.prokind='f' and p.prorettype='integer'::regtype and not p.proretset\n           and p.proconfig=array['search_path=pg_catalog, public, pg_temp']\n           and md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=\n               '425192c83d3802e8ae49d2fa54b17560')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 4,
+          "error": "typed_availability_incident_owner_not_ready",
+          "sql": "((to_regprocedure('public.complete_typed_video_missing(jsonb)')) is null or has_function_privilege('anon',(to_regprocedure('public.complete_typed_video_missing(jsonb)')),'EXECUTE')\n       or has_function_privilege('authenticated',(to_regprocedure('public.complete_typed_video_missing(jsonb)')),'EXECUTE')\n       or not has_function_privilege('service_role',(to_regprocedure('public.complete_typed_video_missing(jsonb)')),'EXECUTE')\n       or not exists(select 1 from pg_proc p where p.oid=(to_regprocedure('public.complete_typed_video_missing(jsonb)')) and p.prosecdef\n           and p.proowner=(select oid from pg_roles where rolname='postgres')\n           and md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=\n               'ddf6518ab01d7ef39d791c6a7d5736cb')\n       or to_regclass('public.video_stats_unavailable') is not null\n       or not exists(select 1 from pg_class where oid=to_regclass('public.open_video_availability')\n           and relkind='v' and reloptions @> array['security_invoker=true'])\n       or has_table_privilege('anon',to_regclass('public.open_video_availability'),'SELECT')\n       or has_table_privilege('authenticated',to_regclass('public.open_video_availability'),'SELECT')\n       or not has_table_privilege('service_role',to_regclass('public.open_video_availability'),'SELECT')\n       or has_table_privilege('service_role',to_regclass('public.open_video_availability'),'INSERT,UPDATE,DELETE,TRUNCATE')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 5,
+          "error": "video_queue_cleanup_schema_not_ready",
+          "sql": "(exists(select 1 from pg_attribute where attrelid=pg_catalog.to_regclass('public.video_collection_state')\n        and attnum>0 and not attisdropped and attname in('priority','typed_next_due_at'))\n       or exists(select 1 from pg_attribute where attrelid=pg_catalog.to_regclass('public.video_collection_cadence')\n        and attnum>0 and not attisdropped and attname='priority')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 6,
+          "error": "video_category_clock_not_retired",
+          "sql": "(exists(select 1 from pg_attribute where attrelid=pg_catalog.to_regclass('public.videos')\n        and attnum>0 and not attisdropped and attname='category_collected_at')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 7,
+          "error": "video_channel_lease_epoch_contract_invalid",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute\n        WHERE attrelid=pg_catalog.to_regclass('public.video_collection_state') AND attname='lease_channel_epoch'\n          AND attnum>0 AND NOT attisdropped AND atttypid='bigint'::regtype)\n       OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c\n        WHERE c.conrelid=pg_catalog.to_regclass('public.video_collection_state') AND c.contype='c' AND c.convalidated\n          AND pg_catalog.pg_get_constraintdef(c.oid) LIKE '%%lease_channel_epoch > 0%%')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 8,
+          "error": "video_channel_scope_function_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS expected WHERE ( (to_regprocedure(expected.signature)) IS NULL OR NOT EXISTS (\n            SELECT 1 FROM pg_catalog.pg_proc p WHERE p.oid=(to_regprocedure(expected.signature))\n              AND p.proowner=(SELECT oid FROM pg_catalog.pg_roles WHERE rolname='postgres')\n              AND p.prokind='f' AND p.prosecdef=expected.security_definer\n              AND p.proconfig IS NOT DISTINCT FROM expected.config\n              AND p.prorettype=to_regtype(expected.result_type)\n              AND p.proretset=expected.returns_set\n              AND md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=expected.source_md5\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 9,
+          "error": "video_channel_scope_function_acl_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS expected WHERE ( expected.access<>'trigger' AND (\n            EXISTS(SELECT 1 FROM pg_catalog.pg_proc p\n                CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) acl\n                WHERE p.oid=(to_regprocedure(expected.signature)) AND acl.grantee=0 AND acl.privilege_type='EXECUTE')\n            OR has_function_privilege('anon',(to_regprocedure(expected.signature)),'EXECUTE')\n            OR has_function_privilege('authenticated',(to_regprocedure(expected.signature)),'EXECUTE')\n            OR has_function_privilege('service_role',(to_regprocedure(expected.signature)),'EXECUTE') IS DISTINCT FROM (expected.access='service')\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "requirements_1": "VALUES\n        ('public.claim_due_video_collection_batch(integer,text,uuid,integer)', 'c4988e2ec73322f84d9bdfa10e13966c', true, ARRAY['search_path=pg_catalog, public, extensions, pg_temp','statement_timeout=8s']::text[], 'service', 'jsonb', false),\n        ('public.enqueue_video_collection_ids(text[],jsonb)', '8def64751e9fbf1fc2b198aedb53460c', true, ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=8s']::text[], 'service', 'integer', false),\n        ('public.fail_video_collection_batch(jsonb)', 'd34820207f45dadbb3e01d2e65f5adee', true, ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=8s']::text[], 'service', 'integer', false)\n    "
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'channel_control_fenced',true,'lease_channel_epoch',true,'unified_due_at',true,'priority_storage',false,'status','ok','schema_version',1,'common_pool_version',1,\n        'mixed_claim',true,'sole_lease_owner','video_collection_state','max_request_batch',50,\n        'max_claim_rows',50,'max_inspected_rows',1000,\n        'ordering_policy','due_at_video_id','priority_ordering',false,\n        'atomic_long_availability_restore',true,'availability_incident_owner',true,\n        'profile_single_write',true,'metadata_replay_noop',true,'category_clock_retired',true) AS value\n",
+      "value_sha256": "e555c4b9d5b7423812a16bc13115580d3684e848e67082d766707bcf187dd9ce",
+      "value_ctes": [],
+      "fields": [
+        "channel_control_fenced",
+        "lease_channel_epoch",
+        "unified_due_at",
+        "priority_storage",
+        "status",
+        "schema_version",
+        "common_pool_version",
+        "mixed_claim",
+        "sole_lease_owner",
+        "max_request_batch",
+        "max_claim_rows",
+        "max_inspected_rows",
+        "ordering_policy",
+        "priority_ordering",
+        "atomic_long_availability_restore",
+        "availability_incident_owner",
+        "profile_single_write",
+        "metadata_replay_noop",
+        "category_clock_retired"
+      ]
+    },
+    "assert_video_collection_queue_schema": {
+      "constant": "_ASSERT_VIDEO_COLLECTION_QUEUE_SCHEMA_SQL",
+      "query_sha256": "155126da139f7a1ccc030b0cf0a4ffbc0ac2596782be09dbc9c1e00702cc108c",
+      "slots": [
+        {
+          "index": 0,
+          "error": "videos.metadata_checked_at must be timestamp with time zone",
+          "sql": "((\n        select col.data_type\n        from schema_columns as col\n        where col.table_schema = 'public'\n            and col.table_name = 'videos'\n            and col.column_name = 'metadata_checked_at'\n    ) is distinct from 'timestamp with time zone') IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 1,
+          "error": "videos.stream_actual_end_at must be timestamp with time zone",
+          "sql": "((\n        select col.data_type\n        from schema_columns as col\n        where col.table_schema = 'public'\n            and col.table_name = 'videos'\n            and col.column_name = 'stream_actual_end_at'\n    ) is distinct from 'timestamp with time zone') IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 2,
+          "error": "videos stream completion evidence constraint is missing or invalid",
+          "sql": "(not exists (\n        select 1\n        from pg_catalog.pg_constraint as constraint_row\n        where constraint_row.conrelid = pg_catalog.to_regclass('public.videos')\n            and constraint_row.conname = 'videos_stream_actual_end_requires_metadata_clock'\n            and constraint_row.contype = 'c'\n            and constraint_row.convalidated\n            and pg_catalog.pg_get_constraintdef(constraint_row.oid)\n                ~* 'stream_actual_end_at IS NULL'\n            and pg_catalog.pg_get_constraintdef(constraint_row.oid)\n                ~* 'metadata_checked_at IS NOT NULL'\n    )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 3,
+          "error": "video collection due/source clocks must be timestamp with time zone",
+          "sql": "((\n        select count(*)\n        from schema_columns as col\n        where col.table_schema = 'public'\n            and col.table_name = 'video_collection_state'\n            and col.column_name in (\n                'next_due_at',\n                'stats_source_checked_at',\n                'metadata_source_checked_at'\n            )\n            and col.data_type = 'timestamp with time zone'\n    ) <> 3) IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 4,
+          "error": "video_collection_state.lease_token must be uuid",
+          "sql": "((\n        select col.udt_name\n        from schema_columns as col\n        where col.table_schema = 'public'\n            and col.table_name = 'video_collection_state'\n            and col.column_name = 'lease_token'\n    ) is distinct from 'uuid') IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 5,
+          "error": "video_collection_state.last_claim_run_id must be uuid",
+          "sql": "((\n        select col.udt_name\n        from schema_columns as col\n        where col.table_schema = 'public'\n            and col.table_name = 'video_collection_state'\n            and col.column_name = 'last_claim_run_id'\n    ) is distinct from 'uuid') IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 6,
+          "error": "video_snapshots.collection_attempt_id must be uuid",
+          "sql": "((\n        select col.udt_name\n        from schema_columns as col\n        where col.table_schema = 'public'\n            and col.table_name = 'video_snapshots'\n            and col.column_name = 'collection_attempt_id'\n    ) is distinct from 'uuid') IS TRUE",
+          "ctes": [
+            "schema_columns"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 7,
+          "error": "one or more video collection indexes are missing",
+          "sql": "(to_regclass('public.video_collection_state_format_due_idx') is null\n        or to_regclass('public.video_collection_state_channel_idx') is null\n        or to_regclass('public.video_snapshots_collection_attempt_uidx') is null) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 8,
+          "error": "one or more video collection RPCs are missing",
+          "sql": "(to_regprocedure(\n        'public.complete_video_counter_collection(jsonb)'\n    ) is null or to_regprocedure(\n        'public.complete_video_metadata_collection(jsonb)'\n    ) is null or to_regprocedure(\n        'public.complete_video_profile_metadata_collection(jsonb)'\n    ) is null or to_regprocedure(\n        'public.backfill_video_collection_state(integer)'\n    ) is null) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 9,
+          "error": "metadata completion RPC does not implement stream evidence contract v2",
+          "sql": "(pg_catalog.strpos(\n        (SELECT completion_definition FROM observed_1),\n        'stream_actual_end_at timestamp with time zone'\n    ) = 0 or pg_catalog.strpos(\n        (SELECT completion_definition FROM observed_1),\n        'stream_actual_end_at = excluded.stream_actual_end_at'\n    ) = 0 or pg_catalog.strpos(\n        (SELECT completion_definition FROM observed_1),\n        'perform public.assert_hot_source_clock(input.recorded_at)'\n    ) = 0 or pg_catalog.strpos(\n        (SELECT completion_definition FROM observed_1),\n        'perform public.assert_hot_source_clock(coalesce(input.availability_checked_at,input.recorded_at))'\n    ) = 0) IS TRUE",
+          "ctes": [
+            "observed_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 10,
+          "error": "profile metadata completion wrapper must pass the original payload to metadata completion v2",
+          "sql": "(pg_catalog.strpos(\n        (SELECT profile_wrapper_definition FROM observed_2),\n        ('completed_count := public.complete_video_metadata_collection(p_rows)' || chr(59) || '')\n    ) = 0) IS TRUE",
+          "ctes": [
+            "observed_2"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 11,
+          "error": "video metadata completion RPC ACL is not service-only",
+          "sql": "(not has_function_privilege(\n        'service_role',\n        to_regprocedure('public.complete_video_metadata_collection(jsonb)'),\n        'execute'\n    ) or has_function_privilege(\n        'anon',\n        to_regprocedure('public.complete_video_metadata_collection(jsonb)'),\n        'execute'\n    ) or has_function_privilege(\n        'authenticated',\n        to_regprocedure('public.complete_video_metadata_collection(jsonb)'),\n        'execute'\n    ) or not has_function_privilege(\n        'service_role',\n        to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)'),\n        'execute'\n    ) or has_function_privilege(\n        'anon',\n        to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)'),\n        'execute'\n    ) or has_function_privilege(\n        'authenticated',\n        to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)'),\n        'execute'\n    )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 12,
+          "error": "one or more video collection state triggers are missing",
+          "sql": "((\n        select count(*)\n        from pg_trigger as trigger\n        join pg_class as relation on relation.oid = trigger.tgrelid\n        join pg_namespace as namespace on namespace.oid = relation.relnamespace\n        where namespace.nspname = 'public'\n            and (relation.relname, trigger.tgname) in (\n                ('video_inventory', 'video_inventory_collection_state_trigger'),\n                ('video_availability_incidents', 'video_availability_incidents_collection_state_trigger'),\n                ('channels', 'channel_sync_collection_state_trigger'),\n                ('videos', 'videos_collection_reconciliation_trigger')\n            )\n            and not trigger.tgisinternal\n    ) <> 4) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": true,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 13,
+          "error": "channel sync collection state trigger contract is invalid",
+          "sql": "(not exists (\n        select 1\n        from pg_trigger as trigger\n        join pg_class as relation on relation.oid = trigger.tgrelid\n        where relation.oid = pg_catalog.to_regclass('public.channels')\n            and trigger.tgname = 'channel_sync_collection_state_trigger'\n            and trigger.tgfoid = pg_catalog.to_regprocedure('public.sync_video_collection_channel_control_trigger()')\n            and trigger.tgenabled in ('O', 'A')\n            and not trigger.tgisinternal\n    )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": true,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 14,
+          "error": "legacy channel visibility collection trigger must be absent",
+          "sql": "(exists (\n        select 1\n        from pg_trigger as trigger\n        where trigger.tgrelid = pg_catalog.to_regclass('public.channels')\n            and trigger.tgname = 'channel_visibility_collection_state_trigger'\n            and not trigger.tgisinternal\n    )) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": true,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 15,
+          "error": "video collection readiness control row is missing",
+          "sql": "((SELECT control_required FROM observed_3) is null) IS TRUE",
+          "ctes": [
+            "observed_3"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        },
+        {
+          "index": 16,
+          "error": "video collection cadence expected 12 enabled v1 rules, found %",
+          "sql": "((SELECT cadence_count FROM observed_4) <> 12) IS TRUE",
+          "ctes": [
+            "observed_4"
+          ],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": true,
+          "retired_views": []
+        },
+        {
+          "index": 17,
+          "error": "video_channel_lease_epoch_contract_invalid",
+          "sql": "(NOT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute\n        WHERE attrelid=pg_catalog.to_regclass('public.video_collection_state') AND attname='lease_channel_epoch'\n          AND attnum>0 AND NOT attisdropped AND atttypid='bigint'::regtype)\n       OR NOT EXISTS(SELECT 1 FROM pg_catalog.pg_constraint c\n        WHERE c.conrelid=pg_catalog.to_regclass('public.video_collection_state') AND c.contype='c' AND c.convalidated\n          AND pg_catalog.pg_get_constraintdef(c.oid) LIKE '%%lease_channel_epoch > 0%%')) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": false,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 18,
+          "error": "video_channel_scope_function_contract_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS expected WHERE ( (to_regprocedure(expected.signature)) IS NULL OR NOT EXISTS (\n            SELECT 1 FROM pg_catalog.pg_proc p WHERE p.oid=(to_regprocedure(expected.signature))\n              AND p.proowner=(SELECT oid FROM pg_catalog.pg_roles WHERE rolname='postgres')\n              AND p.prokind='f' AND p.prosecdef=expected.security_definer\n              AND p.proconfig IS NOT DISTINCT FROM expected.config\n              AND p.prorettype=to_regtype(expected.result_type)\n              AND p.proretset=expected.returns_set\n              AND md5(replace(replace(p.prosrc,E'\\r\\n',E'\\n'),E'\\r',E'\\n'))=expected.source_md5\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 19,
+          "error": "video_channel_scope_function_acl_invalid: %",
+          "sql": "(EXISTS (SELECT 1 FROM requirements_1 AS expected WHERE ( expected.access<>'trigger' AND (\n            EXISTS(SELECT 1 FROM pg_catalog.pg_proc p\n                CROSS JOIN LATERAL pg_catalog.aclexplode(coalesce(p.proacl,pg_catalog.acldefault('f',p.proowner))) acl\n                WHERE p.oid=(to_regprocedure(expected.signature)) AND acl.grantee=0 AND acl.privilege_type='EXECUTE')\n            OR has_function_privilege('anon',(to_regprocedure(expected.signature)),'EXECUTE')\n            OR has_function_privilege('authenticated',(to_regprocedure(expected.signature)),'EXECUTE')\n            OR has_function_privilege('service_role',(to_regprocedure(expected.signature)),'EXECUTE') IS DISTINCT FROM (expected.access='service')\n        ) ) IS TRUE)) IS TRUE",
+          "ctes": [
+            "requirements_1"
+          ],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        },
+        {
+          "index": 20,
+          "error": "video_unfenced_legacy_overload_present",
+          "sql": "(to_regprocedure('public.ensure_video_collection_state(text[])') IS NOT NULL\n       OR to_regprocedure('public.prioritize_typed_video_collection_ids(text,text[])') IS NOT NULL\n       OR to_regprocedure('public.claim_video_collection_ids(text[],text,uuid,integer)') IS NOT NULL\n       OR to_regprocedure('public.claim_video_metadata_collection_ids(text[],text,uuid,integer)') IS NOT NULL\n       OR to_regprocedure('public.enqueue_video_collection_ids(text[])') IS NOT NULL) IS TRUE",
+          "ctes": [],
+          "mentions_procedure": true,
+          "mentions_trigger": false,
+          "mentions_state": false,
+          "retired_views": []
+        }
+      ],
+      "ctes": {
+        "schema_columns": "\n    SELECT ns.nspname AS table_schema, relation.relname AS table_name,\n           attribute.attname AS column_name,\n           pg_catalog.format_type(CASE WHEN type_row.typtype='d' THEN type_row.typbasetype\n               ELSE attribute.atttypid END, NULL) AS data_type,\n           base_type.typname AS udt_name,\n           CASE WHEN attribute.attnotnull OR (type_row.typtype='d' AND type_row.typnotnull)\n               THEN 'NO' ELSE 'YES' END AS is_nullable\n    FROM pg_catalog.pg_attribute attribute\n    JOIN pg_catalog.pg_class relation ON relation.oid=attribute.attrelid\n    JOIN pg_catalog.pg_namespace ns ON ns.oid=relation.relnamespace\n    JOIN pg_catalog.pg_type type_row ON type_row.oid=attribute.atttypid\n    JOIN pg_catalog.pg_type base_type ON base_type.oid=CASE WHEN type_row.typtype='d'\n        THEN type_row.typbasetype ELSE type_row.oid END\n    WHERE ns.nspname IN ('public','operator_private') AND attribute.attnum>0\n      AND NOT attribute.attisdropped AND relation.relkind IN ('r','v','f','p')\n",
+        "observed_1": "SELECT pg_catalog.regexp_replace(\n        pg_catalog.lower(pg_catalog.pg_get_functiondef(\n            pg_catalog.to_regprocedure('public.complete_video_metadata_collection(jsonb)')\n        )),\n        '[[:space:]]+',\n        ' ',\n        'g'\n    ) AS completion_definition ",
+        "observed_2": "SELECT pg_catalog.regexp_replace(\n        pg_catalog.lower(pg_catalog.pg_get_functiondef(\n            pg_catalog.to_regprocedure('public.complete_video_profile_metadata_collection(jsonb)')\n        )),\n        '[[:space:]]+',\n        ' ',\n        'g'\n    ) AS profile_wrapper_definition ",
+        "observed_3": "SELECT control.reconciliation_required AS control_required, control.invalidated_at AS control_invalidated_at, control.last_reconciled_at AS control_reconciled_at from public.video_collection_control as control\n    where control.singleton = true",
+        "observed_4": "SELECT count(*) AS cadence_count from public.video_collection_cadence\n    where video_type = 'long' and enabled = true and policy_version = 1",
+        "requirements_1": "VALUES\n        ('public.apply_manual_video_type_queue(text,text,text)', '0746436beac391c57415c1d81dc29fcc', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'internal', 'void', false),\n        ('public.backfill_video_collection_state(integer)', 'e74f0411d993ea6a00a79043f342bb58', true, ARRAY['search_path=public, pg_temp','statement_timeout=60s','lock_timeout=5s']::text[], 'service', 'record', true),\n        ('public.claim_due_typed_video_collection_batch(text,integer,text,uuid,integer)', 'a91ccf059d669c73fb96dfd8f3d588d2', true, ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[], 'service', 'jsonb', false),\n        ('public.claim_due_video_collection_batch(integer,text,uuid,integer)', 'c4988e2ec73322f84d9bdfa10e13966c', true, ARRAY['search_path=pg_catalog, public, extensions, pg_temp','statement_timeout=8s']::text[], 'service', 'jsonb', false),\n        ('public.claim_initial_video_collection_batch(uuid,text[],text,uuid,integer)', '4480251c8f38e9136933ada2e1fb3002', true, ARRAY['search_path=pg_catalog, public, extensions, pg_temp','statement_timeout=8s','lock_timeout=3s']::text[], 'service', 'record', true),\n        ('public.claim_video_collection_ids(text[],text,uuid,jsonb,integer)', 'f46799b54f6610f43bdee5bf95f18e49', true, ARRAY['search_path=public, pg_temp']::text[], 'service', 'record', true),\n        ('public.claim_video_metadata_collection_ids(text[],text,uuid,jsonb,integer)', '134ac0b575fcbf09c103ddc2fc90265d', true, ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[], 'service', 'record', true),\n        ('public.complete_stream_lifecycle_probe(jsonb)', '58f5feb1fa0c7bd27721d2c617cbc0f6', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.complete_typed_video_metadata_collection(jsonb)', 'ec115716ee39e8120ac4b01ec8a6986c', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.complete_typed_video_missing(jsonb)', 'ddf6518ab01d7ef39d791c6a7d5736cb', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.complete_video_counter_collection(jsonb)', 'b1a361e0be54323d330e5eaf6013ed2c', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.complete_video_metadata_collection(jsonb)', '425192c83d3802e8ae49d2fa54b17560', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.complete_video_profile_metadata_collection(jsonb)', '11835bea59d0952b023ad5b2901adedd', true, ARRAY['search_path=pg_catalog, pg_temp']::text[], 'service', 'integer', false),\n        ('public.decide_video_type_review(uuid,uuid,bigint,text,text)', '14e26e9b1e4cb72bc7ac5619f80e2897', true, ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=8s','lock_timeout=1s']::text[], 'service', 'jsonb', false),\n        ('public.enqueue_video_collection_ids(text[],jsonb)', '8def64751e9fbf1fc2b198aedb53460c', true, ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=8s']::text[], 'service', 'integer', false),\n        ('public.ensure_video_collection_state(text[],jsonb)', '23d837a9a9051103b6697bad902f1120', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('operator_private.ensure_video_collection_state_provisional(text[])', '6c9eb512e7d56d32610fe7a49a12cc3f', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'internal', 'integer', false),\n        ('public.fail_typed_video_collection_claims(text,jsonb)', 'c3255169865f3cf5d506720bb8de953d', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.fail_video_collection_batch(jsonb)', 'd34820207f45dadbb3e01d2e65f5adee', true, ARRAY['search_path=pg_catalog, public, pg_temp','statement_timeout=8s']::text[], 'service', 'integer', false),\n        ('public.fail_video_collection_claims(jsonb)', '3282ad710ce653c0b20256d33c427f85', true, ARRAY['search_path=public, pg_temp']::text[], 'service', 'integer', false),\n        ('public.prioritize_typed_video_collection_ids(text,text[],jsonb)', '896ac006fa341374a0f63604af4c3b20', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'integer', false),\n        ('operator_private.prioritize_typed_video_collection_ids_provisional(text,text[])', 'eadf428000088b6baa58f4edef990b6f', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'internal', 'integer', false),\n        ('public.reconcile_typed_video_collection_state(text,integer)', 'f2e48e27d9145d2ffdbc23d1bedf348a', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'service', 'jsonb', false),\n        ('public.sync_video_collection_channel_control_trigger()', 'df99f8fd5ada2d554198bc6cc7dbe47b', true, ARRAY['search_path=pg_catalog, public, pg_temp']::text[], 'trigger', 'trigger', false),\n        ('public.sync_video_collection_state_trigger()', '3519a606af4a02e97d592796e8dc9c45', true, ARRAY['search_path=pg_catalog, public, extensions, pg_temp']::text[], 'trigger', 'trigger', false)\n    "
+      },
+      "value_sql": "::boolean[] AS violations,\n jsonb_build_object(\n        'channel_control_fenced',true,'lease_channel_epoch',true,\n        'status', case\n            when (SELECT control_required FROM observed_3) then 'backfill_required'\n            else 'ok'\n        end,\n        'table', 'video_collection_state',\n        'readiness_mode', 'sealed_reconciliation',\n        'reconciliation_required', (SELECT control_required FROM observed_3),\n        'remaining_count', case\n            when (SELECT control_required FROM observed_3) then null\n            else 0\n        end,\n        'remaining_count_exact', not (SELECT control_required FROM observed_3),\n        'invalidated_at', (SELECT control_invalidated_at FROM observed_3),\n        'last_reconciled_at', (SELECT control_reconciled_at FROM observed_3),\n        'cadence_rules', (SELECT cadence_count FROM observed_4),\n        'max_claim_size', 1000,\n        'policy_version', 1,\n        'metadata_completion_contract_version', 2,\n        'stream_completion_evidence', true\n    ) AS value\n",
+      "value_sha256": "5b14bd38626ed3e98fe0dd3837375b551b4854408a0506669a568bb4392e678e",
+      "value_ctes": [
+        "observed_3",
+        "observed_4"
+      ],
+      "fields": [
+        "channel_control_fenced",
+        "lease_channel_epoch",
+        "status",
+        "table",
+        "readiness_mode",
+        "reconciliation_required",
+        "remaining_count",
+        "remaining_count_exact",
+        "invalidated_at",
+        "last_reconciled_at",
+        "cadence_rules",
+        "max_claim_size",
+        "policy_version",
+        "metadata_completion_contract_version",
+        "stream_completion_evidence"
+      ]
+    }
+  }
+}

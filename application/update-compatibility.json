@@ -1,0 +1,7 @@
+{
+  "format": "leti-cook-update-compatibility",
+  "format_version": 1,
+  "application_state_version": 1,
+  "config_format_version": 3,
+  "schedules_format_version": 4
+}

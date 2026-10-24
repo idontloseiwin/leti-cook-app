@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Set up Leti Cook</title><link rel="stylesheet" href="/setup/assets/setup.css"><script src="/setup/assets/setup.js" defer></script></head>
+<body><main>
+<div id="runtime-notices" aria-label="Application status" hidden></div>
+<section id="key-screen" class="screen" hidden aria-labelledby="key-title"><header><a href="/auth">Access</a></header>
+<h1 id="key-title">Connect your YouTube API key</h1>
+<p id="key-error" role="alert" hidden></p>
+<p>In the installation folder on your server, run:</p><pre><code>sudo python3 manage.py set-key</code></pre>
+<p class="help">The terminal hides your input and asks YouTube about the key before keeping it. This page continues on its own.</p></section>
+<section id="choice-screen" class="screen" hidden aria-labelledby="choice-title"><header><a href="/auth">Access</a></header>
+<h1 id="choice-title">Choose channels to start with</h1>
+<p>Pick any of these suggestions, or start with an empty workspace and add your own channels later.</p>
+<p id="notice" role="status" aria-live="polite" hidden></p><button id="prepare" type="button" hidden>Try again</button>
+<form id="starter-form"><div id="starter-list"><div class="starter-row"><label for="starter-MrBeast"><input id="starter-MrBeast" name="starter-channel" type="checkbox" value="https://www.youtube.com/@MrBeast"> MrBeast</label><a href="https://www.youtube.com/@MrBeast" target="_blank" rel="noopener noreferrer" aria-label="Open MrBeast on YouTube">YouTube ↗</a><small id="result-MrBeast" role="status"></small></div>
+<div class="starter-row"><label for="starter-MarkRober"><input id="starter-MarkRober" name="starter-channel" type="checkbox" value="https://www.youtube.com/@MarkRober"> Mark Rober</label><a href="https://www.youtube.com/@MarkRober" target="_blank" rel="noopener noreferrer" aria-label="Open Mark Rober on YouTube">YouTube ↗</a><small id="result-MarkRober" role="status"></small></div>
+<div class="starter-row"><label for="starter-veritasium"><input id="starter-veritasium" name="starter-channel" type="checkbox" value="https://www.youtube.com/@veritasium"> Veritasium</label><a href="https://www.youtube.com/@veritasium" target="_blank" rel="noopener noreferrer" aria-label="Open Veritasium on YouTube">YouTube ↗</a><small id="result-veritasium" role="status"></small></div>
+<div class="starter-row"><label for="starter-kurzgesagt"><input id="starter-kurzgesagt" name="starter-channel" type="checkbox" value="https://www.youtube.com/@kurzgesagt"> Kurzgesagt - In a Nutshell</label><a href="https://www.youtube.com/@kurzgesagt" target="_blank" rel="noopener noreferrer" aria-label="Open Kurzgesagt - In a Nutshell on YouTube">YouTube ↗</a><small id="result-kurzgesagt" role="status"></small></div>
+<div class="starter-row"><label for="starter-mkbhd"><input id="starter-mkbhd" name="starter-channel" type="checkbox" value="https://www.youtube.com/@mkbhd"> Marques Brownlee</label><a href="https://www.youtube.com/@mkbhd" target="_blank" rel="noopener noreferrer" aria-label="Open Marques Brownlee on YouTube">YouTube ↗</a><small id="result-mkbhd" role="status"></small></div>
+</div><div class="starter-actions"><button id="starter-all" type="button">Select all</button></div></form>
+<a id="workspace" href="/app-explorer-v3">Start</a>
+<details><summary>Advanced configuration</summary><p>Collection settings are in <code>config/config.ini</code> inside your installation folder. The file explains each option. After editing it, run from that folder:</p><pre><code>sudo python3 manage.py restart</code></pre></details></section>
+<section id="progress-screen" class="screen" aria-labelledby="progress-title">
+<h1 id="progress-title">Preparing Leti Cook for use</h1>
+<progress id="progress" max="1" aria-labelledby="progress-title"></progress>
+<p id="progress-message" role="status" aria-live="polite" hidden></p></section>
+<section id="attention-screen" class="screen" hidden aria-labelledby="attention-title"><header><a href="/auth">Access</a></header>
+<h1 id="attention-title">Preparation needs your attention</h1>
+<p id="loading-message" role="status" aria-live="polite"></p><div id="loading-channels"></div>
+<button id="loading-recheck" type="button">Check again</button>
+<p class="help">Completed work is saved. You can close this page and return later.</p></section>
+</main></body></html>

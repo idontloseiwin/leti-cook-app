@@ -1,0 +1,3 @@
+# Preserve exact bytes of the verified SQL baseline and release inputs.
+# Automatic line-ending conversion would invalidate schema checksums.
+* -text

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leti Cook — Connect</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <img src="icons/icon128.png" width="48" height="48" alt="">
+    <h1>Connect to Leti Cook</h1>
+    <p>Add a channel from YouTube using the button next to Subscribe.</p>
+    <form id="connection-form">
+      <label for="app-origin">Your Leti Cook address</label>
+      <input id="app-origin" type="url" required maxlength="256" placeholder="http://127.0.0.1:8002" autocomplete="off" spellcheck="false" aria-describedby="address-help">
+      <p id="address-help" class="help">Use the same address you open in this browser. For a remote server, keep your SSH tunnel running.</p>
+      <button id="save" type="submit">Save and connect</button>
+      <button id="open-app" type="button" class="secondary" hidden>Open Leti Cook</button>
+    </form>
+    <p id="status" role="status" aria-live="polite"></p>
+    <p class="help">Allow access when the browser asks, then sign in to Leti Cook if needed. Return to YouTube and reload the page.</p>
+    <details>
+      <summary>What access does this use?</summary>
+      <p>The extension reads the channel link beside YouTube's Subscribe button. It adds a channel only when you click its button.</p>
+      <p>It uses your existing Leti Cook session. It stores only this address, not your password or YouTube API key. Browser permission may cover other ports on this local host; the extension uses only the address you save.</p>
+    </details>
+  </main>
+  <script src="options.js" type="module"></script>
+</body>
+</html>

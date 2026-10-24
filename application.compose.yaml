@@ -1,0 +1,47 @@
+# Fresh-install application overlay for the isolated database stack.
+# Backend and PostgreSQL share only the installation-private database network.
+services:
+  backend:
+    build:
+      context: ../application
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    # The separate bridge provides YouTube egress and the loopback app port.
+    networks: [database, application-access]
+    ports:
+      - "127.0.0.1:${LIC_HTTP_PORT:?Choose the local application port}:8002"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: ../backend.env
+    read_only: true
+    user: "10001:10001"
+    volumes:
+      - application-state:/var/lib/leti-cook
+      - ../config:/etc/leti-cook:ro
+      - type: bind
+        source: ${LIC_UPDATE_MARKER_HOST_DIRECTORY:?Provide the installation update marker directory}
+        target: /run/leti-cook-update/marker
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${LIC_UPDATE_CIPHER_HOST_DIRECTORY:?Provide the installation update ciphertext directory}
+        target: /run/leti-cook-update/cipher
+        bind:
+          create_host_path: false
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m,mode=1777
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    logging:
+      driver: none
+    healthcheck:
+      test: [CMD, python, ops/self_hosted_container.py, health]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 60s
+volumes:
+  application-state:

@@ -1,0 +1,518 @@
+/* Readable channel header and fingerprint composition.
+   This file owns the current Explorer V2 hero instead of extending the legacy rule stack. */
+
+.explorer-app.is-updated .explorer-v2-workspace {
+  container-name: explorer-workspace;
+  container-type: inline-size;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-channel-hero {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-areas: "identity kpis organizer";
+  grid-template-columns: minmax(220px, .86fr) minmax(650px, 1.9fr) minmax(180px, 220px);
+  align-items: center;
+  gap: 14px clamp(16px, 1.8vw, 26px);
+  margin: 0 0 14px;
+  padding: 6px 0 4px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-channel-hero > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-profile-main {
+  grid-area: identity;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-channel-identity {
+  min-width: 0;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-channel-identity h1 {
+  overflow: hidden;
+  overflow-wrap: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: normal;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-channel-meta > span {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis {
+  width: 100%;
+  min-width: 0;
+  grid-area: kpis;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis > .explorer-v2-kpi-grid {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: repeat(5, minmax(118px, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 8px;
+  margin: 0;
+  overflow: visible;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis .explorer-v2-kpi-card {
+  box-sizing: border-box;
+  display: grid;
+  min-width: 0;
+  min-height: 96px;
+  height: 100%;
+  grid-template-rows: minmax(26px, auto) 1fr;
+  align-content: stretch;
+  padding: 10px 11px;
+  overflow: visible;
+  border: 1px solid var(--explorer-line-soft);
+  border-radius: 10px;
+  background: rgba(17, 24, 32, .7);
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis .explorer-v2-kpi-heading {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 6px;
+  color: #79a9c7;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis .explorer-v2-kpi-heading > span {
+  min-width: 0;
+  overflow: visible;
+  overflow-wrap: normal;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis .explorer-v2-kpi-source {
+  min-width: max-content;
+  max-width: 100%;
+  flex: 0 0 auto;
+  padding: 2px 5px;
+  overflow: visible;
+  font-size: 9px;
+  line-height: 1.1;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-value-row {
+  display: flex;
+  min-width: 0;
+  align-self: end;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-value-row > strong {
+  min-width: 0;
+  margin: 0;
+  overflow: visible;
+  color: var(--explorer-text);
+  font-size: clamp(19px, 1.65vw, 25px);
+  font-weight: 740;
+  line-height: 1;
+  letter-spacing: -.035em;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-inline-retry,
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-state {
+  flex: 0 0 auto;
+  align-items: center;
+  color: #8eb8d1;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-inline-retry {
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px 4px;
+  border: 1px solid rgba(92, 189, 255, .24);
+  border-radius: 6px;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-inline-retry:hover,
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-inline-retry:focus-visible {
+  border-color: rgba(102, 227, 180, .48);
+  color: var(--explorer-mint);
+  outline: none;
+}
+
+@keyframes explorer-v2-kpi-period-enter {
+  from {
+    opacity: .58;
+    transform: translateY(2px) scale(.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend {
+  box-sizing: border-box;
+  min-width: 48px;
+  min-height: 32px;
+  justify-content: center;
+  padding: 3px 5px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  animation: explorer-v2-kpi-period-enter 180ms ease-out;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend:hover,
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend:focus-visible {
+  border-color: rgba(92, 189, 255, .34);
+  background: rgba(81, 185, 255, .08);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend:active {
+  transform: scale(.96);
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend > small {
+  font-size: 9px;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-channel-hero > .explorer-v2-hero-side {
+  width: 100%;
+  min-width: 0;
+  max-width: 220px;
+  grid-area: organizer;
+  justify-self: end;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-organizer {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  grid-template-areas:
+    "labels"
+    "folder";
+  align-items: start;
+  gap: 9px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-label-editor {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  grid-area: labels;
+  grid-template-areas:
+    "action"
+    "chips";
+  gap: 5px;
+  justify-items: start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu {
+  width: 100%;
+  min-width: 0;
+  grid-area: action;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu > summary {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 7px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #78a7c5;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 650;
+  list-style: none;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu > summary:hover,
+.explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu > summary:focus-visible,
+.explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu[open] > summary {
+  border-color: rgba(102, 227, 180, .2);
+  background: rgba(102, 227, 180, .07);
+  color: var(--explorer-mint);
+  transform: translateX(2px);
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-label-chips {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  grid-area: chips;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 5px;
+  padding-left: 7px;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-control {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  grid-area: folder;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu > summary {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  min-height: 44px;
+  grid-template-areas:
+    "label arrow"
+    "value arrow";
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 8px;
+  padding: 5px 7px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #78a7c5;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 650;
+  list-style: none;
+  transition:
+    color 150ms ease,
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu > summary:hover,
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu > summary:focus-visible,
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu[open] > summary {
+  border-color: rgba(102, 227, 180, .2);
+  background: rgba(102, 227, 180, .07);
+  color: var(--explorer-mint);
+  transform: translateX(2px);
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-organizer-action-label {
+  display: inline-flex;
+  min-width: 0;
+  grid-area: label;
+  align-items: center;
+  gap: 6px;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-organizer-action-label > svg {
+  flex: 0 0 auto;
+  color: currentColor;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-organizer-current-value {
+  display: block;
+  min-width: 0;
+  grid-area: value;
+  overflow: hidden;
+  color: var(--explorer-text);
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu > summary > svg {
+  grid-area: arrow;
+  align-self: center;
+  color: currentColor;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu[open] > summary > svg {
+  transform: rotate(180deg);
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-control > small {
+  position: static;
+  display: block;
+  margin: 2px 0 0 7px;
+  font-size: 8px;
+  white-space: normal;
+}
+
+.explorer-app.is-updated .explorer-v2-workspace .explorer-folder-popover,
+.explorer-app.is-updated .explorer-v2-workspace .explorer-label-popover {
+  right: 0;
+  left: auto;
+}
+
+/* Respond to the space left after the inline library opens, not to viewport width. */
+@container explorer-workspace (max-width: 960px) {
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-overview-insights {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace
+    .explorer-overview-insights > .explorer-content-section + .explorer-content-section {
+    padding-left: 0;
+    border-top: 1px solid var(--explorer-line-soft);
+    border-left: 0;
+  }
+}
+
+@container explorer-workspace (max-width: 1320px) {
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-channel-hero {
+    grid-template-areas:
+      "identity organizer"
+      "kpis kpis";
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-channel-hero > .explorer-v2-hero-side {
+    max-width: 220px;
+  }
+}
+
+@container explorer-workspace (max-width: 900px) {
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-channel-hero {
+    grid-template-areas:
+      "identity"
+      "organizer"
+      "kpis";
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-channel-hero > .explorer-v2-hero-side {
+    width: 100%;
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-organizer {
+    grid-template-areas:
+      "labels"
+      "folder";
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis > .explorer-v2-kpi-grid {
+    grid-template-columns: repeat(3, minmax(118px, 1fr));
+  }
+}
+
+@container explorer-workspace (max-width: 540px) {
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-organizer {
+    grid-template-areas:
+      "labels"
+      "folder";
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis > .explorer-v2-kpi-grid {
+    grid-template-columns: repeat(2, minmax(118px, 1fr));
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-folder-popover,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-label-popover {
+    right: auto;
+    left: 0;
+  }
+}
+
+@container explorer-workspace (max-width: 330px) {
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-hero-kpis > .explorer-v2-kpi-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend {
+    animation: none;
+    transition: none;
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend:hover,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend:focus-visible,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-v2-kpi-trend:active {
+    transform: none;
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu > summary,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu > summary {
+    transition: none;
+  }
+
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu > summary:hover,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu > summary:focus-visible,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-label-menu[open] > summary,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu > summary:hover,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu > summary:focus-visible,
+  .explorer-app.is-updated .explorer-v2-workspace .explorer-folder-menu[open] > summary {
+    transform: none;
+  }
+}

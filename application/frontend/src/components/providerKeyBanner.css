@@ -1,0 +1,5 @@
+.provider-key-banner { display: flex; align-items: flex-start; gap: 12px; margin: 0 0 20px; padding: 14px 18px; border-left: 3px solid var(--explorer-red); border-radius: 0 8px 8px 0; background: var(--explorer-surface); color: var(--explorer-text); }
+.provider-key-banner > svg { flex-shrink: 0; margin-top: 1px; color: var(--explorer-red); }
+.provider-key-banner strong { display: block; font-size: 14px; }
+.provider-key-banner p { margin: 4px 0 0; color: var(--explorer-muted); font-size: 12px; overflow-wrap: anywhere; }
+.provider-key-banner code { color: var(--explorer-text); font-size: 12px; }

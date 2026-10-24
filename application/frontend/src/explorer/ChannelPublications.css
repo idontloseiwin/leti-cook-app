@@ -1,0 +1,15 @@
+.explorer-publications { margin: 16px 0; padding: 18px 20px; border: 1px solid var(--border, #263c46); border-radius: 12px; }
+.explorer-publications-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.explorer-publications h2 { margin: 0; font-size: 16px; }
+.explorer-publications-note, .explorer-publications small { color: var(--text-muted, #91aaba); font-size: 12px; line-height: 1.6; }
+.explorer-publications ul { list-style: none; margin: 14px 0; padding: 0; }
+.explorer-publications li { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--border, #263c46); }
+.explorer-publications-video, .explorer-publications-time { display: flex; flex-direction: column; gap: 4px; }
+.explorer-publications-video { min-width: 0; }
+.explorer-publications-video a { color: var(--text, #e8f4f8); overflow-wrap: anywhere; }
+.explorer-publications-time { flex-shrink: 0; font-size: 13px; text-align: right; }
+.explorer-publications-pagination { display: flex; gap: 8px; }
+@media (max-width: 640px) {
+  .explorer-publications li { flex-direction: column; }
+  .explorer-publications-time { text-align: left; }
+}

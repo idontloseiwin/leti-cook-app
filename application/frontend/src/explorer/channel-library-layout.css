@@ -1,0 +1,123 @@
+/* Updated Channel Library: compact, flat groups over the existing shell. */
+.explorer-app.is-updated .explorer-v2-library-drawer {
+  width: min(250px, calc(100vw - 96px));
+}
+
+.explorer-app.is-updated .explorer-v2-library-drawer .explorer-v2-folder-group {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.explorer-app.is-updated .explorer-v2-library-drawer .explorer-v2-folder-heading {
+  padding-inline: 3px;
+  border-bottom: 1px solid var(--explorer-line-soft);
+  border-radius: 0;
+}
+
+.explorer-app.is-updated .explorer-v2-library-drawer .explorer-v2-folder-channels {
+  padding: 0;
+}
+
+.explorer-app.is-updated .explorer-v2-library-drawer .explorer-channel-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.explorer-app.is-updated .explorer-v2-library-drawer .explorer-channel-button {
+  position: relative;
+  padding-right: 25px !important;
+}
+
+.explorer-app.is-updated .explorer-v2-library-drawer .explorer-channel-row.is-bookmarked {
+  box-shadow: inset 3px 0 0 var(--explorer-mint);
+}
+
+@media (max-width: 780px) {
+  .explorer-app.is-updated .explorer-v2-library-drawer {
+    width: min(250px, calc(100vw - 86px));
+  }
+}
+
+@keyframes explorer-v2-library-inline-enter {
+  from {
+    transform: translateX(-14px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes explorer-v2-library-modal-enter {
+  from {
+    transform: translateX(-18px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (min-width: 1041px) {
+  .explorer-app.is-updated.explorer-v2-library-inline {
+    --explorer-inline-library-width: 250px;
+    grid-template-columns: 72px 0 minmax(0, 1fr);
+    transition: grid-template-columns 220ms cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open {
+    grid-template-columns:
+      72px
+      var(--explorer-inline-library-width)
+      minmax(0, 1fr);
+  }
+
+  .explorer-app.is-updated.explorer-v2-library-inline .explorer-content {
+    grid-column: 3;
+  }
+
+  .explorer-app.is-updated.explorer-v2-library-inline
+    .explorer-v2-library-drawer[data-library-presentation='inline'] {
+    position: fixed;
+    z-index: 65;
+    inset: 0 auto 0 72px;
+    width: var(--explorer-inline-library-width);
+    max-width: none;
+    height: 100dvh;
+    padding: 17px;
+    border: 0;
+    border-right: 1px solid var(--explorer-line-soft);
+    border-radius: 0;
+    background: #0e151c;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.16);
+    backdrop-filter: none;
+    animation: explorer-v2-library-inline-enter 220ms cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  /* The legacy :has() rule creates a modal scrim; inline mode must never dim main. */
+  .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open
+    .explorer-content.explorer-content::after {
+    display: none;
+    content: none;
+  }
+}
+
+@media (max-width: 1040px) {
+  .explorer-app.is-updated
+    .explorer-v2-library-drawer[data-library-presentation='modal']:not([hidden]) {
+    animation: explorer-v2-library-modal-enter 190ms cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explorer-app.is-updated.explorer-v2-library-inline {
+    transition: none;
+  }
+
+  .explorer-app.is-updated
+    .explorer-v2-library-drawer[data-library-presentation] {
+    animation: none;
+  }
+}

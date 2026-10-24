@@ -1,0 +1,70 @@
+name: Image scan
+# Pinned images freeze their operating-system packages, so they are scanned
+# weekly and whenever a pin or the backend image changes.
+on:
+  push:
+    branches: [main]
+    paths:
+      - database/compose.yaml
+      - application/Dockerfile
+      - application/requirements.lock
+      - .github/workflows/images.yml
+      - database/Dockerfile
+      - tools/schema_ci_postgres_image.sh
+  pull_request:
+    paths:
+      - database/compose.yaml
+      - application/Dockerfile
+      - application/requirements.lock
+      - .github/workflows/images.yml
+      - database/Dockerfile
+      - tools/schema_ci_postgres_image.sh
+  schedule:
+    - cron: '41 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: images-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  scan:
+    name: Known vulnerabilities in images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TRIVY_IMAGE: aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Build the backend image
+        id: build
+        run: docker build --tag leti-cook-backend:scan application
+      - name: Build the installation PostgreSQL image
+        id: postgres
+        run: |
+          set -euo pipefail
+          source tools/schema_ci_postgres_image.sh
+          schema_ci_postgres_source "$PWD"
+          docker pull "$SCHEMA_CI_POSTGRES_BASE"
+          schema_ci_postgres_build "$PWD"
+          schema_ci_postgres_require "$PWD"
+          echo "image=$SCHEMA_CI_POSTGRES_IMAGE" >> "$GITHUB_OUTPUT"
+      - name: Scan the built PostgreSQL and backend images
+        env:
+          POSTGRES_IMAGE: ${{ steps.postgres.outputs.image }}
+        run: |
+          set -euo pipefail
+          [[ "$POSTGRES_IMAGE" =~ ^sha256:[a-f0-9]{64}$ ]]
+          status=0
+          for image in "$POSTGRES_IMAGE" leti-cook-backend:scan; do
+            echo "::group::$image"
+            docker run --rm \
+              --volume /var/run/docker.sock:/var/run/docker.sock:ro \
+              --volume trivy-cache:/root/.cache \
+              "$TRIVY_IMAGE" image --no-progress --scanners vuln \
+              --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "$image" || status=1
+            echo "::endgroup::"
+          done
+          exit "$status"

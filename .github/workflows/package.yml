@@ -1,0 +1,80 @@
+name: Self-hosted checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+concurrency:
+  group: self-hosted-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  package:
+    name: Tests, frontend and package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.16.0'
+          package-manager-cache: false
+      - name: Install locked backend dependencies
+        run: python -m pip install --require-hashes --no-deps -r application/requirements.lock
+      - name: Check self-hosted boundaries (offline)
+        # The updater accepts only root-owned trees. Exercise that real Linux
+        # boundary in this disposable runner, without mocking its permission
+        # checks. Keep setup-python's exact interpreter and locked dependencies.
+        run: sudo -n -- env TMPDIR=/tmp "$(command -v python)" -B -m unittest discover -s tests -v
+      - name: Install locked frontend dependencies
+        run: npm --prefix application/frontend ci --no-audit --no-fund
+      - name: Check browser behavior (offline)
+        run: |
+          node tests/test_explorer_v3_routes.mjs
+          node tests/test_setup_ui.mjs
+          node tests/test_runtime_notices.mjs
+          node tests/test_source_lifetime.mjs
+          node tests/test_format_totals_contract.mjs
+          node tests/test_hydration_full_channel.mjs
+          node tests/test_pipeline_telemetry.mjs
+          node tests/test_collection_explanation.mjs
+          node tests/test_health_presentation.mjs
+          node --test tests/test_chromium_bridge.mjs tests/test_chromium_content.mjs
+      - name: Check frontend resilience (offline)
+        run: node tests/test_frontend_resilience.mjs
+      - name: Build frontend from source
+        run: npm --prefix application/frontend run build:self-hosted -- --outDir "$RUNNER_TEMP/leti-cook-frontend"
+      - name: Check shipped frontend matches source build
+        run: python -B tools/check_frontend_build.py --built-dir "$RUNNER_TEMP/leti-cook-frontend"
+      - name: Verify selected source and package
+        run: python -B tools/package_release.py --output "$RUNNER_TEMP/leti-cook-release"
+      - name: Check packaged schema identity
+        run: python -B tools/check_schema_release.py --check
+  schema:
+    name: Fresh schema on PostgreSQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Prepare pinned images before isolated database execution
+        run: bash tools/prepare_schema_ci_images.sh
+      - name: Prepare hash-locked Python dependencies for schema tests
+        run: bash tools/prepare_schema_ci_python.sh "$RUNNER_TEMP/schema-python-deps"
+      - name: Bootstrap fresh schema and run SQL plus current repositories
+        env:
+          LIC_SCHEMA_CI_MAX_ROWS: '15000'
+          LIC_SCHEMA_CI_DEPS: ${{ runner.temp }}/schema-python-deps
+        run: bash tools/check_schema_postgres.sh
+      - name: Check schema upgrades against a fresh PostgreSQL schema
+        env:
+          LIC_SCHEMA_UPGRADES_MAX_ROWS: '1000'
+        run: bash tools/check_schema_upgrades.sh

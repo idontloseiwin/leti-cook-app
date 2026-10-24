@@ -1,0 +1,74 @@
+.explorer-app.is-updated .explorer-v2-folder-group {
+  min-width: 0;
+}
+
+.explorer-app.is-updated .explorer-v2-folder-heading {
+  display: grid;
+  width: 100%;
+  min-height: 31px;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--explorer-faint);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.explorer-app.is-updated .explorer-v2-folder-heading:hover,
+.explorer-app.is-updated .explorer-v2-folder-heading:focus-visible {
+  border-color: rgba(84, 194, 255, 0.22);
+  background: var(--explorer-blue-soft);
+  color: var(--explorer-text);
+}
+
+.explorer-app.is-updated .explorer-v2-folder-heading:disabled {
+  cursor: default;
+}
+
+.explorer-app.is-updated .explorer-v2-folder-heading:disabled:hover {
+  border-color: transparent;
+  background: transparent;
+  color: var(--explorer-faint);
+}
+
+.explorer-app.is-updated .explorer-v2-folder-heading > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.explorer-app.is-updated .explorer-v2-folder-heading > strong {
+  min-width: 20px;
+  color: var(--explorer-muted);
+  font-size: 10px;
+  text-align: right;
+}
+
+.explorer-app.is-updated .explorer-v2-folder-chevron {
+  transition: transform 150ms ease;
+}
+
+.explorer-app.is-updated .explorer-v2-folder-heading[aria-expanded='true']
+  .explorer-v2-folder-chevron {
+  transform: rotate(90deg);
+}
+
+.explorer-app.is-updated .explorer-v2-folder-channels[hidden] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explorer-app.is-updated .explorer-v2-folder-chevron {
+    transition: none;
+  }
+}

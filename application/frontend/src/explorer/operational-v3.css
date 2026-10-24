@@ -1,0 +1,134 @@
+/* V3-only library-open composition for the operational pages.
+ *
+ * The inline Channel Library lives in the shell next to .explorer-content and
+ * its open class sits on the app root, so opening it removes 250px from EVERY
+ * destination - Health, Telemetry, Saved and Home included. Only
+ * channel-overview.css writes library-open rules, and they are scoped to
+ * .explorer-v2-workspace, so the operational pages recompose at no width.
+ *
+ * Health and Telemetry keep their viewport-owned model. These blocks only
+ * mirror each page's own existing thresholds, shifted by the drawer width:
+ *   health    1150 -> 1400,  850 -> 1100
+ *   telemetry 1250 -> 1500, 1000 -> 1250, 850 -> 1100
+ * Layout selectors require the V3 root plus the inline and open classes, so
+ * V2, Previous, /app-next and the closed layout are untouched. The separate
+ * Collections notice rule is V3-only and works with either Library state.
+ *
+ * Nothing here changes a request, data contract, analytics calculation,
+ * availability rule or loading state.
+ */
+
+/* Health - mirrors @media (max-width: 1150px) in health.css. */
+@media (min-width: 1041px) and (max-width: 1400px) {
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-kpi-rail > .health-metric { padding-inline: 18px; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue { padding-inline: 18px; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue-metrics {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue-metrics .health-metric:last-child { grid-column: 1 / -1; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-secondary-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-secondary-grid > .health-section:last-child { padding-left: 24px; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-run-metrics { grid-template-columns: 1fr 1fr; }
+}
+
+/* Telemetry - mirrors @media (max-width: 1250px) in telemetry.css. */
+@media (min-width: 1041px) and (max-width: 1500px) {
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-workbench {
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 22px;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-context-grid { padding-left: 18px; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-events-layout.has-inspector { grid-template-columns: minmax(0, 1fr); }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-inspector {
+    grid-row: 1;
+    max-height: 60dvh;
+    overflow: auto;
+  }
+}
+
+/* Health - mirrors @media (max-width: 850px) in health.css. Declared last
+   so it wins over the 1400px block where both apply. */
+@media (min-width: 1041px) and (max-width: 1100px) {
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-kpi-rail {
+    grid-template-columns: 1fr 1fr;
+    gap: 22px 0;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-kpi-rail > .health-metric:nth-child(odd) {
+    padding-left: 0;
+    border: 0;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue-grid { grid-template-columns: 1fr; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue {
+    padding: 20px 0;
+    border: 0;
+    border-top: 1px solid var(--explorer-line-soft);
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue:first-child { padding-top: 0; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue:last-child { padding-bottom: 0; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue > .health-note { min-height: 0; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue-metrics { grid-template-columns: 1fr 1fr 1.2fr; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-queue-metrics .health-metric:last-child { grid-column: auto; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-secondary-grid { grid-template-columns: 1fr; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-secondary-grid > .health-section:last-child {
+    border: 0;
+    border-top: 1px solid var(--explorer-line-soft);
+    padding: 24px 0 0;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .health-workspace-v2 .health-run-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Mirror Telemetry's narrow workbench once the open drawer leaves <=1000px. */
+@media (1041px <= width <= 1250px) {
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-workbench { grid-template-columns: minmax(0, 1fr); }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-context-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-left: 0;
+    border-top: 1px solid var(--explorer-line-soft);
+    padding: 22px 0 0;
+    gap: 24px;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-actions { justify-content: flex-start; }
+}
+
+@media (1041px <= width <= 1100px) {
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 0;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-metrics > div:nth-child(3) { border-left: 0; padding-left: 0; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-metrics > div { padding-right: 10px; }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .telemetry-v2-run > summary {
+    grid-template-columns: 130px 100px minmax(0, 1fr) 90px;
+    gap: 10px;
+  }
+}
+
+/* Preserve the shared live region and visible confirmation. Style only the
+ * Collections success notice in V3; empty notices occupy no space. */
+:root[data-explorer-root='/app-explorer-v3'] .saved-views-v2[aria-labelledby='saved-collections-title'] > span[role='status']:not(:empty) {
+  display: block;
+  margin-block: 14px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--explorer-mint);
+  border-radius: 0 8px 8px 0;
+  background: var(--explorer-surface);
+  color: var(--explorer-mint);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+:root[data-explorer-root='/app-explorer-v3'] .saved-views-v2[aria-labelledby='saved-collections-title'] > span[role='status'].saved-work-pending:not(:empty) {
+  color: var(--explorer-text);
+  border-left-color: var(--explorer-muted);
+}

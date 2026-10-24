@@ -1,0 +1,82 @@
+.explorer-version-switch {
+  display: grid;
+  min-width: 224px;
+  gap: 4px;
+  padding: 7px;
+  border: 1px solid var(--explorer-line);
+  border-radius: 11px;
+  background: rgba(7, 16, 20, 0.78);
+}
+
+.explorer-version-switch > span {
+  padding: 0 3px;
+  color: var(--explorer-faint);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.07em;
+  line-height: 12px;
+  text-transform: uppercase;
+}
+
+.explorer-version-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.explorer-version-options > a,
+.explorer-version-options > span {
+  display: flex;
+  min-width: 0;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--explorer-muted);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 14px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.explorer-version-options > a:hover,
+.explorer-version-options > a:focus-visible {
+  border-color: var(--explorer-line);
+  background: var(--explorer-card);
+  color: var(--explorer-text);
+}
+
+.explorer-version-options > span[aria-current="page"] {
+  border-color: rgba(84, 194, 255, 0.3);
+  background: var(--explorer-blue-soft);
+  color: var(--explorer-text);
+}
+
+.explorer-version-switch > small {
+  padding: 0 3px;
+  color: var(--explorer-faint);
+  font-size: 9px;
+  line-height: 12px;
+}
+
+@media (max-width: 1280px) {
+  .explorer-channel-header {
+    grid-template-columns: auto 56px minmax(0, 1fr);
+  }
+
+  .explorer-header-actions {
+    grid-column: 1 / -1;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .explorer-version-switch {
+    width: 100%;
+    min-width: 0;
+  }
+}

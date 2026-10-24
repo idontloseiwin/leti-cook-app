@@ -1,0 +1,12 @@
+.explorer-app.is-updated .user-work-backup-dialog { width: min(660px, calc(100vw - 32px)); }
+.explorer-app.is-updated .user-work-backup-dialog section { border-top: 1px solid #2c414e; margin-top: 18px; padding-top: 16px; }
+.explorer-app.is-updated .user-work-backup-dialog h3 { margin: 0; font-size: 15px; }
+.explorer-app.is-updated .user-work-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.explorer-app.is-updated .user-work-pending-list { list-style: none; padding: 0; }
+.explorer-app.is-updated .user-work-pending-row { padding: 12px 0; border-bottom: 1px solid #2c414e; }
+.explorer-app.is-updated .user-work-pending-row label { margin-top: 0; }
+.explorer-app.is-updated .user-work-preview dl { display: flex; gap: 18px; flex-wrap: wrap; }
+.explorer-app.is-updated .user-work-preview dt { text-transform: capitalize; font-size: 12px; color: #8ca3b3; }
+.explorer-app.is-updated .user-work-preview dd { margin: 4px 0 0; font-weight: 700; }
+.explorer-app.is-updated .user-work-unavailable { font-size: 12px; color: #8ca3b3; }
+.explorer-app.is-updated .user-work-backup-trigger { width: 100%; margin-top: 8px; }

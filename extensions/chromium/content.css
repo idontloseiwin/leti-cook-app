@@ -1,0 +1,48 @@
+/* Controls and feedback live in Shadow DOM. The narrowly enabled watch-row
+   override below is bounded by the measured gap before native action buttons. */
+.leti-cook-channel-control {
+  all: initial !important;
+  position: relative !important;
+  display: inline-flex !important;
+  box-sizing: border-box !important;
+  flex: 0 0 34px !important;
+  align-self: center !important;
+  width: 34px !important;
+  min-width: 34px !important;
+  max-width: 34px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  max-height: 34px !important;
+  margin: 0 6px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  vertical-align: middle !important;
+  overflow: visible !important;
+}
+.leti-cook-channel-control[data-placement="measuring"] {
+  position: fixed !important;
+  visibility: hidden !important;
+}
+.leti-cook-channel-control[data-placement="shorts"] {
+  flex-basis: 48px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  margin: 0 0 12px !important;
+}
+.leti-cook-channel-control[data-placement="floating"] {
+  position: fixed !important;
+  right: 20px !important;
+  bottom: 20px !important;
+  margin: 0 !important;
+  z-index: 2147483646 !important;
+}
+ytd-watch-metadata #owner[data-leti-cook-owner-room="1"] {
+  max-width: var(--leti-cook-owner-room) !important;
+}
+ytd-watch-metadata #owner[data-leti-cook-owner-room="1"] #channel-name a {
+  text-wrap: nowrap !important;
+}

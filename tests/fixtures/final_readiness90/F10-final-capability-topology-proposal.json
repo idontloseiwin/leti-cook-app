@@ -1,0 +1,1542 @@
+{
+  "status": "topology_approved_isolated90_implementation_in_progress",
+  "source_sha256": "1985364b1316c914add1fc6ce529c100926f5ad224e93223b655ce91c29cd715",
+  "schema_sha256": "1cc714cf54bb2eae334d28c5596d27204068760cdc29ceeaafef48f9f5c80f51",
+  "source_owner": "application/db/capabilities.py",
+  "counts": {
+    "keep": 76,
+    "remove": 34,
+    "narrow": 7
+  },
+  "queries": {
+    "assert_channel_discovery_paging_schema": {
+      "constant": "_ASSERT_CHANNEL_DISCOVERY_PAGING_SCHEMA_SQL",
+      "query_sha256": "492aad204c4e36143b8d47fb2bbb18e5d8774c25eede966f31651903dc33e8a3",
+      "slots": [
+        {
+          "index": 0,
+          "error": "channel discovery schema mismatch: token=%, started_at=%, streak=%, streak_not_null=%",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "689b1097876c0646d8fff25e47a01e4d1eca5687c7840f921e263514c5024ca3",
+          "ctes": [
+            "observed_1",
+            "observed_2",
+            "observed_3"
+          ]
+        },
+        {
+          "index": 1,
+          "error": "channel discovery schema contains a negative no-new streak",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "eb325d904379b6bd5d6f949fd86d42107dd428a0daa0b6ca4fea7d9bd64dd281",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "f0494fa74928b71829b1cbe1057c50bc57e08c14dbc69341b9c8878c32ce9bdb",
+      "value_ctes": [
+        "observed_1",
+        "observed_2",
+        "observed_3"
+      ],
+      "fields": [
+        "status",
+        "table",
+        "resume_page_token_type",
+        "resume_started_at_type",
+        "no_new_streak_type",
+        "no_new_streak_not_null",
+        "policy",
+        "max_periodic_hours"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_channel_discovery_queue_schema": {
+      "constant": "_ASSERT_CHANNEL_DISCOVERY_QUEUE_SCHEMA_SQL",
+      "query_sha256": "0202444fbfca023d7364611ba50d84bcb86958b4592d11cdf20d6c8b9d3ed20b",
+      "slots": [],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "0dcbb25f50bdb4aa54aaa9e44136f5fce86cd74b2bf7afab7b2c60d958b95106",
+      "value_ctes": [
+        "observed_1",
+        "observed_2",
+        "schema_columns"
+      ],
+      "fields": [
+        "table",
+        "status",
+        "missing_or_wrong_type",
+        "reconciliation_required",
+        "claim_contract",
+        "completion_idempotent"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_channel_sync_control_ready": {
+      "constant": "_ASSERT_CHANNEL_SYNC_CONTROL_READY_SQL",
+      "query_sha256": "205c53ec4d7ba0568f8a044c60c791912ad0b3c3b7c944fa07d26a12cf7c81cd",
+      "slots": [
+        {
+          "index": 0,
+          "error": "channel sync control RPC contract is incomplete",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "4a56c23a0b3ea44c62767869ff2a1d7d32646ce283ffe76b131352711dadc7cd",
+          "ctes": []
+        },
+        {
+          "index": 1,
+          "error": "channel sync safe error columns are incomplete",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "cb05ddff09bd5507a8ac5ea999f48c6d1a457d9be5262c7795d510223fd9d554",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 2,
+          "error": "channel_collection_control_contract_missing",
+          "action": "narrow",
+          "reason": "Remove only to_regprocedure(assert_channel_collection_scope); keep required control table/views/sequence.",
+          "sql_sha256": "5a49ba9ce8fadc772cabbbfc03e29e597e2d79d6356e582d15b1303c7b65dcbf",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "channel_collection_control_acl_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "aac19f689215226674648ce0be18984e8dd373a316e15e9e299b3b49dc7758a0",
+          "ctes": []
+        },
+        {
+          "index": 4,
+          "error": "channel_collection_control_reconciliation_incomplete",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "82b5f609f6cc7dc01025705ec98b6cfe17684e9a5198226109ccaaa0df53d253",
+          "ctes": []
+        },
+        {
+          "index": 5,
+          "error": "channel_collection_scope_writer_acl_invalid",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "b2dc9adf0ce60355e07b79816490270edacbc501810904c7fc5594dcc26af04a",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "4741097183fcb70c52168b08194b0aea7f5e95f810c9f999e66a2e4193e35da7",
+      "value_ctes": [],
+      "fields": [
+        "ready",
+        "schema_version",
+        "quota_neutral",
+        "canonical_channel_control",
+        "scheduling_projection_is_diagnostic",
+        "health"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_full_initial_schema": {
+      "constant": "_ASSERT_FULL_INITIAL_SCHEMA_SQL",
+      "query_sha256": "5764610fe101be61702efe70b3e1df354bd3e68b692e8039ce7f44297ca50139",
+      "slots": [
+        {
+          "index": 0,
+          "error": "full_initial_function_contract_invalid: %",
+          "action": "narrow",
+          "reason": "Filter requirements_1 to retained guard_hot_operator_target_scope only; preserve existing body/security/owner predicate.",
+          "sql_sha256": "688cc9b084977ec81f43dfaeff518ee0d7b565bcf7eb1a549539618331e5fe5a",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 1,
+          "error": "full_initial_function_acl_invalid: %",
+          "action": "narrow",
+          "reason": "Same filtered requirements_1; preserve exact existing raw/effective function ACL predicate.",
+          "sql_sha256": "28975ecb7e1dedd694e1d55431ce5dcf2c1d2b99ca264542863907c2d848bfc3",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 2,
+          "error": "full_initial_columns_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "e0132b32c4e61c011251213e1521003ae8de6027764607edaa4fec1e5430a07f",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "full_initial_constraint_missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "1f0d6154180270f5133c8e497cc9491f9aaa710e5f145354b06b548391ee4fdd",
+          "ctes": [
+            "requirements_2"
+          ]
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "9bca0eabaeffcaeead73c7768702f7ef7469869e5369b7f2f2f73593f84b9a74",
+      "value_ctes": [],
+      "fields": [
+        "ready",
+        "initial_scope_version",
+        "workset",
+        "page_target_limit"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_inventory_receipts_schema": {
+      "constant": "_ASSERT_INVENTORY_RECEIPTS_SCHEMA_SQL",
+      "query_sha256": "147a9e06da98f939d9f793d692961ea40267a3ce438de0aa8755ee61b03bc157",
+      "slots": [
+        {
+          "index": 0,
+          "error": "inventory_receipts_storage_missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "aa70e38234f6a3cfbba7f1370f6702dac9d264a913f86aa8e1eb3dac75cb4e3d",
+          "ctes": []
+        },
+        {
+          "index": 1,
+          "error": "inventory_receipts_storage_acl_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "b8bfe71278328404ba6bbcc62a816121c90687ac89d44ad939061729c4caefe3",
+          "ctes": []
+        },
+        {
+          "index": 2,
+          "error": "inventory_receipts_constraints_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "7c4b69d9861169a9c0b215f96080825a51078535752eaaad7d055e5def77ae60",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "inventory_receipts_writer_security_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "43fe35aa4091aa50a64d4c1b88d78abe56408b60d92d85b1cfa13274137733f0",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "53af6f5eedd67ca4789b482cafe59b8139ec3c4acdc2ab34e1a163311656db5c",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "inventory_receipt_scopes",
+        "service_direct_writes"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_inventory_switch_schema": {
+      "constant": "_ASSERT_INVENTORY_SWITCH_SCHEMA_SQL",
+      "query_sha256": "b1bc541316336551dbeea77bee1f0fbfa466c57e0cdaaff27fc6adf06cbc70b6",
+      "slots": [
+        {
+          "index": 0,
+          "error": "inventory_switch_function_contract_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "b0e86f8e9b9833f69e41a376934ba10febe2e5b24c1c586be295beb828a109a0",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 1,
+          "error": "inventory_switch_function_acl_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "7120575b601b243ab515bbc21b418da99f35bd221212ac24a2199df4a91565e4",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 2,
+          "error": "inventory_switch_old_claim_owner_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "b92e16f7f33d5040c12f00f4679296de5fe1ed8b3ae1d52e8f4a36f85d4485a2",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "inventory_dispatch_sequence_contract_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "406cc78b9db28fd2c0cdd425240b234637c6a6c8c2158096f1442677753e38c4",
+          "ctes": []
+        },
+        {
+          "index": 4,
+          "error": "inventory_switch_column_contract_invalid: %.%",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "cffa16d91c611c2f0545e06c2eaae28237fd5eb4b0483247c57b25f730ead7b6",
+          "ctes": [
+            "requirements_2"
+          ]
+        },
+        {
+          "index": 5,
+          "error": "inventory_dispatch_default_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "62539259581daa454e6693c7ac64c51c915184b35366a4054bbcaa62e9214e58",
+          "ctes": []
+        },
+        {
+          "index": 6,
+          "error": "inventory_switch_constraint_missing: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "5fea6d8563c5c2edfe586fdd118e577033acfb3e63839880509dc2a7427c6b87",
+          "ctes": [
+            "requirements_3"
+          ]
+        },
+        {
+          "index": 7,
+          "error": "inventory_job_scan_fk_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "2d63532103dcd2fb8cfead26c35f98b2a6821f5d322611376c6b3055c56e3f92",
+          "ctes": []
+        },
+        {
+          "index": 8,
+          "error": "inventory_switch_index_missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "48c67ec0f352b2eed97e239feb2a3de2bf0fbbff57871a53c6ed49bffbdf5eb2",
+          "ctes": []
+        },
+        {
+          "index": 9,
+          "error": "inventory_switch_table_security_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "0f3bebe156eda70cbf69836fbde48588a6db4a37da5520b8b025760621b1e3e8",
+          "ctes": []
+        },
+        {
+          "index": 10,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "211e2ba9ad212fc3d77d8b60b842466855ebc3e3d8d75094ad0ce778a462b8b6",
+          "ctes": []
+        },
+        {
+          "index": 11,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "ccda8a7520f1def3fca6248f08a95d310b4d9b5eb1da04331a598634d083bb7f",
+          "ctes": []
+        },
+        {
+          "index": 12,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "0cfdf7540378733e69e4e921ded36487203d8159b577158e06587171df28c0fc",
+          "ctes": []
+        },
+        {
+          "index": 13,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "29ec5f9eb822eabc91313373fcda05d2cb4783560b2692958a6518fb6f3a1381",
+          "ctes": []
+        },
+        {
+          "index": 14,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "9d08745bb023ee2619702cf5d3e99e9f8eb7e85decb5e05d2b239d2c6002bf5c",
+          "ctes": []
+        },
+        {
+          "index": 15,
+          "error": "inventory_constraint_fingerprint_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "6968220a27677fc195d301ef140b4cd3767fe86e4a563f98e7aa3d4f1fd96a88",
+          "ctes": []
+        },
+        {
+          "index": 16,
+          "error": "inventory_index_fingerprint_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "c67b22f743b8ca27111c0d52692d5d0eb3d9169542c230dc8a6758ba1c4414f7",
+          "ctes": []
+        },
+        {
+          "index": 17,
+          "error": "inventory_index_fingerprint_invalid: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "0539ab51e1906f13f30293cc0eae47c0bf176337f4a670ca584dd61fff9c9295",
+          "ctes": []
+        },
+        {
+          "index": 18,
+          "error": "retired_inventory_rpc_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "6bd93ab3033aa3a3b9e9e080417b78c5ab7e7d9c7b660a5630c5648ed588925c",
+          "ctes": []
+        },
+        {
+          "index": 19,
+          "error": "retired_inventory_rpc_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "c142d03b046ca0ee8aa782ba4f3b99543c4c2182ca183904210b175144a72997",
+          "ctes": []
+        },
+        {
+          "index": 20,
+          "error": "retired_inventory_rpc_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "78586ab30dce4759a85dad381b9fa88c767a26e3d067658745e61dec86f99720",
+          "ctes": []
+        },
+        {
+          "index": 21,
+          "error": "retired_inventory_rpc_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "1a72bf5e9694aec60f8850f4e51289d13eb690f8d0d908f275da9c1197128da6",
+          "ctes": []
+        },
+        {
+          "index": 22,
+          "error": "retired_inventory_rpc_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "78ca6d693c6d66758bde8811eef5392fb31a485e7e38f1ce7fba2be213c400b6",
+          "ctes": []
+        },
+        {
+          "index": 23,
+          "error": "retired_inventory_rpc_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "a9511f3d229de33057cab406dcd38c7702f06c35cce9d9f8bcd836f6298a9413",
+          "ctes": []
+        },
+        {
+          "index": 24,
+          "error": "retired_inventory_rpc_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "00c49af95294cfdfee2b6f37ebfa8822e586e8b7c08d55b2de675f929d876181",
+          "ctes": []
+        },
+        {
+          "index": 25,
+          "error": "retired_inventory_rpc_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "9d6869787815811f34e74fb2eb0e694e1f8ed8cc6800eb2604d742bcb75f57f6",
+          "ctes": []
+        },
+        {
+          "index": 26,
+          "error": "retired_inventory_column_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "fe1e24bd3a89eac8755396d8e6b81cecb6e21fe8b2f2f6888082c65d7549fd07",
+          "ctes": []
+        },
+        {
+          "index": 27,
+          "error": "retired_inventory_null_projection_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "de54ba6902b2136a282f45ca358eb5a227c2a52d8ccf5d152c222966a0c4f8b2",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "b782433dd3677c17eb8e0f771ac961c824c3a9871d32c19a7d9e4821aa54b19a",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "schema_version",
+        "shared_page_owner",
+        "lease_owner",
+        "durable_fairness",
+        "token_history",
+        "page_limit",
+        "continuation_proof_limit",
+        "initial_chunk_pages"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_operator_jobs_ready": {
+      "constant": "_ASSERT_OPERATOR_JOBS_READY_SQL",
+      "query_sha256": "cfc75ada4b0f86888e32ea10d8742a175f803dc83625b98dac91a0fe54b553e1",
+      "slots": [
+        {
+          "index": 0,
+          "error": "durable initial hydration RPC contract is incomplete",
+          "action": "narrow",
+          "reason": "Remove only positive function-presence OR terms; retain all three relation checks.",
+          "sql_sha256": "3f309daff50bad5a154d73380da5cab7ffc858aaa6cf1b60f99361d680e6e834",
+          "ctes": []
+        },
+        {
+          "index": 1,
+          "error": "durable initial hydration columns are incomplete",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "31f36ef333e9babff779e7027995fe11f8114a999d975e8f4769d5e4bf5986e8",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 2,
+          "error": "all_format_initial_hydration_columns_missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "487eef31c36f74d3f74392d511fefd9a166b09636266b85b92439725a87c2ce0",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 3,
+          "error": "operator_job_channel_scope_contract_missing",
+          "action": "narrow",
+          "reason": "Remove only two positive function-presence OR terms; retain accepted_epoch/lease_channel_epoch/request_control_epoch type checks.",
+          "sql_sha256": "e800d02b68001e5e1ba4e1391ec2ed8122399b67dbaab6cd829c9b3202b2ba85",
+          "ctes": [
+            "schema_columns"
+          ]
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "5bf14f4fcaf038ffd622780cc0c07a476075bdac4dbdbc99164c756ed0794d9f",
+      "value_ctes": [],
+      "fields": [
+        "ready",
+        "schema_version",
+        "full_initial_scope_version",
+        "initial_total_limits_enforced",
+        "initial_inventory_scan_bridge",
+        "initial_chunk_pages",
+        "initial_quota_limit_enforced",
+        "full_profile_request_units_per_batch",
+        "unknown_completion_preserves_pending",
+        "job_table",
+        "target_table",
+        "retry_request_table",
+        "initial_inventory_job_type",
+        "initial_full_hydration",
+        "auto_hydration_max_items",
+        "legacy_auto_hydration_max_items",
+        "initial_video_types",
+        "channel_epoch_required",
+        "frozen_initial_scope",
+        "mixed_initial_claim",
+        "unfinished_stream_checked",
+        "verify_lease_seconds",
+        "idempotent_verify",
+        "atomic_workset_materialization",
+        "repairable_target_count_mismatch",
+        "retry_idempotency_key",
+        "mismatch_repair_source",
+        "quota_neutral_migration"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_typed_inventory_canonical_repair_schema": {
+      "constant": "_ASSERT_TYPED_INVENTORY_CANONICAL_REPAIR_SCHEMA_SQL",
+      "query_sha256": "2000aa243bdbe6c8acd0a9a0bdacadd4f33ec6fb7c589d912411d68ddc6d3d4f",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_inventory_canonical_repair_postgres_version_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "5a3d1ea6b32504a86852ffedf67ba55928492d6d10ac21c4b379b7e6af3937a2",
+          "ctes": []
+        },
+        {
+          "index": 1,
+          "error": "typed_inventory_canonical_repair_rpc_missing: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "0282d5afd70e2754fc7f86176b45ada4c4aca93820456255aadf1f480485c51b",
+          "ctes": []
+        },
+        {
+          "index": 2,
+          "error": "typed_inventory_canonical_repair_rpc_acl_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "a24c223d55323fd3871400e765c44da75e60f46a2478d15f3311b21c5cd3c348",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "typed_inventory_canonical_repair_rpc_must_be_invoker: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "948007192efb721d9fc46694bdbb12b7bbf04699f9cf1c0269aedcca0c41e82e",
+          "ctes": []
+        },
+        {
+          "index": 4,
+          "error": "typed_inventory_canonical_repair_lock_schema_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "a2696663673f2687633563742d8d22069181365331a32bf895d133637d706486",
+          "ctes": []
+        },
+        {
+          "index": 5,
+          "error": "typed_inventory_canonical_repair_lock_view_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "4b894aa9e74595750b3cd417558d82abf59d4d4b525a2a795bbfb7fdb2d5ac98",
+          "ctes": [
+            "observed_1"
+          ]
+        },
+        {
+          "index": 6,
+          "error": "typed_inventory_canonical_repair_lock_view_dependency_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "a210d089d527307fab223f5c7392839c54f3f8a9239365c97a626fc6387f3d02",
+          "ctes": [
+            "observed_1"
+          ]
+        },
+        {
+          "index": 7,
+          "error": "typed_inventory_canonical_repair_lock_view_acl_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "863dd162277beedcbcf4ad1ba9ab57e4be986205f032defe6cea26920acd13c7",
+          "ctes": [
+            "observed_1"
+          ]
+        },
+        {
+          "index": 8,
+          "error": "typed_inventory_canonical_repair_base_state_acl_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "a9dd42c044527306fe42a1db5fbf6e80df86df243b5a91618fce708ceadc7cc7",
+          "ctes": []
+        },
+        {
+          "index": 9,
+          "error": "typed_inventory_canonical_repair_function_contract_invalid",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "2a9ec52825cd84a7973260f164fcc1b715fef47fff8982e3cf7f1a599671dc7d",
+          "ctes": [
+            "observed_2"
+          ]
+        },
+        {
+          "index": 10,
+          "error": "typed_inventory_canonical_repair_collection_trigger_missing",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "d4c1d44ed654ab48c1d21cf56847b5f0eec677237c7334976fefd3d9b5f78f1e",
+          "ctes": [
+            "observed_3"
+          ]
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "b6500072d78219b1c5eb4180fd2f9ea0fc3c104f3751a9c5d62cd2ffe9dbb84a",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "schema_version",
+        "authoritative_evidence",
+        "canonical_channel_mutation",
+        "max_atomic_repairs",
+        "collection_state_lock_contract",
+        "minimum_postgres_version",
+        "repair_statement_timeout_seconds"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_typed_inventory_foundation_schema": {
+      "constant": "_ASSERT_TYPED_INVENTORY_FOUNDATION_SCHEMA_SQL",
+      "query_sha256": "a5a936e8eaf16cd952504a5aae655a8ffaca78ebca0d2a932b6162a837503f1e",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_inventory_table_missing_or_rls_disabled: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "e0683e23862f9320afad45dcdd38801835bf56a51d192900074c4cf6bdbb9c04",
+          "ctes": []
+        },
+        {
+          "index": 1,
+          "error": "typed_inventory_table_publicly_readable: %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "bb5b54e4890439ccc31f8c18d1ab69c0b1de76a1d68041bac0e8d8edcc8793fe",
+          "ctes": []
+        },
+        {
+          "index": 2,
+          "error": "typed_inventory_product_exposure_default_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "fa9842ee1c516a38f34331cdeb54dc537479c98c484a06638d76331a6135bbf3",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "video_inventory_must_have_one_canonical_row",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "2a756f622c3bb12a558fc602cdc6337d7dbed02eb48b68420710c3278ee3057f",
+          "ctes": [
+            "observed_1"
+          ]
+        },
+        {
+          "index": 4,
+          "error": "video_inventory_resolution_must_be_security_invoker",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "0133e6c02e9c9f823d3324132fb7045b29ad70bd9260118c91c8fc6c52757e47",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "605372daccdacff066a52e858dd66d1bf7b28dd209401444696d146fba2f349c",
+      "value_ctes": [
+        "observed_2",
+        "observed_3"
+      ],
+      "fields": [
+        "status",
+        "canonical_inventory_key",
+        "product_exposure_default",
+        "membership_conflicts",
+        "absence_requires",
+        "active_long_discovery_owner",
+        "typed_nonlong_runtime_enabled_rows",
+        "product_exposure_ready_rows"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_typed_inventory_quota_defer_schema": {
+      "constant": "_ASSERT_TYPED_INVENTORY_QUOTA_DEFER_SCHEMA_SQL",
+      "query_sha256": "c67990bc789ea1fe308c7a226f0a8a7d36b6b9bdbcde676203edf0a7177869e6",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_inventory_quota_defer_rpc_security_invalid",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "4f66471690421b5de7fd80a035033edcf8579e25de19e671c10cafb0d9f1ba3b",
+          "ctes": []
+        },
+        {
+          "index": 1,
+          "error": "typed_inventory_quota_defer_preservation_contract_invalid",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "4a2dfc97ae7e2c44f41efcc9f97ff2e8fe95b7ccbbd41c0d52962eb9bd1f7c2d",
+          "ctes": [
+            "observed_1"
+          ]
+        },
+        {
+          "index": 2,
+          "error": "typed_inventory_quota_claim_floor_guard_missing",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "aa13c15e2634e3e5e7028f1581a6b68d8915f359ac3b9c272ad8d359c3bae787",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "typed_inventory_quota_claim_floor_truth_table_invalid",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "b633810032a9370cf3c6ff5fa21b338421ba471400b7b25574a56ae1d5deb24b",
+          "ctes": []
+        },
+        {
+          "index": 4,
+          "error": "typed_video_collection_cadence_or_jitter_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "a6de931a14e3ee3db631ba0c3e8ce88befa3d0a504ef735ca0d5d43b2693ad27",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "23d0127ed00e16e1f79085a74d6b6ced7214d336bb239ceb81d50bc22ff6dc28",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "schema_version",
+        "claim_limit",
+        "retry_floor_seconds",
+        "retry_until",
+        "lost_ack_receipts",
+        "active_scan_state_preserved",
+        "cadence_jitter_seconds",
+        "quota_claim_floor_guard"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_typed_inventory_runtime_schema": {
+      "constant": "_ASSERT_TYPED_INVENTORY_RUNTIME_SCHEMA_SQL",
+      "query_sha256": "c771cefe1cdb700956d90273a4011b814b2777fb286c8061c338a45d35d72b88",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_inventory_active_scan_projection_drift",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "37149f57a064c4ebfddd1bf257be1ab3af219867611bb2ee7f9c74c2b01236ca",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "8fc8a07bd7cc18cff0735c766d798f871589e347b7f7d775dfdca63e64ddeab0",
+      "value_ctes": [
+        "observed_1",
+        "observed_2"
+      ],
+      "fields": [
+        "status",
+        "schema_version",
+        "foundation",
+        "runtime_enabled_rows",
+        "product_exposure_ready_rows",
+        "zero_enabled_rows_allowed",
+        "runtime_video_types",
+        "canonical_identity",
+        "page_limit",
+        "continuation_delay_minutes",
+        "head_cadence_hours",
+        "full_reconciliation_days",
+        "product_exposure_independent_of_active_scan",
+        "statistics_collection",
+        "separate_current_data_collection",
+        "lost_ack_receipts",
+        "durable_fairness",
+        "initial_chunk_pages"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_typed_video_collection_schema": {
+      "constant": "_ASSERT_TYPED_VIDEO_COLLECTION_SCHEMA_SQL",
+      "query_sha256": "c4287bf216fbf2d459cffbbe4083b2a36c356b0485b466017a550844947de71a",
+      "slots": [
+        {
+          "index": 0,
+          "error": "typed_video_collection_relation_missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "4472d9f86643f6c1e5cdbcd8f6deab285685f55535cbef722994811d38e9971a",
+          "ctes": []
+        },
+        {
+          "index": 1,
+          "error": "typed_video_collection_relation_security_contract_invalid: %",
+          "action": "narrow",
+          "reason": "Remove retired candidates view from relation list and its view-only branch; preserve table ownership/RLS, raw/effective ACL and all schema24 column-right predicates byte-for-byte.",
+          "sql_sha256": "8fb86ef31ea00896cd71aa92dc71af6a46cef569a8c042b296c589fa1ba2eb8a",
+          "ctes": []
+        },
+        {
+          "index": 2,
+          "error": "typed_video_collection_state_columns_missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "86a3a5dd29662e06bf6334a0db1c6fab8a7439737f4e81d149a2ece4a296ed97",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 3,
+          "error": "typed_video_collection_receipt_contract_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "790d176f0f1d2492a9b6a6afbaa1c9e71b754809f0f0dfcdd1d2b60320a728e9",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 4,
+          "error": "typed_video_collection_cadence_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "017b22ed512793a9314ef0aaea550b0beaa77b6d3983d8502affdc23663c81b1",
+          "ctes": []
+        },
+        {
+          "index": 5,
+          "error": "typed_video_collection_rpc_missing: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "f88deeaeecde36d82770d4f4a3dfc2a3b3493280837215c55894e35686017bd0",
+          "ctes": []
+        },
+        {
+          "index": 6,
+          "error": "typed_video_collection_rpc_security_contract_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "2bce7f4893d3a0931d26a137c182df6d038c4536efd2974458aed4b7dd7f74d6",
+          "ctes": []
+        },
+        {
+          "index": 7,
+          "error": "typed_collection_bounded_repair_schema_missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "1844bc24d2460ca501deecd09c691f9c59ca67bd184d45019dadefcfc58b8ec9",
+          "ctes": []
+        },
+        {
+          "index": 8,
+          "error": "typed_video_collection_state_drift",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "9a62741f96bf53bd007ecd7de384f959ff6da8d2270ba48dee6d84960033c0ce",
+          "ctes": [
+            "observed_1",
+            "observed_2",
+            "observed_3",
+            "observed_4"
+          ]
+        },
+        {
+          "index": 9,
+          "error": "typed_video_collection_product_exposure_must_remain_closed",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "100a8ad58e823b975f3b64ec26110d8d0381e2dfd27f579429ef6eaea5e766a2",
+          "ctes": [
+            "observed_5"
+          ]
+        },
+        {
+          "index": 10,
+          "error": "video_channel_lease_epoch_contract_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "6ca2f5484a717b030d9042481ebd7d6870052fc5d86432c46e38d93155d67c96",
+          "ctes": []
+        },
+        {
+          "index": 11,
+          "error": "video_channel_scope_function_contract_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "61f3900ae26076608d3b9bb488d2ad40419d6c9df3deeb2463797e78d1e3baba",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 12,
+          "error": "video_channel_scope_function_acl_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "7a21c691ae3061be661723409864fb2b85664b65acfb38ae5a497a0e3ea3c1a1",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 13,
+          "error": "typed_video_candidates_canonical_control_missing",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "ca9a2404f1e929ec111ed3e7e3510862cbd1486b39adcd8710373edb658852b9",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "42c02e221e551643981ce04659eca0321b040477809ea78805c662441f738cc9",
+      "value_ctes": [
+        "observed_1",
+        "observed_2",
+        "observed_3",
+        "observed_4",
+        "observed_5"
+      ],
+      "fields": [
+        "channel_control_fenced",
+        "lease_channel_epoch",
+        "status",
+        "schema_version",
+        "repair_version",
+        "bounded_claim_batch",
+        "operational_eligibility_checked",
+        "runtime_video_types",
+        "max_request_batch",
+        "fresh_through_days_inclusive",
+        "fresh_cadence_days",
+        "old_cadence_days",
+        "full_metadata_each_refresh",
+        "completed_streams_only",
+        "exact_receipt_payload_fencing",
+        "stream_lifecycle_model",
+        "product_exposure_changed",
+        "product_exposure_ready_rows",
+        "runtime_enabled_rows",
+        "long_typed_drift",
+        "typed_long_clock_drift",
+        "identity_drift",
+        "disabled_active_drift",
+        "ineligible_active_drift",
+        "health"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_video_collection_cadence_schema": {
+      "constant": "_ASSERT_VIDEO_COLLECTION_CADENCE_SCHEMA_SQL",
+      "query_sha256": "bfb67df646d64c23bba8b9368db4235b504f929179ec6bc99ebfa9be232f7cc3",
+      "slots": [
+        {
+          "index": 0,
+          "error": "shared_cadence_function_contract_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "67bcd2ab3a5c41c145b195b5a94c97201526995e1a6681f526a08bfb1a0d2ba4",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 1,
+          "error": "shared_cadence_acl_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "78fe249b778440e22669dbc1eee64ddac016897805f32912d1118646afa95162",
+          "ctes": [
+            "requirements_1"
+          ]
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "2b67f42299c10e2f690708a0ac77ddcedb17db5bdb9ffbfa463caff871f0db52",
+      "value_ctes": [],
+      "fields": [
+        "status",
+        "selector",
+        "long_bounds",
+        "typed_bounds",
+        "typed_jitter_seconds"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_video_collection_common_pool_schema": {
+      "constant": "_ASSERT_VIDEO_COLLECTION_COMMON_POOL_SCHEMA_SQL",
+      "query_sha256": "49c0adcfa346a2f00e1558463579a612bc2fe3d807dd5ed9ba95c9081f556a53",
+      "slots": [
+        {
+          "index": 0,
+          "error": "common_pool_function_contract_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "e90364457b6e26954a540ef46b676cd4f967702147b45fde11d2a602b19e37c5",
+          "ctes": []
+        },
+        {
+          "index": 1,
+          "error": "common_pool_index_contract_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "b672bb6f5c4f571a6fdbee682354d90c74d673b2c3cc826ad1dac1fa90f43723",
+          "ctes": []
+        },
+        {
+          "index": 2,
+          "error": "typed_long_availability_restore_capability_mismatch",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "6c62153064022ae3179e261762505c6f22081e5b7517a31add9db1c7976e9f3f",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "video_profile_single_write_capability_mismatch",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "cf0dc9db0433d8443b0d41c0bedd809baf09cb720fa2bbf12ec7bcad3085a8e3",
+          "ctes": []
+        },
+        {
+          "index": 4,
+          "error": "typed_availability_incident_owner_not_ready",
+          "action": "narrow",
+          "reason": "Remove only complete_typed_video_missing function-contract prefix; preserve retired-table absence, retained open_video_availability invoker flag and raw/effective view read/write ACL.",
+          "sql_sha256": "81d1944b576cdebdb648fb7c6ac8cb43e269489c82621dfe4760c950a14c31de",
+          "ctes": []
+        },
+        {
+          "index": 5,
+          "error": "video_queue_cleanup_schema_not_ready",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "5c2ce3f093fb045b6b4eb5a5f166f6d6d1a0c5b069fbf2c80eb8ab5a3c76f6ab",
+          "ctes": []
+        },
+        {
+          "index": 6,
+          "error": "video_category_clock_not_retired",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "77c60589b50db01d526787b575ac295b7c5142a071aa2a3b4079e9bd92d0519b",
+          "ctes": []
+        },
+        {
+          "index": 7,
+          "error": "video_channel_lease_epoch_contract_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "6ca2f5484a717b030d9042481ebd7d6870052fc5d86432c46e38d93155d67c96",
+          "ctes": []
+        },
+        {
+          "index": 8,
+          "error": "video_channel_scope_function_contract_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "61f3900ae26076608d3b9bb488d2ad40419d6c9df3deeb2463797e78d1e3baba",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 9,
+          "error": "video_channel_scope_function_acl_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "7a21c691ae3061be661723409864fb2b85664b65acfb38ae5a497a0e3ea3c1a1",
+          "ctes": [
+            "requirements_1"
+          ]
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "e555c4b9d5b7423812a16bc13115580d3684e848e67082d766707bcf187dd9ce",
+      "value_ctes": [],
+      "fields": [
+        "channel_control_fenced",
+        "lease_channel_epoch",
+        "unified_due_at",
+        "priority_storage",
+        "status",
+        "schema_version",
+        "common_pool_version",
+        "mixed_claim",
+        "sole_lease_owner",
+        "max_request_batch",
+        "max_claim_rows",
+        "max_inspected_rows",
+        "ordering_policy",
+        "priority_ordering",
+        "atomic_long_availability_restore",
+        "availability_incident_owner",
+        "profile_single_write",
+        "metadata_replay_noop",
+        "category_clock_retired"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    },
+    "assert_video_collection_queue_schema": {
+      "constant": "_ASSERT_VIDEO_COLLECTION_QUEUE_SCHEMA_SQL",
+      "query_sha256": "155126da139f7a1ccc030b0cf0a4ffbc0ac2596782be09dbc9c1e00702cc108c",
+      "slots": [
+        {
+          "index": 0,
+          "error": "videos.metadata_checked_at must be timestamp with time zone",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "1108c2a591a7d45c61005f200558a35618d00ba80a0cd3abdf62dee3238fd9e5",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 1,
+          "error": "videos.stream_actual_end_at must be timestamp with time zone",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "faffa0416a755dcee17ccdec72f8da3fe9b0dc493fb3b226896aabd89942a8f0",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 2,
+          "error": "videos stream completion evidence constraint is missing or invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "a719dd6ca1863e1845880bd4787ccec0375e7f6c6a389fba586f5194129d5c6c",
+          "ctes": []
+        },
+        {
+          "index": 3,
+          "error": "video collection due/source clocks must be timestamp with time zone",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "38ba22b933494227134946297b91dcdd75143180dd5d12424942237d16b8f681",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 4,
+          "error": "video_collection_state.lease_token must be uuid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "ff20ec8316fe91a2eeebde195cf3ecc98674da56336b6efc6a05ccd509823488",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 5,
+          "error": "video_collection_state.last_claim_run_id must be uuid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "5c6e09a065a90be9110d085bb3aae8585a2b91e841e1cc2fc6ec468310672802",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 6,
+          "error": "video_snapshots.collection_attempt_id must be uuid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "9c52cd024ad38453d3fd43d57819ad1d07ddfddc67c97791c5b962f1394b83ac",
+          "ctes": [
+            "schema_columns"
+          ]
+        },
+        {
+          "index": 7,
+          "error": "one or more video collection indexes are missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "56905bbc6bc032b4be5f98b8701bf55a54c065b0c40fa9e2ed61a03df479d44d",
+          "ctes": []
+        },
+        {
+          "index": 8,
+          "error": "one or more video collection RPCs are missing",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "9eba275675d3ad70caef6474050cd0756144d97dbb99c7d8f5bd33b6a6814762",
+          "ctes": []
+        },
+        {
+          "index": 9,
+          "error": "metadata completion RPC does not implement stream evidence contract v2",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "5ca70e69ba932edf152aab92e649b19942ef96a4f7bfacf18e4a97c1a22da47a",
+          "ctes": [
+            "observed_1"
+          ]
+        },
+        {
+          "index": 10,
+          "error": "profile metadata completion wrapper must pass the original payload to metadata completion v2",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "188f1b54d10468f08ea4c805dc4d5177503eacaef0dc845f2c8d2295d7ae4fe6",
+          "ctes": [
+            "observed_2"
+          ]
+        },
+        {
+          "index": 11,
+          "error": "video metadata completion RPC ACL is not service-only",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "75161b2f79e939dc469f7073ea526e76d3886a39c02a5205359814f6432a1dee",
+          "ctes": []
+        },
+        {
+          "index": 12,
+          "error": "one or more video collection state triggers are missing",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "7e1d1d3ff2969bbb8d7c5efad39bf060bee71c66ce145340a51b910f6f59eb23",
+          "ctes": []
+        },
+        {
+          "index": 13,
+          "error": "channel sync collection state trigger contract is invalid",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "7e8fec2d85ca6bea854f3ce3a3ecc8ea305b14c804f0a0f5faad6dc052cb9248",
+          "ctes": []
+        },
+        {
+          "index": 14,
+          "error": "legacy channel visibility collection trigger must be absent",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "50a443162fb49465b65c411e3e1945915907420d1a917f0ff15bab0e949099c2",
+          "ctes": []
+        },
+        {
+          "index": 15,
+          "error": "video collection readiness control row is missing",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "805c1e6a4685e61de7472322a13deeae48da6ce0a46c19c68f6d4d433fcee082",
+          "ctes": [
+            "observed_3"
+          ]
+        },
+        {
+          "index": 16,
+          "error": "video collection cadence expected 12 enabled v1 rules, found %",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "e598daaa2e3d43c5677bb39892982b5b222a65c21dcc1e765b2713a4e51e7b40",
+          "ctes": [
+            "observed_4"
+          ]
+        },
+        {
+          "index": 17,
+          "error": "video_channel_lease_epoch_contract_invalid",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "6ca2f5484a717b030d9042481ebd7d6870052fc5d86432c46e38d93155d67c96",
+          "ctes": []
+        },
+        {
+          "index": 18,
+          "error": "video_channel_scope_function_contract_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "61f3900ae26076608d3b9bb488d2ad40419d6c9df3deeb2463797e78d1e3baba",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 19,
+          "error": "video_channel_scope_function_acl_invalid: %",
+          "action": "remove",
+          "reason": "Retired positive workflow-function/hook/view requirement only.",
+          "sql_sha256": "7a21c691ae3061be661723409864fb2b85664b65acfb38ae5a497a0e3ea3c1a1",
+          "ctes": [
+            "requirements_1"
+          ]
+        },
+        {
+          "index": 20,
+          "error": "video_unfenced_legacy_overload_present",
+          "action": "keep",
+          "reason": "Preserve exact structural, ACL, state or negative-retirement predicate.",
+          "sql_sha256": "b934d041de685e3ea377171ab78a3e74e669dc91948ab12b2f1e0febcde00c45",
+          "ctes": []
+        }
+      ],
+      "value_policy": "exact_byte_identity",
+      "value_sha256": "5b14bd38626ed3e98fe0dd3837375b551b4854408a0506669a568bb4392e678e",
+      "value_ctes": [
+        "observed_3",
+        "observed_4"
+      ],
+      "fields": [
+        "channel_control_fenced",
+        "lease_channel_epoch",
+        "status",
+        "table",
+        "readiness_mode",
+        "reconciliation_required",
+        "remaining_count",
+        "remaining_count_exact",
+        "invalidated_at",
+        "last_reconciled_at",
+        "cadence_rules",
+        "max_claim_size",
+        "policy_version",
+        "metadata_completion_contract_version",
+        "stream_completion_evidence"
+      ],
+      "ctes_remove_only_if_unreferenced_after_slot_edits": true
+    }
+  },
+  "retained_integrity_guards": [
+    {
+      "function": "public.bind_channel_user_work_owner()",
+      "prosrc_sha256": "cb43fffb53ab2e277074a78e6e0289fb8364dc19b3263d61b96658a12fc29285",
+      "normalized_prosrc_md5": "fad6ef72f002d88375084c6ca04f2bab",
+      "header": "CREATE FUNCTION public.bind_channel_user_work_owner() RETURNS trigger\n    LANGUAGE plpgsql SECURITY DEFINER\n    SET search_path TO 'pg_catalog', 'public', 'pg_temp'",
+      "service_execute": true,
+      "trigger_definitions": [
+        "CREATE TRIGGER review_case_channel_owner BEFORE INSERT OR UPDATE OF channel_id, user_channel_ref ON public.video_type_review_cases FOR EACH ROW EXECUTE FUNCTION public.bind_channel_user_work_owner();",
+        "CREATE TRIGGER saved_member_channel_owner BEFORE INSERT OR UPDATE OF video_id, user_channel_ref ON public.saved_collection_members FOR EACH ROW EXECUTE FUNCTION public.bind_channel_user_work_owner();"
+      ]
+    },
+    {
+      "function": "public.enforce_user_work_backup_limits()",
+      "prosrc_sha256": "ab2f5761a26895469e90da3d058030e0b55c98f5a57a8b731218309bf7daf73d",
+      "normalized_prosrc_md5": "643f2f7ca5c2c111298f4df9677a1f05",
+      "header": "CREATE FUNCTION public.enforce_user_work_backup_limits() RETURNS trigger\n    LANGUAGE plpgsql\n    SET search_path TO 'pg_catalog', 'public', 'pg_temp'",
+      "service_execute": false,
+      "trigger_definitions": [
+        "CREATE TRIGGER user_work_backup_limits AFTER INSERT ON public.channel_label_assignments FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_user_work_backup_limits();",
+        "CREATE TRIGGER user_work_backup_limits AFTER INSERT ON public.channel_labels FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_user_work_backup_limits();",
+        "CREATE TRIGGER user_work_backup_limits AFTER INSERT ON public.channels FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_user_work_backup_limits();",
+        "CREATE TRIGGER user_work_backup_limits AFTER INSERT ON public.folders FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_user_work_backup_limits();",
+        "CREATE TRIGGER user_work_backup_limits AFTER INSERT ON public.saved_collection_members FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_user_work_backup_limits();",
+        "CREATE TRIGGER user_work_backup_limits AFTER INSERT ON public.saved_objects FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_user_work_backup_limits();",
+        "CREATE TRIGGER user_work_backup_limits AFTER INSERT ON public.video_type_review_history FOR EACH STATEMENT EXECUTE FUNCTION public.enforce_user_work_backup_limits();"
+      ]
+    },
+    {
+      "function": "public.enforce_video_inventory_membership_scan()",
+      "prosrc_sha256": "434a502593754366087c62f18846f0fb681eebbe534ed538de78669e472da7f0",
+      "normalized_prosrc_md5": "dec99f98b218890a8c0654828f32dac4",
+      "header": "CREATE FUNCTION public.enforce_video_inventory_membership_scan() RETURNS trigger\n    LANGUAGE plpgsql\n    SET search_path TO 'pg_catalog', 'public', 'pg_temp'",
+      "service_execute": false,
+      "trigger_definitions": [
+        "CREATE TRIGGER video_inventory_membership_scan_guard BEFORE INSERT OR UPDATE OF channel_id, video_type, membership_status, first_seen_scan_id, last_seen_scan_id, absence_confirmed_by_scan_id ON public.video_inventory_memberships FOR EACH ROW EXECUTE FUNCTION public.enforce_video_inventory_membership_scan();"
+      ]
+    },
+    {
+      "function": "public.guard_channel_user_work_identity()",
+      "prosrc_sha256": "9ed8e3f30dbcf1c4c7d4e76f80b2c10a4763a7889b1d1abdfb2ec53c4e17e8fd",
+      "normalized_prosrc_md5": "b24fa9878daa2989919ff4f960dc891f",
+      "header": "CREATE FUNCTION public.guard_channel_user_work_identity() RETURNS trigger\n    LANGUAGE plpgsql\n    SET search_path TO 'pg_catalog', 'pg_temp'",
+      "service_execute": false,
+      "trigger_definitions": [
+        "CREATE TRIGGER channels_user_work_identity_immutable BEFORE UPDATE OF user_work_id ON public.channels FOR EACH ROW EXECUTE FUNCTION public.guard_channel_user_work_identity();"
+      ]
+    },
+    {
+      "function": "public.guard_hot_operator_scope()",
+      "prosrc_sha256": "c7b01b5f58bdb0385ae0b4f23d6c9f703b5e1454ffda5127cb3a7ced209e902b",
+      "normalized_prosrc_md5": "5be1f5ba8b75942b2ff93ae224588d33",
+      "header": "CREATE FUNCTION public.guard_hot_operator_scope() RETURNS trigger\n    LANGUAGE plpgsql SECURITY DEFINER\n    SET search_path TO 'pg_catalog', 'public', 'operator_private', 'pg_temp'",
+      "service_execute": true,
+      "trigger_definitions": [
+        "CREATE TRIGGER hot_operator_source_scope BEFORE INSERT OR UPDATE ON public.operator_jobs FOR EACH ROW EXECUTE FUNCTION public.guard_hot_operator_scope();"
+      ]
+    },
+    {
+      "function": "public.guard_hot_operator_target_scope()",
+      "prosrc_sha256": "37f06699e0b1dcc39a20fade4a6b71acdf704a1a215b2b30c9268dbed845086d",
+      "normalized_prosrc_md5": "6d224d5075e65a755c8d21f5ecc3efb6",
+      "header": "CREATE FUNCTION public.guard_hot_operator_target_scope() RETURNS trigger\n    LANGUAGE plpgsql SECURITY DEFINER\n    SET search_path TO 'pg_catalog', 'public', 'operator_private', 'pg_temp'",
+      "service_execute": true,
+      "trigger_definitions": [
+        "CREATE TRIGGER hot_operator_target_scope BEFORE INSERT OR UPDATE ON public.operator_job_targets FOR EACH ROW EXECUTE FUNCTION public.guard_hot_operator_target_scope();"
+      ]
+    },
+    {
+      "function": "public.guard_hot_storage_collection_delete()",
+      "prosrc_sha256": "c0cd4326f278494fcdd0832088fccc03ead8c6d0498e9e0e4104b6940ddd446b",
+      "normalized_prosrc_md5": "c2e1936914e574486ec3ab1ad137a920",
+      "header": "CREATE FUNCTION public.guard_hot_storage_collection_delete() RETURNS trigger\n    LANGUAGE plpgsql SECURITY DEFINER\n    SET search_path TO 'pg_catalog', 'public', 'pg_temp'",
+      "service_execute": false,
+      "trigger_definitions": [
+        "CREATE TRIGGER hot_storage_collection_delete_guard BEFORE DELETE ON public.video_collection_state FOR EACH ROW EXECUTE FUNCTION public.guard_hot_storage_collection_delete();",
+        "CREATE TRIGGER hot_storage_playlist_delete_guard BEFORE DELETE ON public.channel_playlist_state FOR EACH ROW EXECUTE FUNCTION public.guard_hot_storage_collection_delete();"
+      ]
+    },
+    {
+      "function": "public.guard_manual_video_type_decision()",
+      "prosrc_sha256": "bb7180305e4f743f8a05b378346a315975da5ac7daaf93b9d379a5a2f0356ec0",
+      "normalized_prosrc_md5": "85c3aa256387d101d123cbaa0939d57d",
+      "header": "CREATE FUNCTION public.guard_manual_video_type_decision() RETURNS trigger\n    LANGUAGE plpgsql SECURITY DEFINER\n    SET search_path TO 'pg_catalog', 'public', 'pg_temp'",
+      "service_execute": false,
+      "trigger_definitions": [
+        "CREATE TRIGGER video_type_review_canonical_guard BEFORE UPDATE OF video_id, video_type, channel_id ON public.video_inventory FOR EACH ROW EXECUTE FUNCTION public.guard_manual_video_type_decision();"
+      ]
+    }
+  ],
+  "prerequisites": {
+    "paging": "unchanged",
+    "foundation": "unchanged",
+    "control": "Delete only first retired-function slot and remove function-presence term from mixed third slot; explicitly remap remaining errors rather than old slice[:3].",
+    "typed_video": "Remove candidates view from required-relation VALUES only; keep original relation/type parse safety ordering."
+  },
+  "hot_runtime": {
+    "preserve": [
+      "value keys version/as_of/schema_ready",
+      "native clock_timestamp()",
+      "fail-closed shape validation",
+      "all seven existing maintenance raw/effective ACL validations and inventory-switch structural validation"
+    ],
+    "replace": "Seven retired cleanup-function and one retired reader signature/EXECUTE/config CTEs become roles plus shared retained-intrinsic catalog facts. Never schema_ready=true literal."
+  },
+  "shared_guard": {
+    "proposal": "A fixed native catalog fact for eight retained functions and sixteen registrations; check owner/language/volatility/security-definer/config/result/zero-arg shape/body, exact role EXECUTE authority and raw ACL, exact enabled registration table/event/level/columns/WHEN/arguments. No DML/functions executed.",
+    "read_path": "Once per _Read invocation before dependency facts; no global cache. Existing field maps, validators, rejection policy and live health composition unchanged.",
+    "maintenance_path": "Same fixed fact integrated in existing maintenance hot_runtime query; no new generic driver SQL capability.",
+    "compatibility": "Strict exact8 function and16 noninternal registration set; unexpected workflow objects reject compatibility. No permissive old-schema flag. Installer/admin identity independently verifies actual migration history25; runtime does not claim verified history version.",
+    "error": "Fail closed via existing finite database_operation_failed disclosure; no new public domain error needed.",
+    "version_boundary": "Root amended the earlier runtime version25 request: do not add COMMENT marker or history read grant. One authoritative installer/admin history25 acceptance gate, runtime exact final schema compatibility facts."
+  },
+  "unchanged_acl_modules": {
+    "user_work_capabilities": "85fad66b9bddcef3c37fdc8695d950da127871be42ff22f8e92ec2d44bd500b3",
+    "video_failure_capabilities": "88678d0c40aec68f376f46b3b98c19223d6547181ddd91ee5a74111f1d124000",
+    "evidence_retention_capabilities": "387fd81965111070dd49679d9c7875778f081344589b076f509b851460680d82",
+    "inventory_receipt_capabilities": "6069477ee91ee55cb4e78016f2abef45df5b17565725d32a14ab307e2dd5d5ad",
+    "operational_retention_capabilities": "02ffb65a1ace7b9596ee1b520f664c0e443a624a5bf8901a22aeb53eda5c4b85",
+    "deleted_channel_retention_capabilities": "fe0f9ff22fba8442fbe63c21eefe25d86300400b9862383ea5ed4d599cfc3c3e",
+    "collection_completion_capabilities": "48d0208bf4b9f257b7b93dc63555c65888defb714965bf596a4c754063dc9ebf",
+    "collection_preflight": "bc1a18836f83043654fb591c4d051077a2c55938c3cb4e59ce8ee621d2d78161"
+  },
+  "proof": [
+    "Exact per-slot inverse and unchanged SQL bytes for every keep slot and every live value expression/CTE; no false substitution.",
+    "Actual _reviewed_statement plus psycopg binds for all candidate queries, including empty-violation cadence shape.",
+    "Focused strict-shape/error-order/prerequisite/dependency-once tests and public live health reports.",
+    "Native comparison before/after final retirement with identical healthy/drift fixtures: missing control, canonical identity/lease epoch mismatch, active scan mismatch, exposure leakage, reconciliation invalidation, cadence row drift.",
+    "Rollback-only negative native mutations for every retained guard body/registration/owner/ACL category and representative table/index/constraint/role/column ACL checks; each must fail closed.",
+    "Retired positive function/view pins absent from emitted query tree, with only retained intrinsic names and intentional negative legacy absence references remaining.",
+    "No runtime activation before coordinated hook removal and final schema/native approval."
+  ],
+  "no_runtime_or_schema_edits": true
+}

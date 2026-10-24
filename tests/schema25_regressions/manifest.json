@@ -1,0 +1,295 @@
+{
+  "format": 2,
+  "schema_version": 25,
+  "expected_sql_count": 10,
+  "expected_python_count": 16,
+  "sql": {
+    "01_contract_and_privileges.sql": {
+      "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
+      "row_budget": 1000
+    },
+    "02_user_work_restore_acl.sql": {
+      "sha256": "74d42b1a14a685d8fb44a4dbec5db55d27d446b80aa868a58481bfd7bb7a0eaf",
+      "row_budget": 1000
+    },
+    "03_video_failure_acl.sql": {
+      "sha256": "f44de12c50bbab5481e13450f285de70148d436d315b3cb75d40d960bcb82078",
+      "row_budget": 1000
+    },
+    "04_evidence_retention_acl.sql": {
+      "sha256": "c0847d71c828b91e448e6c4fab5aaff3ae1f4ec4c05a67108bbbe33f6bb4c192",
+      "row_budget": 1000
+    },
+    "05_collection_claim_acl.sql": {
+      "sha256": "0cb2029c98a5c35a58a1f290e257bc5f395f11c7449f4cf333ba62262a249dac",
+      "row_budget": 1000
+    },
+    "20_shared_collection_cadence.sql": {
+      "sha256": "42e36bb46361b8955daa1023a06e46f42feb7625d121319c3bbd52158d0572ca",
+      "row_budget": 1000
+    },
+    "30_retention_scrub.sql": {
+      "sha256": "50e5265ba6e574c72156716a6dcfa861394dbaa206ba1f018a13d84e68344880",
+      "row_budget": 1000
+    },
+    "40_user_work_limits.sql": {
+      "sha256": "10b8aadd091aef160fcd6ce3293f826b8152f36c87bcc88117a36f1c8eecd55d",
+      "row_budget": 15000
+    },
+    "80_text_bounds.sql": {
+      "sha256": "5e6f4f69f098e14ba0873cf446884f777d2362e8a5dbe19bb901a689685f80ac",
+      "row_budget": 1000
+    },
+    "85_folder_label_management.sql": {
+      "sha256": "298a06274215bc91df29ee81679fe10607bd91615a19e0822631148ce3f6d8ed",
+      "row_budget": 1000
+    }
+  },
+  "python": {
+    "availability_recheck": {
+      "owners": [
+        "AvailabilityRepository.load_recheck_candidate_ids"
+      ],
+      "assertions": "Exact seven-row order; count-change/stale selections; attempts, scrubbed status, future clock; interval lower/upper errors",
+      "row_budget": 1000,
+      "fixtures": [
+        "availability_recheck_seed.sql"
+      ],
+      "callable": "cases_retention.availability_recheck"
+    },
+    "restore_merge": {
+      "owners": [
+        "UserWorkBackupRepository.import_document",
+        "UserWorkBackupRepository.bind_pending"
+      ],
+      "assertions": "Tracked merge, folder/view/label/member owner transfer; child revision; replay; cycle avoidance; visibility preserved",
+      "row_budget": 1000,
+      "fixtures": [
+        "restore_merge_expression.sql",
+        "restore_parent_cycle_expression.sql"
+      ],
+      "callable": "cases_user_work.restore_merge"
+    },
+    "cadence_policy": {
+      "owners": [
+        "db.videos.collection_policy.load_cadence_snapshot",
+        "current collection_policy functions",
+        "current typed reconciliation owner"
+      ],
+      "assertions": "All fixed-clock vectors including108 Long fractional-age comparisons, typed90day/jitter/stream anchor/HOT/DST/invalid clocks; one actual scheduling write integration",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_policy.cadence_policy"
+    },
+    "playlist_absence": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page",
+        "OperatorJobRepository.estimate_initial_inventory"
+      ],
+      "assertions": "Fresh absent lists unchanged;758items/18pages;33334 scalar channel count requires confirmation; unknown remains unknown",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.playlist_absence"
+    },
+    "quota_phase_labels": {
+      "owners": [
+        "current operational label function",
+        "YouTubeQuotaRepository.start_attempt",
+        "YouTubeQuotaRepository.finish_attempt"
+      ],
+      "assertions": "All eight phase strings retained and unknown maps other; real persisted row proves active normalization",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.quota_phase_labels"
+    },
+    "removal_stops_job": {
+      "owners": [
+        "ChannelSyncRepository.insert_channel",
+        "ChannelSyncRepository.update_channel",
+        "OperatorJobRepository.enqueue_initial_inventory",
+        "OperatorJobRepository.claim",
+        "ChannelTrashRepository.remove",
+        "OperatorJobRepository.release"
+      ],
+      "assertions": "Actual owner chain; suspended job, all lease fields clear, finish/error, not active, late release cannot reopen",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_jobs.removal_stops_job"
+    },
+    "removed_job_scan_cleanup": {
+      "owners": [
+        "ChannelTrashRepository.remove",
+        "HotRetentionRepository.cleanup_page"
+      ],
+      "assertions": "Playlist released; linked scan first deferred; job retention removes reference; second inventory cleanup deletes without permanent deferral",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_jobs.removed_job_scan_cleanup"
+    },
+    "failed_job_backoff": {
+      "owners": [
+        "OperatorJobRepository.enqueue_current_stats",
+        "OperatorJobRepository.claim",
+        "OperatorJobRepository.prepare_chunk",
+        "OperatorJobRepository.release"
+      ],
+      "assertions": "Three actual rounds;five-minute retry pause/no early claim; admin advances only retry clock; no fourth attempts; completed/error_count3 and all three targets retry_limit_reached",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_jobs.failed_job_backoff"
+    },
+    "retention_scrub": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page",
+        "current video queue ensure owner"
+      ],
+      "assertions": "Fresh review revision4 survives; stale revision5 cleared once; repeat no-op; paused reason availability_unsupported",
+      "row_budget": 1000,
+      "fixtures": [
+        "review_retention_seed.sql"
+      ],
+      "callable": "cases_retention.retention_scrub"
+    },
+    "detached_reviews": {
+      "owners": [
+        "VideoTypeReviewsRepository.has_open",
+        "VideoTypeReviewsRepository.list_cases"
+      ],
+      "assertions": "Detached excluded from open/health but visible in all; attached case counted",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.detached_reviews"
+    },
+    "operational_retention": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page"
+      ],
+      "assertions": "Old sync/quota rows removed, recent retained; exact receipt/envelope; fixture uses normalized current row shapes",
+      "row_budget": 1000,
+      "fixtures": [
+        "operational_retention_seed.sql"
+      ],
+      "callable": "cases_retention.operational_retention"
+    },
+    "inventory_window": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page"
+      ],
+      "assertions": "1500 inventory plus1500 memberships;five every300th stale;only the five stale memberships selected,work<=100;one page;1495membership survivors",
+      "row_budget": 3500,
+      "fixtures": [
+        "inventory_window_seed.sql"
+      ],
+      "callable": "cases_retention.inventory_window"
+    },
+    "saved_noop_revision": {
+      "owners": [
+        "SavedCollectionsRepository.change_members"
+      ],
+      "assertions": "Add2;duplicate no-op and receipt replay;absent removal;stale conflict;real removal leaves count1;exact revisions",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_user_work.saved_noop_revision"
+    },
+    "folder_label_management": {
+      "owners": [
+        "UserWorkBackupRepository.import_document"
+      ],
+      "assertions": "Renamed/deleted preset, custom old-name and explicit v1 rejection; real retained FK scenario stays SQL",
+      "row_budget": 1000,
+      "fixtures": [
+        "labels_renamed_preset_expression.sql",
+        "labels_deleted_preset_expression.sql",
+        "labels_invalid_version_expression.sql"
+      ],
+      "callable": "cases_user_work.folder_label_management"
+    },
+    "runtime_readiness": {
+      "owners": [
+        "all exact17 db.readiness.capabilities.CHECKS readers",
+        "get_hot_runtime_contract",
+        "actual closed HOT control readiness",
+        "ChannelSyncRepository.assert_metadata_batch_ready",
+        "VideoCollectionRepository.assert_forced_metadata_claim_ready"
+      ],
+      "assertions": "Explicit nonempty list equal current inventory; all live health values checked on empty baseline; strict intrinsic compatibility and real role; current baseline and intrinsic function pins verified separately; actual metadata/forced empty public preflights, malformed UUID cast-first and intrinsic/ACL denial",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_readiness.runtime_readiness"
+    },
+    "negative_intrinsic_guard": {
+      "owners": [
+        "actual current shared intrinsic guard and blocked HOT admission"
+      ],
+      "assertions": "Finite retired/disabled/unexpected function-hook, body/ACL, missing relation/index/constraint faults; each rejects and rolls back/restores metadata before next case",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_readiness.negative_intrinsic_guard"
+    }
+  },
+  "fixtures": {
+    "availability_recheck_seed.sql": {
+      "sha256": "e8f9fe2e056ae38780ee9e713d023fd5c5266a63d129a932997362f05e7528a4",
+      "kind": "seed",
+      "cases": [
+        "availability_recheck"
+      ]
+    },
+    "review_retention_seed.sql": {
+      "sha256": "158b9637f81e75dd02e52d83e0b05f1ea616b02857f26f1b781d0f317e192b35",
+      "kind": "seed",
+      "cases": [
+        "retention_scrub"
+      ]
+    },
+    "operational_retention_seed.sql": {
+      "sha256": "28f06c18fa10eff0a6233005ae0f00d817e88e31b9d7b44d905fcfacfb4f2d39",
+      "kind": "seed",
+      "cases": [
+        "operational_retention"
+      ]
+    },
+    "inventory_window_seed.sql": {
+      "sha256": "4ccd2c3c0b838c379b310c7e55c52671e86c349713aa6d45fd79d38293481aa8",
+      "kind": "seed",
+      "cases": [
+        "inventory_window"
+      ]
+    },
+    "restore_merge_expression.sql": {
+      "sha256": "cce2f91fd43a94d5c20f5f87ac2c29c3dc522daf4f7f1f6878b1be44b4c94e6a",
+      "kind": "expression",
+      "cases": [
+        "restore_merge"
+      ]
+    },
+    "restore_parent_cycle_expression.sql": {
+      "sha256": "d9f91e25cb6673379892a7e2f668a689974365ba7fc4eed0a12aa58a652c3f91",
+      "kind": "expression",
+      "cases": [
+        "restore_merge"
+      ]
+    },
+    "labels_renamed_preset_expression.sql": {
+      "sha256": "b910396b76c51db2b0f25bcc4664d420d782e34286d131b37d5c9dc9d6f7817f",
+      "kind": "expression",
+      "cases": [
+        "folder_label_management"
+      ]
+    },
+    "labels_deleted_preset_expression.sql": {
+      "sha256": "67449968d3e822b130d51166635486eab492120ce277394a78b4db94873caa6c",
+      "kind": "expression",
+      "cases": [
+        "folder_label_management"
+      ]
+    },
+    "labels_invalid_version_expression.sql": {
+      "sha256": "342ceec070fab4ed2cc44b288aaa8faed3229299ab0ed227e67ac2017fdeeaea",
+      "kind": "expression",
+      "cases": [
+        "folder_label_management"
+      ]
+    }
+  }
+}

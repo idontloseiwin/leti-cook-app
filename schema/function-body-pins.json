@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "public.bind_channel_user_work_owner()": "cb43fffb53ab2e277074a78e6e0289fb8364dc19b3263d61b96658a12fc29285",
+    "public.enforce_user_work_backup_limits()": "ab2f5761a26895469e90da3d058030e0b55c98f5a57a8b731218309bf7daf73d",
+    "public.enforce_video_inventory_membership_scan()": "434a502593754366087c62f18846f0fb681eebbe534ed538de78669e472da7f0",
+    "public.guard_channel_user_work_identity()": "9ed8e3f30dbcf1c4c7d4e76f80b2c10a4763a7889b1d1abdfb2ec53c4e17e8fd",
+    "public.guard_hot_operator_scope()": "784b4ca0753da046f19c2e0c2aebb4fab3f8aa5206675c32ec779595ca09803a",
+    "public.guard_hot_operator_target_scope()": "27eca23006ec49942d8cb8f75a3c19cfe517faed217bd6d22fef43a57436fdcc",
+    "public.guard_hot_storage_collection_delete()": "c0cd4326f278494fcdd0832088fccc03ead8c6d0498e9e0e4104b6940ddd446b",
+    "public.guard_inventory_chain_consistency()": "1f4108fa58b203d04963f5a22c6d4f85b9db8055d39ed773943dcc52dea26e18",
+    "public.guard_inventory_chain_identity()": "cb180885f8b8b1214276af600da98f3fb8ab221972c7141dba45e52a619c7d1a",
+    "public.guard_inventory_chain_parent_version()": "621764115c92ee48e3013b2d65fa4d39f6004d1762aafca3ae11887db52fc23e",
+    "public.guard_manual_video_type_decision()": "ce154301251f1ed40977f4aaa4fb3d66b08039a806e199b20f85371c1b025997"
+  },
+  "schema_sha256": "2cfd4e46fae00cc2508f8fbc50789810f088a31380db9fd67f14b5f37d50d74a"
+}

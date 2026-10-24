@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "views": [
+    {"key": "under_1k", "label": "Under 1K", "min": null, "max": 1000},
+    {"key": "1k_10k", "label": "1K–10K", "min": 1000, "max": 10000},
+    {"key": "10k_100k", "label": "10K–100K", "min": 10000, "max": 100000},
+    {"key": "100k_1m", "label": "100K–1M", "min": 100000, "max": 1000000},
+    {"key": "1m_10m", "label": "1M–10M", "min": 1000000, "max": 10000000},
+    {"key": "10m_plus", "label": "10M+", "min": 10000000, "max": null}
+  ],
+  "duration": [
+    {"key": "under_5m", "label": "Under 5 min", "min": null, "max": 300},
+    {"key": "5m_10m", "label": "5–10 min", "min": 300, "max": 600},
+    {"key": "10m_20m", "label": "10–20 min", "min": 600, "max": 1200},
+    {"key": "20m_40m", "label": "20–40 min", "min": 1200, "max": 2400},
+    {"key": "40m_60m", "label": "40–60 min", "min": 2400, "max": 3600},
+    {"key": "60m_plus", "label": "60+ min", "min": 3600, "max": null}
+  ],
+  "likes": [
+    {"key":"under_100","label":"Under 100","min":null,"max":100},
+    {"key":"100_1k","label":"100-1K","min":100,"max":1000},
+    {"key":"1k_10k","label":"1K-10K","min":1000,"max":10000},
+    {"key":"10k_100k","label":"10K-100K","min":10000,"max":100000},
+    {"key":"100k_plus","label":"100K+","min":100000,"max":null}
+  ],
+  "comments": [
+    {"key":"under_10","label":"Under 10","min":null,"max":10},
+    {"key":"10_100","label":"10-100","min":10,"max":100},
+    {"key":"100_1k","label":"100-1K","min":100,"max":1000},
+    {"key":"1k_10k","label":"1K-10K","min":1000,"max":10000},
+    {"key":"10k_plus","label":"10K+","min":10000,"max":null}
+  ],
+  "title_length": [
+    {"key":"under_40","label":"Under 40 characters","min":null,"max":40},
+    {"key":"40_60","label":"40–60 characters","min":40,"max":60},
+    {"key":"60_80","label":"60–80 characters","min":60,"max":80},
+    {"key":"80_plus","label":"80+ characters","min":80,"max":null}
+  ],
+  "tag_count": [
+    {"key":"zero","label":"0 tags","min":0,"max":1},
+    {"key":"1_5","label":"1–5 tags","min":1,"max":6},
+    {"key":"6_15","label":"6–15 tags","min":6,"max":16},
+    {"key":"16_plus","label":"16+ tags","min":16,"max":null}
+  ]
+}

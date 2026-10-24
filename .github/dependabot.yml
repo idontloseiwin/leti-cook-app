@@ -1,0 +1,29 @@
+# Routine version-update PRs are paused for this release repository.
+# Security update settings are independent; vulnerability audit workflows remain enabled.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /application
+    open-pull-requests-limit: 0
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /application/frontend
+    open-pull-requests-limit: 0
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /application
+    open-pull-requests-limit: 0
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /database
+    open-pull-requests-limit: 0
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    open-pull-requests-limit: 0
+    schedule:
+      interval: weekly
