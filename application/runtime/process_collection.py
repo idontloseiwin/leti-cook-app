@@ -276,14 +276,8 @@ def bind_process_common_dispatch(context, *, whole_cycle=False):
         return active.run_phase(feeder)
 
     def observed_phase(phase, callback, **options):
-        from pipeline_trace import scope
-        with scope("collection_phase", phase=phase) as trace:
-            result = callback(**options)
-            trace.finish("unknown" if result.get("settlement_unknown") else
-                         "error" if result.get("errors") else
-                         "deferred" if result.get("stopped_reason") else "completed",
-                         reason=result.get("stopped_reason"), count=result.get("processed", 0))
-            return result
+        from pipeline_trace import observe_collection_phase
+        return observe_collection_phase(phase, callback, **options)
 
     def run(*, limit, progress_callback=None, common_preflight_checked=False, context=context):
         return observed_phase("video_collection", _run, limit=limit, progress_callback=progress_callback,

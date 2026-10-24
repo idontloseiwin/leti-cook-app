@@ -28,6 +28,51 @@ class TraceSetup(unittest.TestCase):
 
 
 class TraceTests(TraceSetup):
+    def test_collection_phase_records_actual_completion_and_unit(self):
+        cases = [
+            ("video_collection", {"updated": 2304, "stopped_reason": "no_claimable_work"}, "completed", 2304),
+            ("video_collection", {"updated": 12, "completion_outcome": "partial", "stopped_reason": "no_claimable_work"}, "partial", 12),
+            ("channel_metadata", {"processed": 421, "stopped_reason": "sweep_exhausted"}, "completed", 421),
+            ("typed_inventory", {"processed": 3, "stopped_reason": "time_budget"}, "deferred", 3),
+            ("video_collection", {"errors": 1, "completion_outcome": "partial"}, "error", None),
+            ("video_collection", {"settlement_unknown": True, "errors": 1}, "unknown", None),
+            ("video_collection", {"completion_unknown": True}, "unknown", None),
+            ("video_collection", {"yield_requested": True}, "deferred", None),
+        ]
+        for phase, result, status, count in cases:
+            with self.subTest(phase=phase, result=result):
+                rows, calls = [], []
+                def callback(**options):
+                    calls.append(options)
+                    return result
+                with patch.object(telemetry, "emit_event", side_effect=lambda *args, **kw: rows.append(build_event(*args, **kw))):
+                    observed = trace.observe_collection_phase(phase, callback, limit=20)
+                self.assertIs(observed, result)
+                self.assertEqual(calls, [{"limit": 20}])
+                self.assertEqual([r["status"] for r in rows], ["started", status])
+                self.assertTrue(all(r["phase"] == phase for r in rows))
+                self.assertEqual(rows[-1].get("count"), count)
+                if count is None:
+                    self.assertNotIn("count", rows[-1])
+
+    def test_collection_phase_failure_keeps_identity_and_original_exception(self):
+        failure = RuntimeError("domain failure")
+        rows, calls = [], []
+        def callback():
+            calls.append(True)
+            raise failure
+        with patch.object(telemetry, "emit_event", side_effect=lambda *args, **kw: rows.append(build_event(*args, **kw))):
+            with self.assertRaises(RuntimeError) as caught:
+                trace.observe_collection_phase("video_collection", callback)
+        self.assertIs(caught.exception, failure)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(rows[-1]["status"], "unknown")
+        self.assertEqual(rows[-1]["phase"], "video_collection")
+        self.assertEqual(dict(trace.capture()), {})
+        with patch.object(telemetry, "emit_event", side_effect=OSError("sink failed")):
+            value = {"updated": 5}
+            self.assertIs(trace.observe_collection_phase("video_collection", lambda: value), value)
+
     def test_manifest_full_correlation_fits_default_event_budget_and_roundtrips(self):
         facts = dict(trace_id="a" * 32, span_id="b" * 32, parent_span_id="c" * 32,
                      operation_id="operation-123", sync_run_id=50, job_id="12345678-1234-1234-1234-123456789abc",

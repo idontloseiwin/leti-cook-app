@@ -85,12 +85,21 @@ export type TelemetryCollectionOutcome = Partial<Record<
   'claimed' | 'updated' | 'unavailable_marked' | 'metadata_deferred' | 'unresolved' | 'publication_waiting' | 'stream_lifecycle_probed', number>> & {
   completion_outcome?: 'completed' | 'partial' | 'error'; incomplete?: boolean; yield_requested?: boolean;
 };
+// Sequential cycle phases. regular_video_stats_seconds is an alias of the
+// common video phase and must not appear as another cost.
+export const telemetryRunPhases = [
+  ['preflight_seconds', 'Preflight'], ['lifecycle_recovery_seconds', 'Recovery'],
+  ['video_collection_seconds', 'Video collection'], ['channel_metadata_seconds', 'Channel profiles'],
+  ['typed_inventory_seconds', 'Playlist inventory'],
+] as const;
+type RunPhaseTimings = Partial<Record<typeof telemetryRunPhases[number][0], number>>;
 export type TelemetryRun = {
   id?: string; status?: string; current_phase?: string; phase_state?: string;
   started_at?: string; finished_at?: string; progress_updated_at?: string;
   duration_seconds?: number; stats_updated?: number; new_videos?: number; errors?: number;
   collection?: TelemetryCollectionOutcome; yield_requested?: boolean;
   explanation?: CollectionExplanation;
+  timings?: RunPhaseTimings;
 };
 export type TelemetrySystemSummary = { now: string; latest_run: TelemetryRun | null; recent_runs: TelemetryRun[] };
 /** Validate only the owned, bounded run projection; unrelated summary fields remain additive. */
@@ -126,6 +135,17 @@ export function parseTelemetrySystemSummary(value: unknown): TelemetrySystemSumm
       if (value[key] == null) continue;
       if (typeof value[key] !== 'number' || !Number.isFinite(value[key]) || value[key] < 0 || value[key] > 1e15) return fail();
       result[key] = value[key];
+    }
+    if (summary.timings != null) {
+      if (!record(summary.timings)) return fail();
+      const timings: RunPhaseTimings = {};
+      for (const [key] of telemetryRunPhases) {
+        const seconds = summary.timings[key];
+        if (seconds == null) continue;
+        if (typeof seconds !== 'number' || !Number.isFinite(seconds) || seconds < 0 || seconds > 1e15) return fail();
+        timings[key] = seconds;
+      }
+      result.timings = timings;
     }
     if (summary.yield_requested != null) {
       if (typeof summary.yield_requested !== 'boolean') return fail();
@@ -179,8 +199,12 @@ export function telemetryFailed(event: TelemetryEvent): boolean {
 }
 
 /** Counter names belong to each producer boundary, not to the envelope field name. */
-export function telemetryCountLabels(event: TelemetryEvent): { requested: string; received: string } {
+export function telemetryCountLabels(event: TelemetryEvent): { requested: string; received: string; count?: string } {
   switch (event.operation) {
+    case 'collection_phase': return { requested: 'Requested count', received: 'Received count',
+      count: event.phase === 'video_collection' ? 'Confirmed video updates'
+        : event.phase === 'channel_metadata' ? 'Processed channels'
+        : event.phase === 'typed_inventory' ? 'Playlist page attempts' : 'Count' };
     case 'video_provider_manifest':
     case 'video_general_observation':
     case 'video_stats_observation': return { requested: 'Requested IDs', received: 'Returned IDs' };
@@ -193,6 +217,20 @@ export function telemetryCountLabels(event: TelemetryEvent): { requested: string
     case 'video_batch_manifest': return { requested: 'Claimed IDs', received: 'Received count' };
     default: return { requested: 'Requested count', received: 'Received count' };
   }
+}
+
+/** Interpret only explicit observations, never infer why YouTube omitted an ID. */
+export function telemetryVideoObservation(event: TelemetryEvent): string | undefined {
+  if (event.operation === 'video_provider_item' && event.status === 'observed' && event.reason === 'id_omitted') {
+    if (event.endpoint === 'videos:batchGetStats') return 'This video was not returned in the statistics response. This alone does not establish availability; a metadata check is needed.';
+    if (event.endpoint === 'videos') return 'This video was not returned in the metadata response. The API did not report a reason for its absence.';
+  }
+  if (event.operation !== 'video_write') return undefined;
+  if (event.status === 'unknown') return 'The write was not acknowledged. Its result is unknown; this event does not confirm a saved change.';
+  if (event.status !== 'confirmed') return undefined;
+  if (event.reason === 'youtube_stats_counters_unavailable') return 'The need for a metadata check was saved. The retry delay is a requested minimum, not a promised check time. Search the same Video ID for later retained observations.';
+  if (event.reason === 'unavailable') return 'The API absence was saved as unavailable. This does not identify deletion, privacy or another cause, and does not establish current availability.';
+  return undefined;
 }
 
 /** Existing Stream count is a subset of the all-type publication count, never an extra total. */
@@ -285,7 +323,9 @@ export function filterTelemetryEvents(events: TelemetryEvent[], filter: Telemetr
   return events.filter((event) => (!filter.kind || event.kind === filter.kind)
     && (!filter.failedOnly || telemetryFailed(event))
     && (!filter.flowKey || JSON.stringify([event.source, event.target]) === filter.flowKey)
-    && (!query || [event.operation, event.source, event.target, event.phase, event.status, event.detail].some((field) => field?.toLowerCase().includes(query))));
+    && (!query || [event.operation, event.source, event.target, event.phase, event.status, event.detail,
+      event.reason, event.video_id, event.channel_id, event.batch_id, event.sync_run_id?.toString(),
+      ...(Array.isArray(event.video_ids) ? event.video_ids : [])].some((field) => typeof field === 'string' && field.toLowerCase().includes(query))));
 }
 
 /** Same dedupe/order owner as legacy mapping, with one bounded visible buffer. */

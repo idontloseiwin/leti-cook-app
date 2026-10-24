@@ -52,6 +52,12 @@ assert.equal(workspace.telemetryFailed(receipt), false);
 assert.deepEqual(workspace.filterTelemetryEvents([refusal, receipt], {
   query: '', kind: '', failedOnly: true,
 }), [refusal]);
+for (const query of [refusal.video_id, refusal.channel_id, refusal.batch_id, '201', refusal.reason]) {
+  assert.ok(workspace.filterTelemetryEvents([refusal, event], {query, kind: '', failedOnly: false}).includes(refusal));
+}
+assert.deepEqual(workspace.filterTelemetryEvents([traced, event], {
+  query: 'v0000000001', kind: '', failedOnly: false,
+}), [traced]); // A returned-ID manifest is evidence for the searched video too.
 
 let runFixture;
 let streamFixture = {events: [], arrivals: [], connection: 'connected', journalStatus: 'ok', rejected: 0};
@@ -77,6 +83,10 @@ for (const expected of ['Rejected field', 'contentDetails.duration', 'Reason', '
   assert.ok(inspector.includes(expected), expected);
 }
 const legacy = textOf(page.EventDetails({event, onClose() {}}));
+for (const [phase, label] of [['video_collection', 'Confirmed video updates'],
+  ['channel_metadata', 'Processed channels'], ['typed_inventory', 'Playlist page attempts']]) {
+  assert.ok(textOf(page.EventDetails({event: {...event, operation: 'collection_phase', phase, count: 7}, onClose() {}})).includes(`${label} 7`));
+}
 const providerManifest = {...traced, operation: 'video_provider_manifest', endpoint: 'videos',
   requested_count: 2, received_count: 1, video_ids: ['v0000000001']};
 const manifestText = textOf(page.EventDetails({event: parseTelemetryEvent(providerManifest), onClose() {}}));
@@ -89,6 +99,17 @@ assert.ok(legacy.includes('Phase Not recorded'));
 assert.ok(legacy.includes('Reason Not recorded'));
 assert.ok(!legacy.includes('Rejected field'));
 assert.ok(!legacy.includes('Video ID'));
+const omitted = {...refusal, operation: 'video_provider_item', status: 'observed', reason: 'id_omitted'};
+const statsOmission = textOf(page.EventDetails({event: {...omitted, endpoint: 'videos:batchGetStats'}, onClose() {}}));
+assert.ok(statsOmission.includes('does not establish availability'));
+const metadataOmission = textOf(page.EventDetails({event: {...omitted, endpoint: 'videos'}, onClose() {}}));
+assert.ok(metadataOmission.includes('did not report a reason for its absence'));
+const deferredWrite = {...receipt, reason: 'youtube_stats_counters_unavailable'};
+assert.ok(workspace.telemetryVideoObservation(deferredWrite).includes('not a promised check time'));
+assert.equal(workspace.telemetryVideoObservation({...deferredWrite, status: 'started'}), undefined);
+assert.ok(workspace.telemetryVideoObservation({...deferredWrite, status: 'unknown'}).includes('does not confirm a saved change'));
+assert.equal(workspace.telemetryVideoObservation({...omitted, status: 'invalid', endpoint: 'videos'}), undefined);
+assert.equal(workspace.telemetryVideoObservation({...omitted, reason: 'omission_untrusted', endpoint: 'videos'}), undefined);
 const malformed = textOf(page.EventDetails({event: {...event, reason: {raw: 'DO_NOT_RENDER'},
   video_id: {raw: 'DO_NOT_RENDER'}, batch_id: {raw: 'DO_NOT_RENDER'}}, onClose() {}}));
 assert.ok(!malformed.includes('DO_NOT_RENDER'));
@@ -175,6 +196,31 @@ assert.ok(pageText.includes('A missing counter alone does not confirm that a vid
 assert.ok(workspace.telemetryRunExplanation({status: 'error'}).includes('saved'));
 assert.ok(pageText.includes('Waiting publications handled 3'));
 assert.ok(!pageText.includes('DO_NOT_RENDER'));
+assert.ok(pageText.includes('Videos recorded as unavailable via API 1'));
+assert.ok(pageText.includes('Video collection Not recorded'));
+const timedRun = structuredClone(summaryInput);
+timedRun.recent_runs[0].summary_json.timings = {
+  preflight_seconds: 0, video_collection_seconds: 16.416, channel_metadata_seconds: 6.548,
+  typed_inventory_seconds: 22.282, regular_video_stats_seconds: 16.416, private_key: 'DO_NOT_RENDER',
+};
+runFixture = workspace.parseTelemetrySystemSummary(timedRun);
+assert.deepEqual(runFixture.recent_runs[0].timings, {
+  preflight_seconds: 0, video_collection_seconds: 16.416, channel_metadata_seconds: 6.548, typed_inventory_seconds: 22.282,
+});
+const timedText = textOf(page.TelemetryPage());
+for (const expected of ['Preflight 0s', 'Recovery Not recorded', 'Video collection 16.4s',
+  'Channel profiles 6.5s', 'Playlist inventory 22.3s']) assert.ok(timedText.includes(expected), expected);
+assert.equal((timedText.match(/16.4s/g) ?? []).length, 1); // Do not double count the compatibility alias.
+assert.ok(!timedText.includes('DO_NOT_RENDER'));
+for (const invalid of [-1, NaN, Infinity, true, '10', {}]) {
+  const input = structuredClone(timedRun);
+  input.recent_runs[0].summary_json.timings.video_collection_seconds = invalid;
+  assert.throws(() => workspace.parseTelemetrySystemSummary(input));
+}
+const oldRun = structuredClone(summaryInput);
+oldRun.recent_runs[0].summary_json.timings = {total_seconds: 45.52};
+runFixture = workspace.parseTelemetrySystemSummary(oldRun);
+assert.ok(textOf(page.TelemetryPage()).includes('Video collection Not recorded'));
 // New explanations retain exact recorded causes and remain explicitly historical.
 const explainedRun = structuredClone(summaryInput);
 explainedRun.recent_runs[0].explanation = {

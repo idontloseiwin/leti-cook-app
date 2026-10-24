@@ -24,6 +24,11 @@ SUMMARY_FIELDS = frozenset("summary_schema_version column_fields errors processe
 # Numeric work counters already consumed by Health; no provider values or payloads.
 SUMMARY_FIELDS |= frozenset("yield_requested batch_recurring_requested batches degraded_batch_requests failed_id_fallbacks fallback_requests long_missing long_requested long_unavailable_marked long_updated metadata_deferred metadata_duplicate_items metadata_refresh_requested metadata_refresh_requests partial_counter_updates presence_fallback_ids short_missing short_requested short_unavailable_marked short_updated source_view_count_absent source_view_count_invalid stream_lifecycle_probed publication_waiting stream_missing stream_requested stream_unavailable_marked stream_updated".split())
 
+# Existing cycle measurements, not provider data. Keep their finite names in
+# both the API and persisted projection; compaction visits timings as a section.
+SUMMARY_TIMING_FIELDS = frozenset("preflight_seconds lifecycle_recovery_seconds channel_metadata_seconds typed_inventory_seconds long_availability_loss_seconds channel_discovery_seconds collect_new_video_ids_seconds new_video_stats_seconds video_collection_seconds regular_video_stats_seconds short_video_collection_seconds completed_stream_collection_seconds elapsed_seconds total_seconds".split())
+SUMMARY_FIELDS |= SUMMARY_TIMING_FIELDS
+
 # Only the cycle's recorded root progress belongs in a run summary. These are
 # separate from generic labels: a phase name must not admit arbitrary strings
 # elsewhere, including nested reported_values or per-section diagnostics.

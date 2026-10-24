@@ -56,6 +56,22 @@ updates remain; the status does not mean the whole pass was discarded.
 
 See [Configuration](CONFIGURATION.md) for collection controls and quota limits.
 
+### Understanding a partial or slow sync
+
+Expand a run in **Telemetry → Sync history** to see its recorded reasons and
+phase durations, including time spent waiting within each phase. Older runs
+may only have a total duration; missing measurements cannot be reconstructed.
+
+A missing statistics response can require a later metadata check. It does not
+by itself mean a video was deleted. If the metadata response also omits the
+video, the app can record it as unavailable via the API, without knowing why.
+The requested retry delay is not a guarantee that the next sync starts then.
+
+Search **Event log** by Video ID to inspect retained observations and their
+run IDs, endpoints and write acknowledgements. The browser sample and diagnostic
+journal are bounded; an absent event is not proof that a check did not happen.
+Run history describes past work, not the video's current availability.
+
 ## Data maintenance status
 
 Startup cleanup can delay access after downtime. Leave the server running and
