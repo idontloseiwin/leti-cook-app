@@ -23,15 +23,16 @@ for the full-size view.*
 
 ## Status
 
-**The foundation is already running.** The current pre-release collects
+**The foundation is already running.** The application collects
 Long-form videos, Shorts and Streams, with a working Long-form Explorer, folders,
 labels, saved views, video collections and backups of your organized work.
 
 An early version of the [browser extension](extensions/chromium/README.md) lets
 you add channels directly from YouTube.
 
-**Pre-release: [run from source](#quick-start).** The first public release is in
-preparation. The app is designed for one owner on their own installation.
+**In active development.** No releases have been published. You can
+[run from source](#quick-start). The app is designed for one owner on their own
+installation.
 
 **[First steps →](docs/INSTALLATION.md#using-the-workspace)**
 
@@ -94,8 +95,7 @@ Run Leti Cook on your own Linux machine with Docker and your own YouTube Data
 API key. The [installation guide](docs/INSTALLATION.md) covers requirements,
 setup, access and updates.
 
-**The first public release is in preparation.** Until signed public downloads
-are available, use the [source-development guide](docs/INSTALLATION.md#from-source-development).
+Install the [development version from source](docs/INSTALLATION.md#from-source-development).
 
 **[Installation and updates →](docs/INSTALLATION.md)** ·
 **[Set up the browser extension →](extensions/chromium/README.md)**

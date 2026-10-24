@@ -3,8 +3,8 @@
 Leti Cook runs on your Linux machine with Docker and a private PostgreSQL
 database. You need your own YouTube Data API key.
 
-Signed public downloads are not available yet. Use
-[installation from source](#from-source-development) for now.
+Leti Cook is in active development. No releases have been published. Install
+[from source](#from-source-development).
 
 ## Requirements
 
@@ -30,8 +30,7 @@ your server's public IP address. Keep the key private.
 
 ### From source (development)
 
-From a trusted checkout, run `sudo bash install.sh`. Once this repository is
-public, you can obtain that checkout with:
+Clone the repository, then run the installer from that checkout:
 
 ```bash
 git clone https://github.com/idontloseiwin/leti-cook-app.git
@@ -41,22 +40,6 @@ sudo bash install.sh
 
 This builds the images and creates a separate installation. Running it again
 does not update an existing installation.
-
-### Signed downloads
-
-When published downloads are available, obtain `install-release.py` from the
-[project's releases](https://github.com/idontloseiwin/leti-cook-app/releases).
-Only run an installer you trust, especially with `sudo`.
-
-```bash
-python3 ./install-release.py --check
-sudo python3 ./install-release.py
-```
-
-The default selects the latest stable version. Add `--pre` to both commands for
-a prerelease. Use `--version VERSION` to select a specific published version;
-prereleases also require `--pre`. Use `--build-local` to build verified source
-locally. Other CPU architectures than amd64 use a local build automatically.
 
 ### Folder, port and setup code
 
@@ -121,8 +104,13 @@ ports are refused. Public internet hosting is not supported by this installer.
 
 ## Updating an installation
 
-Download a [backup of your work](DATA.md#backing-up-your-work) first. Use the
-installed management command; you do not need to clone or pull the repository.
+No releases have been published, so there are no published updates to install.
+The built-in updater uses signed release packages; it does not update from Git
+commits. Pulling this repository or rerunning `install.sh` does not update an
+existing installation.
+
+The commands below are a reference for signed-package updates. Download a
+[backup of your work](DATA.md#backing-up-your-work) before applying a package.
 
 ```bash
 sudo python3 /opt/leti-cook/manage.py update --check
