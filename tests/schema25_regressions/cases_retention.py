@@ -64,7 +64,35 @@ def detached_reviews(f):
     f.channel()
     f.rows("INSERT INTO public.video_inventory(video_id,channel_id,video_type,published_at,published_acquired_at) VALUES('attached001',%s,'long',now()-interval '10 days',now())",(CHANNEL,))
     f.rows("INSERT INTO public.video_type_review_cases(video_id,channel_id,observed_canonical_type,observed_types,observed_channels,state,evidence_expires_at) VALUES('attached001',%s,'long',ARRAY['long','short'],ARRAY[%s],'open',now()+interval '696 hours')",(CHANNEL,CHANNEL))
-    f.check(repo.has_open() is True and len(repo.list_cases('open',101))==1 and len(repo.list_cases('all',101))==2,'attached_visibility')
+    # A retained open case alone is not a current contradiction.
+    f.check(repo.has_open() is False and repo.list_cases('open',101)==[],'unverified_not_open')
+    waiting=repo.list_cases('awaiting',101)
+    f.check(len(waiting)==1 and waiting[0]['review_status']=='awaiting_refresh'
+            and waiting[0]['can_decide'] is False,'unverified_awaiting')
+    f.check(len(repo.list_cases('all',101))==2,'attached_history_visible')
+
+    def add_membership(index,video_type,prefix):
+        scan=f'10000000-0000-4000-8000-{index:012d}'
+        playlist=prefix+CHANNEL[2:]
+        f.rows("INSERT INTO public.channel_video_inventory_scans(scan_id,channel_id,video_type,playlist_id,scan_kind,status,coverage,completed_at,source_checked_at,pages_completed,items_seen) VALUES(%s,%s,%s,%s,'full_reconciliation','completed','complete',now(),now(),1,1)",(scan,CHANNEL,video_type,playlist))
+        f.rows("INSERT INTO public.video_inventory_memberships(video_id,channel_id,video_type,playlist_id,source_published_at,first_seen_scan_id,last_seen_scan_id,membership_status,first_seen_at,last_seen_at,last_present_at) VALUES('attached001',%s,%s,%s,now()-interval '10 days',%s,%s,'present',now(),now(),now())",(CHANNEL,video_type,playlist,scan,scan))
+
+    add_membership(31,'long','UULF')
+    add_membership(32,'short','UUSH')
+    waiting=repo.list_cases('awaiting',101)
+    f.check(repo.has_open() is False and repo.list_cases('open',101)==[]
+            and len(waiting)==1 and waiting[0]['observed_types']==['long','short']
+            and waiting[0]['can_decide'] is False,'long_short_awaiting_metadata')
+
+    # Fresh evidence outside automatic Long/Short resolution remains visible.
+    add_membership(33,'stream','UULV')
+    active=repo.list_cases('open',101)
+    f.check(repo.has_open() is True and len(active)==1 and active[0]['video_id']=='attached001'
+            and active[0]['review_status']=='needs_review' and active[0]['can_decide'] is True
+            and active[0]['observed_types']==['long','short','stream'],'fresh_conflict_visible')
+    f.rows("UPDATE public.video_inventory_memberships SET first_seen_at=now()-interval '30 days',last_seen_at=now()-interval '30 days',last_present_at=now()-interval '30 days' WHERE video_id='attached001'")
+    f.check(repo.has_open() is False and repo.list_cases('open',101)==[],'expired_conflict_not_open')
+    f.check(len(repo.list_cases('awaiting',101))==1 and len(repo.list_cases('all',101))==2,'expired_history_retained')
 
 def operational_retention(f):
     f.seed_sql('operational_retention_seed.sql')

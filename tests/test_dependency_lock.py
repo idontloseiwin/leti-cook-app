@@ -40,6 +40,7 @@ class LockTests(unittest.TestCase):
         version=lambda name:tuple(int(part) for part in locked[name].split('.')[:2])
         self.assertGreaterEqual(version('cryptography'),(50,0))
         self.assertGreaterEqual(version('requests'),(2,33))
+        self.assertGreaterEqual(tuple(map(int,locked['certifi'].split('.'))),(2026,10,19))
 
     def test_image_and_ci_install_only_the_hashed_lock(self):
         dockerfile=(APP/'Dockerfile').read_text(encoding='utf-8')

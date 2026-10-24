@@ -155,7 +155,7 @@
         "VideoTypeReviewsRepository.has_open",
         "VideoTypeReviewsRepository.list_cases"
       ],
-      "assertions": "Detached excluded from open/health but visible in all; attached case counted",
+      "assertions": "Detached history retained; attached cases need fresh evidence; Long/Short awaits metadata; fresh exceptional conflict counted; expired evidence leaves open/health",
       "row_budget": 1000,
       "fixtures": [],
       "callable": "cases_retention.detached_reviews"
