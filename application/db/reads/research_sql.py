@@ -91,13 +91,15 @@ def _continuation(order, keys, params):
     return "(" + " OR ".join(terms) + ")" if terms else "FALSE"
 
 
+# Materialize type proof once per scope, retaining the protected view as its
+# sole policy owner. Duration parts and numeric seconds are each evaluated once;
+# inlined LATERAL aliases would repeat the parser for value/state checks.
 _SOURCE = """WITH args AS MATERIALIZED (
  SELECT statement_timestamp() AS evaluated_at, %(scope_id)s::text AS scope_id,
  %(scope_kind)s::text AS scope_kind, %(video_type)s::text AS video_type),
 scope AS MATERIALIZED (
  SELECT c.channel_id,c.user_work_id FROM readable.channel_user_work c CROSS JOIN args a
- WHERE NOT c.is_hidden AND CASE WHEN a.scope_kind='channel' THEN c.channel_id=a.scope_id
- ELSE c.folder_id=a.scope_id::uuid END),
+ WHERE NOT c.is_hidden AND {scope_predicate}),
 scope_info AS MATERIALIZED (
  SELECT CASE WHEN a.scope_kind='channel' THEN EXISTS(SELECT 1 FROM scope)
  ELSE EXISTS(SELECT 1 FROM public.folders WHERE id=a.scope_id::uuid) END AS source_exists,
@@ -120,6 +122,11 @@ inventory_state AS MATERIALIZED (
  WHERE s.channel_id=scope.channel_id AND s.video_type=a.video_type AND s.playlist_id=state.playlist_id
  AND s.status='completed' AND s.coverage='complete' AND s.scan_kind IN('initial_inventory','full_reconciliation')
  AND s.completed_at<=a.evaluated_at ORDER BY s.completed_at DESC,s.scan_id DESC LIMIT 1) full_scan ON true),
+hot_scoped AS MATERIALIZED (
+ SELECT h.video_id,h.channel_id,h.video_type,h.source_checked_at,h.source_expires_at
+ FROM readable.hot_video_inventory h
+ WHERE h.channel_id IN (SELECT channel_id FROM scope)
+ AND h.video_type=%(video_type)s::text),
 raw AS MATERIALIZED (
  SELECT i.video_id,i.channel_id,i.video_type,h.source_checked_at AS identity_clock,h.source_expires_at AS identity_expiry,
  v.title,v.published_at,v.duration,v.views,v.checked_at,v.metadata_checked_at,v.availability_checked_at,
@@ -139,9 +146,20 @@ raw AS MATERIALIZED (
  AND v.checked_at>a.evaluated_at-interval '696 hours' AND v.metadata_checked_at>a.evaluated_at-interval '696 hours'
  AND v.checked_at<=a.evaluated_at AND v.metadata_checked_at<=a.evaluated_at)),false) AS admitted
  FROM scope JOIN readable.video_inventory i USING(channel_id) CROSS JOIN args a
- LEFT JOIN readable.hot_video_inventory h ON h.video_id=i.video_id AND h.channel_id=i.channel_id AND h.video_type=i.video_type
+ LEFT JOIN hot_scoped h ON h.video_id=i.video_id AND h.channel_id=i.channel_id AND h.video_type=i.video_type
  LEFT JOIN readable.videos v ON v.video_id=i.video_id
- WHERE i.video_type=a.video_type AND i.video_id ~ '^[A-Za-z0-9_-]{11}$'),
+ WHERE i.video_type=%(video_type)s::text AND i.video_id ~ '^[A-Za-z0-9_-]{11}$'),
+duration_inputs AS MATERIALIZED (
+ SELECT video_id, text, regexp_match(text,
+ '^P(?:([0-9]{1,20})D)?(?:T(?:([0-9]{1,20})H)?(?:([0-9]{1,20})M)?(?:([0-9]{1,20})S)?)?$') AS parts
+ FROM raw CROSS JOIN LATERAL (SELECT upper(btrim(duration)) AS text) t
+ WHERE admitted AND metadata_fresh),
+duration_values AS MATERIALIZED (
+ SELECT video_id, CASE WHEN text ~ '^[0-9]{1,20}$' THEN text::numeric
+ WHEN parts IS NOT NULL AND text ~ '[0-9]' AND (strpos(text,'T')=0 OR text ~ 'T.*[0-9]')
+ THEN coalesce(parts[1]::numeric,0)*86400+coalesce(parts[2]::numeric,0)*3600+
+ coalesce(parts[3]::numeric,0)*60+coalesce(parts[4]::numeric,0) END AS seconds
+ FROM duration_inputs),
 normalized AS MATERIALIZED (
  SELECT video_id,channel_id,video_type,identity_clock,identity_expiry,metadata_checked_at,checked_at,
  least(identity_expiry,availability_checked_at+interval '696 hours') AS core_expiry,
@@ -161,11 +179,7 @@ normalized AS MATERIALIZED (
  OR parsed.seconds NOT BETWEEN 0 AND 18446744073709551615 THEN 'unknown' ELSE 'known' END AS duration_seconds_state,
  CASE WHEN isfinite(checked_at) AND checked_at<=evaluated_at-interval '696 hours' THEN 'expired'
  WHEN checked_at>evaluated_at THEN 'unavailable' WHEN NOT counters_fresh OR views IS NULL OR views<0 THEN 'unknown' ELSE 'known' END AS views_state
- FROM raw LEFT JOIN LATERAL (SELECT upper(btrim(duration)) AS text) duration_text ON metadata_fresh
- LEFT JOIN LATERAL (SELECT regexp_match(text,'^P(?:([0-9]{1,20})D)?(?:T(?:([0-9]{1,20})H)?(?:([0-9]{1,20})M)?(?:([0-9]{1,20})S)?)?$') AS parts) duration_parts ON true
- LEFT JOIN LATERAL (SELECT CASE WHEN text ~ '^[0-9]{1,20}$' THEN text::numeric
- WHEN parts IS NOT NULL AND text ~ '[0-9]' AND (strpos(text,'T')=0 OR text ~ 'T.*[0-9]')
- THEN coalesce(parts[1]::numeric,0)*86400+coalesce(parts[2]::numeric,0)*3600+coalesce(parts[3]::numeric,0)*60+coalesce(parts[4]::numeric,0) END AS seconds) parsed ON true
+ FROM raw LEFT JOIN duration_values parsed USING(video_id)
  WHERE admitted),
 prepared AS MATERIALIZED (SELECT normalized.*, {fold} AS title_key FROM normalized),
 coverage AS MATERIALIZED (
@@ -207,7 +221,11 @@ def compile_query(plan, continuation=None):
     keyset = _continuation(order, continuation["keys"] if continuation else None, params)
     ordering = ",".join(_value(f, sort=True) + " " + d.upper() + " NULLS LAST" for f, d in order)
     key_values = ",".join("(" + _value(f, sort=True) + ")::text" for f, _ in order)
-    statement = _SOURCE
+    # A validated enum selects one of two fixed shapes. Bind the scope directly
+    # so PostgreSQL can estimate its cardinality; a CASE over a CTE hides it.
+    scope_predicate = ("c.channel_id=%(scope_id)s::text" if request.scope.kind == "channel"
+                       else "c.folder_id=%(scope_id)s::uuid")
+    statement = _SOURCE.replace("{scope_predicate}", scope_predicate)
     for key, value in {"fold": fold, "required": required, "predicate": predicate,
                        "continuation": keyset, "order": ordering, "page_order": ordering,
                        "sort_keys": "jsonb_build_array("+key_values+")"}.items():

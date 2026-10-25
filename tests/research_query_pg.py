@@ -308,4 +308,45 @@ class NativeQueryTests(unittest.TestCase):
                     self.assertEqual(actual,expected)
 
 
+    def test_15_duration_parser_preserves_exact_values_and_unknowns(self):
+        row='a0000000001'
+        old=self.admin.execute('SELECT duration,metadata_checked_at FROM public.videos WHERE video_id=%s',(row,)).fetchone()
+        q=query(where={'field':'video.id','op':'eq','value':row},select=['video.id','video.duration_seconds'])
+        cases=[(None,None),('',None),('0','0'),(' 0012 ','12'),('pt12s','12'),
+               ('P1DT2H3M4S','93784'),('P0D','0'),('PT0S','0'),('P',None),('PT',None),
+               ('P1DT',None),('PT1.5S',None),('-1',None),('NaN',None),('1e3',None),
+               ('18446744073709551615','18446744073709551615'),
+               ('18446744073709551616',None),('PT18446744073709551615S','18446744073709551615'),
+               ('P99999999999999999999D',None),('9'*21,None),('PT'+'9'*21+'S',None)]
+        try:
+            for duration,expected in cases:
+                with self.subTest(duration=duration):
+                    self.admin.execute('UPDATE public.videos SET duration=%s WHERE video_id=%s',(duration,row))
+                    cell=self.run_query(q)['rows'][0]['cells']['video.duration_seconds']
+                    self.assertEqual(cell['value'],expected)
+                    self.assertEqual(cell['state'],'known' if expected is not None else 'unknown')
+            for clock,state in [("clock_timestamp()-interval '700 hours'",'expired'),
+                                ("clock_timestamp()+interval '1 hour'",'unavailable')]:
+                self.admin.execute('UPDATE public.videos SET duration=%s,metadata_checked_at='+clock+' WHERE video_id=%s',('PT12S',row))
+                cell=self.run_query(q)['rows'][0]['cells']['video.duration_seconds']
+                self.assertEqual(cell['state'],state)
+                self.assertIsNone(cell['value'])
+        finally:
+            self.admin.execute('UPDATE public.videos SET duration=%s,metadata_checked_at=%s WHERE video_id=%s',(*old,row))
+
+    def test_16_bound_channel_scope_matches_folder_for_all_types(self):
+        for kind in ('long','short','stream'):
+            q=query(video_types=[kind],select=['video.id','video.channel_id'],page={'size':200})
+            folder=self.run_query(q)
+            for channel in FIXTURE['channels']:
+                scoped={**q,'scope':{'kind':'channel','id':channel['id']}}
+                if channel['hidden']:
+                    with self.assertRaises(QueryRejected): self.run_query(scoped)
+                else:
+                    expected=[r['id'] for r in folder['rows'] if r['cells']['video.channel_id']['value']==channel['id']]
+                    # The source folder contains these channels only.
+                    if channel['folder']==0:
+                        self.assertEqual([r['id'] for r in self.run_query(scoped)['rows']],expected)
+
+
 if __name__=='__main__': unittest.main(verbosity=2)

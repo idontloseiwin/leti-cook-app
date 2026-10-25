@@ -12,6 +12,7 @@ from pathlib import Path
 import argparse
 import concurrent.futures
 import json
+import heapq
 import math
 import os
 import platform
@@ -48,31 +49,6 @@ TARGETS = {'S_warm_p95_ms':750,'M_warm_p95_ms':2500,'no_query_timeout':True,
            'write_median_regression_ratio':1.25}
 
 
-def materialized_candidate():
-    """Experiment only: preserve protected views, evaluate their rows once.
-
-    This does not replace type/retention rules or read unprotected raw tables.
-    The compiler remains the only SQL owner; this harness alters its fixed
-    source text temporarily to test a proposed query plan boundary.
-    """
-    from db.reads.research_sql import _SOURCE
-    extra='''hot_scoped AS MATERIALIZED (
- SELECT h.video_id,h.channel_id,h.video_type,h.source_checked_at,h.source_expires_at
- FROM readable.hot_video_inventory h
- WHERE h.channel_id IN (SELECT channel_id FROM scope)
- AND h.video_type=(SELECT video_type FROM args)),
-videos_scoped AS MATERIALIZED (
- SELECT v.video_id,v.channel_id,v.title,v.published_at,v.duration,v.views,v.checked_at,
- v.metadata_checked_at,v.availability_checked_at,v.source_expires_at,v.availability_status,
- v.publication_status,v.stream_actual_end_at FROM readable.videos v
- WHERE v.channel_id IN (SELECT channel_id FROM scope)),
-raw AS MATERIALIZED ('''
-    assert _SOURCE.count('raw AS MATERIALIZED (')==1
-    return (_SOURCE.replace('raw AS MATERIALIZED (',extra)
-            .replace('LEFT JOIN readable.hot_video_inventory h ON','LEFT JOIN hot_scoped h ON')
-            .replace('LEFT JOIN readable.videos v ON','LEFT JOIN videos_scoped v ON'))
-
-
 def generated_row(i, channels, now=NOW):
     # Half the rows belong to ten large channels; the rest span small channels.
     channel = i % 10 if i % 2 == 0 else (i * 17) % channels
@@ -96,12 +72,13 @@ def generated_row(i, channels, now=NOW):
 
 def oracle(q, channels, videos, now, offset=0):
     rows = (generated_row(i, channels, now) for i in range(videos))
-    rows = [r for r in rows if not r['hidden'] and r['type'] == q['video_types'][0]
+    rows = (r for r in rows if not r['hidden'] and r['type'] == q['video_types'][0]
             and (q['scope']['kind'] != 'channel' or r['channel_id'] == q['scope']['id'])
             and r['proof'] == 'resolved' and r['availability'] == 'public'
             and (r['type'] != 'stream' or (r['stream_completion'] == 'proven' and not r['states']))
-            and condition(q.get('where'), r) is True]
-    rows.sort(key=cmp_to_key(lambda a,b: compare(a,b,q['order_by'])))
+            and condition(q.get('where'), r) is True)
+    rows = heapq.nsmallest(offset+q['page']['size'], rows,
+                          key=cmp_to_key(lambda a,b: compare(a,b,q['order_by'])))
     return [r['id'] for r in rows[offset:offset+q['page']['size']]]
 
 
@@ -290,8 +267,8 @@ def main():
                     case={'first_ms':first['ms'],'first_error':first['error']}
                     report['workloads'][name]=case
                     if result:
-                        if args.size in {'pilot','S'}:
-                            # Independent model only for this bounded correctness set.
+                        if args.size in SIZES:
+                            # Independent model; streaming top-k keeps fixture memory bounded.
                             expected=oracle(q,*SIZES[args.size][:2],now)
                             actual=[r['id'] for r in result['rows']]
                             case['oracle_ids_equal']=actual==expected
@@ -315,7 +292,7 @@ def main():
                 tracemalloc.start();cpu=time.process_time()
                 _,r=sample('python_memory_probe',workloads()['folder_long'])
                 report['python_memory_probe']={'peak_traced_bytes':tracemalloc.get_traced_memory()[1],
-                    'python_cpu_ms':(time.process_time()-cpu)*1000,'note':'separate instrumented sample; excludes PostgreSQL and fixture generator memory'}
+                    'python_cpu_ms':(time.process_time()-cpu)*1000,'error':r['error'],'note':'separate instrumented sample; excludes PostgreSQL and fixture generator memory'}
                 tracemalloc.stop()
                 # Sequential cursor traversal (bounded at eight pages), not OFFSET.
                 q=deepcopy(workloads()['folder_long']); ids=[]; pages=0; deep=[]
@@ -365,30 +342,6 @@ def main():
                     (args.output/(name+'-plan.json')).write_text(json.dumps(plan,indent=2,default=str))
                     report['plans'][name]={'execution_ms':plan[0]['Execution Time'],'planning_ms':plan[0]['Planning Time']}
                 except psycopg.errors.QueryCanceled: report['plans'][name]={'error':'statement_timeout_5s'}
-                save()
-            # Test a possible fix only AFTER saving baseline evidence. Keep it
-            # out of the shipped executor until parity and scale are reviewed.
-            report['candidate']={'kind':'materialize_scoped_protected_views','workloads':{}}
-            with patch('db.reads.research_sql._SOURCE',materialized_candidate()),patch('ui_read_trace.is_active',lambda:True),patch('ui_read_trace.scope',observe):
-                # Undo only our deterministic counter-probe changes, not cleanup.
-                with admin.transaction():
-                    for i in range(10,30):
-                        r=generated_row(i,SIZES[args.size][0],now)
-                        admin.execute('UPDATE public.videos SET views=%s WHERE video_id=%s',(r['views'],r['id']))
-                for name,q in workloads().items():
-                    check_budget(); values=[]; failures=[]; result=None
-                    for _ in range(20 if name=='folder_long' and args.size!='pilot' else 3):
-                        check_budget(); result,r=sample('candidate_'+name,q)
-                        if r['error']: failures.append(r['error']);break
-                        values.append(r['ms'])
-                    check={'latency':summarize(values),'errors':failures}
-                    if result and args.size in {'pilot','S'}:
-                        check['oracle_ids_equal']=[r['id'] for r in result['rows']]==oracle(q,*SIZES[args.size][:2],now)
-                        if not check['oracle_ids_equal']: raise AssertionError('candidate_oracle_mismatch:'+name)
-                    report['candidate']['workloads'][name]=check
-                    save();print(json.dumps({'size':args.size,'candidate':name,**check}),flush=True)
-                check_budget()
-                report['candidate']['http']=http_measurements(db,connection,args.output/'candidate-http',workloads()['folder_long'],check_budget)
                 save()
         except TimeoutError:
             report['budget_exhausted']=True

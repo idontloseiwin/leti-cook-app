@@ -57,8 +57,9 @@ and stop the cluster afterwards. No live database or YouTube calls are used.
 
 The output separates successful reads from timeouts, pool wait from transaction
 work, and loopback HTTP from direct service calls. Server plans use EXPLAIN
-ANALYZE under `lic_reader`. A temporary query-plan candidate is evaluated only
-inside this harness; it does not change the application. Synthetic write probes
+ANALYZE under `lic_reader`. Measurements use the current executor without
+replacing its SQL; comparisons with an earlier run require its preserved inputs.
+Synthetic write probes
 are small counter updates and expired-snapshot deletions, not collector acceptance.
 The first call follows loading and ANALYZE; it is not a cold operating-system
 cache measurement. Small samples do not establish tail latency or production SLOs.

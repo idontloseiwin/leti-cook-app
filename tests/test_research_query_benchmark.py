@@ -6,7 +6,7 @@ import unittest
 import tempfile
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parent))
-from research_query_benchmark import SIZES, generated_row, oracle, workloads, summarize, NOW, materialized_candidate
+from research_query_benchmark import SIZES, generated_row, oracle, workloads, summarize, NOW
 from research_query.validation import validate,canonical,AccessContext
 
 class BenchmarkFixtureTests(unittest.TestCase):
@@ -43,10 +43,11 @@ class BenchmarkFixtureTests(unittest.TestCase):
         for q in workloads().values():
             validate(canonical(q),AccessContext('fixture','owner',enabled=True))
 
-    def test_candidate_keeps_protected_sources(self):
-        source=materialized_candidate()
+    def test_executor_keeps_protected_sources(self):
+        from db.reads.research_sql import _SOURCE
+        source=_SOURCE
         self.assertIn('FROM readable.hot_video_inventory h',source)
-        self.assertIn('FROM readable.videos v',source)
+        self.assertIn('JOIN readable.videos v',source)
         self.assertNotIn('FROM public.videos',source)
         self.assertEqual(source.count('hot_scoped AS MATERIALIZED'),1)
 
