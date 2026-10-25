@@ -1,1 +1,1 @@
-"""Unwired research query definitions; no routes, execution or collection hooks."""
+"""Query components; importing the package installs no routes or collection hooks."""

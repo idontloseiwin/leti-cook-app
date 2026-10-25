@@ -1,7 +1,7 @@
 """Minimal versioned definitions for the first research catalogue.
 
 Definitions are not permissions or executable capabilities. Source admission,
-workspace authorization and lifecycle checks belong to the future server planner.
+workspace authorization and lifecycle checks belong to the server binding.
 No SQL, credentials, environment reads or application startup imports belong here.
 """
 from __future__ import annotations
@@ -120,9 +120,9 @@ class FieldDefinition:
     schema_version: int = 1
     grain: str = "video"
     video_types: tuple[str, ...] = VIDEO_TYPES
-    mapping_owner: str = "db/ (planner mapping not implemented)"
+    mapping_owner: str = "db/reads/research_sql.py"
     policy_evidence: str = "youtube-public-current-v1: source/operation/storage/presentation review required"
-    query_implementation: str = "definition_only"
+    query_implementation: str = "implemented_unmounted"
 
 
 _STATE_OPS = ("is_known", "is_unknown", "state_is")

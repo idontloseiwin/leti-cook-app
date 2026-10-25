@@ -1,6 +1,6 @@
 """Strict wire shapes for review, not an executable query validator.
 
-The future planner must additionally resolve registry fields/operators, enforce
+The validator must additionally resolve registry fields/operators, enforce
 budgets before recursive parsing, authorize source/scope, and bind server clocks.
 These models perform no reads, SQL, permission checks or endpoint registration.
 """
@@ -19,6 +19,7 @@ MAX_DEPTH = 8
 MAX_LEAVES = 128
 MAX_LIST_VALUES = 1000
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
+MAX_CURSOR_CHARS = 16 * 1024  # Includes a full 1000-code-point Unicode sort key.
 
 VideoType = Literal["long", "short", "stream"]
 FieldId = Annotated[StrictStr, Field(min_length=1, max_length=96, pattern=r"^[a-z][a-z0-9_.]*$")]
@@ -102,7 +103,7 @@ class Projection(WireModel):
 
 class PageRequest(WireModel):
     size: Annotated[StrictInt, Field(ge=1, le=200)] = 50
-    after: Annotated[StrictStr, Field(min_length=1, max_length=4096)] | None = None
+    after: Annotated[StrictStr, Field(min_length=1, max_length=MAX_CURSOR_CHARS)] | None = None
 
 
 class QueryRequest(WireModel):
@@ -204,7 +205,7 @@ class Context(WireModel):
 
 class PageResult(WireModel):
     has_more: StrictBool
-    next_cursor: Annotated[StrictStr, Field(min_length=1, max_length=4096)] | None
+    next_cursor: Annotated[StrictStr, Field(min_length=1, max_length=MAX_CURSOR_CHARS)] | None
 
     @model_validator(mode="after")
     def cursor_matches_continuation(self):
