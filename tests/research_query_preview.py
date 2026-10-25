@@ -24,8 +24,10 @@ def create_preview_app(database, auth_path, origin, folders):
     now = int(time.time())
     owner = OwnerAuthRepository.initialize(auth_path, 'fixture-dummy', now)
     owner.issue_setup('fixture-setup', now)
-    assert owner.claim_setup(lambda value: value == 'fixture-setup', 'fixture-session', now) == 'ok'
-    assert owner.complete_setup('fixture-session', 'local', None, lambda: None, None, now) == 'ok'
+    assert owner.claim_setup(lambda value: value == 'fixture-setup', 'fixture-session', int(time.time())) == 'ok'
+    # These are separate simulated requests. The claim's committed session can
+    # be newer than the timestamp captured before filesystem/SQLite setup.
+    assert owner.complete_setup('fixture-session', 'local', None, lambda: None, None, int(time.time())) == 'ok'
     app = FastAPI()
     app.state.hot_runtime = SimpleNamespace(status=lambda: {'status': 'ready', 'api_read': {'allowed': True},
                                                            'collection': {'allowed': False}, 'user_work': {'allowed': True}})

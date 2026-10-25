@@ -40,3 +40,25 @@ DIR must be an empty task-owned directory. This serves the built interface and
 adds synthetic rows for pagination; sidebar organization and HOT readiness are
 fixtures. Write a `stop` file in DIR to stop the web server, then stop the cluster
 and remove test credentials. Do not point this entrypoint at an installation.
+
+## Synthetic performance measurements
+
+`tests/research_query_benchmark.py` is a manual experiment, excluded from test
+discovery. It requires the same disposable-cluster variables and an empty
+PostgreSQL 17 database. It creates deterministic data with skewed channel sizes,
+three formats, unknown and expired values, hidden channels and conflicting type
+evidence. Constraints and read security remain enabled.
+
+Choose `--size pilot`, `S` or `M`, a new `--output DIR`, and a bounded `--seconds`
+value. S contains 100 channels, 10,000 videos and 100,000 observations; M contains
+1,000 channels, 250,000 videos and 1,000,000 observations. Agree the total time
+and disk budget before running S/M; the cluster owner must enforce that budget
+and stop the cluster afterwards. No live database or YouTube calls are used.
+
+The output separates successful reads from timeouts, pool wait from transaction
+work, and loopback HTTP from direct service calls. Server plans use EXPLAIN
+ANALYZE under `lic_reader`. A temporary query-plan candidate is evaluated only
+inside this harness; it does not change the application. Synthetic write probes
+are small counter updates and expired-snapshot deletions, not collector acceptance.
+The first call follows loading and ANALYZE; it is not a cold operating-system
+cache measurement. Small samples do not establish tail latency or production SLOs.
