@@ -995,7 +995,8 @@ class HotRuntimeMiddleware:
             nonlocal denied
             if denied:
                 return
-            if message['type'] == 'http.response.start' and scope.get('method') in ('GET', 'HEAD'):
+            if message['type'] == 'http.response.start' and (scope.get('method') in ('GET', 'HEAD')
+                    or (scope.get('method') == 'POST' and path == '/research/queries/execute')):
                 try:
                     require_hot_runtime_ready(operation='http')
                 except HotRuntimeUnavailable:

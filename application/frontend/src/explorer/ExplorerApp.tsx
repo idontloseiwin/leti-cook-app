@@ -107,6 +107,7 @@ const UserWorkBackupEntry = lazy(() => import('./UserWorkBackupDialog').then((mo
 const SavedPage = lazy(() => import('./SavedPage').then((module) => ({ default: module.SavedPage })));
 const HealthPage = lazy(() => import('./HealthPage').then((module) => ({ default: module.HealthPage })));
 const TelemetryPage = lazy(() => import('./TelemetryPage').then((module) => ({ default: module.TelemetryPage })));
+const ResearchCatalogue = lazy(() => import('./ResearchCatalogue').then((module) => ({ default: module.ResearchCatalogue })));
 
 type SidebarState =
   | { kind: 'loading' }
@@ -212,7 +213,7 @@ export function ExplorerApp({
     () => readExplorerDestination(window.location.pathname, window.location.search),
   );
   const selectedChannelId = destination.kind === 'channel' ? destination.channelId : undefined;
-  const operationalPage = destination.kind === 'health' || destination.kind === 'telemetry';
+  const operationalPage = destination.kind === 'health' || destination.kind === 'telemetry' || destination.kind === 'research';
   const homeVisible = destination.kind === 'home';
   const { state: homeState, refresh: refreshHomeSummary } = useVisibleSummary(
     loadExplorerHomeSummary, homeVisible, homeSummaryIncomplete,
@@ -1087,7 +1088,9 @@ export function ExplorerApp({
         id="explorer-main" tabIndex={-1}
       >
         <RuntimeNotices onChange={runtimeChanged} />
-        {destination.kind === 'health' ? (
+        {destination.kind === 'research' ? (
+          pageBoundary('Research catalogue', <Suspense fallback={<LoadingState label="Loading catalogue…" />}><ResearchCatalogue folders={folders.flatMap(folder => folder.id && folder.name ? [{ id: folder.id, name: folder.name }] : [])} foldersLoaded={sidebarState.kind === 'ready'} apiAvailable={runtimeApiAvailable} /></Suspense>)
+        ) : destination.kind === 'health' ? (
           pageBoundary('Health', <Suspense fallback={<LoadingState label="Loading Health…" />}><HealthPage /></Suspense>)
         ) : destination.kind === 'telemetry' ? (
           pageBoundary('Telemetry', <Suspense fallback={<LoadingState label="Loading Telemetry…" />}><TelemetryPage /></Suspense>)

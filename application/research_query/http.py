@@ -1,14 +1,11 @@
-"""Unmounted API adapter. Owner authentication and service binding are mandatory.
-
-Stage 1.6 must mount these routes in the existing HOT/read-lifetime pipeline and
-classify POST execute as api_read. Importing this module changes no live routes.
-"""
+"""Bounded API adapter. Owner authentication and service binding are mandatory."""
 import asyncio
 from threading import Event
 
 import anyio
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
+from hot_storage import register_read_deadline
 
 from .contracts import MAX_BODY_BYTES
 from .service import instant
@@ -30,16 +27,20 @@ def create_router(service_provider, authorize_owner):
         return JSONResponse(value, status_code=status, headers={"Cache-Control": "no-store"})
 
     @router.get("/capabilities")
-    async def get_capabilities():
+    async def get_capabilities(request: Request):
         try:
-            return response(capabilities(service_provider().context_provider()))
+            service = service_provider(request)
+            context = await anyio.to_thread.run_sync(service.context_provider)
+            return response(capabilities(context))
         except QueryRejected as error:
             return response(error.payload(), error.status)
 
     @router.post("/queries/validate")
     async def validate_query(request: Request):
         try:
-            plan = service_provider().validate(await body(request))
+            raw = await body(request)
+            service = service_provider(request)
+            plan = await anyio.to_thread.run_sync(lambda: service.validate(raw))
             return response({"valid": True, "query_version": 1, "query_fingerprint": plan.fingerprint,
                              "referenced_fields": plan.referenced_fields})
         except QueryRejected as error:
@@ -51,10 +52,13 @@ def create_router(service_provider, authorize_owner):
         monitor = None
         try:
             raw = await body(request)
-            service = service_provider()
+            service = service_provider(request)
 
             async def watch_disconnect():
-                while True:
+                # Request.is_disconnected uses its own cancellation scope. A
+                # simultaneous task cancellation can be consumed there, so the
+                # shared stop flag must also terminate this loop.
+                while not cancelled.is_set():
                     if await request.is_disconnected():
                         cancelled.set()
                         return
@@ -62,6 +66,7 @@ def create_router(service_provider, authorize_owner):
 
             monitor = asyncio.create_task(watch_disconnect())
             result = await anyio.to_thread.run_sync(lambda: service.execute(raw, cancelled=cancelled.is_set))
+            register_read_deadline(instant(result["context"]["valid_before"]))
             answer = response(result)
             if instant(service.clock()) >= instant(result["context"]["valid_before"]):
                 raise QueryRejected("cursor_expired")

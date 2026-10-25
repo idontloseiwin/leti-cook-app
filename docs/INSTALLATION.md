@@ -87,6 +87,9 @@ and Streams are also collected, but their dedicated interface tabs are not yet
 available. Use **Folders and labels** to organise channels, **Saved** for saved
 views and collections, and **Health** to check collection and quota notices.
 
+Development builds also have an opt-in
+[folder catalogue preview](DATA.md#experimental-folder-catalogue) for all three formats.
+
 Use **Backup and restore** to save your organised work. The optional
 [browser extension](../extensions/chromium/README.md) adds channels from YouTube.
 

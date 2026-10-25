@@ -7,6 +7,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import json
 import os
+import re
 from pathlib import Path
 import sys
 import unittest
@@ -102,7 +103,7 @@ def seed(admin, now):
 def shift_dates(value, delta):
     if isinstance(value,dict): return {k:shift_dates(v,delta) for k,v in value.items()}
     if isinstance(value,list): return [shift_dates(v,delta) for v in value]
-    if isinstance(value,str) and value.endswith('Z') and 'T' in value:
+    if isinstance(value,str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z', value):
         return (datetime.fromisoformat(value)+delta).isoformat().replace('+00:00','Z')
     return value
 
@@ -279,6 +280,32 @@ class NativeQueryTests(unittest.TestCase):
             self.assertEqual(result['rows'],[])
             self.assertEqual(result['coverage']['status'],'partial')
         finally: self.admin.execute("UPDATE public.videos SET availability_status='public' WHERE video_id=%s",(row,))
+
+
+    def test_14_owner_http_pages_match_native_executor_for_every_type(self):
+        import tempfile
+        from unittest.mock import patch
+        from fastapi.testclient import TestClient
+        from research_query_preview import create_preview_app
+        with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, LIC_RESEARCH_QUERY_PREVIEW='1'), \
+                patch('hot_runtime.require_hot_runtime_ready', lambda **kw: None):
+            app = create_preview_app(self.db, Path(folder)/'owner.sqlite3', 'http://127.0.0.1:8002', FIXTURE['folders'])
+            with TestClient(app, base_url='http://127.0.0.1:8002', headers={'Origin':'http://127.0.0.1:8002'}) as client:
+                for kind in ('long','short','stream'):
+                    q=query(video_types=[kind], select=['video.id','video.channel_id','video.type','video.title',
+                            'video.published_at','video.duration_seconds','video.views'])
+                    expected=[row['id'] for row in self.run_query(q)['rows']]
+                    q['page']={'size':1}; actual=[]
+                    for _ in range(30):
+                        response=client.post('/research/queries/execute',json=q)
+                        self.assertEqual(response.status_code,200,response.text)
+                        data=response.json()
+                        self.assertEqual(data['context']['valid_before'],data['source_expires_at'])
+                        actual.extend(row['id'] for row in data['rows'])
+                        if not data['page']['has_more']: break
+                        q['page']['after']=data['page']['next_cursor']
+                    else: self.fail('unbounded_continuation')
+                    self.assertEqual(actual,expected)
 
 
 if __name__=='__main__': unittest.main(verbosity=2)

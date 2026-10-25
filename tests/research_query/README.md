@@ -1,12 +1,14 @@
 # Research query checks
 
-The query modules and router factory are not connected to the running application.
-These checks exercise their contract without changing existing catalogue routes.
+The owner-only query preview is mounted separately from existing catalogue routes
+and is disabled unless the API process has `LIC_RESEARCH_QUERY_PREVIEW=1`.
+These checks cover its contract, owner access, HOT admission and source lifetime.
 
 Run the offline suite from the repository root with Python 3.12:
 
 ```bash
 python -B -m unittest discover -s tests -p 'test_research_query*.py'
+node tests/test_research_query_ui.mjs
 ```
 
 `tests/research_query_pg.py` additionally runs the SQL on PostgreSQL 17. It is
@@ -27,5 +29,14 @@ Set these variables in the test process:
 
 Then run `python -B tests/research_query_pg.py`, stop the disposable cluster,
 and remove its test credentials. No YouTube calls are made. The fixture bypasses
-HOT admission only during this isolated repository test; HTTP integration and
-performance at installation scale require separate checks.
+HOT readiness only inside this isolated fixture. The native suite also compares
+HTTP pages with direct executor results for all three types. Offline integration
+tests separately exercise HOT denial before and after execution. Performance at
+installation scale requires separate measurements.
+
+For manual browser verification, use a fresh disposable cluster with the same
+variables and run `python -B tests/research_query_preview.py --port PORT --state DIR`.
+DIR must be an empty task-owned directory. This serves the built interface and
+adds synthetic rows for pagination; sidebar organization and HOT readiness are
+fixtures. Write a `stop` file in DIR to stop the web server, then stop the cluster
+and remove test credentials. Do not point this entrypoint at an installation.

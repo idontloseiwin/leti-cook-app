@@ -151,7 +151,7 @@ class HTTPTests(unittest.TestCase):
         def owner():
             if not self.authorized: raise HTTPException(status_code=401)
         self.app = FastAPI()
-        self.app.include_router(create_router(lambda: self.service, owner))
+        self.app.include_router(create_router(lambda request: self.service, owner))
         self.client = TestClient(self.app)
 
     def tearDown(self): self.client.close()

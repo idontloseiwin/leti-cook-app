@@ -20,6 +20,7 @@ from web.library import create_library_http
 from web.lifecycle import create_lifespan
 from web.middleware import install_runtime_middleware
 from web.organization import create_organization_router
+from web.research import create_research_router
 from web.system import create_system_router
 
 COLLECTION_SETTINGS, COLLECTION_POLICY = process_collection_configuration()
@@ -133,6 +134,7 @@ if hasattr(app, "include_router") and os.getenv(
 
 # Keep the public route registration order, including retired 410 endpoints.
 app.include_router(channel_http.add_router)
+app.include_router(create_research_router(database))
 app.include_router(library_http.router)
 app.include_router(create_explorer_router(
     cache=read_cache, library=library_http, core=core, database=database,

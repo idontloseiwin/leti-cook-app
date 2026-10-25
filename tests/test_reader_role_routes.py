@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 # Ordered so a real browse request supplies the four inspector session tokens,
 # and the actual mutation requests follow nonmutating catalogue verification.
 PROTECTED_ROUTES = (
+    "POST /research/queries/execute",  # Native HTTP proof: research_query_pg.py.
     "GET /explorer/channel-library/video-channel",
     "GET /explorer/home-summary",
     "GET /explorer/recent-videos",

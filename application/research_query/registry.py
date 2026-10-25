@@ -122,7 +122,7 @@ class FieldDefinition:
     video_types: tuple[str, ...] = VIDEO_TYPES
     mapping_owner: str = "db/reads/research_sql.py"
     policy_evidence: str = "youtube-public-current-v1: source/operation/storage/presentation review required"
-    query_implementation: str = "implemented_unmounted"
+    query_implementation: str = "implemented_preview"
 
 
 _STATE_OPS = ("is_known", "is_unknown", "state_is")

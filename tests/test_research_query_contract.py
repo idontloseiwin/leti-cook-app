@@ -63,7 +63,7 @@ class DefinitionTests(unittest.TestCase):
             with self.subTest(field=field.id):
                 self.assertTrue(set(field.dependencies) <= DEPENDENCIES.keys())
                 self.assertEqual(field.video_types, ("long", "short", "stream"))
-                self.assertEqual(field.query_implementation, "implemented_unmounted")
+                self.assertEqual(field.query_implementation, "implemented_preview")
                 self.assertTrue(field.policy_evidence and field.storage_evidence and field.definition_epoch)
                 self.assertTrue(set(field.operators) <= OPERATORS.keys())
                 self.assertTrue(all(field.value_type in OPERATORS[op].value_types for op in field.operators))
@@ -72,12 +72,12 @@ class DefinitionTests(unittest.TestCase):
         self.assertNotIn("counters", FIELDS["video.title"].dependencies)
         self.assertEqual(SOURCE.stream_dependencies, ("stream_completion",))
 
-    def test_no_current_application_caller_imports_unwired_package(self):
+    def test_only_reviewed_adapter_and_read_owner_import_query_package(self):
         callers = []
         for path in (ROOT / "application").rglob("*.py"):
             if ("research_query" in path.parts or "node_modules" in path.parts
                     or path.relative_to(ROOT / "application").as_posix() in {
-                        "db/reads/research_query.py", "db/reads/research_sql.py"}):
+                        "db/reads/research_query.py", "db/reads/research_sql.py", "web/research.py"}):
                 continue
             tree = ast.parse(path.read_text(encoding="utf-8"))
             for node in ast.walk(tree):

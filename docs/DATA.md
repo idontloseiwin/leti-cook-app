@@ -30,7 +30,7 @@ and cleans up data while running. See
   A fresh counter cannot recreate expired history or observations missed while
   your server was off.
 - **Expired fields are hidden.** They stop appearing even if cleanup has not
-  yet removed them. An open browser page requests current data automatically;
+  yet removed them. The main Explorer requests current data automatically;
   if that fails, it offers a reload.
 - **Your work remains.** Folders, labels, saved references and your edits are
   retained, subject to permanent channel deletion below.
@@ -52,6 +52,31 @@ Records without current type evidence can remain as saved IDs while being absent
 from a typed catalogue. Missing details do not necessarily mean your saved work
 was deleted. Check collection status and quota before removing and re-adding
 a channel.
+
+## Experimental folder catalogue
+
+Development builds include a separate preview at `/app-explorer-v3/research`.
+It is off by default. To try it on a development installation, pass
+`LIC_RESEARCH_QUERY_PREVIEW=1` to the API process and restart that process.
+This is an environment switch, not a `config.ini` setting or an agent credential.
+
+Choose a folder, one format, title text, an optional minimum view count and a
+sort order, then select **Refresh**. The table returns 25 stored videos per page.
+Long-form, Shorts and completed Streams use the same query rules. Type comes
+from recorded YouTube playlist membership and the application's conflict
+resolution; a short duration alone does not make a video a Short.
+
+Unknown, expired and unavailable values are shown explicitly and sort last.
+Coverage describes the channels' stored inventory, not all videos on YouTube.
+**Next page** continues a live selection: updates can move rows between pages.
+A continuation expires within two minutes, possibly sooner when a source field
+expires. An expired page is cleared; select **Refresh** to start again. Switching
+filters or format also clears the previous result immediately.
+
+The preview reads the local database without requesting YouTube data or changing
+collection schedules. It requires the installation's existing owner access and
+data-read readiness. Existing channel pages remain available. Saving queries,
+gallery views and the complete Shorts/Streams overview are not part of this preview.
 
 ## Removing a channel
 
