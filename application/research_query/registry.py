@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from types import MappingProxyType
+from typing import Literal
 
 REGISTRY_VERSION = 1
 SOURCE_ID = "public.videos.current.v1"
@@ -15,6 +16,30 @@ VIDEO_TYPES = ("long", "short", "stream")
 UNICODE_VERSION = "15.0.0"  # Python 3.12 casefold; SQL lower is not equivalent.
 UINT64_MAX = 2**64 - 1
 POSTGRES_BIGINT_MAX = 2**63 - 1
+OperatorId = Literal["eq", "in", "gt", "gte", "lt", "lte", "contains_casefold_v1", "is_known", "is_unknown", "state_is"]
+
+
+@dataclass(frozen=True)
+class OperatorDefinition:
+    id: str
+    argument: str
+    value_types: tuple[str, ...]
+    semantics: str
+    use_class: str = "source_selection"
+    version: int = 1
+
+
+_ALL_TYPES = ("video_id", "channel_id", "video_type", "text", "utc_instant", "uint_decimal")
+OPERATORS = MappingProxyType({item.id: item for item in (
+    OperatorDefinition("eq", "scalar", _ALL_TYPES, "typed exact equality; unknown yields unknown"),
+    OperatorDefinition("in", "nonempty_list_max_1000", _ALL_TYPES, "typed set membership; unknown yields unknown"),
+    *(OperatorDefinition(key, "scalar", ("utc_instant", "uint_decimal"),
+                         "ordered comparison; unknown yields unknown") for key in ("gt", "gte", "lt", "lte")),
+    OperatorDefinition("contains_casefold_v1", "string", ("text",), "Unicode 15.0 casefold literal substring"),
+    OperatorDefinition("is_known", "none", _ALL_TYPES, "true only for state known"),
+    OperatorDefinition("is_unknown", "none", _ALL_TYPES, "true for state unknown, expired or unavailable"),
+    OperatorDefinition("state_is", "state_enum", _ALL_TYPES, "known/unknown/expired/unavailable; never disabled"),
+)})
 
 
 @dataclass(frozen=True)

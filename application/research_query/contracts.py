@@ -12,7 +12,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, StrictStr, field_validator, model_validator
 
-from .registry import FIELDS, UINT64_MAX
+from .registry import FIELDS, OperatorId, UINT64_MAX
 
 MAX_BODY_BYTES = 64 * 1024
 MAX_DEPTH = 8
@@ -50,7 +50,7 @@ class FolderScope(WireModel):
 
 class Predicate(WireModel):
     field: FieldId
-    op: Literal["eq", "in", "gt", "gte", "lt", "lte", "contains_casefold_v1", "is_known", "is_unknown", "state_is"]
+    op: OperatorId
     value: LiteralValue | None = None
 
     @model_validator(mode="after")
@@ -178,13 +178,19 @@ class Coverage(WireModel):
         return self
 
 
+class DefinitionReference(WireModel):
+    id: Annotated[StrictStr, Field(min_length=1, max_length=96)]
+    version: Annotated[StrictInt, Field(ge=1)]
+    revision: Annotated[StrictStr, Field(min_length=1, max_length=96)]
+
+
 class Context(WireModel):
     source_id: Literal["public.videos.current.v1"]
-    source_schema_version: StrictInt
-    registry_version: StrictInt
-    lifecycle_profile: Annotated[StrictStr, Field(min_length=1, max_length=96)]
+    source_schema_version: Annotated[StrictInt, Field(ge=1)]
+    registry_version: Annotated[StrictInt, Field(ge=1)]
+    lifecycle_profile: DefinitionReference
     preferences_revision: Annotated[StrictStr, Field(min_length=1, max_length=96)]
-    type_policy_revision: Annotated[StrictStr, Field(min_length=1, max_length=96)]
+    type_policy: DefinitionReference
     evaluated_at: Instant
     valid_before: Instant
     consistency: Literal["current"]

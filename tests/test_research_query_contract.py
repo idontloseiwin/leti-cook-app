@@ -8,13 +8,14 @@ from pathlib import Path
 import sys
 import unittest
 import unicodedata
+from typing import get_args
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "application"))
 sys.path.insert(0, str(ROOT / "tests"))
 from pydantic import ValidationError
 from research_query import contracts as wire
-from research_query.registry import DEPENDENCIES, FIELDS, SOURCE, UNICODE_VERSION, describe_definitions
+from research_query.registry import DEPENDENCIES, FIELDS, OPERATORS, OperatorId, SOURCE, UNICODE_VERSION, describe_definitions
 from research_query_oracle import cell, condition, execute_fixture
 
 FIXTURE = json.loads((ROOT / "tests/fixtures/research_query_v1.json").read_text(encoding="utf-8"))
@@ -28,8 +29,8 @@ def result():
     return {
         "query_version": 1, "query_fingerprint": "a" * 64,
         "context": {"source_id": SOURCE.id, "source_schema_version": 1, "registry_version": 1,
-                    "lifecycle_profile": "public_standard_v1", "preferences_revision": "existing_v1",
-                    "type_policy_revision": "existing_v1", "evaluated_at": FIXTURE["now"],
+                    "lifecycle_profile": {"id":"public_standard", "version":1, "revision":"existing_v1"}, "preferences_revision": "existing_v1",
+                    "type_policy": {"id":"canonical_membership", "version":1, "revision":"existing_v1"}, "evaluated_at": FIXTURE["now"],
                     "valid_before": "2026-10-26T00:00:00Z", "consistency": "current"},
         "columns": ["video.views"],
         "provenance": {"counter": {"origin": "youtube_reported", "source_paths": ["videos.statistics.viewCount"],
@@ -57,12 +58,15 @@ class DefinitionTests(unittest.TestCase):
         self.assertNotIn("mapping_owner", str(projection))
 
     def test_every_field_has_independent_clocks_policy_and_dependencies(self):
+        self.assertEqual(set(OPERATORS), set(get_args(OperatorId)))
         for field in FIELDS.values():
             with self.subTest(field=field.id):
                 self.assertTrue(set(field.dependencies) <= DEPENDENCIES.keys())
                 self.assertEqual(field.video_types, ("long", "short", "stream"))
                 self.assertEqual(field.query_implementation, "definition_only")
                 self.assertTrue(field.policy_evidence and field.storage_evidence and field.definition_epoch)
+                self.assertTrue(set(field.operators) <= OPERATORS.keys())
+                self.assertTrue(all(field.value_type in OPERATORS[op].value_types for op in field.operators))
         self.assertIn("counters", FIELDS["video.views"].dependencies)
         self.assertNotIn("metadata", FIELDS["video.views"].dependencies)
         self.assertNotIn("counters", FIELDS["video.title"].dependencies)
