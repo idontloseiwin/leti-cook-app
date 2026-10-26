@@ -17,6 +17,7 @@ schema_ci_resources_init
 
 schema_ci_create postgres "$image" --network none --memory 768m --memory-swap 768m --cpus 1.5 --log-driver none --pids-limit 128 \
   -e POSTGRES_USER=postgres -e POSTGRES_DB=leti-cook -e POSTGRES_PASSWORD="$LIC_SCHEMA_CI_ADMIN_PASSWORD" \
+  -e POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 \
   -e AUTHENTICATOR_PASSWORD="$LIC_SCHEMA_CI_RUNTIME_PASSWORD" -e SELF_HOSTED_SCHEMA_SHA256="$digest" \
   -v "$root/database/bootstrap.sh:/docker-entrypoint-initdb.d/10-self-hosted.sh:ro" \
   -v "$root/schema/schema.sql:/opt/leti-cook/schema.sql:ro" \

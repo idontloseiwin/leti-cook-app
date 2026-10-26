@@ -32,6 +32,15 @@ class SchemaCiTests(unittest.TestCase):
         self.assertIn('schema_ci_postgres_build "$root"',prepare)
         self.assertNotIn('docker pull',script)
 
+    def test_ci_databases_require_passwords_like_an_installation(self):
+        # Without it initdb trusts every 127.0.0.1 connection, and CI never
+        # checks the authenticator password an installation requires.
+        compose=(ROOT/'database/compose.yaml').read_text(encoding='utf-8')
+        self.assertIn('POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256',compose)
+        for name in ('check_schema_postgres.sh','check_schema_upgrades.sh'):
+            script=(ROOT/'tools'/name).read_text(encoding='utf-8')
+            self.assertEqual(script.count('-e POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256'),1,name)
+
     def test_database_image_runtime_checks_actual_process_and_existing_volume(self):
         script=(ROOT/'tools/check_schema_postgres.sh').read_text(encoding='utf-8')
         for guard in ('/proc/1/status','/proc/1/environ','HOME=$home','if command -v gosu >/dev/null; then exit 1; fi',
