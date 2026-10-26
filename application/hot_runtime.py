@@ -37,6 +37,10 @@ RETRY_MAX_SECONDS = 600
 # passes in a row, or when its data is this close to YouTube's 30-day limit.
 PAUSE_AFTER_PASSES = 3
 PAUSE_MARGIN_SECONDS = 12 * 3600
+# While startup cleanup holds API reads after downtime, one step runs up to this
+# many pages, each its own short transaction, within the step's 2-second budget.
+# Otherwise a step is one page.
+CATCHUP_PAGES_PER_STEP = 20
 _MAINTENANCE = ContextVar('hot_maintenance', default=False)
 _COLLECTION_CONTROL = ContextVar('hot_collection_control', default=False)
 _COLLECTION_INTERRUPTED = ContextVar('hot_collection_interrupted', default=False)
@@ -790,7 +794,8 @@ class HotRuntimeController:
                     # the repository call has already finished before callback.
                     with self._lock:
                         self._priority.observe(page, self.monotonic())
-                summary = self.cycle.run_slice(max_batches=1, max_seconds=10, on_page=observe_priority)
+                summary = self.cycle.run_slice(max_batches=CATCHUP_PAGES_PER_STEP if self._catchup else 1,
+                                               max_seconds=10, on_page=observe_priority)
             if self._drift():
                 self._clock_invalid = True
                 self._recheck_pending = True

@@ -49,6 +49,7 @@ class Cycle:
     def __init__(self, clocks, pages=3, **findings):
         self.clocks, self.pages, self.findings, self.done = clocks, pages, findings, 0
         self.error = False
+        self.page_budgets = []
     def summary(self):
         return {'status': 'error' if self.error else 'in_progress', 'batches': self.done}
     def reset(self):
@@ -57,6 +58,7 @@ class Cycle:
         self.error = False
     def run_slice(self, **kw):
         self.done += 1
+        self.page_budgets.append(kw['max_batches'])
         if self.findings.get('failure'):
             self.error = True
             return {'status': 'error', 'pages': [], 'failed_target': 'video_snapshots'}
@@ -100,6 +102,18 @@ class NarrowGateTests(unittest.TestCase):
         self.assertEqual(s['startup_notice']['records'], 1)
         self.assertTrue(s['startup_notice']['complete'])
         self.assertEqual(c.status()['startup_notice']['id'], s['startup_notice']['id'])
+    def test_startup_cleanup_runs_several_pages_per_step_until_confirmed_clean(self):
+        from hot_runtime import CATCHUP_PAGES_PER_STEP
+        c, clocks = runtime(expired=True, deleted=1)
+        c.initialize()
+        step(c, clocks, 2)
+        c.repository.expired = False
+        step(c, clocks)
+        self.assertTrue(c.status()['api_read']['allowed'])
+        clocks.advance(60)
+        step(c, clocks)
+        self.assertEqual(c.cycle.page_budgets, [CATCHUP_PAGES_PER_STEP] * 3 + [1])
+
     def test_startup_grace_ignores_normal_lag_and_exactly_one_hour(self):
         for expired_seconds, expected in ((30, False), (3600, False), (3600.001, True)):
             with self.subTest(expired_seconds=expired_seconds):

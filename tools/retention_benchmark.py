@@ -190,8 +190,9 @@ class TimedRepository:
         return getattr(self.repository, name)
 
 
-def full_pass(repository, *, cycle_factory=None, limit=STEP_LIMIT):
-    """One whole cleanup pass, one page per step, as the runtime controller runs it."""
+def full_pass(repository, *, cycle_factory=None, limit=STEP_LIMIT, pages_per_step=1):
+    """One whole cleanup pass, as the runtime controller runs it: one page per step,
+    or several while startup cleanup catches up after downtime."""
     if cycle_factory is None:
         from hot_retention import HotCleanupCycle as cycle_factory
     timed = TimedRepository(repository)
@@ -200,7 +201,7 @@ def full_pass(repository, *, cycle_factory=None, limit=STEP_LIMIT):
     started = time.perf_counter()
     while steps < limit:
         step_started = time.perf_counter()
-        summary = cycle.run_slice(max_batches=1, max_seconds=10)
+        summary = cycle.run_slice(max_batches=pages_per_step, max_seconds=10)
         slowest = max(slowest, time.perf_counter() - step_started)
         steps += 1
         if summary["status"] == "error":
@@ -215,7 +216,7 @@ def full_pass(repository, *, cycle_factory=None, limit=STEP_LIMIT):
     else:
         raise RuntimeError("cleanup_pass_too_long")
     seconds = time.perf_counter() - started
-    return {"steps": steps, "seconds": round(seconds, 3), "slowest_step_seconds": round(slowest, 3),
+    return {"steps": steps, "pages_per_step": pages_per_step, "seconds": round(seconds, 3), "slowest_step_seconds": round(slowest, 3),
             # The runtime loop pauses between due steps; this is the wait a restart would see.
             "runtime_estimate_seconds": round(seconds + steps * STEP_PAUSE_SECONDS, 1),
             # Where the time of a slow pass goes: the seconds of each target's pages.
@@ -229,6 +230,7 @@ def run(args, environ=os.environ):
     sys.path.insert(0, str(ROOT / "application"))
     import check_direct_pg_repositories as fixtures
     from db.hot.hot_runtime import MaintenanceRepository
+    from hot_runtime import CATCHUP_PAGES_PER_STEP
     offset = timedelta(days=args.downtime_days if args.scenario == "downtime" else 0)
     admin = safety.connect(admin_dsn, {"client_execute_calls": 0, "client_execute_seconds": 0.0})
     try:
@@ -239,9 +241,11 @@ def run(args, environ=os.environ):
             seeding = round(time.perf_counter() - seeded_started, 1)
             repository = MaintenanceRepository(database)
             passes = []
-            for _ in range(2):
+            for index in range(2):
                 before = rows_read(admin)
-                result = full_pass(repository)
+                # After downtime the first pass is the startup catch-up.
+                catchup = index == 0 and args.scenario == "downtime"
+                result = full_pass(repository, pages_per_step=CATCHUP_PAGES_PER_STEP if catchup else 1)
                 time.sleep(11)  # an idle backend flushes its table statistics within 10 seconds
                 result["rows_read"], result["rows_read_by_table"] = read_delta(before, rows_read(admin))
                 passes.append(result)

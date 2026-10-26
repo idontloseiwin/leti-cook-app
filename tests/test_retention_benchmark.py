@@ -47,6 +47,7 @@ class RetentionBenchmarkTests(unittest.TestCase):
         self.assertEqual(videos, {'pages': 2, 'scanned': 140, 'deleted': 0, 'scrubbed': 3, 'deferred': 0})
         self.assertEqual(result['targets']['sync_runs']['deleted'], 7)
         self.assertGreaterEqual(result['runtime_estimate_seconds'], 0.3)  # three paced steps
+        self.assertEqual(result['pages_per_step'], 1)
 
     def test_each_page_is_timed_under_its_own_target(self):
         clock = iter(range(100))
@@ -55,6 +56,15 @@ class RetentionBenchmarkTests(unittest.TestCase):
                 repository, [page('videos'), page('sync_runs')]))
         # Each page call spans one tick of the fake clock.
         self.assertEqual((result['targets']['videos']['seconds'], result['targets']['sync_runs']['seconds']), (1, 1))
+
+    def test_catch_up_pass_asks_for_the_runtime_page_budget(self):
+        budgets = []
+        class Recording(Cycle):
+            def run_slice(self, **kw):
+                budgets.append(kw['max_batches'])
+                return super().run_slice(**kw)
+        result = bench.full_pass(Repository(), cycle_factory=lambda repository: Recording(repository, [page('videos')]), pages_per_step=20)
+        self.assertEqual((budgets, result['pages_per_step']), ([20], 20))
 
     def test_a_failed_page_or_an_endless_pass_stops_the_benchmark(self):
         failing = type('Failing', (), {'run_slice': lambda self, **kw: {'status': 'error', 'failed_target': 'videos'}})
