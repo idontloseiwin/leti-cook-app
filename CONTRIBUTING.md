@@ -43,8 +43,10 @@ or to the schedule format:
 LIC_TEST_OLD_UPDATER_ROOT=/path/to/pre-v4-checkout python3 -B -m unittest discover -s tests -p 'test_schedule_update_bridge.py'
 ```
 
-Database checks require disposable PostgreSQL 17 containers. Use the preparation
-and execution instructions in the [schema regression guide](tests/schema25_regressions/README.md)
+Database checks require disposable PostgreSQL 17 containers. Image preparation
+uses the network to apply Debian security updates to OpenSSL and enforce a fixed
+minimum version. The actual database fixtures still run with networking disabled.
+Use the preparation and execution instructions in the [schema regression guide](tests/schema25_regressions/README.md)
 and [upgrade test guide](tests/schema_upgrades/README.md). Never run fixtures
 against a user's database. Live collection checks need a separate disposable
 installation and your own API key.

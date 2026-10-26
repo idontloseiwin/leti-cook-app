@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# One build identity for the COPY-free installation Dockerfile. No network here.
+# One build identity for the COPY-free installation Dockerfile.
+# Building belongs to dependency preparation; native fixtures remain offline.
 schema_ci_postgres_source() {
   local root="$1"
   SCHEMA_CI_POSTGRES_SOURCE_SHA="$(sha256sum "$root/database/Dockerfile" | cut -d' ' -f1)" || return 1
@@ -11,8 +12,9 @@ schema_ci_postgres_source() {
   SCHEMA_CI_POSTGRES_TAG="leti-cook-postgres-ci:$SCHEMA_CI_POSTGRES_SOURCE_SHA"
 }
 schema_ci_postgres_build() {
+  [[ $# == 1 && "${LIC_SCHEMA_CI_OFFLINE:-0}" == 0 ]] || return 2
   schema_ci_postgres_source "$1" || return 1
-  docker build --network none --pull=false --tag "$SCHEMA_CI_POSTGRES_TAG" \
+  docker build --network default --pull=false --tag "$SCHEMA_CI_POSTGRES_TAG" \
     --label "org.leti-cook.postgres-source-sha=$SCHEMA_CI_POSTGRES_SOURCE_SHA" "$1/database"
 }
 schema_ci_postgres_require() {

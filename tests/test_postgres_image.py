@@ -32,7 +32,7 @@ class PostgresImageTests(unittest.TestCase):
                 binary = root / 'gosu'
                 entry.write_text('#!/bin/bash\n' + calls + '\n', encoding='utf-8')
                 binary.write_text('fixture', encoding='utf-8')
-                command = RECIPE.split('\nRUN ', 1)[1].replace('\\\n', '\n')
+                command = RECIPE.rsplit('\nRUN ', 1)[1].replace('\\\n', '\n')
                 command = command.replace('/usr/local/bin/docker-entrypoint.sh', str(entry))
                 command = command.replace('/usr/local/bin/gosu', str(binary))
                 result = subprocess.run(['bash', '-c', command], text=True, capture_output=True, timeout=10)

@@ -43,15 +43,20 @@ class SchemaCiPostgresImageTests(unittest.TestCase):
             result=subprocess.run([self.bash,'-c',script],env=env,capture_output=True,text=True,timeout=20)
             return result,json.loads(state.read_text()),hashlib.sha256(content.encode()).hexdigest()
 
-    def test_build_and_use_exact_source_as_immutable_image_without_network(self):
+    def test_build_in_dependency_phase_then_use_exact_immutable_image(self):
         result,state,digest=self.helper('schema_ci_postgres_build "$TEST_ROOT"\nschema_ci_postgres_require "$TEST_ROOT"\nprintf "%s\\n" "$SCHEMA_CI_POSTGRES_IMAGE"')
         self.assertEqual(result.returncode,0,result.stderr)
         self.assertEqual(result.stdout.strip(),'sha256:'+'2'*64)
         build=state['calls'][0]
-        self.assertEqual(build[:5],['build','--network','none','--pull=false','--tag'])
+        self.assertEqual(build[:5],['build','--network','default','--pull=false','--tag'])
         self.assertIn('leti-cook-postgres-ci:'+digest,build)
         self.assertIn('org.leti-cook.postgres-source-sha='+digest,build)
         self.assertFalse(any(c[0]=='pull' for c in state['calls']))
+
+    def test_offline_fixture_phase_cannot_start_a_network_build(self):
+        result,state,_=self.helper('export LIC_SCHEMA_CI_OFFLINE=1\nschema_ci_postgres_build "$TEST_ROOT"')
+        self.assertEqual(result.returncode,2,result.stderr)
+        self.assertEqual(state['calls'],[])
 
     def test_source_change_gets_distinct_tag_and_cannot_reuse_stale_build(self):
         body='schema_ci_postgres_build "$TEST_ROOT"\nprintf "\\n# changed\\n" >> "$TEST_ROOT/database/Dockerfile"\nschema_ci_postgres_require "$TEST_ROOT"'
