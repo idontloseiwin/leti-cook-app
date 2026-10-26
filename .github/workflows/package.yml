@@ -43,6 +43,11 @@ jobs:
           node tests/test_pipeline_telemetry.mjs
           node tests/test_collection_explanation.mjs
           node tests/test_health_presentation.mjs
+          node tests/test_channel_trash_titles.mjs
+          node tests/test_research_query_ui.mjs
+          node tests/test_ui_read_recovery.mjs
+          node tests/test_video_type_review_presentation.mjs
+          node --test tests/test_user_work_reconnect.mjs
           node --test tests/test_chromium_bridge.mjs tests/test_chromium_content.mjs
       - name: Check frontend resilience (offline)
         run: node tests/test_frontend_resilience.mjs

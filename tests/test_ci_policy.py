@@ -126,6 +126,12 @@ class WorkflowRoutingTests(unittest.TestCase):
     def text(self, name):
         return (ROOT / '.github/workflows' / name).read_text(encoding='utf-8')
 
+    def test_every_offline_node_test_runs_in_ci(self):
+        # A browser-behaviour test outside the workflow would never fail CI.
+        listed = set(re.findall(r'tests/(test_\w+\.mjs)', self.text('package.yml')))
+        present = {path.name for path in (ROOT / 'tests').glob('test_*.mjs')}
+        self.assertEqual(present - listed, set())
+
     def test_only_coordinator_receives_pr_and_main_push(self):
         ci = self.text('ci.yml')
         trigger = ci.split('\npermissions:', 1)[0]
