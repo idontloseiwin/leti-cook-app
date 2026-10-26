@@ -14,11 +14,11 @@ def tool(name):
     result=importlib.util.module_from_spec(spec);spec.loader.exec_module(result);return result
 
 class Schema25SuiteTests(unittest.TestCase):
-    def test_current_manifest_exact_ten_plus_sixteen(self):
+    def test_current_manifest_exact_ten_plus_seventeen(self):
         data=manifest.load()
         self.assertEqual(len(data['sql']),10)
-        self.assertEqual(set(data['python']),set(suite.CASES));self.assertEqual(len(suite.CASES),16)
-        self.assertEqual(len(data['fixtures']),9)
+        self.assertEqual(set(data['python']),set(suite.CASES));self.assertEqual(len(suite.CASES),17)
+        self.assertEqual(len(data['fixtures']),10)
         self.assertNotIn('historical',data)
         manifest.validate_dispatch(data,suite.CASES)
 
@@ -123,7 +123,7 @@ class Schema25SuiteTests(unittest.TestCase):
             fixture.assert_not_called()
     def test_runner_exact_completion_and_cleanup(self):
         text=(ROOT/'tools/check_schema25_repositories.py').read_text()
-        for term in ("validate_dispatch(manifest,CASES)","execute_python_case(fixture,CASES[name])","len(names)==26","finally:fixture.close()","fixture.admin.rollback();fixture.reset()","fixture.identity()"):
+        for term in ("validate_dispatch(manifest,CASES)","execute_python_case(fixture,CASES[name])","len(names)==27","finally:fixture.close()","fixture.admin.rollback();fixture.reset()","fixture.identity()"):
             self.assertIn(term,text)
         self.assertNotIn('argparse',text)
         main=next(node for node in ast.parse(text).body if isinstance(node,ast.FunctionDef) and node.name=='main')

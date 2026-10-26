@@ -119,3 +119,42 @@ def inventory_window(f):
         page=f.cleanup('memberships',after_id=page.next_cursor,limit=100)
     f.check(pages==1 and deleted==5,'window_pages_and_deletions')
     f.check(f.scalar('SELECT count(*) FROM public.video_inventory_memberships')==1495,'window_survivors')
+
+def trashed_channel_removal(f):
+    # A channel kept in the trash past the window is removed with everything it
+    # owns, even when its catalogue outgrew one page; collection never waits on it.
+    from db.channel.channel_control import set_channel_trash_state
+    from db.videos.video_queue_ensure import ensure_video_collection_state
+    from db.hot.hot_retention import HotRetentionRepository
+    from hot_retention import HotCleanupCycle
+    f.channel()
+    f.seed_sql('trashed_channel_seed.sql')
+    ids=[r['video_id'] for r in f.rows('SELECT video_id FROM public.video_inventory WHERE channel_id=%s ORDER BY video_id',(CHANNEL,))]
+    ensure_video_collection_state(f.database,ids,[{'channel_id':CHANNEL,'control_epoch':f.epoch()}])
+    set_channel_trash_state(f.database,channel_id=CHANNEL,restore=False)
+    # 700 hours later: the trash age and every source clock the channel owns.
+    for sql in ("UPDATE public.channel_collection_state SET hidden_at=now()-interval '700 hours' WHERE channel_id=%(c)s",
+                "UPDATE public.channels SET channel_metadata_checked_at=now()-interval '700 hours' WHERE channel_id=%(c)s",
+                "UPDATE public.channel_snapshots SET recorded_at=now()-interval '700 hours' WHERE channel_id=%(c)s",
+                "UPDATE public.video_inventory SET published_acquired_at=now()-interval '700 hours' WHERE channel_id=%(c)s",
+                "UPDATE public.video_inventory_memberships SET first_seen_at=now()-interval '701 hours',last_seen_at=now()-interval '700 hours',last_present_at=now()-interval '700 hours' WHERE channel_id=%(c)s",
+                "UPDATE public.videos SET checked_at=now()-interval '700 hours',metadata_checked_at=now()-interval '700 hours' WHERE channel_id=%(c)s",
+                "UPDATE public.video_snapshots s SET recorded_at=now()-interval '700 hours' FROM public.video_inventory i WHERE i.video_id=s.video_id AND i.channel_id=%(c)s"):
+        f.rows(sql,{'c':CHANNEL})
+    owned=('channels','channel_collection_state','channel_playlist_state','channel_video_inventory_scans','channel_snapshots',
+           'video_inventory','video_inventory_memberships','videos','video_collection_state','video_search_projection')
+    def remaining():
+        return {t:f.scalar('SELECT count(*) FROM public.'+t+' WHERE channel_id=%s',(CHANNEL,)) for t in owned}
+    f.check(remaining()['video_inventory']==110 and remaining()['video_collection_state']==110,'trashed_fixture_exact')
+    cycle=HotCleanupCycle(HotRetentionRepository(f.database))
+    passes=0
+    while remaining()['channels'] and passes<4:
+        passes+=1
+        while True:
+            summary=cycle.run_slice(max_batches=100,max_seconds=60)
+            f.check(summary['status']!='error','trashed_cleanup_pass')
+            if summary['status']=='scan_exhausted' or summary['stop_reason']=='deferred_or_no_progress':break
+        cycle.reset()
+    f.check(passes<=2,'trashed_channel_passes')
+    f.check(set(remaining().values())=={0},'trashed_channel_removed')
+    f.check(f.scalar("SELECT count(*) FROM public.video_snapshots WHERE video_id LIKE 't%%'")==0,'trashed_snapshots_removed')

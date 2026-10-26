@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 16,
+  "expected_python_count": 17,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -225,6 +225,18 @@
       "row_budget": 1000,
       "fixtures": [],
       "callable": "cases_readiness.negative_intrinsic_guard"
+    },
+    "trashed_channel_removal": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page",
+        "HotCleanupCycle.run_slice"
+      ],
+      "assertions": "110-video channel kept in the trash past the window; every owned row removed within two full cleanup passes",
+      "row_budget": 1000,
+      "fixtures": [
+        "trashed_channel_seed.sql"
+      ],
+      "callable": "cases_retention.trashed_channel_removal"
     }
   },
   "fixtures": {
@@ -289,6 +301,13 @@
       "kind": "expression",
       "cases": [
         "folder_label_management"
+      ]
+    },
+    "trashed_channel_seed.sql": {
+      "sha256": "c262f1763bf703b764bc39d3e3a27f02c1a29177e3b69505f28ac2f7c1599040",
+      "kind": "seed",
+      "cases": [
+        "trashed_channel_removal"
       ]
     }
   }

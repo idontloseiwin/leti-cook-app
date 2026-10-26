@@ -91,7 +91,9 @@ gallery views and the complete Shorts/Streams overview are not part of this prev
 
 Select the channel and choose **Remove selected channel**. It stops being
 collected and moves to **Deleted channels**, where you can restore it for 29 days.
-After that, its stored data and associated saved work are permanently deleted.
+After that, routine cleanup permanently deletes its stored data, every video it
+collected and its associated saved work, usually within minutes; collection of
+your other channels continues meanwhile.
 Your unrelated channels and workspace organisation remain.
 
 ## Backing up your work

@@ -30,6 +30,7 @@ EXPECTED_CASE_MODULES = {
     "folder_label_management": "cases_user_work",
     "runtime_readiness": "cases_readiness",
     "negative_intrinsic_guard": "cases_readiness",
+    "trashed_channel_removal": "cases_retention",
 }
 EXPECTED_CASE_FIXTURES = {
     "availability_recheck": ("availability_recheck_seed.sql",),
@@ -54,6 +55,7 @@ EXPECTED_CASE_FIXTURES = {
     ),
     "runtime_readiness": (),
     "negative_intrinsic_guard": (),
+    "trashed_channel_removal": ("trashed_channel_seed.sql",),
 }
 MANIFEST_PATH = Path("tests/schema25_regressions/manifest.json")
 FIXTURE_PATH = Path("tests/schema25_regressions/data")
@@ -112,12 +114,12 @@ class CurrentManifestTests(unittest.TestCase):
             name: {"kind": "seed" if name.endswith("_seed.sql") else "expression", "cases": [case]}
             for case, names in EXPECTED_CASE_FIXTURES.items() for name in names
         }
-        self.assertEqual(len(expected), 9)
+        self.assertEqual(len(expected), 10)
         self.assertEqual(
             {name: {"kind": entry["kind"], "cases": entry["cases"]}
              for name, entry in data["fixtures"].items()}, expected,
         )
-        self.assertEqual(sum(entry["kind"] == "seed" for entry in data["fixtures"].values()), 4)
+        self.assertEqual(sum(entry["kind"] == "seed" for entry in data["fixtures"].values()), 5)
 
     def test_every_current_fixture_loads_with_its_declared_kind(self):
         data = manifest.load(self.root)

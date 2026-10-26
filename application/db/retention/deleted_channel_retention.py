@@ -8,6 +8,7 @@ from ..base.postgres import DatabaseServerError
 from ..channel.channel_membership_cascade import drain_channel_memberships
 from ..inventory.inventory_incident_queue_effects import after_availability_incident_write
 from ..user_work.user_work_restore import REBASE_PENDING_PARENT_SQL
+from .inventory_retention import video_payload
 
 ERRORS = frozenset({'channel_trash_invalid_cleanup', 'channel_collection_scope_lost'})
 _HEADER = """WITH args AS (SELECT %s::text AS target, %s::text AS after_id, %s::integer AS limit),
@@ -27,8 +28,8 @@ _LOCK = """SELECT c.channel_id,c.user_work_id::text AS owner,s.control_epoch,
 _BUSY = """SELECT EXISTS(SELECT 1 FROM public.video_collection_state WHERE channel_id=%(channel)s::text AND lease_token IS NOT NULL AND lease_expires_at>%(at)s::timestamptz)
  OR EXISTS(SELECT 1 FROM public.channel_playlist_state WHERE channel_id=%(channel)s::text AND lease_token IS NOT NULL AND lease_expires_at>%(at)s::timestamptz)
  OR EXISTS(SELECT 1 FROM public.operator_jobs WHERE channel_id=%(channel)s::text AND lease_token IS NOT NULL AND lease_expires_at>%(at)s::timestamptz)
- OR EXISTS(SELECT 1 FROM public.video_inventory WHERE channel_id=%(channel)s::text)
- OR EXISTS(SELECT 1 FROM public.videos WHERE channel_id=%(channel)s::text)
+ OR EXISTS(SELECT 1 FROM public.video_inventory WHERE channel_id=%(channel)s::text AND skeleton_since IS NULL)
+ OR EXISTS(SELECT 1 FROM public.videos v WHERE v.channel_id=%(channel)s::text AND """+video_payload('v')+""")
  OR EXISTS(SELECT 1 FROM public.channel_snapshots WHERE channel_id=%(channel)s::text) AS busy"""
 _COLLECTION = """SELECT DISTINCT collection_id FROM public.saved_collection_members
  WHERE user_channel_ref=%(owner)s::uuid ORDER BY collection_id LIMIT 1"""
@@ -51,6 +52,15 @@ _CHILD_DELETES = (
     'DELETE FROM public.channel_playlist_state WHERE channel_id=%(channel)s::text',
     'DELETE FROM public.typed_inventory_receipts WHERE ctid IN (SELECT r.ctid FROM public.typed_inventory_receipts r JOIN public.channel_video_inventory_scans s ON s.scan_id=r.scan_id WHERE s.channel_id=%(channel)s::text LIMIT %(limit)s::integer)',
     'DELETE FROM public.channel_video_inventory_scans s WHERE s.ctid IN (SELECT s2.ctid FROM public.channel_video_inventory_scans s2 WHERE s2.channel_id=%(channel)s::text AND NOT EXISTS(SELECT 1 FROM public.typed_inventory_receipts r WHERE r.scan_id=s2.scan_id) LIMIT %(limit)s::integer)',
+    # Expiry keeps a video as an identity-only inventory row (and a video row
+    # without API data) so user decisions stay bound to it; no other target
+    # removes them. Once nothing refers to a video, it goes with its channel;
+    # its queue and read-model rows follow the inventory row.
+    'DELETE FROM public.videos v WHERE v.ctid IN (SELECT v2.ctid FROM public.videos v2 WHERE v2.channel_id=%(channel)s::text AND NOT '+video_payload('v2')+' AND NOT EXISTS(SELECT 1 FROM public.video_snapshots s WHERE s.video_id=v2.video_id) LIMIT %(limit)s::integer)',
+    'DELETE FROM public.video_inventory i WHERE i.ctid IN (SELECT i2.ctid FROM public.video_inventory i2 WHERE i2.channel_id=%(channel)s::text AND i2.skeleton_since IS NOT NULL'
+    ' AND NOT EXISTS(SELECT 1 FROM public.videos v WHERE v.video_id=i2.video_id) AND NOT EXISTS(SELECT 1 FROM public.video_snapshots s WHERE s.video_id=i2.video_id)'
+    ' AND NOT EXISTS(SELECT 1 FROM public.video_inventory_memberships m WHERE m.video_id=i2.video_id) AND NOT EXISTS(SELECT 1 FROM public.typed_video_collection_receipts r WHERE r.video_id=i2.video_id)'
+    ' AND NOT EXISTS(SELECT 1 FROM public.video_type_review_cases c WHERE c.video_id=i2.video_id) LIMIT %(limit)s::integer)',
 )
 
 _INCIDENT_DELETE = _CHILD_DELETES[7] + ' RETURNING to_jsonb(video_availability_incidents)::text AS old_text,restored_at IS NULL AS was_open'
@@ -64,7 +74,9 @@ _CHILDREN = """SELECT EXISTS(SELECT 1 FROM public.saved_collection_members WHERE
  OR EXISTS(SELECT 1 FROM public.channel_label_assignments WHERE channel_id=%(channel)s::text)
  OR EXISTS(SELECT 1 FROM public.channel_playlist_state WHERE channel_id=%(channel)s::text)
  OR EXISTS(SELECT 1 FROM public.channel_video_inventory_scans WHERE channel_id=%(channel)s::text)
- OR EXISTS(SELECT 1 FROM public.video_collection_state WHERE channel_id=%(channel)s::text) AS remaining"""
+ OR EXISTS(SELECT 1 FROM public.video_collection_state WHERE channel_id=%(channel)s::text)
+ OR EXISTS(SELECT 1 FROM public.video_inventory WHERE channel_id=%(channel)s::text)
+ OR EXISTS(SELECT 1 FROM public.videos WHERE channel_id=%(channel)s::text) AS remaining"""
 _PARENT_CHANNELS = """UPDATE public.channels SET parent_channel_id=NULL WHERE channel_id IN
  (SELECT channel_id FROM public.channels WHERE parent_channel_id=%(channel)s::text LIMIT %(limit)s::integer)"""
 _PARENT_PENDING = "UPDATE public.user_channel_restore_items SET parent_ref=NULL," + REBASE_PENDING_PARENT_SQL + """
@@ -148,6 +160,7 @@ def cleanup_hot_deleted_channels(transaction, *, target, after_id=None, limit=10
             rows=tx.fetch_all('SELECT channel_id FROM public.channels_with_control WHERE is_hidden AND hidden_at<=%(cutoff)s::timestamptz AND channel_id=ANY(%(ids)s::text[]) ORDER BY channel_id',
                 dict(cutoff=p['cutoff'],ids=[key[1] for key in references if key[0]=='channel']),max_rows=p['limit'])
         removed=deferred=0
+        progressing=False
         unresolved=[]
         pending=[]
         scopes=[]
@@ -174,6 +187,7 @@ def cleanup_hot_deleted_channels(transaction, *, target, after_id=None, limit=10
                     delete_ids.append(row['channel_id'])
                 else:
                     deferred+=1
+                    progressing=progressing or count>0
                     unresolved.append(dict(target=target,key=['channel',candidate['channel_id']]))
             except DatabaseServerError as error:
                 if error.code not in ('55P03','40P01'):
@@ -205,9 +219,13 @@ def cleanup_hot_deleted_channels(transaction, *, target, after_id=None, limit=10
                 raise DatabaseServerError('channel_collection_scope_lost',code='P0001')
         drain_channel_memberships(tx,delete_ids)
         removed+=tx.execute('DELETE FROM public.channels WHERE channel_id=ANY(%s::text[])',(delete_ids,))
-        complete=references is not None or len(rows)<p['limit']
+        # A removal that advanced but is not finished keeps the page open without
+        # a cursor: the pass reads it again at once, so a large catalogue is
+        # removed within one pass instead of one page of children per pass.
+        complete=references is not None or (len(rows)<p['limit'] and not progressing)
+        cursor=rows[-1]['channel_id'] if not complete and len(rows)==p['limit'] else None
         return dict(target=p['target'],as_of=p['at'],cutoff=p['cutoff'],scanned=len(rows)+(len(pending) if references is not None else 0),deleted=removed,scrubbed=0,
-                    deferred=deferred,complete=complete,next_cursor=None if complete else rows[-1]['channel_id'],
+                    deferred=deferred,complete=complete,next_cursor=cursor,
                     oldest_remaining_expired_source_at=None,invalid_clock_remaining=0,
                     # Every selected row has proved canonical removal expiry, even
                     # when its later lock is busy. Do not invent a source clock.

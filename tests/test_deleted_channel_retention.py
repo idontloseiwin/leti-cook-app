@@ -7,6 +7,7 @@ from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'application'))
 from db.retention import deleted_channel_retention as subject
 from db.base.postgres import DatabaseServerError
+from db.retention.inventory_retention import video_payload
 
 AT='2026-10-06T00:00:00+00:00'
 FLOOR='2026-09-08T00:00:00+00:00'
@@ -101,6 +102,29 @@ class DeletedChannelRetentionTests(unittest.TestCase):
             result=self.invoke(tx)
         self.assertEqual((result['deleted'],result['deferred']),(4,1))
         self.assertEqual(tx.events[-1][1],([],))
+    def test_unfinished_removal_reopens_the_page_without_a_cursor(self):
+        # The pass reads the page again at once, so a large catalogue does not
+        # take one page of children per pass; no progress closes the page.
+        tx=self.candidate()
+        with patch.object(subject,'_children',return_value=(4,False)):
+            result=self.invoke(tx)
+        self.assertEqual((result['deleted'],result['deferred'],result['complete'],result['next_cursor']),(4,1,False,None))
+        tx=self.candidate()
+        with patch.object(subject,'_children',return_value=(0,False)):
+            result=self.invoke(tx)
+        self.assertEqual((result['deferred'],result['complete'],result['next_cursor']),(1,True,None))
+    def test_only_rows_with_data_keep_the_channel_busy(self):
+        # What expiry leaves (identity-only inventory, video rows without API
+        # data) is removed as a child once nothing else refers to the video.
+        self.assertIn('video_inventory WHERE channel_id=%(channel)s::text AND skeleton_since IS NULL',subject._BUSY)
+        self.assertIn(video_payload('v'),subject._BUSY)
+        videos,inventory=subject._CHILD_DELETES[-2:]
+        self.assertTrue(videos.startswith('DELETE FROM public.videos ') and 'NOT '+video_payload('v2') in videos)
+        self.assertTrue(inventory.startswith('DELETE FROM public.video_inventory ') and 'i2.skeleton_since IS NOT NULL' in inventory)
+        for table in ('videos','video_snapshots','video_inventory_memberships','typed_video_collection_receipts','video_type_review_cases'):
+            self.assertIn('NOT EXISTS(SELECT 1 FROM public.'+table+' ',inventory)
+        for table in ('video_inventory','videos'):
+            self.assertIn('EXISTS(SELECT 1 FROM public.'+table+' WHERE channel_id=%(channel)s::text)',subject._CHILDREN)
     def test_row_lock_conflict_and_deadlock_do_not_acquire_final_scope(self):
         for code in ('55P03','40P01'):
             tx=self.candidate();tx.lock_error=code

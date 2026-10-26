@@ -179,13 +179,14 @@ _RECOVERY_QUEUE="""INSERT INTO public.video_collection_state AS state
 _CHILDREN="""SELECT EXISTS(SELECT 1 FROM public.video_inventory_memberships WHERE video_id=%(video_id)s)
  OR EXISTS(SELECT 1 FROM public.video_snapshots WHERE video_id=%(video_id)s)
  OR EXISTS(SELECT 1 FROM public.typed_video_collection_receipts WHERE video_id=%(video_id)s) AS present"""
-_CURRENT="""SELECT title IS NOT NULL OR views IS NOT NULL OR like_count IS NOT NULL OR comment_count IS NOT NULL
- OR published_at IS NOT NULL OR duration IS NOT NULL OR tags IS NOT NULL OR category_id IS NOT NULL
- OR youtube_topic_categories IS NOT NULL OR default_audio_language IS NOT NULL OR default_language IS NOT NULL
- OR caption_available IS NOT NULL OR stream_actual_end_at IS NOT NULL
- OR publication_status IS NOT NULL OR scheduled_start_at IS NOT NULL OR availability_status IS NOT NULL
- OR privacy_status IS NOT NULL OR upload_status IS NOT NULL AS payload
- FROM public.videos WHERE video_id=%(video_id)s FOR UPDATE NOWAIT"""
+# Every videos column except the identity and the three source clocks.
+VIDEO_PAYLOAD_COLUMNS=('title','views','like_count','comment_count','published_at','duration','tags','category_id',
+    'youtube_topic_categories','default_audio_language','default_language','caption_available','stream_actual_end_at',
+    'publication_status','scheduled_start_at','availability_status','privacy_status','upload_status')
+def video_payload(alias):
+    """True while a video row still carries API data, not only its identity."""
+    return '('+' OR '.join(alias+'.'+column+' IS NOT NULL' for column in VIDEO_PAYLOAD_COLUMNS)+')'
+_CURRENT="SELECT "+video_payload('v')+" AS payload FROM public.videos v WHERE v.video_id=%(video_id)s FOR UPDATE NOWAIT"
 # Four preflight round trips become one native snapshot. The clock is fresh,
 # the page cutoff is fixed, and every writable candidate is rechecked below
 # after the existing ownership locks. No preflight row authorizes a write.
