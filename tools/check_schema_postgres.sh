@@ -82,4 +82,4 @@ docker exec "$name" rm -- /tmp/schema-ci-runtime.dump
 printf '%s\n' '{"stage":"postgres_image_runtime","status":"pass","checks":["nonroot_uid_gid","no_process_capabilities","postgres_home","gosu_absent","dump_restore","term_shutdown","existing_volume_restart"]}'
 
 bash "$root/tools/check_schema_ci_suite.sh" "$name"
-echo "Fresh schema passes the complete 10 SQL + 20 Python suite."
+echo "Fresh schema passes the complete 10 SQL + 21 Python suite."

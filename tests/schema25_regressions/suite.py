@@ -9,4 +9,5 @@ CASES={
 'runtime_readiness':c.runtime_readiness,'negative_intrinsic_guard':c.negative_intrinsic_guard,
 'trashed_channel_removal':r.trashed_channel_removal,'inventory_queue_seek':r.inventory_queue_seek,
 'receipt_scan_index':r.receipt_scan_index,
-'growth_window_from_last_snapshot':r.growth_window_from_last_snapshot}
+'growth_window_from_last_snapshot':r.growth_window_from_last_snapshot,
+'claim_window_skips_leases':j.claim_window_skips_leases}

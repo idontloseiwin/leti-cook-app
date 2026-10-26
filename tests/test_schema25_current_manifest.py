@@ -34,6 +34,7 @@ EXPECTED_CASE_MODULES = {
     "inventory_queue_seek": "cases_retention",
     "receipt_scan_index": "cases_retention",
     "growth_window_from_last_snapshot": "cases_retention",
+    "claim_window_skips_leases": "cases_jobs",
 }
 EXPECTED_CASE_FIXTURES = {
     "availability_recheck": ("availability_recheck_seed.sql",),
@@ -62,6 +63,7 @@ EXPECTED_CASE_FIXTURES = {
     "inventory_queue_seek": ("inventory_queue_seed.sql",),
     "receipt_scan_index": (),
     "growth_window_from_last_snapshot": (),
+    "claim_window_skips_leases": ("claim_window_seed.sql",),
 }
 MANIFEST_PATH = Path("tests/schema25_regressions/manifest.json")
 FIXTURE_PATH = Path("tests/schema25_regressions/data")
@@ -120,12 +122,12 @@ class CurrentManifestTests(unittest.TestCase):
             name: {"kind": "seed" if name.endswith("_seed.sql") else "expression", "cases": [case]}
             for case, names in EXPECTED_CASE_FIXTURES.items() for name in names
         }
-        self.assertEqual(len(expected), 11)
+        self.assertEqual(len(expected), 12)
         self.assertEqual(
             {name: {"kind": entry["kind"], "cases": entry["cases"]}
              for name, entry in data["fixtures"].items()}, expected,
         )
-        self.assertEqual(sum(entry["kind"] == "seed" for entry in data["fixtures"].values()), 6)
+        self.assertEqual(sum(entry["kind"] == "seed" for entry in data["fixtures"].values()), 7)
 
     def test_every_current_fixture_loads_with_its_declared_kind(self):
         data = manifest.load(self.root)

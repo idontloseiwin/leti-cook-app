@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 20,
+  "expected_python_count": 21,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -266,6 +266,17 @@
       "row_budget": 1000,
       "fixtures": [],
       "callable": "cases_retention.growth_window_from_last_snapshot"
+    },
+    "claim_window_skips_leases": {
+      "owners": [
+        "VideoCollectionRepository.claim_due_video_collection_batch"
+      ],
+      "assertions": "1000 earliest due rows under live leases, five free: the due window holds the five free rows; an expired lease is due again",
+      "row_budget": 4500,
+      "fixtures": [
+        "claim_window_seed.sql"
+      ],
+      "callable": "cases_jobs.claim_window_skips_leases"
     }
   },
   "fixtures": {
@@ -344,6 +355,13 @@
       "kind": "seed",
       "cases": [
         "inventory_queue_seek"
+      ]
+    },
+    "claim_window_seed.sql": {
+      "sha256": "ecfaeee76eb80f9717dcf898be4b817fcf6d9b8773f9d6ab283f673484b8beff",
+      "kind": "seed",
+      "cases": [
+        "claim_window_skips_leases"
       ]
     }
   }

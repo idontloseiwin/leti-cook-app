@@ -1,7 +1,9 @@
 """Bounded scheduled claims used by the video collection repository.
 
 The existing per-video queue remains the sole lease owner. Its raw1000-ID due
-window follows advisory operation selection and precedes lease/identity filtering.
+window follows advisory operation selection, leaves out rows under a live lease
+(as the mixed window does, so abandoned leases cannot fill it) and precedes the
+locked lease and identity checks, which stay authoritative.
 Scoped common batches recheck the selected provider operation under locks; unrelated
 due work stays queued. The fixed cursor retains PostgreSQL17's10/50-row fetch
 batches and one selection snapshot. Sparse operations may inspect and briefly
@@ -33,6 +35,7 @@ _RECOVERY_WINDOW = _RECOVERY_IDENTITY.replace('%s::text','state.video_id',1).rep
 _WINDOW_BASE="""SELECT coalesce(array_agg(page.video_id ORDER BY page.due_at,page.video_id),ARRAY[]::text[]) AS ids
  FROM (SELECT state.video_id,state.next_due_at AS due_at FROM public.video_collection_state state
  WHERE state.paused_reason IS NULL AND state.next_due_at<=now() {typed}
+ AND (state.lease_token IS NULL OR state.lease_expires_at<=now())
  AND NOT """+VIDEO_INITIAL_PENDING_STATE_SQL+"""
  AND (state.video_type IS NOT NULL OR ("""+_RECOVERY_WINDOW+"""))
  ORDER BY state.next_due_at,state.video_id LIMIT 1000) page"""

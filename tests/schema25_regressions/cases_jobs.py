@@ -73,3 +73,17 @@ def failed_job_backoff(f):
     f.check(repo.prepare_chunk(job,claimed['lease_token'],limit=50,lease_seconds=60)['video_ids']==[],'exhausted_not_retried')
     f.check(f.scalar("SELECT status='completed' AND error_count=3 FROM public.operator_jobs WHERE id=%s",(job,)) is True,'job_completed')
     f.check(f.scalar("SELECT count(*)=3 AND bool_and(status='error' AND result_code='retry_limit_reached' AND job_attempts<=3) FROM public.operator_job_targets WHERE job_id=%s",(job,)) is True,'target_attempt_bound')
+
+def claim_window_skips_leases(f):
+    # The due window leaves out rows under a live lease, so a thousand abandoned
+    # leases cannot fill it and starve the collector of the free rows behind them.
+    from db.videos.video_scheduled_claims import _WINDOW
+    f.channel()
+    f.seed_sql('claim_window_seed.sql')
+    ids=f.rows(_WINDOW[False])[0]['ids']
+    free=['w%010d' % v for v in range(1001,1006)]
+    f.check(ids==free,'claim_window_free_rows')
+    f.check(f.scalar("SELECT count(*) FROM public.video_collection_state WHERE lease_token IS NOT NULL AND lease_expires_at>now()")==1000,'claim_window_leases_kept')
+    # An expired lease is due work again.
+    f.rows("UPDATE public.video_collection_state SET lease_started_at=now()-interval '10 minutes',lease_expires_at=now()-interval '1 second' WHERE video_id='w0000000001'")
+    f.check(f.rows(_WINDOW[False])[0]['ids'][0]=='w0000000001','claim_window_expired_lease_due')
