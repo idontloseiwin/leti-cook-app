@@ -135,29 +135,20 @@ def video(video_id, *, current=True, public=True):
 
 
 class InventoryReadTests(unittest.TestCase):
-    def test_keyset_advances_from_timestamp_ties_to_null_publications(self):
-        for repository_type, module in (
-            (ChannelExplorerRepository, channel_explorer),
-            (ChannelBaselineRepository, channel_baseline),
-            (ChannelDerivedInsightsRepository, channel_derived_insights),
-        ):
+    def test_long_inventory_is_one_statement_with_the_requested_limit(self):
+        # The protected view cannot be read in pages by its order key, so the
+        # requested prefix is one statement (and one snapshot).
+        for repository_type in (ChannelExplorerRepository, ChannelBaselineRepository, ChannelDerivedInsightsRepository):
             with self.subTest(repository=repository_type.__name__):
-                first = [inventory("a"), inventory("b")]
-                second = [inventory("c", None), inventory("d", None)]
-                db = RecordingDatabase(first, second, [])
-                repository = repository_type(db)
-                with patch.object(module, "INVENTORY_PAGE_SIZE", 2):
-                    rows = repository.load_long_inventory("channel'quoted", limit=5)
-                self.assertEqual(rows, first + second)
-                self.assertEqual(len(db.calls), 3)
-                self.assertIn("published_at DESC NULLS LAST, video_id ASC", db.calls[0][2])
+                rows = [inventory("a"), inventory("b"), inventory("c", None)]
+                db = RecordingDatabase(rows)
+                self.assertEqual(repository_type(db).load_long_inventory("channel'quoted", limit=5001), rows)
+                self.assertEqual(len(db.calls), 1)
+                self.assertIn("ORDER BY published_at DESC NULLS LAST, video_id ASC LIMIT %s", db.calls[0][2])
                 self.assertNotIn("channel'quoted", db.calls[0][2])
-                self.assertEqual(db.calls[0][3], ("channel'quoted", "long", 2))
-                self.assertIn("published_at IS NULL", db.calls[1][2])
-                self.assertIn("published_at = %s::timestamptz AND video_id > %s", db.calls[1][2])
-                self.assertEqual(db.calls[1][3], ("channel'quoted", "long", CURRENT, CURRENT, "b", 2))
-                self.assertIn("published_at IS NULL AND video_id > %s", db.calls[2][2])
-                self.assertEqual(db.calls[2][3], ("channel'quoted", "long", "d", 1))
+                self.assertEqual(db.calls[0][3], ("channel'quoted", "long", 5001))
+                self.assertEqual(db.calls[0][4], 5001)
+                self.assertEqual(repository_type(RecordingDatabase()).load_long_inventory("channel", limit=0), [])
 
     def test_scope_scan_requires_empty_page_and_rejects_repeated_cursor(self):
         page = [inventory("a")]

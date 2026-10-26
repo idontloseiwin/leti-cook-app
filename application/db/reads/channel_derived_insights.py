@@ -13,29 +13,14 @@ from psycopg import sql
 from ..base.sql_values import projection
 
 
-INVENTORY_PAGE_SIZE = 1000
 SNAPSHOT_PAGE_SIZE = 1000
 CURSOR_TIMESTAMP_RE = re.compile(r"^[0-9T:+.Z-]+$")
-CURSOR_VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 
 
 def _iso(value: datetime) -> str:
     if value.tzinfo is None:
         value = value.replace(tzinfo=timezone.utc)
     return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-
-
-def _inventory_cursor(row: dict[str, Any]) -> tuple[str | None, str]:
-    published_at = row.get("published_at")
-    published = str(published_at).strip() if published_at is not None else None
-    video_id = str(row.get("video_id") or "").strip()
-    if published == "":
-        published = None
-    if published is not None and not CURSOR_TIMESTAMP_RE.fullmatch(published):
-        raise RuntimeError("inventory cursor has an invalid publication timestamp")
-    if not CURSOR_VIDEO_ID_RE.fullmatch(video_id):
-        raise RuntimeError("inventory cursor has an invalid video ID")
-    return published, video_id
 
 
 def _snapshot_cursor(row: dict[str, Any]) -> tuple[str, int]:
@@ -65,40 +50,18 @@ class ChannelDerivedInsightsRepository(DatabaseRepository):
 
     def load_long_inventory(self, channel_id: str, *, limit: int) -> list[dict[str, Any]]:
         requested = max(0, int(limit))
-        rows: list[dict[str, Any]] = []
-        cursor_published: str | None = None
-        cursor_video_id: str | None = None
-        while len(rows) < requested:
-            page_size = min(INVENTORY_PAGE_SIZE, requested - len(rows))
-            statement = (
-                "SELECT video_id,published_at,source_checked_at,source_expires_at FROM readable.hot_video_inventory "
-                "WHERE channel_id = %s AND video_type = %s"
-            )
-            params = [channel_id, "long"]
-            if cursor_video_id is not None:
-                if cursor_published is None:
-                    statement += " AND published_at IS NULL AND video_id > %s"
-                    params.append(cursor_video_id)
-                else:
-                    statement += (
-                        " AND (published_at < %s::timestamptz"
-                        " OR (published_at = %s::timestamptz AND video_id > %s)"
-                        " OR published_at IS NULL)"
-                    )
-                    params.extend((cursor_published, cursor_published, cursor_video_id))
-            statement += " ORDER BY published_at DESC NULLS LAST, video_id ASC LIMIT %s"
-            params.append(page_size)
-            batch = self.database.read_rows(
-                "channel_derived_insights_load_long_inventory", statement, params, max_rows=page_size,
-            ) or []
-            rows.extend(dict(row) for row in batch)
-            if len(batch) < page_size:
-                break
-            next_cursor = _inventory_cursor(dict(batch[-1]))
-            if next_cursor == (cursor_published, cursor_video_id):
-                raise RuntimeError("inventory keyset cursor did not advance")
-            cursor_published, cursor_video_id = next_cursor
-        return self.admit_source_deadlines(rows)
+        if requested == 0:
+            return []
+        # One statement: the protected view cannot be read in pages by its order
+        # key, so every 1000-row page rebuilt the channel's whole inventory. One
+        # read is also one snapshot of the catalogue.
+        batch = self.database.read_rows(
+            "channel_derived_insights_load_long_inventory",
+            "SELECT video_id,published_at,source_checked_at,source_expires_at FROM readable.hot_video_inventory "
+            "WHERE channel_id = %s AND video_type = %s ORDER BY published_at DESC NULLS LAST, video_id ASC LIMIT %s",
+            [channel_id, "long", requested], max_rows=requested,
+        ) or []
+        return self.admit_source_deadlines([dict(row) for row in batch])
 
     def load_videos_by_ids(self, video_ids: Sequence[str], *, columns: str) -> list[dict[str, Any]]:
         columns = columns if columns == "*" else ",".join(dict.fromkeys([*columns.split(","), "source_expires_at"]))
