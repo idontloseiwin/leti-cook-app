@@ -476,7 +476,7 @@ class HotRuntimeController:
         self.time_trust = _time_trust.monitor() if time_trust is None else time_trust
         self.on_ready, self._ready_notified = on_ready, False
         self.clock, self.monotonic = clock, monotonic
-        self.cycle = HotCleanupCycle(repository)
+        self.cycle = HotCleanupCycle(repository, clock=monotonic)
         self._priority = PriorityRetrySet()
         self._lock = threading.RLock()
         self._stop = threading.Event()
@@ -818,6 +818,8 @@ class HotRuntimeController:
                     'invalid_clocks_observed', 'unknown_expiry_observed',
                     'oldest_observed_expired_source_at')}
                 self._summary['confirmed_expired_observed'] = summary.get('confirmed_expired_observed', 0)
+                # A target that keeps failing waits behind the others; keep it visible.
+                self._summary['targets_failing'] = list(summary.get('targets_failing', ()))
                 self._last_tick, self._last_wall = self.monotonic(), self.clock()
                 removed = summary['counts']['deleted'] + summary['counts']['scrubbed']
                 if self._catchup:
