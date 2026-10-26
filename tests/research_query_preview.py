@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 import time
 from types import SimpleNamespace
+from contextlib import asynccontextmanager
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'application'), str(ROOT/'tests')]
@@ -18,9 +19,11 @@ from request_limits import RequestBodyLimitMiddleware
 from web.middleware import install_runtime_middleware, HttpReadScopeMiddleware
 from web.research import create_research_router
 from web.frontend import create_frontend_router
+from db.inventory.search_projection import SearchProjectionRepository
+from research_projection_refresher import SearchProjectionRefresher
 
 
-def create_preview_app(database, auth_path, origin, folders):
+def create_preview_app(database, auth_path, origin, folders, *, projection=None, start_projection=True):
     now = int(time.time())
     owner = OwnerAuthRepository.initialize(auth_path, 'fixture-dummy', now)
     owner.issue_setup('fixture-setup', now)
@@ -28,7 +31,16 @@ def create_preview_app(database, auth_path, origin, folders):
     # These are separate simulated requests. The claim's committed session can
     # be newer than the timestamp captured before filesystem/SQLite setup.
     assert owner.complete_setup('fixture-session', 'local', None, lambda: None, None, int(time.time())) == 'ok'
-    app = FastAPI()
+    projection = projection or SearchProjectionRefresher(SearchProjectionRepository(database), ready=lambda: None)
+    @asynccontextmanager
+    async def lifespan(app):
+        if start_projection: projection.start()
+        try:
+            yield
+        finally:
+            if start_projection: projection.close()
+    app = FastAPI(lifespan=lifespan)
+    app.state.research_projection = projection
     app.state.hot_runtime = SimpleNamespace(status=lambda: {'status': 'ready', 'api_read': {'allowed': True},
                                                            'collection': {'allowed': False}, 'user_work': {'allowed': True}})
     install_runtime_middleware(app, core=SimpleNamespace())

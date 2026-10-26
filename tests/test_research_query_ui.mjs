@@ -44,3 +44,33 @@ assert.throws(() => exports.parseResearchPage(structuredClone(valid), 'short'));
 const unknown = tagged(data => { data.rows[0].cells['video.views'].state = 'unknown'; data.rows[0].cells['video.views'].value = null; });
 assert.equal(exports.parseResearchPage(unknown, 'short').rows[0].cells['video.views'].value, null);
 console.log('Research query UI: request, precision, source lifetime, identity, coverage and malformed-response checks passed.');
+
+class ApiError extends Error { constructor(code) { super(code); this.code = code; } }
+function retryFixture(sequence, { hold = false } = {}) {
+  const api = {}, delays = [], timers = new Set(); let calls = 0;
+  new Function('require', 'exports', 'setTimeout', 'clearTimeout', outputText)(
+    name => name === '../sourceLifetime' ? lifetime : { ExplorerApiError: ApiError,
+      requestJson: async () => { calls++; const next = sequence.shift(); if (next instanceof Error) throw next; return next; } },
+    api, (fn, ms) => { const id = {}; timers.add(id); delays.push(ms); if (!hold) queueMicrotask(() => { timers.delete(id); fn(); }); return id; },
+    id => timers.delete(id));
+  return { api, delays, timers, calls: () => calls };
+}
+let fixture = retryFixture([new ApiError('catalogue_preparing'), tagged()]);
+let notices = 0;
+assert.equal((await fixture.api.loadResearchPage(filters, new AbortController().signal, undefined, () => notices++)).rows.length, 1);
+assert.equal(fixture.calls(), 2); assert.equal(notices, 1); assert.deepEqual(fixture.delays, [2000]);
+fixture = retryFixture(Array.from({length: 4}, () => new ApiError('catalogue_preparing')));
+await assert.rejects(fixture.api.loadResearchPage(filters, new AbortController().signal), /catalogue_preparing/);
+assert.equal(fixture.calls(), 3); assert.deepEqual(fixture.delays, [2000, 2000]);
+for (const code of ['policy_denied', 'backend_unavailable', 'query_busy', 'query_budget_exceeded', 'cursor_expired']) {
+  fixture = retryFixture([new ApiError(code)]);
+  await assert.rejects(fixture.api.loadResearchPage(filters, new AbortController().signal), new RegExp(code));
+  assert.equal(fixture.calls(), 1); assert.equal(fixture.delays.length, 0);
+}
+fixture = retryFixture([new ApiError('catalogue_preparing')], { hold: true });
+const controller = new AbortController(), pending = fixture.api.loadResearchPage(filters, controller.signal);
+await Promise.resolve(); await Promise.resolve();
+assert.equal(fixture.timers.size, 1);
+controller.abort(); await assert.rejects(pending, /abort/i);
+assert.equal(fixture.timers.size, 0); assert.equal(fixture.calls(), 1);
+console.log('Preparation retry: bounded attempts, cancellation, timer cleanup, and no retries for other failures passed.');

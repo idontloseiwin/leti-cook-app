@@ -294,6 +294,7 @@ class NativeQueryTests(unittest.TestCase):
 
 
     def test_14_owner_http_pages_match_native_executor_for_every_type(self):
+        import time
         import tempfile
         from unittest.mock import patch
         from fastapi.testclient import TestClient
@@ -302,6 +303,10 @@ class NativeQueryTests(unittest.TestCase):
                 patch('hot_runtime.require_hot_runtime_ready', lambda **kw: None):
             app = create_preview_app(self.db, Path(folder)/'owner.sqlite3', 'http://127.0.0.1:8002', FIXTURE['folders'])
             with TestClient(app, base_url='http://127.0.0.1:8002', headers={'Origin':'http://127.0.0.1:8002'}) as client:
+                ready_deadline = time.monotonic()+15
+                while not app.state.research_projection.initial_fill_complete:
+                    self.assertLess(time.monotonic(), ready_deadline, 'initial preparation stalled')
+                    time.sleep(.02)
                 for kind in ('long','short','stream'):
                     q=query(video_types=[kind], select=['video.id','video.channel_id','video.type','video.title',
                             'video.published_at','video.duration_seconds','video.views'])
@@ -493,5 +498,50 @@ class NativeQueryTests(unittest.TestCase):
             self.admin.execute('UPDATE public.videos SET title=%s,duration=%s WHERE video_id=%s',(row[1],row[2],row[0]))
             self.admin.execute('DELETE FROM public.video_type_review_cases WHERE video_id IS NULL')
             self.refresh()
+
+
+    def test_23_preparation_ends_while_collection_keeps_writing(self):
+        import threading, time
+        from db.inventory.search_projection import SearchProjectionRepository
+        from research_projection_refresher import SearchProjectionRefresher
+        repository=SearchProjectionRepository(self.db)
+        videos=[r[0] for r in self.admin.execute('SELECT DISTINCT video_id FROM public.video_inventory_memberships ORDER BY video_id')]
+        # Changes made while the process was down: the first batch after a start has work.
+        backlog=lambda: self.admin.execute('UPDATE public.video_inventory_memberships SET updated_at=now()')
+        backlog()
+        # A full batch may leave work behind; preparation goes on until one is not full.
+        small=SearchProjectionRefresher(repository,ready=lambda: None,limit=5)
+        small.step()
+        self.assertFalse(small.initial_fill_complete)
+        for _ in range(len(videos)):
+            if small.initial_fill_complete: break
+            small.step()
+        self.assertTrue(small.initial_fill_complete)
+        backlog()
+        stop=threading.Event()
+        def collect():
+            # One membership row every 0.2 s, far fewer than a playlist scan writes.
+            with psycopg.connect(self.admin.info.dsn,password=os.environ['LIC_QUERY_TEST_PASSWORD'],autocommit=True) as writer:
+                i=0
+                while not stop.is_set():
+                    writer.execute('UPDATE public.video_inventory_memberships SET updated_at=now() WHERE video_id=%s',(videos[i%len(videos)],))
+                    i+=1
+                    stop.wait(.2)
+        thread=threading.Thread(target=collect,daemon=True)
+        thread.start()
+        owner=SearchProjectionRefresher(repository,ready=lambda: None)
+        try:
+            time.sleep(.3)
+            owner.start()
+            deadline=time.monotonic()+10
+            while not owner.initial_fill_complete:
+                self.assertLess(time.monotonic(),deadline,'preparation waited for collection to stop writing')
+                time.sleep(.05)
+            self.assertTrue(thread.is_alive())
+        finally:
+            owner.close()
+            stop.set()
+            thread.join(5)
+        self.refresh()
 
 if __name__=='__main__': unittest.main(verbosity=2)

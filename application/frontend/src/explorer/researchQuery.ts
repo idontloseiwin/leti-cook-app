@@ -92,17 +92,39 @@ export async function loadResearchCapabilities(signal: AbortSignal): Promise<Res
   if (researchFields.some(id => !fields.some(field => field.id === id && field.sortable === true))) return invalid();
   return root.video_types as ResearchType[];
 }
-export async function loadResearchPage(filters: ResearchFilters, signal: AbortSignal, after?: string): Promise<ResearchPage> {
-  return parseResearchPage(await requestJson('/research/queries/execute', signal, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(researchQuery(filters, after)),
-  }), filters.type);
+function preparationDelay(signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    signal.throwIfAborted();
+    const abort = () => { clearTimeout(timer); reject(signal.reason); };
+    const timer = setTimeout(() => { signal.removeEventListener('abort', abort); resolve(); }, 2000);
+    signal.addEventListener('abort', abort, { once: true });
+  });
+}
+export async function loadResearchPage(filters: ResearchFilters, signal: AbortSignal, after?: string, onPreparing = () => {}): Promise<ResearchPage> {
+  const body = JSON.stringify(researchQuery(filters, after));
+  for (let attempt = 0; ; attempt++) {
+    signal.throwIfAborted();
+    try {
+      return parseResearchPage(await requestJson('/research/queries/execute', signal, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body,
+      }), filters.type);
+    } catch (error) {
+      // Only this read-only, explicitly unexecuted request can retry. Never
+      // retry access errors, query timeouts, writes, or an unknown response.
+      if (!(error instanceof ExplorerApiError) || error.code !== 'catalogue_preparing' || attempt >= 2) throw error;
+      onPreparing();
+      await preparationDelay(signal);
+    }
+  }
 }
 export function researchError(error: unknown): string {
   if (error instanceof ExplorerApiError) {
     if (error.code === 'policy_denied') return 'This preview is not enabled, or your access has ended.';
     if (error.code === 'cursor_expired' || error.code === 'cursor_context_changed') return 'The page has expired or its source changed. Refresh from the first page.';
     if (error.code === 'source_unavailable') return 'This folder is no longer available. Choose a folder and refresh.';
-    if (error.code === 'query_busy' || error.code === 'query_budget_exceeded') return 'The query could not finish within its limits. Narrow the selection and try again.';
+    if (error.code === 'catalogue_preparing') return 'The catalogue is still being prepared in the background. Try Refresh shortly.';
+    if (error.code === 'query_busy') return 'The catalogue is busy. Try Refresh shortly.';
+    if (error.code === 'query_budget_exceeded') return 'The query could not finish within its limits. Narrow the selection and try again.';
   }
   return 'The catalogue could not be loaded. Check access and connection, then refresh.';
 }

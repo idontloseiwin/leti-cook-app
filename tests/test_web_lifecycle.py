@@ -156,11 +156,13 @@ class WebLifespanTests(unittest.TestCase):
                     "runtime.construct", "runtime.install", "clock.probe", "runtime.initialize", "runtime.start", "onboarding.construct",
                     "supervisor.construct", "onboarding.install", "supervisor.start"])
                 runtime = app.state.hot_runtime
+                self.assertIsNotNone(app.state.research_projection)
                 self.assertNotEqual(runtime.initialized_thread, runtime.started_thread)
                 runtime.local_cleanup()
                 runtime.clear_caches()
                 runtime.on_ready()
                 self.assertEqual(events[-4:], ["reference.purge", "cache.read.clear", "cache.catalogue.clear", "recorder.start"])
+            self.assertIsNone(app.state.research_projection)
             self.assertEqual(events[-10:], ["onboarding.close", "onboarding.remove", "provider.close", "recorder.close",
                 "runtime.close", "runtime.remove", "maintenance.close", "reference.close", "database.close", "owner.exit"])
 

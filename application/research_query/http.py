@@ -24,7 +24,10 @@ def create_router(service_provider, authorize_owner):
         return bytes(raw)
 
     def response(value, status=200):
-        return JSONResponse(value, status_code=status, headers={"Cache-Control": "no-store"})
+        headers = {"Cache-Control": "no-store"}
+        if status == 503 and value.get('code') == 'catalogue_preparing':
+            headers['Retry-After'] = '2'
+        return JSONResponse(value, status_code=status, headers=headers)
 
     @router.get("/capabilities")
     async def get_capabilities(request: Request):

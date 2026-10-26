@@ -42,6 +42,8 @@ class IntegrationTests(unittest.TestCase):
         ]:
             item = patch(target, value); item.start(); self.addCleanup(item.stop)
         self.app = FastAPI()
+        self.projection = SimpleNamespace(initial_fill_complete=True, preparation_failing=False)
+        self.app.state.research_projection = self.projection
         install_runtime_middleware(self.app, core=SimpleNamespace())
         self.app.include_router(create_research_router(None))
         self.app.add_middleware(RequestBodyLimitMiddleware)
@@ -61,6 +63,27 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(self.post().status_code, 403)
         self.owner.mode = 'password'
         self.assertEqual(self.post().status_code, 401)
+        self.assertEqual(self.repo.reads, 0)
+
+    def test_initial_preparation_returns_fixed_retryable_state_without_reading(self):
+        self.projection.initial_fill_complete = False
+        answer = self.post()
+        self.assertEqual((answer.status_code, answer.json()['code']), (503, 'catalogue_preparing'))
+        self.assertEqual(answer.headers['retry-after'], '2')
+        self.assertEqual(answer.headers['cache-control'], 'no-store')
+        self.assertEqual(self.repo.reads, 0)
+        self.assertEqual(self.client.get('/research/capabilities').status_code, 200)
+        self.projection.preparation_failing = True
+        answer = self.post()
+        self.assertEqual(answer.json()['code'], 'backend_unavailable')
+        self.assertNotIn('retry-after', answer.headers)
+        self.assertEqual(self.repo.reads, 0)
+        self.projection.initial_fill_complete = True
+        self.assertEqual(self.post().status_code, 200)
+
+    def test_missing_worker_fails_closed_without_reading(self):
+        self.app.state.research_projection = None
+        self.assertEqual(self.post().json()['code'], 'backend_unavailable')
         self.assertEqual(self.repo.reads, 0)
 
     def test_same_origin_and_body_limits_precede_database(self):

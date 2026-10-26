@@ -13,10 +13,11 @@ from research_projection_refresher import SearchProjectionRefresher  # noqa: E40
 
 
 class Repository:
+    """Each result is (markers taken, rows refreshed) or an exception to raise."""
     def __init__(self, *results):
         self.results, self.calls = list(results), []
 
-    def refresh(self, limit):
+    def refresh_counts(self, limit):
         self.calls.append(limit)
         result = self.results.pop(0)
         if isinstance(result, Exception):
@@ -26,27 +27,73 @@ class Repository:
 
 class RefresherTests(unittest.TestCase):
     def test_work_continues_soon_and_an_empty_batch_idles(self):
-        repository = Repository(50, 1, 0)
+        repository = Repository((50, 50), (1, 1), (0, 0))
         owner = SearchProjectionRefresher(repository, ready=lambda: None, limit=50)
+        self.assertFalse(owner.initial_fill_complete)
         self.assertEqual(owner.step(), refresher.BUSY_SECONDS)
+        self.assertFalse(owner.initial_fill_complete)
         self.assertEqual(owner.step(), refresher.BUSY_SECONDS)
+        self.assertTrue(owner.initial_fill_complete)
         self.assertEqual(owner.step(), refresher.IDLE_SECONDS)
         self.assertEqual(repository.calls, [50, 50, 50])
         self.assertLess(refresher.BUSY_SECONDS, refresher.IDLE_SECONDS)
 
-    def test_closed_gate_skips_the_database_and_retries_later(self):
+    def test_preparation_ends_while_collection_keeps_queueing(self):
+        # Every batch finds new markers, as while collection writes; the first
+        # batch that took all it found ends preparation without an empty one.
+        owner = SearchProjectionRefresher(Repository((50, 50), (50, 12), (3, 3), (2, 2)),
+                                          ready=lambda: None, limit=50)
+        for ready in (False, False, True, True):
+            self.assertEqual(owner.step(), refresher.BUSY_SECONDS)
+            self.assertEqual(owner.initial_fill_complete, ready)
+
+    def test_a_full_page_of_expired_rows_keeps_preparing(self):
+        owner = SearchProjectionRefresher(Repository((0, 50), (10, 60), (10, 49)),
+                                          ready=lambda: None, limit=50)
+        owner.step()
+        owner.step()
+        self.assertFalse(owner.initial_fill_complete)
+        owner.step()
+        self.assertTrue(owner.initial_fill_complete)
+
+    def test_closed_gate_skips_the_database_and_retries_soon_while_preparing(self):
         repository = Repository()
         def closed():
             raise RuntimeError('collection_not_admitted')
         owner = SearchProjectionRefresher(repository, ready=closed)
-        self.assertEqual(owner.step(), refresher.RETRY_SECONDS)
+        for _ in range(refresher.FAILURES_BEFORE_UNAVAILABLE):
+            self.assertFalse(owner.preparation_failing)
+            self.assertEqual(owner.step(), refresher.PREPARING_RETRY_SECONDS)
+        self.assertTrue(owner.preparation_failing)
         self.assertEqual(repository.calls, [])
         self.assertEqual(owner.last_error, 'RuntimeError')
+        self.assertFalse(owner.initial_fill_complete)
+        self.assertLess(refresher.PREPARING_RETRY_SECONDS, refresher.RETRY_SECONDS)
+
+    def test_one_failure_in_a_row_while_preparing_is_not_an_outage(self):
+        owner = SearchProjectionRefresher(
+            Repository(ValueError('lock'), ValueError('lock'), (50, 50), ValueError('lock'), ValueError('lock')),
+            ready=lambda: None, limit=50)
+        owner.step()
+        owner.step()
+        self.assertFalse(owner.preparation_failing)
+        owner.step()  # A success resets the failures in a row.
+        owner.step()
+        owner.step()
+        self.assertFalse(owner.preparation_failing)
+        self.assertFalse(owner.initial_fill_complete)
+
+    def test_initial_admission_survives_later_writes_and_errors(self):
+        owner = SearchProjectionRefresher(Repository((0, 0), (10, 10), ValueError('offline')),
+                                          ready=lambda: None)
+        for expected in (refresher.IDLE_SECONDS, refresher.BUSY_SECONDS, refresher.RETRY_SECONDS):
+            self.assertEqual(owner.step(), expected)
+            self.assertTrue(owner.initial_fill_complete)
 
     def test_database_error_keeps_only_a_class_name_and_recovers(self):
-        repository = Repository(ValueError('SELECT secret FROM somewhere'), 0)
+        repository = Repository(ValueError('SELECT secret FROM somewhere'), (0, 0))
         owner = SearchProjectionRefresher(repository, ready=lambda: None)
-        self.assertEqual(owner.step(), refresher.RETRY_SECONDS)
+        self.assertEqual(owner.step(), refresher.PREPARING_RETRY_SECONDS)
         self.assertEqual(owner.last_error, 'ValueError')
         self.assertEqual(owner.step(), refresher.IDLE_SECONDS)
         self.assertIsNone(owner.last_error)
@@ -55,9 +102,9 @@ class RefresherTests(unittest.TestCase):
     def test_thread_stops_promptly_and_runs_once(self):
         stepped = threading.Event()
         class Endless(Repository):
-            def refresh(self, limit):
+            def refresh_counts(self, limit):
                 stepped.set()
-                return 0
+                return 0, 0
         owner = SearchProjectionRefresher(Endless(), ready=lambda: None)
         owner.start()
         try:
@@ -111,6 +158,10 @@ class RepositoryTests(unittest.TestCase):
     def test_nothing_waiting_returns_zero(self):
         database, _ = self.database(queued=(), updated=0)
         self.assertEqual(SearchProjectionRepository(database).refresh(5), 0)
+
+    def test_counts_separate_markers_from_refreshed_rows(self):
+        database, _ = self.database(queued=('a0000000001', 'a0000000002'), updated=5)
+        self.assertEqual(SearchProjectionRepository(database).refresh_counts(100), (2, 5))
 
     def test_limit_and_result_are_validated(self):
         database, _ = self.database()

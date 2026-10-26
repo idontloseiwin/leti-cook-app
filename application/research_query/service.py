@@ -4,6 +4,7 @@ SQL owns source selection, normalization, boolean logic, ordering and paging.
 Python sees one bounded page and shapes evidence, clocks and continuation.
 """
 from datetime import datetime, timezone
+from contextlib import nullcontext
 import time
 
 from pydantic import ValidationError
@@ -40,11 +41,13 @@ def optional_clock(value):
 
 
 class QueryService:
-    def __init__(self, repository, context_provider, *, clock=None, codec=None):
+    def __init__(self, repository, context_provider, *, clock=None, codec=None,
+                 admission=None, preparation_check=lambda: None):
         self.repository = repository
         self.context_provider = context_provider
         self.clock = clock or (lambda: datetime.now(timezone.utc))
         self.codec = codec or CursorCodec()
+        self.admission, self.preparation_check = admission, preparation_check
 
     def validate(self, raw):
         return validate(raw, self.context_provider())
@@ -56,6 +59,18 @@ class QueryService:
         request = plan.request
         continuation = self.codec.decode(request.page.after, plan, self.clock())
         deadline = started + 8.0  # Includes validation, pool wait and output.
+        self.preparation_check()
+        slot = (self.admission.enter(deadline=deadline, cancelled=cancelled)
+                if self.admission is not None else nullcontext())
+        with slot:
+            # Access may have been revoked while waiting outside the DB pool.
+            if self.context_provider().fingerprint() != context.fingerprint():
+                raise QueryRejected("cursor_context_changed")
+            self.preparation_check()
+            return self._execute(plan, context, continuation, deadline, cancelled)
+
+    def _execute(self, plan, context, continuation, deadline, cancelled):
+        request = plan.request
         data = self.repository.read_page(plan, continuation, deadline=deadline, cancelled=cancelled)
         try:
             evaluated, valid_before = instant(data["evaluated_at"]), instant(data["valid_before"])

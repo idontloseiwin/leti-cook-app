@@ -64,3 +64,51 @@ Synthetic write probes
 are small counter updates and expired-snapshot deletions, not collector acceptance.
 The first call follows loading and ANALYZE; it is not a cold operating-system
 cache measurement. Small samples do not establish tail latency or production SLOs.
+
+`tests/research_query_acceptance.py` uses the same disposable setup and bounded
+arguments for a loopback HTTP check of the final candidate. It checks cold and
+filled projections, complete returned cells against the generated sources,
+keyset pages for all formats, concurrent requests, small writes with the real
+retention repository and projection worker, and recovery after SQL timeouts.
+The report separates completion from measured latency and write-impact targets.
+Only HOT readiness and sidebar organization are fixtures; this is not a full
+collector, installation-lifespan or YouTube acceptance test. Agree the time/disk
+budget separately before S/M, just as for the benchmark above.
+
+The HTTP runner first expects `catalogue_preparing` without executing the large
+read. Its explicit fill loop measures refresh transactions without busy pauses;
+it is not a measurement of installation startup. Subsequent queued changes still
+exercise the protected-source fallback.
+
+Write impact is measured once the fixture has settled: `VACUUM (ANALYZE)`,
+`CHECKPOINT`, no autovacuum worker running, `track_wal_io_timing` on in the
+disposable cluster.
+
+Comparison: one projection refresher runs through all of it and is never
+restarted. Blocks of small writes with the same cleanup and the same lead time
+alternate between `background` (no reads) and `reads` (continuous catalogue
+reads); the arm going first changes every round, so a slow period of the server
+falls on both alike. This runs on the shared pool and on separate
+collector/maintenance pools.
+
+Diagnostic, apart from the comparison: on the shared pool, blocks without reads
+alternate between `refresher_off` and `refresher_on`; the refresher starts at the
+start of each `refresher_on` block, which bounds its cost from above.
+
+Each sample has its time and phases (pool acquisition, setup, statements,
+commit/release). Each block has the refresher's real work (batches, markers
+taken, rows refreshed, failures), the queue (queued markers and expired rows at
+its start and end, and the largest sampled size), WAL and checkpointer counter
+differences, and counted server wait events. On Windows the default
+`open_datasync` writes WAL synchronously, so WAL write time includes the sync.
+
+The gate compares the medians of `reads` and `background` on the shared pool and
+needs at least 100 samples per arm (S/M: 10 rounds of 10 writes); fewer neither
+pass nor fail it. The separate pools and the refresher diagnostic are reported,
+not gated. None of this is a full collector acceptance test.
+
+`tests/research_query_pressure.py OUTPUT.json` is a small diagnostic using the
+same fresh disposable-cluster setup. It holds four read transactions, compares
+write progress with bounded read admission and a separate writer pool, and
+records phase timings. Its deliberately held transactions demonstrate connection
+contention, not large-query latency or the S/M write-impact gate.

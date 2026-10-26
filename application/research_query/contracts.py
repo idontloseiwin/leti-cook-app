@@ -276,7 +276,7 @@ ERROR_STATUS = {
     "field_disabled": 422, "dependency_disabled": 422, "policy_denied": 403,
     "grant_required": 403, "source_unavailable": 404, "incomplete_source": 409,
     "cursor_expired": 409, "cursor_context_changed": 409, "query_budget_exceeded": 422,
-    "query_busy": 429, "backend_unavailable": 503,
+    "query_busy": 429, "backend_unavailable": 503, "catalogue_preparing": 503,
 }
 
 

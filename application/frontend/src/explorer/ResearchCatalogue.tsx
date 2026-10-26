@@ -45,9 +45,11 @@ export function ResearchCatalogue({ folders, foldersLoaded, apiAvailable }: { fo
     setLoading(true); setMessage('');
     const timeout = window.setTimeout(() => controller.abort(), 15_000);
     try {
-      const answer = await loadResearchPage(filters, controller.signal, after);
+      const answer = await loadResearchPage(filters, controller.signal, after, () => {
+        if (id === generation.current && !controller.signal.aborted) setMessage('Preparing the catalogue in the background…');
+      });
       if (id !== generation.current || controller.signal.aborted) return;
-      setResult(answer); setPage(number);
+      setMessage(''); setResult(answer); setPage(number);
     } catch (error) {
       if (id === generation.current) setMessage(controller.signal.aborted ? 'The request timed out. Refresh to try again.' : researchError(error));
     } finally { window.clearTimeout(timeout); if (id === generation.current) setLoading(false); }

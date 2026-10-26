@@ -61,6 +61,7 @@ def create_lifespan(*, core, cache, YOUTUBE_QUOTA_ATTEMPT_RECORDER):
                 from research_projection_refresher import SearchProjectionRefresher
                 projection = SearchProjectionRefresher(SearchProjectionRepository(core.database),
                                                        ready=runtime.require_collection_ready)
+                app.state.research_projection = projection
                 projection.start()
                 if os.getenv('LIC_SETUP_DIRECTORY'):
                     from self_hosted_configuration import ConfigurationStore
@@ -97,6 +98,7 @@ def create_lifespan(*, core, cache, YOUTUBE_QUOTA_ATTEMPT_RECORDER):
                             try:
                                 if projection is not None:
                                     await run_in_threadpool(projection.close)
+                                    app.state.research_projection = None
                             finally:
                                 try:
                                     await run_in_threadpool(runtime.close)

@@ -67,6 +67,11 @@ class SearchProjectionRepository:
     def refresh(self, limit=REFRESH_LIMIT):
         """Refresh at most `limit` queued and `limit` expired rows; returns the
         number of markers taken plus rows refreshed, zero when nothing waits."""
+        return sum(self.refresh_counts(limit))
+
+    def refresh_counts(self, limit=REFRESH_LIMIT):
+        """The same refresh; returns (markers taken, rows refreshed) separately.
+        Both below `limit` means the batch took all the work it found."""
         if type(limit) is not int or not 1 <= limit <= 10_000:
             raise ValueError('research_projection_limit_invalid')
         with self.database.transaction(_REFRESH) as tx:
@@ -75,4 +80,4 @@ class SearchProjectionRepository:
                                              'duration_pattern': DURATION_PATTERN, **casefold_parameters()})
         if type(refreshed) is not int or refreshed < 0:
             raise ValueError('research_projection_result_invalid')
-        return len(queued) + refreshed
+        return len(queued), refreshed
