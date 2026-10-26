@@ -35,6 +35,20 @@ class BenchmarkFixtureTests(unittest.TestCase):
                     self.assertEqual(row['stream_completion'],'proven')
                     self.assertFalse(row['states'])
 
+    def test_cyrillic_titles_take_the_unicode_path_and_default_is_unchanged(self):
+        import research_query_benchmark as benchmark
+        self.assertEqual(benchmark.TITLES,'mixed')
+        self.assertEqual(generated_row(1,100)['title'],'Synthetic video 1')
+        try:
+            benchmark.TITLES='cyrillic'
+            titles=[generated_row(i,100)['title'] for i in range(1100)]
+        finally:
+            benchmark.TITLES='mixed'
+        present=[t for t in titles if t is not None]
+        self.assertGreater(sum(not t.isascii() for t in present)/len(present),.99)
+        self.assertGreater(sum('Ё' in t for t in present)/len(present),.85)
+        self.assertEqual(generated_row(22,100)['title'],'Straße 測試 22')
+
     def test_sizes_are_finite_and_large_run_not_accepted(self):
         self.assertNotIn('L',SIZES)
         self.assertEqual(SIZES['M'][:2],(1000,250000))

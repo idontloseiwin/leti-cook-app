@@ -354,5 +354,22 @@ class NativeQueryTests(unittest.TestCase):
                     if channel['folder']==0:
                         self.assertEqual([r['id'] for r in self.run_query(scoped)['rows']],expected)
 
+    def test_17_builtin_lowercase_equals_casefold_outside_special_characters(self):
+        import random
+        from db.reads.research_sql import casefold_special
+        special=set(casefold_special())
+        rows=self.admin.execute("""SELECT n,lower(chr(n) COLLATE pg_c_utf8) FROM generate_series(1,1114111) n
+                                   WHERE n NOT BETWEEN 55296 AND 57343""").fetchall()
+        differ={chr(n) for n,low in rows if low!=chr(n).casefold()}
+        self.assertEqual(differ,special)
+        # Context-free: whole strings fold like their characters, word-final Σ included.
+        alphabet=[chr(n) for n,_ in rows if chr(n) not in special and chr(n)!='\x00']
+        rng=random.Random(17)
+        samples=['ΣΑΣ ΟΔΟΣ','Обзор: ЛУЧШЕЕ видео — Ёлка','Σ','ΑΣ.','Ǆǅǆ']
+        samples+=[''.join(rng.choice(alphabet) for _ in range(rng.randint(1,40))) for _ in range(2000)]
+        folded=self.admin.execute('SELECT array_agg(lower(t COLLATE pg_c_utf8) ORDER BY i) FROM unnest(%s::text[]) WITH ORDINALITY AS x(t,i)',
+                                  (samples,)).fetchone()[0]
+        self.assertEqual(folded,[t.casefold() for t in samples])
+
 
 if __name__=='__main__': unittest.main(verbosity=2)

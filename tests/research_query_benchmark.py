@@ -49,6 +49,19 @@ TARGETS = {'S_warm_p95_ms':750,'M_warm_p95_ms':2500,'no_query_timeout':True,
            'write_median_regression_ratio':1.25}
 
 
+# 'mixed': mostly ASCII titles. 'cyrillic': ten in eleven titles take the
+# per-character casefold path, as in Russian-language catalogues.
+TITLE_MODES = ('mixed', 'cyrillic')
+TITLES = 'mixed'
+
+
+def generated_title(i):
+    if i % 97 == 0: return None
+    if i % 11 == 0: return 'Straße 測試 '+str(i)
+    if TITLES == 'cyrillic': return f'Обзор: ЛУЧШЕЕ видео недели №{i % 100} — Москва, Ёлка'
+    return 'Synthetic video '+str(i % 100)
+
+
 def generated_row(i, channels, now=NOW):
     # Half the rows belong to ten large channels; the rest span small channels.
     channel = i % 10 if i % 2 == 0 else (i * 17) % channels
@@ -57,7 +70,7 @@ def generated_row(i, channels, now=NOW):
     if i % 101 == 0: states['video.title'] = 'expired'
     if i % 103 == 0: states['video.views'] = 'expired'
     row = dict(id=f'z{i:010}', channel=channel, channel_id='UC'+f'{channel:022}', type=kind,
-               title=None if i % 97 == 0 else ('Straße 測試 '+str(i) if i % 11 == 0 else 'Synthetic video '+str(i % 100)),
+               title=generated_title(i),
                views=None if i % 89 == 0 else str((i * 7919) % 10000),
                duration_seconds=str(i % 5000), states=states,
                published_at=(now-timedelta(days=2+i % 365)).isoformat(),
@@ -215,14 +228,17 @@ def main():
     parser.add_argument('--size',choices=SIZES,required=True)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--seconds',type=int,default=240)
+    parser.add_argument('--titles',choices=TITLE_MODES,default='mixed')
     args=parser.parse_args()
+    global TITLES
+    TITLES=args.titles
     if os.environ.get('LIC_RESEARCH_QUERY_DISPOSABLE')!='1': raise RuntimeError('disposable_cluster_required')
     if not 10<=args.seconds<=1100: raise RuntimeError('bounded_run_required')
     args.output.mkdir(exist_ok=False)
     started=time.monotonic(); deadline=started+args.seconds
     password=os.environ['LIC_QUERY_TEST_PASSWORD']; port=int(os.environ['LIC_QUERY_TEST_PORT'])
     connection=dict(host='127.0.0.1',port=port,dbname='leti-cook',user='postgres',password=password,autocommit=True)
-    report={'size':args.size,'input_counts':SIZES[args.size],'samples':[], 'workloads':{}, 'plans':{},
+    report={'size':args.size,'titles':args.titles,'input_counts':SIZES[args.size],'samples':[], 'workloads':{}, 'plans':{},
             'condition':'freshly loaded and ANALYZE; OS cache not evicted; first call separate from warm',
             'limits':{'seconds':args.seconds,'page':25,'pool':4,'statement_ms':5000},
             'runtime':{'python':platform.python_version(),'platform':platform.platform(),'cpu_count':os.cpu_count()},

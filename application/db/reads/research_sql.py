@@ -32,6 +32,16 @@ def casefold_map():
             if chr(n).casefold() != chr(n)}
 
 
+@lru_cache(maxsize=1)
+def casefold_special():
+    """Characters whose casefold differs from PostgreSQL 17's builtin simple
+    lowercase (collation pg_c_utf8): full folds such as ß, final sigma, µ, İ.
+    Any other title folds exactly as lower(title COLLATE pg_c_utf8)."""
+    casefold_map()  # same pinned Unicode version
+    return "".join(chr(n) for n in range(1, 0x110000) if not 0xD800 <= n <= 0xDFFF
+                   and (chr(n).casefold() != chr(n).lower() or len(chr(n).lower()) != 1))
+
+
 def _value(field, *, sort=False):
     column, kind = MAPPINGS[field]
     if sort and field == "video.title":
@@ -220,8 +230,13 @@ def compile_query(plan, continuation=None):
     fold = "NULL::text"
     if need_fold:
         params["fold_map"] = Jsonb(casefold_map())
+        params["fold_special"] = "[" + casefold_special() + "]"
+        # Most non-ASCII titles (Cyrillic, CJK, ...) fold exactly by the builtin,
+        # locale-independent lowercase; only titles with a special character
+        # take the per-character map, which is about eight times slower.
         fold = """CASE WHEN title IS NULL THEN NULL WHEN title !~ '[^ -~]' THEN
- translate(title,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') ELSE
+ translate(title,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
+ WHEN title !~ %(fold_special)s THEN lower(title COLLATE pg_c_utf8) ELSE
  (SELECT coalesce(string_agg(coalesce(%(fold_map)s::jsonb->>ch,ch),'' ORDER BY ordinal),'')
  FROM regexp_split_to_table(title,'') WITH ORDINALITY AS chars(ch,ordinal)) END"""
     required = " AND ".join(MAPPINGS[f][0] + " IS NOT NULL" for f in request.coverage.required_fields) or "TRUE"
