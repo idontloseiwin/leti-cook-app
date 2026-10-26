@@ -142,6 +142,23 @@ class ServiceTests(unittest.TestCase):
             repo._read('SELECT 1', {}, deadline=time.monotonic()+2, cancelled=lambda: True, name='query_test')
         self.assertEqual(database.calls, 3)
 
+    def test_repository_reads_are_read_only_snapshots_without_jit(self):
+        class RecordingDatabase:
+            operations = []
+            @contextmanager
+            def transaction(self, operation):
+                self.operations.append(operation)
+                raise DatabaseUnavailable('closed', reason='pool_queue_full')
+                yield
+        database = RecordingDatabase()
+        with self.assertRaises(QueryRejected):
+            ResearchQueryRepository(database)._read('SELECT 1', {}, deadline=time.monotonic()+2,
+                                                    cancelled=lambda: False, name='query_test')
+        operation = database.operations[0]
+        self.assertTrue(operation.read_only)
+        self.assertTrue(operation.repeatable_read)
+        self.assertTrue(operation.disable_jit)
+
 
 class HTTPTests(unittest.TestCase):
     def setUp(self):

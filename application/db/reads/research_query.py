@@ -27,9 +27,12 @@ class ResearchQueryRepository:
                 raise QueryRejected("query_budget_exceeded")
         check()
         remaining = max(1, min(5000, int((deadline-time.monotonic())*1000)))
+        # On the installed PostgreSQL image JIT is on by default; compiling this
+        # many-branch statement took about 2.5 s of a 2.7 s folder page, while
+        # execution itself took 0.2 s. Disable it only for these reads.
         operation = Operation(name, read_only=True, repeatable_read=True,
                               statement_timeout_ms=remaining, total_timeout_ms=remaining,
-                              lock_timeout_ms=min(250, remaining))
+                              lock_timeout_ms=min(250, remaining), disable_jit=True)
         try:
             # Read POSTs use the same restricted role as HTTP GETs. This does
             # not grant access or bypass the database's existing HOT admission.
