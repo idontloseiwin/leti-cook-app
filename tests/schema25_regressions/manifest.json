@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 18,
+  "expected_python_count": 19,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -248,6 +248,15 @@
         "inventory_queue_seed.sql"
       ],
       "callable": "cases_retention.inventory_queue_seek"
+    },
+    "receipt_scan_index": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page"
+      ],
+      "assertions": "with sequential scans off, the scan cleanup receipt probe and the FK cascade shape both use typed_inventory_receipts_scan_id_idx; the scan delete succeeds",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.receipt_scan_index"
     }
   },
   "fixtures": {

@@ -185,3 +185,27 @@ def inventory_queue_seek(f):
     f.check(queue and read<=3*150,'inventory_queue_seek_bound')
     page=f.cleanup('inventory',limit=100)
     f.check(page.scanned==0 and page.complete and page.deferred==0,'inventory_queue_noop_page')
+
+def receipt_scan_index(f):
+    # Scan cleanup finds receipts by scan_id alone: its probe and the FK cascade
+    # of the scan delete. With sequential scans off, both must use the scan_id
+    # index (the scan_transition partial index cannot serve them).
+    import json
+    f.channel()
+    scan='10000000-0000-4000-8000-000000000041'
+    f.rows("INSERT INTO public.channel_video_inventory_scans(scan_id,channel_id,video_type,playlist_id,scan_kind,status,coverage,completed_at,source_checked_at,pages_completed,items_seen) VALUES(%s,%s,'long',%s,'full_reconciliation','completed','complete',now(),now(),1,1)",(scan,CHANNEL,'UULF'+CHANNEL[2:]))
+    def indexed(sql):
+        with f.admin.transaction():
+            f.rows('SET LOCAL enable_seqscan=off')
+            plan=f.rows('EXPLAIN (FORMAT JSON) '+sql)[0]['QUERY PLAN']
+        nodes=[]
+        def walk(node):
+            nodes.append(node)
+            for child in node.get('Plans',()):walk(child)
+        walk(plan[0]['Plan'])
+        return ('typed_inventory_receipts_scan_id_idx' in {n.get('Index Name') for n in nodes}
+                and not any(n['Node Type']=='Seq Scan' and n.get('Relation Name')=='typed_inventory_receipts' for n in nodes))
+    f.check(indexed("SELECT EXISTS(SELECT 1 FROM public.typed_inventory_receipts WHERE scan_id='"+scan+"'::uuid)"),'receipt_probe_indexed')
+    f.check(indexed("DELETE FROM ONLY public.typed_inventory_receipts WHERE '"+scan+"'::uuid OPERATOR(pg_catalog.=) scan_id"),'receipt_cascade_indexed')
+    f.rows('DELETE FROM public.channel_video_inventory_scans WHERE scan_id=%s',(scan,))
+    f.check(f.scalar('SELECT count(*) FROM public.channel_video_inventory_scans WHERE scan_id=%s',(scan,))==0,'scan_deleted')

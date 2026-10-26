@@ -4614,7 +4614,7 @@ ALTER TABLE operator_private.schema_migrations ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE operator_private.schema_migrations FROM PUBLIC,anon,authenticated,authenticator,service_role,lic_reader;
 
 INSERT INTO operator_private.schema_state(singleton,baseline_id,initial_version,current_version)
-VALUES (true,'leti-cook-release-01',35,35);
+VALUES (true,'leti-cook-release-01',36,36);
 
 CREATE VIEW readable.schema_version WITH (security_barrier=true,security_invoker=false) AS
 SELECT baseline_id,current_version FROM operator_private.schema_state WHERE singleton;
@@ -5793,5 +5793,13 @@ CREATE TRIGGER videos_search_queue AFTER INSERT OR DELETE
 -- Existing rows start past their deadline and are read live until refreshed.
 INSERT INTO public.video_search_projection(video_id,channel_id)
 SELECT video_id,channel_id FROM public.video_inventory;
+
+-- Schema step 0036-inventory-receipt-scan-index
+-- Inventory scan cleanup deletes scans together with their receipts. The FK
+-- cascade and the cleanup probe find receipts by scan_id alone, which the
+-- scan_transition partial index cannot serve, so every deleted scan read the
+-- whole receipts table. scan_id = $1 implies scan_id IS NOT NULL.
+CREATE INDEX typed_inventory_receipts_scan_id_idx ON public.typed_inventory_receipts (scan_id)
+    WHERE scan_id IS NOT NULL;
 
 COMMIT;

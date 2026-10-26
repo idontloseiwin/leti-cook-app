@@ -664,6 +664,7 @@
   "schema/steps/0033-health-queue-projections.sql": "schema/steps/0033-health-queue-projections.sql",
   "schema/steps/0034-all-type-queue-health.sql": "schema/steps/0034-all-type-queue-health.sql",
   "schema/steps/0035-research-read-model.sql": "schema/steps/0035-research-read-model.sql",
+  "schema/steps/0036-inventory-receipt-scan-index.sql": "schema/steps/0036-inventory-receipt-scan-index.sql",
   "tests/schema25_regressions/README.md": "tests/schema25_regressions/README.md",
   "tools/package_release.py": "tools/package_release.py"
 }

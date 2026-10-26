@@ -7,4 +7,5 @@ CASES={
 'detached_reviews':r.detached_reviews,'operational_retention':r.operational_retention,'inventory_window':r.inventory_window,
 'saved_noop_revision':u.saved_noop_revision,'folder_label_management':u.folder_label_management,
 'runtime_readiness':c.runtime_readiness,'negative_intrinsic_guard':c.negative_intrinsic_guard,
-'trashed_channel_removal':r.trashed_channel_removal,'inventory_queue_seek':r.inventory_queue_seek}
+'trashed_channel_removal':r.trashed_channel_removal,'inventory_queue_seek':r.inventory_queue_seek,
+'receipt_scan_index':r.receipt_scan_index}
