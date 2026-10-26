@@ -11,4 +11,5 @@ CASES={
 'receipt_scan_index':r.receipt_scan_index,
 'growth_window_from_last_snapshot':r.growth_window_from_last_snapshot,
 'claim_window_skips_leases':j.claim_window_skips_leases,
-'user_work_limit_race':u.user_work_limit_race}
+'user_work_limit_race':u.user_work_limit_race,
+'evidence_page_locks':r.evidence_page_locks}

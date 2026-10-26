@@ -103,10 +103,17 @@ class ExactFamilyTests(unittest.TestCase):
                 native=dict(zip((name for name,cast in evidence._REFERENCE_KEYS[target]),KEYS[target]))
                 candidate=dict(row_data=native,work_at=OLD,work_key='key',video_id=None if target=='channel_snapshots' else VIDEO,
                                expired=True,invalid_clock=False,cursor=None)
-                self.queue(Result(rows=(candidate,)),one(eligible=True))
-                if target=='review_evidence':self.queue(one(acquired=False))
-                elif target=='channel_snapshots':self.queue(Result())
-                else:self.queue(Result(execute_error=ServerFailure('55P03')))
+                self.queue(Result(rows=(candidate,)))
+                if spec.immutable:
+                    # One page step at a time: proof, then the queue row another
+                    # transaction holds (or, without a video, the held row itself).
+                    self.queue(Result(rows=(dict(ord=1,eligible=True),)))
+                    if target=='channel_snapshots':self.queue(Result())
+                    else:self.queue(Result(rows=(dict(video_id=VIDEO,present=True,has_token=None,expires_at=None),)))
+                else:
+                    self.queue(one(eligible=True))
+                    if target=='review_evidence':self.queue(one(acquired=False))
+                    else:self.queue(Result(execute_error=ServerFailure('55P03')))
                 self.queue(one(value=OLD))
                 self.assertEqual(self.invoke(target).remaining,(PriorityReference(target,KEYS[target]),))
         self.assertFalse(any(sql.startswith(('DELETE','UPDATE')) for sql,p in self.connection.queries))

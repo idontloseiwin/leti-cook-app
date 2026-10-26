@@ -234,3 +234,40 @@ def growth_window_from_last_snapshot(f):
     f.check(shape('g0000000003')==('ready',500,672*3600,0,None),'growth_ready_at_window_start')
     f.check(shape('g0000000002')==('partial',400,600*3600,None,25),'growth_partial_inside_window')
     f.check(_normalized_growth(rows['g0000000001'])['status']=='ready','growth_ready_contract')
+
+def evidence_page_locks(f):
+    # Expired snapshots are removed a page at a time: a live lease or a queue row
+    # another transaction holds defers its video, a held snapshot defers itself,
+    # and the rest of the page is deleted. Released rows go on the next page.
+    import psycopg
+    from .fixtures import dsns
+    from db.hot.hot_retention import HotRetentionRepository
+    f.channel()
+    videos=['e%010d'%n for n in range(1,6)]
+    for video in videos:
+        f.rows("INSERT INTO public.video_inventory(video_id,channel_id,video_type) VALUES(%s,%s,'long')",(video,CHANNEL))
+        f.rows("INSERT INTO public.video_snapshots(video_id,views,recorded_at) VALUES(%s,1,now()-interval '700 hours'),(%s,2,now()-interval '701 hours')",(video,video))
+    f.rows("INSERT INTO public.video_snapshots(video_id,views,recorded_at) VALUES(%s,3,now()-interval '1 hour')",(videos[3],))
+    # e1 under a live lease, e2 and e3 free, e4 without a queue row, e5 with an expired lease.
+    for video in (videos[0],videos[1],videos[2],videos[4]):
+        f.rows("INSERT INTO public.video_collection_state(video_id,channel_id,video_type) VALUES(%s,%s,'long')",(video,CHANNEL))
+    lease="UPDATE public.video_collection_state SET lease_token=gen_random_uuid(),lease_owner='other-collector',lease_started_at=now()+%s::interval,lease_expires_at=now()+%s::interval WHERE video_id=%s"
+    f.rows(lease,('-1 minute','5 minutes',videos[0]))
+    f.rows(lease,('-10 minutes','-1 second',videos[4]))
+    held=psycopg.connect(dsns()[0],connect_timeout=5)
+    try:
+        # Another transaction holds e2's queue row and one of e3's snapshots.
+        held.execute('SELECT 1 FROM public.video_collection_state WHERE video_id=%s FOR UPDATE',(videos[1],))
+        held.execute('SELECT 1 FROM public.video_snapshots WHERE id=(SELECT min(id) FROM public.video_snapshots WHERE video_id=%s) FOR UPDATE',(videos[2],))
+        repo=HotRetentionRepository(f.database)
+        page=repo.cleanup_page('video_snapshots',limit=100)
+        f.check((page.scanned,page.deleted,page.deferred,len(page.priority_references))==(10,5,5,5),'evidence_page_held_deferred')
+        left=f.rows("SELECT video_id,count(*) AS n FROM public.video_snapshots WHERE recorded_at<now()-interval '696 hours' GROUP BY video_id ORDER BY video_id")
+        f.check([(r['video_id'],r['n']) for r in left]==[(videos[0],2),(videos[1],2),(videos[2],1)],'evidence_page_deleted_rest')
+    finally:
+        held.rollback();held.close()
+    f.rows("UPDATE public.video_collection_state SET lease_started_at=now()-interval '10 minutes',lease_expires_at=now()-interval '1 second' WHERE video_id=%s",(videos[0],))
+    page=repo.cleanup_page('video_snapshots',limit=100)
+    f.check((page.deleted,page.deferred)==(5,0),'evidence_page_released_deleted')
+    f.check(f.rows('SELECT video_id,views FROM public.video_snapshots')==[{'video_id':videos[3],'views':3}],'evidence_page_fresh_kept')
+
