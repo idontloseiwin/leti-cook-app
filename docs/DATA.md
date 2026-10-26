@@ -29,6 +29,10 @@ and cleans up data while running. See
 - **History is temporary.** Each statistics snapshot expires independently.
   A fresh counter cannot recreate expired history or observations missed while
   your server was off.
+- **Growth is counted between snapshots.** A video's 28-day growth ends at its
+  latest snapshot. It counts as full history when a snapshot from at least 28
+  days before that one is still kept; the comparison then spans 28 to 29 days.
+  Otherwise the actual number of tracked days is shown.
 - **Expired fields are hidden.** They stop appearing even if cleanup has not
   yet removed them. The main Explorer requests current data automatically;
   if that fails, it offers a reload.

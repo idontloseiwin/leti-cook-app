@@ -53,7 +53,9 @@ GROWTH_STATUSES = (
     "unavailable",
 )
 GROWTH_WINDOW = ANALYTICS_WINDOW
-GROWTH_BOUNDARY_TOLERANCE = timedelta(0)
+# A full window starts at the latest snapshot at or before 28 days before the
+# video's last one; retention keeps at most one more day of snapshots.
+GROWTH_BOUNDARY_TOLERANCE = timedelta(days=1)
 PARTIAL_MINIMUM_SECONDS = 86_400
 
 
@@ -146,8 +148,8 @@ def _normalized_growth(raw: dict[str, Any] | None) -> dict[str, Any]:
             or start is None
             or end is None
             or interval is None
-            or interval != int(GROWTH_WINDOW.total_seconds())
             or boundary_distance is None
+            or interval != int(GROWTH_WINDOW.total_seconds()) + boundary_distance
             or boundary_distance > int(GROWTH_BOUNDARY_TOLERANCE.total_seconds())
             or measured_interval != interval
             or raw.get("tracked_days") is not None
@@ -628,8 +630,8 @@ def build_channel_video_growth(
         },
         "methods": {
             "endpoint_observation": "current_video_row_with_matching_snapshot",
-            "full_window_start": "exact_28d_interval_inside_hot_window",
-            "partial_window_start": "earliest_snapshot_inside_hot_window",
+            "full_window_start": "latest_snapshot_at_or_before_28d_before_endpoint",
+            "partial_window_start": "earliest_snapshot_within_28d_before_endpoint",
             "partial_minimum_seconds": PARTIAL_MINIMUM_SECONDS,
             "counter_decrease": "reported_as_correction_not_clamped",
             "average_views_per_day": "signed_delta_per_actual_second_times_86400_rounded_2dp_half_even",

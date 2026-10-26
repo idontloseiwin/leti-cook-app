@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 19,
+  "expected_python_count": 20,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -257,6 +257,15 @@
       "row_budget": 1000,
       "fixtures": [],
       "callable": "cases_retention.receipt_scan_index"
+    },
+    "growth_window_from_last_snapshot": {
+      "owners": [
+        "read_video_view_growth_28d"
+      ],
+      "assertions": "28-day growth ends at each video's last snapshot: starts 674 h and 672 h earlier are ready (boundary 2 h, 0), 600 h earlier is partial (25 days); the ready row passes the application contract",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.growth_window_from_last_snapshot"
     }
   },
   "fixtures": {

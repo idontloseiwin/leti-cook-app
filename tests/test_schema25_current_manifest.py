@@ -33,6 +33,7 @@ EXPECTED_CASE_MODULES = {
     "trashed_channel_removal": "cases_retention",
     "inventory_queue_seek": "cases_retention",
     "receipt_scan_index": "cases_retention",
+    "growth_window_from_last_snapshot": "cases_retention",
 }
 EXPECTED_CASE_FIXTURES = {
     "availability_recheck": ("availability_recheck_seed.sql",),
@@ -60,6 +61,7 @@ EXPECTED_CASE_FIXTURES = {
     "trashed_channel_removal": ("trashed_channel_seed.sql",),
     "inventory_queue_seek": ("inventory_queue_seed.sql",),
     "receipt_scan_index": (),
+    "growth_window_from_last_snapshot": (),
 }
 MANIFEST_PATH = Path("tests/schema25_regressions/manifest.json")
 FIXTURE_PATH = Path("tests/schema25_regressions/data")

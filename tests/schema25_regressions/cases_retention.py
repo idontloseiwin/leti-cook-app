@@ -209,3 +209,28 @@ def receipt_scan_index(f):
     f.check(indexed("DELETE FROM ONLY public.typed_inventory_receipts WHERE '"+scan+"'::uuid OPERATOR(pg_catalog.=) scan_id"),'receipt_cascade_indexed')
     f.rows('DELETE FROM public.channel_video_inventory_scans WHERE scan_id=%s',(scan,))
     f.check(f.scalar('SELECT count(*) FROM public.channel_video_inventory_scans WHERE scan_id=%s',(scan,))==0,'scan_deleted')
+
+def growth_window_from_last_snapshot(f):
+    # The 28 days end at each video's last snapshot, not at the read: a snapshot
+    # at or before that start gives a full window (28 to 29 days), a later one
+    # a partial window. The ready row passes the application's own contract.
+    from datetime import timedelta
+    from db.reads.analytics_read_queries import read_video_view_growth_28d
+    from channel_video_growth import _normalized_growth
+    f.channel()
+    scan='10000000-0000-4000-8000-000000000051'
+    end=f.scalar("SELECT date_trunc('second',now())-interval '1 hour'")
+    f.rows("INSERT INTO public.channel_video_inventory_scans(scan_id,channel_id,video_type,playlist_id,scan_kind,status,coverage,completed_at,source_checked_at,pages_completed,items_seen) VALUES(%s,%s,'long',%s,'full_reconciliation','completed','complete',%s,%s,1,3)",(scan,CHANNEL,'UULF'+CHANNEL[2:],end,end))
+    starts={'g0000000001':(674,400),'g0000000002':(600,600),'g0000000003':(672,500)}
+    for video,(hours,views) in starts.items():
+        f.rows("INSERT INTO public.video_inventory(video_id,channel_id,video_type,published_at,published_acquired_at) VALUES(%s,%s,'long',%s-interval '100 days',%s)",(video,CHANNEL,end,end))
+        f.rows("INSERT INTO public.video_inventory_memberships(video_id,channel_id,video_type,playlist_id,source_published_at,first_seen_scan_id,last_seen_scan_id,membership_status,first_seen_at,last_seen_at,last_present_at) VALUES(%s,%s,'long',%s,%s-interval '100 days',%s,%s,'present',%s,%s,%s)",(video,CHANNEL,'UULF'+CHANNEL[2:],end,scan,scan,end,end,end))
+        f.rows("INSERT INTO public.videos(video_id,channel_id,title,views,checked_at,published_at,duration,metadata_checked_at) VALUES(%s,%s,'Growth',1000,%s,%s-interval '100 days','PT5M',%s)",(video,CHANNEL,end,end,end))
+        f.rows('INSERT INTO public.video_snapshots(video_id,views,recorded_at) VALUES(%s,1000,%s),(%s,%s,%s)',(video,end,video,views,end-timedelta(hours=hours)))
+    rows={r['video_id']:r for r in read_video_view_growth_28d(f.database,channel_id=CHANNEL,video_ids=list(starts),as_of=f.scalar('SELECT now()').isoformat())}
+    def shape(video):
+        r=rows[video];return (r['growth_status'],r['delta_views'],r['actual_interval_seconds'],r['boundary_distance_seconds'],r['tracked_days'])
+    f.check(shape('g0000000001')==('ready',600,674*3600,2*3600,None),'growth_ready_before_window_start')
+    f.check(shape('g0000000003')==('ready',500,672*3600,0,None),'growth_ready_at_window_start')
+    f.check(shape('g0000000002')==('partial',400,600*3600,None,25),'growth_partial_inside_window')
+    f.check(_normalized_growth(rows['g0000000001'])['status']=='ready','growth_ready_contract')
