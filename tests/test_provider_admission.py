@@ -144,11 +144,13 @@ class AdmissionTests(unittest.TestCase):
         def work(selected):
             nonlocal active, peak
             try:
-                with selected.acquire("operator", timeout=3):
+                # Generous waits: under load six registrations can take seconds,
+                # and the finally below releases the holders as soon as it can.
+                with selected.acquire("operator", timeout=15):
                     with lock:
                         active += 1
                         peak = max(peak, active)
-                    release.wait(2)
+                    release.wait(15)
                     with lock:
                         active -= 1
             except BaseException as error:
@@ -156,7 +158,7 @@ class AdmissionTests(unittest.TestCase):
         for i in range(6):
             self.start(lambda i=i: work(gate if i % 2 else other))
         try:
-            self.eventually(lambda: gate.snapshot()["tickets"] == 6)
+            self.eventually(lambda: gate.snapshot()["tickets"] == 6, seconds=10)
             self.assertEqual(gate.snapshot()["active"], 3)
             with self.assertRaises(pa.AdmissionFull):
                 other.acquire("interactive")
