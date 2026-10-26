@@ -10,4 +10,5 @@ CASES={
 'trashed_channel_removal':r.trashed_channel_removal,'inventory_queue_seek':r.inventory_queue_seek,
 'receipt_scan_index':r.receipt_scan_index,
 'growth_window_from_last_snapshot':r.growth_window_from_last_snapshot,
-'claim_window_skips_leases':j.claim_window_skips_leases}
+'claim_window_skips_leases':j.claim_window_skips_leases,
+'user_work_limit_race':u.user_work_limit_race}

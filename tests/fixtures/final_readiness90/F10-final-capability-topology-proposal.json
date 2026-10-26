@@ -1420,8 +1420,8 @@
     },
     {
       "function": "public.enforce_user_work_backup_limits()",
-      "prosrc_sha256": "ab2f5761a26895469e90da3d058030e0b55c98f5a57a8b731218309bf7daf73d",
-      "normalized_prosrc_md5": "643f2f7ca5c2c111298f4df9677a1f05",
+      "prosrc_sha256": "88a69c3e7f5a225f64f165673efb70f0f1d7cc89d588bfe7bebe63c620b544bf",
+      "normalized_prosrc_md5": "3a8712eebb37289261a22a2b91d5bbf0",
       "header": "CREATE FUNCTION public.enforce_user_work_backup_limits() RETURNS trigger\n    LANGUAGE plpgsql\n    SET search_path TO 'pg_catalog', 'public', 'pg_temp'",
       "service_execute": false,
       "trigger_definitions": [

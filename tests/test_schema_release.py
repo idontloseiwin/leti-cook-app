@@ -33,7 +33,7 @@ class SchemaReleaseMetadataTests(unittest.TestCase):
         expected = generator.check(ROOT)
         self.assertEqual(expected, (ROOT / "application/schema-release.json").read_bytes())
         identity = load_schema_release()
-        self.assertEqual(identity, SchemaRelease("leti-cook-release-01", 37))
+        self.assertEqual(identity, SchemaRelease("leti-cook-release-01", 38))
         self.assertEqual(parse_schema_release(expected).document(), identity.document())
 
     def test_runtime_file_rejects_duplicate_keys_unknown_fields_and_wrong_types(self):

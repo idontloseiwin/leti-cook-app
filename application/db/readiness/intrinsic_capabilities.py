@@ -9,7 +9,7 @@ from .capability_facts import require_boolean_facts
 READINESS_SQL = r"""
 WITH expected_functions(signature,body_md5,security_definer,search_path,service_execute) AS (VALUES
 ('public.bind_channel_user_work_owner()','fad6ef72f002d88375084c6ca04f2bab',true,'search_path=pg_catalog, public, pg_temp',true),
-('public.enforce_user_work_backup_limits()','643f2f7ca5c2c111298f4df9677a1f05',false,'search_path=pg_catalog, public, pg_temp',false),
+('public.enforce_user_work_backup_limits()','3a8712eebb37289261a22a2b91d5bbf0',false,'search_path=pg_catalog, public, pg_temp',false),
 ('public.enforce_video_inventory_membership_scan()','dec99f98b218890a8c0654828f32dac4',false,'search_path=pg_catalog, public, pg_temp',false),
 ('public.guard_channel_user_work_identity()','b24fa9878daa2989919ff4f960dc891f',false,'search_path=pg_catalog, pg_temp',false),
 ('public.guard_hot_operator_scope()','eda8054b15f84795ee8637fbcd457d44',true,'search_path=pg_catalog, public, operator_private, pg_temp',true),

@@ -666,6 +666,7 @@
   "schema/steps/0035-research-read-model.sql": "schema/steps/0035-research-read-model.sql",
   "schema/steps/0036-inventory-receipt-scan-index.sql": "schema/steps/0036-inventory-receipt-scan-index.sql",
   "schema/steps/0037-type-resolution-membership-index.sql": "schema/steps/0037-type-resolution-membership-index.sql",
+  "schema/steps/0038-user-work-limit-lock.sql": "schema/steps/0038-user-work-limit-lock.sql",
   "tests/schema25_regressions/README.md": "tests/schema25_regressions/README.md",
   "tools/package_release.py": "tools/package_release.py"
 }

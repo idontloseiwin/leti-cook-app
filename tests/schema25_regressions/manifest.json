@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 21,
+  "expected_python_count": 22,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -277,6 +277,15 @@
         "claim_window_seed.sql"
       ],
       "callable": "cases_jobs.claim_window_skips_leases"
+    },
+    "user_work_limit_race": {
+      "owners": [
+        "enforce_user_work_backup_limits"
+      ],
+      "assertions": "999 folders, two concurrent inserts: the second waits for the first commit and is refused with user_work_limit_reached; exactly 1000 folders",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_user_work.user_work_limit_race"
     }
   },
   "fixtures": {

@@ -136,9 +136,9 @@ def upgraded(probe):
     # then apply the lifecycle and read-plan steps. This proves the nullable
     # lifecycle upgrade and view replacement do not relabel or erase videos;
     # the independent catalog comparison remains below.
-    require(plan.schema_version == 37 and plan.steps[-1].version == 37, "type_resolution_index_upgrade_target37")
+    require(plan.schema_version == 38 and plan.steps[-1].version == 38, "user_work_limit_lock_upgrade_target38")
     previous_sql = plan.schema_sql.split(b"-- Publication state is independent",1)[0] + b"COMMIT;\n"
-    previous_sql = previous_sql.replace(b"release-01',37,37",b"release-01',30,30")
+    previous_sql = previous_sql.replace(b"release-01',38,38",b"release-01',30,30")
     previous = replace(plan,schema_version=30,steps=tuple(step for step in plan.steps if step.version <= 30),
                        schema_sql=previous_sql,schema_sha256=digest(previous_sql))
     intermediate = engine.run_schema_upgrade(previous,expected_current_version=plan.baseline_version,command=probe.command)

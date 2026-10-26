@@ -1,7 +1,7 @@
 {
   "functions": {
     "public.bind_channel_user_work_owner()": "cb43fffb53ab2e277074a78e6e0289fb8364dc19b3263d61b96658a12fc29285",
-    "public.enforce_user_work_backup_limits()": "ab2f5761a26895469e90da3d058030e0b55c98f5a57a8b731218309bf7daf73d",
+    "public.enforce_user_work_backup_limits()": "88a69c3e7f5a225f64f165673efb70f0f1d7cc89d588bfe7bebe63c620b544bf",
     "public.enforce_video_inventory_membership_scan()": "434a502593754366087c62f18846f0fb681eebbe534ed538de78669e472da7f0",
     "public.guard_channel_user_work_identity()": "9ed8e3f30dbcf1c4c7d4e76f80b2c10a4763a7889b1d1abdfb2ec53c4e17e8fd",
     "public.guard_hot_operator_scope()": "784b4ca0753da046f19c2e0c2aebb4fab3f8aa5206675c32ec779595ca09803a",
@@ -14,5 +14,5 @@
     "public.queue_video_search_projection()": "343eeccee2186f266dc52df9d54d3243ad79ac9e27bfb4f91a74727d10fca0f0",
     "public.track_video_search_inventory()": "8b8f6005d6b8a00639ea8fe16e769afd23ec3e93fb5fe5400c22d4361a65d667"
   },
-  "schema_sha256": "ea831900aed2a0ab1d0799e5a215d11544ab72bf53225e91695dab0e9ce29ad2"
+  "schema_sha256": "8c1f3f2aa6cba9eb698f0e2f0a7fe3072d414c1e039f3371800f860e1e4ffba6"
 }
