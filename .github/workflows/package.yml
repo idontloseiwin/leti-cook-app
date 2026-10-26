@@ -76,6 +76,10 @@ jobs:
           LIC_SCHEMA_CI_MAX_ROWS: '15000'
           LIC_SCHEMA_CI_DEPS: ${{ runner.temp }}/schema-python-deps
         run: bash tools/check_schema_postgres.sh
+      - name: Check research query SQL on an empty PostgreSQL
+        env:
+          LIC_SCHEMA_CI_DEPS: ${{ runner.temp }}/schema-python-deps
+        run: bash tools/check_research_query_postgres.sh
       - name: Check schema upgrades against a fresh PostgreSQL schema
         env:
           LIC_SCHEMA_UPGRADES_MAX_ROWS: '1000'

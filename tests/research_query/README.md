@@ -28,7 +28,8 @@ Set these variables in the test process:
 - `LIC_DEPLOYMENT_PROFILE=self-hosted` and `LIC_DATABASE_TRANSPORT=postgres`.
 
 Then run `python -B tests/research_query_pg.py`, stop the disposable cluster,
-and remove its test credentials. No YouTube calls are made. The fixture bypasses
+and remove its test credentials. CI does the same in a disposable container
+through `tools/check_research_query_postgres.sh`. No YouTube calls are made. The fixture bypasses
 HOT readiness only inside this isolated fixture. The native suite also compares
 HTTP pages with direct executor results for all three types. Offline integration
 tests separately exercise HOT denial before and after execution. Performance at

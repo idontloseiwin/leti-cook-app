@@ -53,9 +53,21 @@ class SchemaCiTests(unittest.TestCase):
         # checks the authenticator password an installation requires.
         compose=(ROOT/'database/compose.yaml').read_text(encoding='utf-8')
         self.assertIn('POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256',compose)
-        for name in ('check_schema_postgres.sh','check_schema_upgrades.sh'):
+        for name in ('check_schema_postgres.sh','check_schema_upgrades.sh','check_research_query_postgres.sh'):
             script=(ROOT/'tools'/name).read_text(encoding='utf-8')
             self.assertEqual(script.count('-e POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256'),1,name)
+
+    def test_research_query_sql_runs_on_an_empty_database_in_ci(self):
+        # research_query_pg.py builds its own schema and refuses a bootstrapped one.
+        workflow=(ROOT/'.github/workflows/package.yml').read_text(encoding='utf-8')
+        self.assertIn('run: bash tools/check_research_query_postgres.sh',workflow)
+        script=(ROOT/'tools/check_research_query_postgres.sh').read_text(encoding='utf-8')
+        self.assertIn('python -B /repo/tests/research_query_pg.py',script)
+        self.assertIn('source "$root/tools/schema_ci_resources.sh"',script)
+        self.assertEqual(script.count('schema_ci_create '),2)
+        self.assertIn('schema_ci_require_pg "$SCHEMA_CI_LAST_ID"',script)
+        for absent in ('docker-entrypoint-initdb.d','docker run ','docker rm ','-p ','--publish'):
+            self.assertNotIn(absent,script)
 
     def test_database_image_runtime_checks_actual_process_and_existing_volume(self):
         script=(ROOT/'tools/check_schema_postgres.sh').read_text(encoding='utf-8')
