@@ -29,7 +29,8 @@ jobs:
         # The updater accepts only root-owned trees. Exercise that real Linux
         # boundary in this disposable runner, without mocking its permission
         # checks. Keep setup-python's exact interpreter and locked dependencies.
-        run: sudo -n -- env TMPDIR=/tmp "$(command -v python)" -B -m unittest discover -s tests -v
+        # The slowest tests are listed so the 10-minute job limit stays visible.
+        run: sudo -n -- env TMPDIR=/tmp "$(command -v python)" -B -m unittest discover -s tests -v --durations 20
       - name: Install locked frontend dependencies
         run: npm --prefix application/frontend ci --no-audit --no-fund
       - name: Check browser behavior (offline)
