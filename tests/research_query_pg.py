@@ -317,7 +317,13 @@ class NativeQueryTests(unittest.TestCase):
                ('P1DT',None),('PT1.5S',None),('-1',None),('NaN',None),('1e3',None),
                ('18446744073709551615','18446744073709551615'),
                ('18446744073709551616',None),('PT18446744073709551615S','18446744073709551615'),
-               ('P99999999999999999999D',None),('9'*21,None),('PT'+'9'*21+'S',None)]
+               ('P99999999999999999999D',None),('9'*21,None),('PT'+'9'*21+'S',None),
+               # Each part may have at most 20 digits, leading zeros included.
+               ('0'*20,'0'),('0'*21,None),('0'*19+'7','7'),('0'*20+'7',None),
+               ('PT'+'0'*19+'1S','1'),('PT'+'0'*20+'1S',None),('PT'+'0'*19+'1M','60'),
+               ('PT'+'0'*20+'1M',None),('PT'+'0'*19+'1H','3600'),('PT'+'0'*20+'1H',None),
+               ('P'+'0'*19+'1D','86400'),('P'+'0'*20+'1D',None),('P1DT'+'0'*20+'1S',None),
+               ('PT'+'9'*20+'H',None),('PT1H'+'0'*21+'M',None)]
         try:
             for duration,expected in cases:
                 with self.subTest(duration=duration):

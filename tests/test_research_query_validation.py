@@ -118,6 +118,28 @@ class ValidatorTests(unittest.TestCase):
         self.assertIn('::numeric',compile_query(self.plan(query(where={'field':'video.views','op':'gt','value':'18446744073709551615'})))[0])
         self.assertEqual(casefold_map()['ß'],'ss')
 
+    def test_source_window_is_one_bound_hot_parameter(self):
+        from hot_storage import HOT_DATA_WINDOW, RETENTION_HOURS
+        statement,params=compile_query(self.plan(query()))
+        # Hours, never days: '29 days' is 697 hours across a DST change.
+        self.assertEqual(params['window'],f'{RETENTION_HOURS} hours')
+        self.assertEqual(HOT_DATA_WINDOW,timedelta(hours=RETENTION_HOURS))
+        self.assertNotIn('696',statement)
+        self.assertNotRegex(statement,r"interval '\d+ (hours?|days?)'")
+        self.assertIn('%(window)s::interval',statement)
+
+    def test_channel_scope_bounds_inventory_and_folder_does_not(self):
+        channel,_=compile_query(self.plan(query(scope={'kind':'channel','id':'UC'+'0'*22})))
+        folder,_=compile_query(self.plan(query()))
+        bound=' AND i.channel_id=%(scope_id)s::text'
+        self.assertIn('c.channel_id=%(scope_id)s::text',channel)
+        self.assertIn(bound,channel)
+        self.assertNotIn(bound,folder)
+        self.assertIn('c.folder_id=%(scope_id)s::uuid',folder)
+        for statement in (channel,folder):
+            self.assertNotIn('{inventory_scope}',statement)
+            self.assertNotIn('{1,20}',statement)
+
 
 class CursorTests(unittest.TestCase):
     def test_encryption_tamper_context_expiry_and_restart(self):

@@ -8,6 +8,7 @@ import unicodedata
 
 from psycopg.types.json import Jsonb
 
+from hot_storage import RETENTION_HOURS
 from research_query.registry import UNICODE_VERSION
 from research_query.validation import QueryRejected, ValidatedQuery
 
@@ -91,9 +92,15 @@ def _continuation(order, keys, params):
     return "(" + " OR ".join(terms) + ")" if terms else "FALSE"
 
 
-# Materialize type proof once per scope, retaining the protected view as its
-# sole policy owner. Duration parts and numeric seconds are each evaluated once;
-# inlined LATERAL aliases would repeat the parser for value/state checks.
+# Type proof is read per inventory row from the protected view, its sole policy
+# owner: the equality keys are leakproof, so they reach its indexes, while a join
+# against the whole view is estimated at one row and becomes a quadratic loop.
+# video_inventory is keyed by video_id, so the view yields at most one row and
+# LIMIT 1 only keeps PostgreSQL from flattening the subquery. Duration parts and
+# numeric seconds are each evaluated once; inlined LATERAL aliases would repeat
+# the parser for value/state checks. A bounded {1,20} repeat is several times
+# slower than + in PostgreSQL regular expressions, so part lengths are checked
+# separately. The source lifetime is one bound parameter, the HOT window.
 _SOURCE = """WITH args AS MATERIALIZED (
  SELECT statement_timestamp() AS evaluated_at, %(scope_id)s::text AS scope_id,
  %(scope_kind)s::text AS scope_kind, %(video_type)s::text AS video_type),
@@ -122,62 +129,60 @@ inventory_state AS MATERIALIZED (
  WHERE s.channel_id=scope.channel_id AND s.video_type=a.video_type AND s.playlist_id=state.playlist_id
  AND s.status='completed' AND s.coverage='complete' AND s.scan_kind IN('initial_inventory','full_reconciliation')
  AND s.completed_at<=a.evaluated_at ORDER BY s.completed_at DESC,s.scan_id DESC LIMIT 1) full_scan ON true),
-hot_scoped AS MATERIALIZED (
- SELECT h.video_id,h.channel_id,h.video_type,h.source_checked_at,h.source_expires_at
- FROM readable.hot_video_inventory h
- WHERE h.channel_id IN (SELECT channel_id FROM scope)
- AND h.video_type=%(video_type)s::text),
 raw AS MATERIALIZED (
  SELECT i.video_id,i.channel_id,i.video_type,h.source_checked_at AS identity_clock,h.source_expires_at AS identity_expiry,
  v.title,v.published_at,v.duration,v.views,v.checked_at,v.metadata_checked_at,v.availability_checked_at,
  v.source_expires_at AS video_expiry,v.availability_status,v.publication_status,v.stream_actual_end_at,
  a.evaluated_at,
- coalesce(isfinite(v.metadata_checked_at) AND v.metadata_checked_at>a.evaluated_at-interval '696 hours'
+ coalesce(isfinite(v.metadata_checked_at) AND v.metadata_checked_at>a.evaluated_at-%(window)s::interval
  AND v.metadata_checked_at<=a.evaluated_at,false) AS metadata_fresh,
- coalesce(isfinite(v.checked_at) AND v.checked_at>a.evaluated_at-interval '696 hours'
+ coalesce(isfinite(v.checked_at) AND v.checked_at>a.evaluated_at-%(window)s::interval
  AND v.checked_at<=a.evaluated_at,false) AS counters_fresh,
  coalesce(h.video_id IS NOT NULL AND h.source_expires_at>a.evaluated_at
  AND v.video_id IS NOT NULL AND v.channel_id=i.channel_id
  AND v.availability_status='public' AND v.availability_checked_at<=a.evaluated_at
- AND v.availability_checked_at>a.evaluated_at-interval '696 hours'
+ AND v.availability_checked_at>a.evaluated_at-%(window)s::interval
  AND v.publication_status IS NULL AND (v.published_at IS NULL OR v.published_at<=a.evaluated_at)
  AND (i.video_type<>'stream' OR (v.stream_actual_end_at IS NOT NULL AND v.stream_actual_end_at<=a.evaluated_at
  AND v.stream_actual_end_at<=v.checked_at AND v.stream_actual_end_at<=v.metadata_checked_at
- AND v.checked_at>a.evaluated_at-interval '696 hours' AND v.metadata_checked_at>a.evaluated_at-interval '696 hours'
+ AND v.checked_at>a.evaluated_at-%(window)s::interval AND v.metadata_checked_at>a.evaluated_at-%(window)s::interval
  AND v.checked_at<=a.evaluated_at AND v.metadata_checked_at<=a.evaluated_at)),false) AS admitted
  FROM scope JOIN readable.video_inventory i USING(channel_id) CROSS JOIN args a
- LEFT JOIN hot_scoped h ON h.video_id=i.video_id AND h.channel_id=i.channel_id AND h.video_type=i.video_type
+ LEFT JOIN LATERAL (SELECT p.video_id,p.source_checked_at,p.source_expires_at FROM readable.hot_video_inventory p
+ WHERE p.video_id=i.video_id AND p.channel_id=i.channel_id AND p.video_type=i.video_type LIMIT 1) h ON true
  LEFT JOIN readable.videos v ON v.video_id=i.video_id
- WHERE i.video_type=%(video_type)s::text AND i.video_id ~ '^[A-Za-z0-9_-]{11}$'),
+ WHERE i.video_type=%(video_type)s::text{inventory_scope} AND i.video_id ~ '^[A-Za-z0-9_-]{11}$'),
 duration_inputs AS MATERIALIZED (
  SELECT video_id, text, regexp_match(text,
- '^P(?:([0-9]{1,20})D)?(?:T(?:([0-9]{1,20})H)?(?:([0-9]{1,20})M)?(?:([0-9]{1,20})S)?)?$') AS parts
+ '^P(?:([0-9]+)D)?(?:T(?:([0-9]+)H)?(?:([0-9]+)M)?(?:([0-9]+)S)?)?$') AS parts
  FROM raw CROSS JOIN LATERAL (SELECT upper(btrim(duration)) AS text) t
  WHERE admitted AND metadata_fresh),
 duration_values AS MATERIALIZED (
- SELECT video_id, CASE WHEN text ~ '^[0-9]{1,20}$' THEN text::numeric
- WHEN parts IS NOT NULL AND text ~ '[0-9]' AND (strpos(text,'T')=0 OR text ~ 'T.*[0-9]')
+ SELECT video_id, CASE WHEN text ~ '^[0-9]+$' THEN CASE WHEN char_length(text)<=20 THEN text::numeric END
+ WHEN parts IS NOT NULL AND coalesce(char_length(parts[1]),0)<=20 AND coalesce(char_length(parts[2]),0)<=20
+ AND coalesce(char_length(parts[3]),0)<=20 AND coalesce(char_length(parts[4]),0)<=20
+ AND text ~ '[0-9]' AND (strpos(text,'T')=0 OR text ~ 'T.*[0-9]')
  THEN coalesce(parts[1]::numeric,0)*86400+coalesce(parts[2]::numeric,0)*3600+
  coalesce(parts[3]::numeric,0)*60+coalesce(parts[4]::numeric,0) END AS seconds
  FROM duration_inputs),
 normalized AS MATERIALIZED (
  SELECT video_id,channel_id,video_type,identity_clock,identity_expiry,metadata_checked_at,checked_at,
- least(identity_expiry,availability_checked_at+interval '696 hours') AS core_expiry,
+ least(identity_expiry,availability_checked_at+%(window)s::interval) AS core_expiry,
  CASE WHEN metadata_fresh AND char_length(title)<=1000 THEN title END AS title,
  CASE WHEN metadata_fresh AND isfinite(published_at) AND published_at>='0001-01-01Z'::timestamptz
  AND published_at<'10000-01-01Z'::timestamptz THEN published_at END AS published_at,
  CASE WHEN metadata_fresh AND parsed.seconds BETWEEN 0 AND 18446744073709551615 THEN parsed.seconds END AS duration_seconds,
  CASE WHEN counters_fresh AND views>=0 THEN views::numeric END AS views,
- CASE WHEN isfinite(metadata_checked_at) AND metadata_checked_at<=evaluated_at-interval '696 hours' THEN 'expired'
+ CASE WHEN isfinite(metadata_checked_at) AND metadata_checked_at<=evaluated_at-%(window)s::interval THEN 'expired'
  WHEN metadata_checked_at>evaluated_at OR (title IS NOT NULL AND char_length(title)>1000) THEN 'unavailable'
  WHEN NOT metadata_fresh OR title IS NULL THEN 'unknown' ELSE 'known' END AS title_state,
- CASE WHEN isfinite(metadata_checked_at) AND metadata_checked_at<=evaluated_at-interval '696 hours' THEN 'expired'
+ CASE WHEN isfinite(metadata_checked_at) AND metadata_checked_at<=evaluated_at-%(window)s::interval THEN 'expired'
  WHEN metadata_checked_at>evaluated_at THEN 'unavailable' WHEN NOT metadata_fresh OR published_at IS NULL OR NOT isfinite(published_at)
  OR published_at<'0001-01-01Z'::timestamptz OR published_at>='10000-01-01Z'::timestamptz THEN 'unknown' ELSE 'known' END AS published_at_state,
- CASE WHEN isfinite(metadata_checked_at) AND metadata_checked_at<=evaluated_at-interval '696 hours' THEN 'expired'
+ CASE WHEN isfinite(metadata_checked_at) AND metadata_checked_at<=evaluated_at-%(window)s::interval THEN 'expired'
  WHEN metadata_checked_at>evaluated_at THEN 'unavailable' WHEN NOT metadata_fresh OR parsed.seconds IS NULL
  OR parsed.seconds NOT BETWEEN 0 AND 18446744073709551615 THEN 'unknown' ELSE 'known' END AS duration_seconds_state,
- CASE WHEN isfinite(checked_at) AND checked_at<=evaluated_at-interval '696 hours' THEN 'expired'
+ CASE WHEN isfinite(checked_at) AND checked_at<=evaluated_at-%(window)s::interval THEN 'expired'
  WHEN checked_at>evaluated_at THEN 'unavailable' WHEN NOT counters_fresh OR views IS NULL OR views<0 THEN 'unknown' ELSE 'known' END AS views_state
  FROM raw LEFT JOIN duration_values parsed USING(video_id)
  WHERE admitted),
@@ -189,7 +194,7 @@ coverage AS MATERIALIZED (
  least((SELECT evaluated_at+interval '120 seconds' FROM args),
  (SELECT min(source_expires_at) FROM inventory_state WHERE source_expires_at>(SELECT evaluated_at FROM args)),
  (SELECT min(boundary) FROM raw CROSS JOIN LATERAL (VALUES(identity_expiry),(video_expiry),
- (checked_at+interval '696 hours'),(metadata_checked_at+interval '696 hours'),(availability_checked_at+interval '696 hours'),
+ (checked_at+%(window)s::interval),(metadata_checked_at+%(window)s::interval),(availability_checked_at+%(window)s::interval),
  (checked_at),(metadata_checked_at),(availability_checked_at),(published_at)) deadlines(boundary)
  WHERE isfinite(boundary) AND boundary>evaluated_at)) AS valid_before),
 page AS MATERIALIZED (
@@ -205,7 +210,10 @@ def compile_query(plan, continuation=None):
         raise QueryRejected("invalid_query")
     request = plan.request
     params = {"scope_id": request.scope.id, "scope_kind": request.scope.kind,
-              "video_type": request.video_types[0], "limit": request.page.size + 1}
+              "video_type": request.video_types[0], "limit": request.page.size + 1,
+              # Exact hours: an interval of days follows the session time zone
+              # across daylight-saving changes, so 29 days is not always 696 hours.
+              "window": f"{RETENTION_HOURS} hours"}
     obj = request.model_dump(mode="json", by_alias=True)
     order = sort_definition(request)
     need_fold = any(field == "video.title" for field, _ in order) or b'"contains_casefold_v1"' in plan.encoded
@@ -223,9 +231,11 @@ def compile_query(plan, continuation=None):
     key_values = ",".join("(" + _value(f, sort=True) + ")::text" for f, _ in order)
     # A validated enum selects one of two fixed shapes. Bind the scope directly
     # so PostgreSQL can estimate its cardinality; a CASE over a CTE hides it.
-    scope_predicate = ("c.channel_id=%(scope_id)s::text" if request.scope.kind == "channel"
-                       else "c.folder_id=%(scope_id)s::uuid")
+    # For a channel the inventory bound reaches the protected view directly.
+    channel = request.scope.kind == "channel"
+    scope_predicate = "c.channel_id=%(scope_id)s::text" if channel else "c.folder_id=%(scope_id)s::uuid"
     statement = _SOURCE.replace("{scope_predicate}", scope_predicate)
+    statement = statement.replace("{inventory_scope}", " AND i.channel_id=%(scope_id)s::text" if channel else "")
     for key, value in {"fold": fold, "required": required, "predicate": predicate,
                        "continuation": keyset, "order": ordering, "page_order": ordering,
                        "sort_keys": "jsonb_build_array("+key_values+")"}.items():

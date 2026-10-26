@@ -73,6 +73,12 @@ A continuation expires within two minutes, possibly sooner when a source field
 expires. An expired page is cleared; select **Refresh** to start again. Switching
 filters or format also clears the previous result immediately.
 
+Every page is computed from the whole folder, so later pages take as long as the
+first. A single channel answers quickly; a folder with tens of thousands of
+stored videos of one format can take several seconds per page. A page that
+cannot finish within its time limit is not shown: the preview asks you to narrow
+the selection, for example to a smaller folder or one channel.
+
 The preview reads the local database without requesting YouTube data or changing
 collection schedules. It requires the installation's existing owner access and
 data-read readiness. Existing channel pages remain available. Saving queries,

@@ -46,10 +46,13 @@ class BenchmarkFixtureTests(unittest.TestCase):
     def test_executor_keeps_protected_sources(self):
         from db.reads.research_sql import _SOURCE
         source=_SOURCE
-        self.assertIn('FROM readable.hot_video_inventory h',source)
+        self.assertIn('FROM readable.hot_video_inventory p',source)
         self.assertIn('JOIN readable.videos v',source)
         self.assertNotIn('FROM public.videos',source)
-        self.assertEqual(source.count('hot_scoped AS MATERIALIZED'),1)
+        # Type proof is read per row by its keys, not materialized for the scope.
+        self.assertEqual(source.count('readable.hot_video_inventory'),1)
+        self.assertIn('p.video_id=i.video_id AND p.channel_id=i.channel_id AND p.video_type=i.video_type LIMIT 1) h ON true',source)
+        self.assertNotIn('hot_scoped',source)
 
     def test_browser_fixture_setup_crosses_a_second_boundary(self):
         from research_query_preview import create_preview_app

@@ -3,10 +3,12 @@
 SQL owns source selection, normalization, boolean logic, ordering and paging.
 Python sees one bounded page and shapes evidence, clocks and continuation.
 """
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 import time
 
 from pydantic import ValidationError
+
+from hot_storage import HOT_DATA_WINDOW
 
 from .contracts import MAX_RESPONSE_BYTES, QueryResult
 from .cursor import CursorCodec
@@ -90,7 +92,7 @@ class QueryService:
                         value = iso(value) if field_id == "video.published_at" else str(value)
                     clock_key = "identity_clock" if core else "checked_at" if field.clock_family == "counters" else "metadata_checked_at"
                     observed = optional_clock(source[clock_key])
-                    expiry = optional_clock(source["identity_expiry"]) if core else observed + timedelta(hours=696) if observed else None
+                    expiry = optional_clock(source["identity_expiry"]) if core else observed + HOT_DATA_WINDOW if observed else None
                     ref = field_id
                     provenance[ref] = {"origin": field.origin, "source_paths": list(field.api_paths),
                                        "method": "canonical_membership_v1" if core else "reported_current_v1",
