@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import sys
 import unittest
+import unittest.mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
@@ -17,12 +18,18 @@ SOURCE = (ROOT / 'tools/retention_benchmark.py').read_text(encoding='utf-8')
 RUNNER = (ROOT / 'tools/retention_benchmark.sh').read_text(encoding='utf-8')
 
 
+class Repository:
+    def cleanup_page(self, target, **kw):
+        return target
+
+
 class Cycle:
     def __init__(self, repository, pages):
-        self.pages = list(pages)
+        self.repository, self.pages = repository, list(pages)
 
     def run_slice(self, **kw):
         page = self.pages.pop(0)
+        self.repository.cleanup_page(page['target'])
         return {'status': 'scan_exhausted' if not self.pages else 'in_progress', 'pages': [page]}
 
 
@@ -33,11 +40,21 @@ def page(target, **counts):
 class RetentionBenchmarkTests(unittest.TestCase):
     def test_a_pass_adds_up_pages_per_target_and_ends_when_the_scan_is_exhausted(self):
         pages = [page('videos', scanned=100, scrubbed=3), page('videos', scanned=40), page('sync_runs', scanned=7, deleted=7)]
-        result = bench.full_pass(object(), cycle_factory=lambda repository: Cycle(repository, pages))
+        result = bench.full_pass(Repository(), cycle_factory=lambda repository: Cycle(repository, pages))
         self.assertEqual(result['steps'], 3)
-        self.assertEqual(result['targets']['videos'], {'pages': 2, 'scanned': 140, 'deleted': 0, 'scrubbed': 3, 'deferred': 0})
+        videos = dict(result['targets']['videos'])
+        self.assertGreaterEqual(videos.pop('seconds'), 0)
+        self.assertEqual(videos, {'pages': 2, 'scanned': 140, 'deleted': 0, 'scrubbed': 3, 'deferred': 0})
         self.assertEqual(result['targets']['sync_runs']['deleted'], 7)
         self.assertGreaterEqual(result['runtime_estimate_seconds'], 0.3)  # three paced steps
+
+    def test_each_page_is_timed_under_its_own_target(self):
+        clock = iter(range(100))
+        with unittest.mock.patch.object(bench.time, 'perf_counter', lambda: next(clock)):
+            result = bench.full_pass(Repository(), cycle_factory=lambda repository: Cycle(
+                repository, [page('videos'), page('sync_runs')]))
+        # Each page call spans one tick of the fake clock.
+        self.assertEqual((result['targets']['videos']['seconds'], result['targets']['sync_runs']['seconds']), (1, 1))
 
     def test_a_failed_page_or_an_endless_pass_stops_the_benchmark(self):
         failing = type('Failing', (), {'run_slice': lambda self, **kw: {'status': 'error', 'failed_target': 'videos'}})

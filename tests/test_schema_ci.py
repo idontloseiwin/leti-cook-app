@@ -53,7 +53,7 @@ class SchemaCiTests(unittest.TestCase):
         # checks the authenticator password an installation requires.
         compose=(ROOT/'database/compose.yaml').read_text(encoding='utf-8')
         self.assertIn('POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256',compose)
-        for name in ('check_schema_postgres.sh','check_schema_upgrades.sh','check_research_query_postgres.sh'):
+        for name in ('check_schema_postgres.sh','check_schema_upgrades.sh','check_research_query_postgres.sh','retention_benchmark.sh'):
             script=(ROOT/'tools'/name).read_text(encoding='utf-8')
             self.assertEqual(script.count('-e POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256'),1,name)
 

@@ -35,13 +35,19 @@ SMALL_CHANNELS = tuple("UC" + letter * 22 for letter in "CDEF")
 REFRESH = timedelta(days=21)          # the longest refresh interval (collection_schedule.MAX_INTERVAL_SECONDS)
 SNAPSHOT_SPAN = timedelta(days=28)    # counters are refreshed often; history spans the window
 HISTORY_DAYS = 35                     # channel snapshots, runs and API records: one per day/hour back this far
+JOB_SCOPE = timedelta(hours=696)      # the operator job guards refuse new jobs older than this
+JOB_GUARDS = (("public.operator_jobs", "hot_operator_source_scope"),
+              ("public.operator_job_targets", "hot_operator_target_scope"))
 STEP_PAUSE_SECONDS = 0.1              # the runtime loop waits this long between due cleanup steps
 STEP_LIMIT = 50_000
 
 # Every value is a bound parameter; each statement seeds one channel.
 SEED_SQL = {
-    "inventory": """INSERT INTO public.video_inventory(video_id,channel_id,video_type,published_at,discovered_at,updated_at)
-        SELECT %(prefix)s||lpad(g::text,9,'0'),%(channel)s,'long',%(at)s::timestamptz-g*interval '1 hour',%(at)s,%(at)s
+    # A publication date always comes with the time it was acquired (schema step 27).
+    "inventory": """INSERT INTO public.video_inventory(video_id,channel_id,video_type,published_at,published_acquired_at,
+          discovered_at,updated_at)
+        SELECT %(prefix)s||lpad(g::text,9,'0'),%(channel)s,'long',%(at)s::timestamptz-g*interval '1 hour',
+          %(at)s::timestamptz-%(offset)s::interval,%(at)s,%(at)s
         FROM generate_series(1,%(videos)s) g""",
     "memberships": """INSERT INTO public.video_inventory_memberships(video_id,channel_id,video_type,playlist_id,source_published_at,
         first_seen_at,last_seen_at,last_present_at)
@@ -57,6 +63,13 @@ SEED_SQL = {
           %(at)s::timestamptz-%(offset)s::interval-(abs(hashtext(i.video_id||'c'))%%%(refresh)s)*interval '1 second' AS counters,
           %(at)s::timestamptz-%(offset)s::interval-(abs(hashtext(i.video_id||'d'))%%%(refresh)s)*interval '1 second' AS metadata) s
         WHERE i.channel_id=%(channel)s""",
+    # The collector's queue row per video, due again one refresh interval after its last check.
+    "queue": """INSERT INTO public.video_collection_state(video_id,channel_id,video_type,profile_metadata_version,
+          stats_source_checked_at,metadata_source_checked_at,last_success_at,stats_due_at,metadata_due_at,next_due_at)
+        SELECT v.video_id,v.channel_id,'long',1,v.checked_at,v.metadata_checked_at,v.checked_at,
+          v.checked_at+%(refresh)s*interval '1 second',v.metadata_checked_at+%(refresh)s*interval '1 second',
+          least(v.checked_at,v.metadata_checked_at)+%(refresh)s*interval '1 second'
+        FROM public.videos v WHERE v.channel_id=%(channel)s""",
     "video_snapshots": """INSERT INTO public.video_snapshots(video_id,views,like_count,comment_count,recorded_at)
         SELECT i.video_id,1000+k,10,1,%(at)s::timestamptz-%(offset)s::interval-k*(%(span)s::interval/%(snapshots)s)
         FROM public.video_inventory i CROSS JOIN generate_series(0,%(snapshots)s-1) k
@@ -90,6 +103,7 @@ SHARED_SQL = {
 # Labels the collector really records (operational_copy_policy.QUOTA_LABELS); others are normalized by cleanup.
 QUOTA_SEED = {"bucket": "general", "phase": "video_collection", "endpoint": "videos"}
 COUNTED = ("public.channels", "public.video_inventory", "public.video_inventory_memberships", "public.videos",
+           "public.video_collection_state",
            "public.video_snapshots", "public.channel_snapshots", "public.sync_runs", "public.youtube_api_request_attempts",
            "public.operator_jobs", "public.operator_job_targets", "public.youtube_category_reference")
 
@@ -119,16 +133,25 @@ def seed(admin, database, *, big_videos, small_videos, snapshots, offset):
     from db.channel.channel_control import create_channel_for_collection
     admin.execute("SET statement_timeout='300s'")  # bulk seeding of a disposable database
     at = admin.scalar("SELECT clock_timestamp()")
-    for channel, prefix, videos in channels(big_videos, small_videos):
-        create_channel_for_collection(database, {
-            "channel_id": channel, "title": "Benchmark " + channel[2], "initial_long_inventory_status": "completed",
-            "initial_28d_stats_status": "completed"}, "accepted")
-        with admin.transaction():
-            admin.execute("UPDATE public.channels SET user_input=%s,channel_metadata_status='ok',channel_metadata_checked_at=%s"
-                          " WHERE channel_id=%s", ("https://www.youtube.com/channel/" + channel, at - offset, channel))
-            values = seed_parameters(channel, prefix, videos, at=at, offset=offset, snapshots=snapshots)
-            for statement in SEED_SQL.values():
-                admin.execute(statement, values)
+    # Jobs of a downtime longer than the job scope were written before it. Only
+    # their two age guards are off while the channels are seeded.
+    guards = JOB_GUARDS if offset + timedelta(hours=1) > JOB_SCOPE else ()
+    for table, trigger in guards:
+        admin.execute(f"ALTER TABLE {table} DISABLE TRIGGER {trigger}")
+    try:
+        for channel, prefix, videos in channels(big_videos, small_videos):
+            create_channel_for_collection(database, {
+                "channel_id": channel, "title": "Benchmark " + channel[2], "initial_long_inventory_status": "completed",
+                "initial_28d_stats_status": "completed"}, "accepted")
+            with admin.transaction():
+                admin.execute("UPDATE public.channels SET user_input=%s,channel_metadata_status='ok',channel_metadata_checked_at=%s"
+                              " WHERE channel_id=%s", ("https://www.youtube.com/channel/" + channel, at - offset, channel))
+                values = seed_parameters(channel, prefix, videos, at=at, offset=offset, snapshots=snapshots)
+                for statement in SEED_SQL.values():
+                    admin.execute(statement, values)
+    finally:
+        for table, trigger in guards:
+            admin.execute(f"ALTER TABLE {table} ENABLE TRIGGER {trigger}")
     with admin.transaction():
         for statement in SHARED_SQL.values():
             admin.execute(statement, {"at": at, "offset": offset, "history": HISTORY_DAYS, **QUOTA_SEED})
@@ -150,11 +173,29 @@ def read_delta(before, after):
     return sum(delta.values()), dict(sorted(delta.items(), key=lambda item: -item[1]))
 
 
+class TimedRepository:
+    """The maintenance repository, timing each cleanup page by its target."""
+
+    def __init__(self, repository):
+        self.repository, self.seconds = repository, {}
+
+    def cleanup_page(self, target, **kwargs):
+        started = time.perf_counter()
+        try:
+            return self.repository.cleanup_page(target, **kwargs)
+        finally:
+            self.seconds[target] = self.seconds.get(target, 0.0) + time.perf_counter() - started
+
+    def __getattr__(self, name):
+        return getattr(self.repository, name)
+
+
 def full_pass(repository, *, cycle_factory=None, limit=STEP_LIMIT):
     """One whole cleanup pass, one page per step, as the runtime controller runs it."""
     if cycle_factory is None:
         from hot_retention import HotCleanupCycle as cycle_factory
-    cycle = cycle_factory(repository)
+    timed = TimedRepository(repository)
+    cycle = cycle_factory(timed)
     targets, steps, slowest = {}, 0, 0.0
     started = time.perf_counter()
     while steps < limit:
@@ -177,7 +218,9 @@ def full_pass(repository, *, cycle_factory=None, limit=STEP_LIMIT):
     return {"steps": steps, "seconds": round(seconds, 3), "slowest_step_seconds": round(slowest, 3),
             # The runtime loop pauses between due steps; this is the wait a restart would see.
             "runtime_estimate_seconds": round(seconds + steps * STEP_PAUSE_SECONDS, 1),
-            "targets": dict(sorted(targets.items()))}
+            # Where the time of a slow pass goes: the seconds of each target's pages.
+            "targets": {name: dict(totals, seconds=round(timed.seconds.get(name, 0.0), 3))
+                        for name, totals in sorted(targets.items())}}
 
 
 def run(args, environ=os.environ):
