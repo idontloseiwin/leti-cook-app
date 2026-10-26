@@ -182,11 +182,11 @@ def main():
                         if index < 3:
                             require({event["video_id"] for event in confirmed} == set(IDS.values()),
                                     "all_actual_commits_traced")
-                            selected = {event["video_id"]: event for event in events
-                                        if event["operation"] == "video_selected"}
-                            require(set(selected) == set(IDS.values()), "all_actual_claims_traced")
+                            claimed = {event["video_id"]: event for event in events
+                                       if event["operation"] == "video_selected"}
+                            require(set(claimed) == set(IDS.values()), "all_actual_claims_traced")
                             for event in confirmed:
-                                require(event["batch_id"] == selected[event["video_id"]]["batch_id"],
+                                require(event["batch_id"] == claimed[event["video_id"]]["batch_id"],
                                         "claim_commit_batch_join")
                                 require("due_at" not in event, "no_invented_next_due")
                             require(all(len(event.get("video_ids", [])) <= 50 for event in events),
@@ -207,6 +207,8 @@ def main():
             finally:
                 f.close()
                 report["fixture_restored"] = True
+        # A case that never ran must not read as passed.
+        require(len(report["cases"]) == len(selected), "all_selected_cases_ran")
         report["status"] = "passed" if all(item["status"] == "passed" for item in report["cases"]) else "failed"
     except Exception as error:
         report.update(base.error_details(error))
