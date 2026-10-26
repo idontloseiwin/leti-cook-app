@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from psycopg.types.json import Jsonb
 from ..base.postgres import DatabaseServerError
-from .queue_retention import QUEUE_LEASE_SQL
+from .queue_retention import QUEUE_LEASE_SQL,busy_videos
 
 ERRORS=frozenset({'hot_cleanup_invalid_target','hot_cleanup_invalid_limit','hot_cleanup_invalid_cursor'})
 _CLOCK="""WITH clock AS MATERIALIZED(SELECT clock_timestamp() AS at)
@@ -153,6 +153,45 @@ def _exact_page(spec,target):
         JOIN public.{spec.table} t ON {join} ORDER BY {clock},{spec.key}"""
 
 
+# Immutable evidence: the same protocol as the row loop below, one statement per
+# step for the whole page. A row never changes, so its locked copy decides.
+
+
+def _batch_eligible(spec):
+    predicate=spec.predicate.replace('%(now)s::timestamptz','clock.at')
+    return f"""WITH clock AS MATERIALIZED(SELECT clock_timestamp() AS at)
+ SELECT c.ord,({predicate}) AS eligible FROM jsonb_array_elements(%(rows)s::jsonb) WITH ORDINALITY c(value,ord)
+ CROSS JOIN LATERAL jsonb_populate_record(NULL::public.{spec.table},c.value) t CROSS JOIN clock ORDER BY c.ord"""
+
+
+def _batch_lock(spec):
+    primary=spec.primary.replace('%(row)s::jsonb','c.value')
+    return f"""SELECT c.ord,l.value FROM jsonb_array_elements(%(rows)s::jsonb) WITH ORDINALITY c(value,ord)
+ CROSS JOIN LATERAL(SELECT to_jsonb(t) AS value FROM public.{spec.table} t WHERE {primary} LIMIT 1 FOR UPDATE SKIP LOCKED) l ORDER BY c.ord"""
+
+
+def _batch_delete(spec):
+    return f"""DELETE FROM public.{spec.table} t USING jsonb_array_elements(%(rows)s::jsonb) c(value)
+ WHERE {spec.primary.replace('%(row)s::jsonb','c.value')} AND ({spec.predicate})"""
+
+
+def _immutable_page(tx,spec,rows,cutoff):
+    """Delete one page of immutable evidence; returns (deleted, deferred rows in page order)."""
+    if not rows:return 0,[]
+    proof=tx.fetch_all(_batch_eligible(spec),dict(rows=Jsonb([row['row_data'] for row in rows]),cutoff=cutoff),max_rows=len(rows))
+    eligible={check['ord'] for check in proof if check['eligible'] is True}
+    candidates=[row for ord,row in enumerate(rows,1) if ord in eligible]
+    busy=busy_videos(tx,[row['video_id'] for row in candidates if row['video_id'] is not None])
+    free=[index for index,row in enumerate(candidates) if row['video_id'] not in busy]
+    locked=tx.fetch_all(_batch_lock(spec),dict(rows=Jsonb([candidates[index]['row_data'] for index in free])),max_rows=len(free)) if free else []
+    # A row another transaction holds, or one already gone, is deferred like in the row loop.
+    owned={free[row['ord']-1] for row in locked}
+    deferred=[row for index,row in enumerate(candidates) if index not in owned]
+    if not locked:return 0,deferred
+    at=tx.fetch_one("SELECT to_jsonb(clock_timestamp())#>>'{}' AS at")['at']
+    return tx.execute(_batch_delete(spec),dict(rows=Jsonb([row['value'] for row in locked]),cutoff=cutoff,now=at)),deferred
+
+
 def _reference(target,candidate):
     return dict(target=target,key=[str(candidate['row_data'][name]) for name,cast in _REFERENCE_KEYS[target]])
 
@@ -176,7 +215,8 @@ def cleanup_hot_evidence(transaction,*,target,after_id=None,limit=100,references
             rows=tx.fetch_all(_exact_page(spec,target),params,max_rows=len(references))
         deleted=scrubbed=invalid=0
         deferred=[]
-        for candidate in rows:
+        if spec.immutable:deleted,deferred=_immutable_page(tx,spec,rows,stamp['cutoff'])
+        for candidate in () if spec.immutable else rows:
             try:
                 with tx.savepoint():
                     if not _eligible(tx,spec,candidate['row_data'],stamp['cutoff']):continue

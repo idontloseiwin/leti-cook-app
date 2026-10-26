@@ -95,8 +95,9 @@ def seed(f, total, channels, mode):
         args = dict(start=start, end=min(start + 9999, total), channels=channels,
                     mode=mode, due=due, future=future, old=old, published=published)
         with f.admin.transaction():
-            f.rows(cte + """INSERT INTO public.video_inventory(video_id,channel_id,video_type,published_at)
-                SELECT video_id,channel_id,'long',%(published)s FROM input""", args)
+            # Schema 27: a publication date always comes with when it was acquired.
+            f.rows(cte + """INSERT INTO public.video_inventory(video_id,channel_id,video_type,published_at,published_acquired_at)
+                SELECT video_id,channel_id,'long',%(published)s,%(old)s FROM input""", args)
             f.rows(cte + """INSERT INTO public.videos(video_id,channel_id,published_at,checked_at,metadata_checked_at,
                 availability_checked_at,availability_status,privacy_status,upload_status,views,like_count,comment_count)
                 SELECT video_id,channel_id,%(published)s,%(old)s,%(old)s,%(old)s,
@@ -142,7 +143,9 @@ class Metrics:
         self.total, self.channels, self.mode, self.variant = total, channels, mode, variant
         self.published, self.scale, self.missing = published, scale, set(missing)
         self.lock = Lock()
-        self.started = time.monotonic()
+        # The trace clock: on Windows monotonic() ticks every 15.6 ms, longer than a
+        # 5 ms provider call, and a zero-length interval breaks occupancy().
+        self.started = time.perf_counter()
         self.active = self.peak = 0
         self.claimed = bytearray(total + 1)
         self.completed = bytearray(total + 1)
@@ -167,7 +170,7 @@ class Metrics:
             seq = len(self.trace) + 1
             # Fixed, disclosed sequence: use the same profile for each version.
             delay = (1.5 if seq <= 8 else (.1, .3, .6)[(seq - 9) % 3]) if self.scale else .005
-            row = dict(sequence=seq, route=route, start=time.monotonic() - self.started,
+            row = dict(sequence=seq, route=route, start=time.perf_counter() - self.started,
                        end=None, size=len(ids), ids=list(ids), delay=delay,
                        channels=len({1 + (number(video) - 1) % self.channels for video in ids}))
             self.trace.append(row)
@@ -196,7 +199,7 @@ class Metrics:
             return result
         finally:
             with self.lock:
-                row["end"] = time.monotonic() - self.started
+                row["end"] = time.perf_counter() - self.started
                 self.active -= 1
 
     def aggregate(self):
@@ -383,7 +386,7 @@ def drive(f, m, *, pass_limit):
             emit(stage="pass", **report)
         else:
             raise AssertionError("too_many_passes")
-    m.collection_end = time.monotonic() - m.started
+    m.collection_end = time.perf_counter() - m.started
     require(sum(m.claimed) == sum(m.completed) == m.total, "all_ids_once")
     require(m.active == 0, "provider_not_drained")
     expected_general = sum(operation(index, m.mode) == "general" for index in range(1, m.total + 1))

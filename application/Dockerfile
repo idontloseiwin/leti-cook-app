@@ -1,7 +1,15 @@
 FROM python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
+
+# Apply Debian security fixes while the pinned base awaits its next rebuild.
+# Keep the fixed-version floor even if the repository returns a newer update.
+RUN apt-get update && \
+    apt-get install --yes --no-install-recommends --only-upgrade libssl3 openssl && \
+    dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libssl3)" ge '3.0.22-1~deb12u2' && \
+    dpkg --compare-versions "$(dpkg-query -W -f='${Version}' openssl)" ge '3.0.22-1~deb12u2' && \
+    rm -rf /var/lib/apt/lists/*
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONNOUSERSITE=1 PYTHON_DOTENV_DISABLED=1 HOME=/var/lib/leti-cook
 WORKDIR /opt/leti-cook
-# Every package, transitive ones included, is pinned by version and hash.
+# Every Python package, transitive ones included, is pinned by version and hash.
 COPY requirements.lock ./requirements.lock
 RUN pip install --no-cache-dir --require-hashes --no-deps -r requirements.lock && \
     groupadd --gid 10001 lic && useradd --uid 10001 --gid lic --no-create-home --home-dir /var/lib/leti-cook lic && \

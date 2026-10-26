@@ -12,6 +12,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'application'))
+from db.user_work import reconnect_admission
 from db.user_work.reconnect_admission import ChannelAddAdmission, ChannelAddAdmissionUnavailable
 from quota_guards import CHANNEL_ADD_WINDOWS, RateLimiter
 
@@ -27,6 +28,9 @@ class Clock:
 
 
 def contender(path, ready, start, result):
+    # The shared window is under test, not the half-second busy give-up: on a
+    # loaded host four writers can queue for the SQLite lock longer than that.
+    reconnect_admission._BUSY_SECONDS = 10
     owner = ChannelAddAdmission(path, INSTALLATION, clock=Clock())
     ready.put(True)
     if not start.wait(10):

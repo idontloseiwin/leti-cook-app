@@ -14,11 +14,11 @@ def tool(name):
     result=importlib.util.module_from_spec(spec);spec.loader.exec_module(result);return result
 
 class Schema25SuiteTests(unittest.TestCase):
-    def test_current_manifest_exact_ten_plus_sixteen(self):
+    def test_current_manifest_exact_ten_plus_twenty_two(self):
         data=manifest.load()
         self.assertEqual(len(data['sql']),10)
-        self.assertEqual(set(data['python']),set(suite.CASES));self.assertEqual(len(suite.CASES),16)
-        self.assertEqual(len(data['fixtures']),9)
+        self.assertEqual(set(data['python']),set(suite.CASES));self.assertEqual(len(suite.CASES),25)
+        self.assertEqual(len(data['fixtures']),12)
         self.assertNotIn('historical',data)
         manifest.validate_dispatch(data,suite.CASES)
 
@@ -49,7 +49,7 @@ class Schema25SuiteTests(unittest.TestCase):
         source=(ROOT/'tests/schema25_regressions/cases_retention.py').read_text()
         self.assertIn('pages==1 and deleted==5',source);self.assertIn("page.scanned==5 and page.complete",source);self.assertIn('==1495',source)
         self.assertEqual(data['sql']['40_user_work_limits.sql']['row_budget'],15000)
-        self.assertEqual(data['python']['inventory_window']['row_budget'],3500)
+        self.assertEqual(data['python']['inventory_window']['row_budget'],6500)
 
     def test_current_sql_does_not_call_retired_functions(self):
         schema=(ROOT/'schema/schema.sql').read_text()
@@ -62,7 +62,7 @@ class Schema25SuiteTests(unittest.TestCase):
     def test_intrinsic_pins_match_current_baseline(self):
         pins=json.loads((ROOT/'schema/function-body-pins.json').read_text())
         actual={f.key:hashlib.sha256(f.body.encode()).hexdigest() for f in (parse_function(s) for s in statements((ROOT/'schema/schema.sql').read_text()) if s.startswith('CREATE FUNCTION '))}
-        self.assertEqual(len(actual),11);self.assertEqual(actual,pins['functions'])
+        self.assertEqual(len(actual),13);self.assertEqual(actual,pins['functions'])
         self.assertEqual(hashlib.sha256((ROOT/'schema/schema.sql').read_bytes()).hexdigest(),pins['schema_sha256'])
 
     def test_current_identity_checks_real_body_digests_and_readiness(self):
@@ -123,7 +123,7 @@ class Schema25SuiteTests(unittest.TestCase):
             fixture.assert_not_called()
     def test_runner_exact_completion_and_cleanup(self):
         text=(ROOT/'tools/check_schema25_repositories.py').read_text()
-        for term in ("validate_dispatch(manifest,CASES)","execute_python_case(fixture,CASES[name])","len(names)==26","finally:fixture.close()","fixture.admin.rollback();fixture.reset()","fixture.identity()"):
+        for term in ("validate_dispatch(manifest,CASES)","execute_python_case(fixture,CASES[name])","len(names)==35","finally:fixture.close()","fixture.admin.rollback();fixture.reset()","fixture.identity()"):
             self.assertIn(term,text)
         self.assertNotIn('argparse',text)
         main=next(node for node in ast.parse(text).body if isinstance(node,ast.FunctionDef) and node.name=='main')

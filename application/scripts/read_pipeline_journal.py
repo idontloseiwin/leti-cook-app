@@ -5,6 +5,7 @@ import argparse
 from collections import Counter, defaultdict, deque
 import json
 from pathlib import Path
+import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -96,10 +97,32 @@ def _transport_summary(events):
             "request_sizes": {key: dict(sorted(value.items())) for key, value in sizes.items()}}
 
 
+def _video_history(rows, video_id, limit):
+    """Observed checks for one identity, not causal recovery or current state."""
+    observations = []
+    fields = ("id", "ts", "sync_run_id", "trace_id", "span_id", "writer_id", "sequence",
+              "batch_id", "operation", "status", "endpoint", "reason", "retry_after_seconds")
+    for event in rows:
+        operation = event.get("operation")
+        direct = event.get("video_id") == video_id
+        returned = (operation == "video_provider_manifest" and event.get("status") == "received"
+                    and video_id in event.get("video_ids", []))
+        if not returned and not (direct and operation in ("video_provider_item", "video_validation", "video_write")):
+            continue
+        item = {key: event[key] for key in fields if key in event}
+        item["observation"] = "returned_by_provider" if returned else operation
+        observations.append(item)
+    return {"video_id": video_id, "scope": "retained_observations_in_file_order",
+            "current_state": "not_evaluated", "causal_recovery": "not_inferred",
+            "output_truncated": len(observations) > limit, "observations": observations[-limit:]}
+
+
 def read_journal(path, *, sync_run_id=None, trace_id=None, video_id=None, channel_id=None,
                  limit=200, max_bytes=32 * 1024 * 1024, max_records=MAX_SCAN_RECORDS):
     if not 1 <= limit <= 5000 or not 1 <= max_bytes <= MAX_SCAN_BYTES or not 1 <= max_records <= MAX_SCAN_RECORDS:
         raise ValueError("journal_read_bounds_invalid")
+    if video_id is not None and (not isinstance(video_id, str) or not re.fullmatch(r"[A-Za-z0-9_-]{11}", video_id)):
+        raise ValueError("journal_video_id_invalid")
     records = deque(maxlen=max_records)
     invalid = dropped_prefix = 0
     with Path(path).open("rb") as source:
@@ -171,7 +194,7 @@ def read_journal(path, *, sync_run_id=None, trace_id=None, video_id=None, channe
                 or (event.get("batch_id") and event["batch_id"] in selected_batches)
                 or (event.get("operation_id") and (event.get("trace_id"), event["operation_id"]) in selected_operations)]
     open_spans = _unfinished_observations(filtered)
-    return {"format": "leti-cook-pipeline-observation-v1", "complete_history": False,
+    result = {"format": "leti-cook-pipeline-observation-v1", "complete_history": False,
             "coverage": {"file_bytes_at_open": before, "scanned_from_byte": begin,
                          "head_truncated": begin > 0 or dropped_prefix > 0,
                          "records_evicted_from_reader": dropped_prefix,
@@ -186,6 +209,11 @@ def read_journal(path, *, sync_run_id=None, trace_id=None, video_id=None, channe
             "transport": _transport_summary(filtered),
             "context_event_ids": [event["id"] for event in filtered[-limit:] if not matches(event)],
             "events": filtered[-limit:]}
+    if video_id is not None:
+        # Exact matches only: another video in a shared batch cannot become a
+        # result for the selected ID. Keep run/trace filters and existing bounds.
+        result["video_history"] = _video_history(matching, video_id, limit)
+    return result
 
 
 def main(argv=None):

@@ -130,15 +130,24 @@ class AutomaticTypePolicyTests(unittest.TestCase):
                 self.assertIn("automatic.video_id=e.video_id", resolution)
                 self.assertIn("automatic.channel_id=e.canonical_channel_id", resolution)
                 self.assertIn("WHEN manual_valid OR automatic_valid THEN 'resolved'::text", resolution)
-                # Existing output columns stay in place; the new flag is last.
+                # Existing output columns stay in place; the new flag is last,
+                # followed only by schema 37's group key of the readable view.
                 output = resolution.split("\n SELECT video_id,", 1)[1].split("\n   FROM resolved", 1)[0]
+                key = "canonical_video_type AS inventory_video_type"
+                self.assertEqual(output.count(key), int(namespace == "readable"))
+                output = output.rstrip().removesuffix(key).rstrip().removesuffix(",")
                 self.assertTrue(output.rstrip().endswith("automatic_valid"))
                 self.assertIn("manual_valid", output)
 
     def test_hot_proof_only_relaxes_exact_singleton_admission(self):
         for namespace in ("public", "readable"):
             with self.subTest(namespace=namespace):
-                original, automatic, current = views(f"{namespace}.hot_video_inventory")
+                found = views(f"{namespace}.hot_video_inventory")
+                if namespace == "readable":
+                    # Schema 37 restates the view, adding only the type key of the join.
+                    *found, restated = found
+                    self.assertEqual(restated.replace(" AND (resolution.inventory_video_type = inv.video_type)", "", 1), found[-1])
+                original, automatic, current = found
                 waiting = ("\n AND NOT EXISTS(SELECT 1 FROM public.videos publication WHERE publication.video_id=inv.video_id"
                     "\n AND publication.channel_id=inv.channel_id AND publication.publication_status IS NOT NULL)")
                 self.assertEqual(current.count(waiting), 1)

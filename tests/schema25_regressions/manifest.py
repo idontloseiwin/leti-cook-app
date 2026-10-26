@@ -29,7 +29,7 @@ def load(root=ROOT):
     data = json.loads((root / "tests/schema25_regressions/manifest.json").read_text(encoding="utf-8"))
     require(data["format"] == 2 and data["schema_version"] == 25, "manifest_version")
     require(len(data["sql"]) == data["expected_sql_count"] == 10, "sql_manifest_count")
-    require(len(data["python"]) == data["expected_python_count"] == 16, "python_manifest_count")
+    require(len(data["python"]) == data["expected_python_count"] == 25, "python_manifest_count")
     require(set(data["sql"]) == {p.name for p in (root / "tests/sql").glob("*.sql")}, "sql_manifest_coverage")
     for name, entry in data["sql"].items():
         require(re.fullmatch(r"[0-9]{2}_[a-z_]+\.sql", name), "sql_path")
@@ -39,7 +39,11 @@ def load(root=ROOT):
     consumers = {name: set() for name in data["fixtures"]}
     for name, entry in data["python"].items():
         require(re.fullmatch(r"[a-z][a-z_]+", name), "case_name")
-        require(entry["row_budget"] == (3500 if name == "inventory_window" else 1000), "python_row_bound")
+        # inventory_window: 3000 core rows plus one read-model row and one queue
+        # marker per inventory video (schema 35). claim_window_skips_leases: a
+        # due window is 1000 rows, so it needs 1005 queue and inventory rows.
+        large = {"inventory_window": 6500, "claim_window_skips_leases": 4500}
+        require(entry["row_budget"] == large.get(name, 1000), "python_row_bound")
         require(entry["owners"] and entry["assertions"] and isinstance(entry["fixtures"], list), "case_contract")
         require(len(entry["fixtures"]) == len(set(entry["fixtures"])), "case_fixture_duplicate")
         require(entry["callable"] in {module + "." + name for module in CASE_MODULES}, "case_binding")

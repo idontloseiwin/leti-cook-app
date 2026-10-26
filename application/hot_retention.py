@@ -5,6 +5,11 @@ import time
 
 from db.hot.hot_retention import HotRetentionRepository, RetentionError, TARGET_FUNCTIONS, MAX_PRIORITY_REFERENCES
 
+# A page that fails again after its explicit retry stops blocking the pass: it
+# waits behind the other targets with its unchanged cursor, for a growing hold.
+FAILED_HOLD_FIRST_SECONDS = 15
+FAILED_HOLD_MAX_SECONDS = 600
+
 
 def run_cleanup(repository: HotRetentionRepository, *, targets=None, limit=100,
                 max_batches=len(TARGET_FUNCTIONS), max_seconds=30, clock=time.monotonic) -> dict:
@@ -71,13 +76,14 @@ class HotCleanupCycle:
     The supplied repository must independently bound each call to eight seconds.
     """
 
-    def __init__(self, repository: HotRetentionRepository, *, targets=None):
+    def __init__(self, repository: HotRetentionRepository, *, targets=None, clock=time.monotonic):
         selected = tuple(TARGET_FUNCTIONS if targets is None else targets)
         if (not selected or len(set(selected)) != len(selected)
                 or any(target not in TARGET_FUNCTIONS for target in selected)):
             raise ValueError("invalid_cleanup_targets")
         self.repository = repository
         self.targets = selected
+        self._clock = clock
         self.reset()
 
     def reset(self):
@@ -95,6 +101,10 @@ class HotCleanupCycle:
         self._first_page_at = None
         self._last_page_at = None
         self._failure = None
+        # Consecutive failures and hold deadline per target; a successful page
+        # of that target clears both.
+        self._failure_streak = {}
+        self._held_until = {}
 
     def retry_failed(self):
         """Permit one explicit retry after the caller reviewed an uncertain result.
@@ -105,7 +115,22 @@ class HotCleanupCycle:
         """
         if self._failure is None:
             raise ValueError("cleanup_cycle_has_no_failed_page")
+        target = self._failure["failed_target"]
         self._failure = None
+        streak = self._failure_streak.get(target, 0)
+        if streak >= 2 and self._pending and self._pending[0][0] == target:
+            # It failed again after a retry: the other targets go first, in a
+            # fresh round when this pass already finished them. The page keeps
+            # its cursor, so a committed outcome is still re-read, only later.
+            entry = self._pending.popleft()
+            waiting = {name for name, _ in self._pending}
+            for other in self.targets:
+                if other != target and other not in waiting:
+                    self._pending.append((other, None))
+                    self._exhausted.discard(other)
+            self._pending.append(entry)
+            self._held_until[target] = self._clock() + min(
+                FAILED_HOLD_MAX_SECONDS, FAILED_HOLD_FIRST_SECONDS * 2 ** min(20, streak - 2))
 
     def summary(self):
         """Bounded diagnostics only: neither API locators nor opaque cursors."""
@@ -121,6 +146,7 @@ class HotCleanupCycle:
                                 if target not in self._exhausted],
             "targets_with_observed_deferrals": [target for target in self.targets
                                                 if target in self._observed_deferred],
+            "targets_failing": [target for target in self.targets if self._failure_streak.get(target)],
             "invalid_clocks_observed": self._invalid_clocks_observed,
             "unknown_expiry_observed": self._unknown_expiry_observed,
             "confirmed_expired_observed": self._confirmed_expired_observed,
@@ -165,12 +191,18 @@ class HotCleanupCycle:
             if target in stalled:
                 self._pending.rotate(-1)
                 continue
+            if self._held_until.get(target, float("-inf")) > self._clock():
+                # A repeatedly failing page waits out its hold; nothing else does.
+                stalled.add(target)
+                self._pending.rotate(-1)
+                continue
             try:
                 page = self.repository.cleanup_page(target, after_id=cursor, limit=limit)
             except RetentionError as error:
                 # Leave the failed page at the head. An ambiguous commit cannot
                 # advance the cursor or disappear from subsequent slices.
                 known_code = error.code in ("cleanup_outcome_unknown", "invalid_cleanup_result")
+                self._failure_streak[target] = self._failure_streak.get(target, 0) + 1
                 self._failure = {
                     "error_code": error.code if known_code else "cleanup_failed",
                     "failed_target": target,
@@ -182,6 +214,8 @@ class HotCleanupCycle:
             if on_page is not None:
                 on_page(page)
             self._pending.popleft()
+            self._failure_streak.pop(target, None)
+            self._held_until.pop(target, None)
             self._visited.add(target)
             self._batches += 1
             pages.append(page.summary())

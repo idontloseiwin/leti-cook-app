@@ -132,3 +132,38 @@ class _Observation:
 
 def scope(operation: str, **identity: Any) -> _Observation:
     return _Observation(operation, identity)
+
+
+def observe_collection_phase(phase: str, callback: Callable[..., Any], **options: Any):
+    """Describe the recorded phase result without changing collection decisions."""
+    with scope("collection_phase", phase=phase) as observation:
+        try:
+            result = callback(**options)
+        except BaseException:
+            observation.finish("unknown", phase=phase)
+            raise
+        # A diagnostic projection must not turn a successful callback into a
+        # collection failure, even if its result cannot be described.
+        try:
+            reason = result.get("stopped_reason")
+            outcome = result.get("completion_outcome")
+            if result.get("settlement_unknown") or result.get("completion_unknown"):
+                status = "unknown"
+            elif result.get("errors") or outcome == "error" or result.get("infrastructure_error"):
+                status = "error"
+            elif outcome == "partial" or result.get("incomplete"):
+                status = "partial"
+            elif result.get("yield_requested") or reason not in (None, "no_claimable_work", "sweep_exhausted"):
+                status = "deferred"
+            else:
+                status = "completed"
+            facts = {"phase": phase, "reason": reason}
+            # Video phases report confirmed updates, not an absent processed
+            # field defaulted to zero. Other phases retain their own unit.
+            count = result.get("updated" if phase == "video_collection" else "processed")
+            if type(count) is int and count >= 0:
+                facts["count"] = count
+            observation.finish(status, **facts)
+        except Exception:
+            observation.finish("unknown", phase=phase)
+        return result

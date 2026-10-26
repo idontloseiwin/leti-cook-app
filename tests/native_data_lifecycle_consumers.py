@@ -194,3 +194,9 @@ def run(f):
         finally:
             f.reset()
     if failed:raise AssertionError('consumer_cases_failed:'+','.join(failed))
+
+
+
+if __name__ == "__main__":
+    from native_case_runner import run_cases
+    raise SystemExit(run_cases("native_data_lifecycle_consumers", (run,)))

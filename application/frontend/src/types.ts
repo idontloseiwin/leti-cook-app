@@ -483,13 +483,13 @@ export type ChannelVideoGrowthPayload = {
   window: {
     metric: 'views';
     requested_days: 28;
-    boundary_tolerance_days: 0;
+    boundary_tolerance_days: 1;
     endpoint: 'per_video_current_checked_at';
   };
   methods: {
     endpoint_observation: 'current_video_row_with_matching_snapshot';
-    full_window_start: 'exact_28d_interval_inside_hot_window';
-    partial_window_start: 'earliest_snapshot_inside_hot_window';
+    full_window_start: 'latest_snapshot_at_or_before_28d_before_endpoint';
+    partial_window_start: 'earliest_snapshot_within_28d_before_endpoint';
     partial_minimum_seconds: 86400;
     average_views_per_day?: 'signed_delta_per_actual_second_times_86400_rounded_2dp_half_even';
     counter_decrease: 'reported_as_correction_not_clamped';

@@ -22,6 +22,7 @@ _clock = time.monotonic
 MAX_CHILD_EVENTS = 128
 TRACE_HEADER = b"x-leti-read-trace"
 HTTP_ROUTES = {
+    "/research/queries/execute": "research_query",
     "/system-summary": "system_summary",
     "/system/run-history": "run_history",
     "/explorer/home-summary": "home_summary",
@@ -39,6 +40,7 @@ COMPONENTS = frozenset({
     "response_serialization", "request_guard",
 })
 READ_DATABASE_OPERATIONS = frozenset({
+    "research_query_page", "research_query_scope",
     "frontend_count_inventory_by_type", "frontend_load_channel_rows",
     "frontend_load_visible_channel_user_work",
     "frontend_load_visible_channel_user_work_identity", "frontend_load_folder_rows",
@@ -365,10 +367,11 @@ def database_scope(operation_name, phase="db_transaction"):
 
 
 async def observe_http(app, scope, receive, send):
-    """Observe selected finite GET reads without changing their execution."""
+    """Observe selected finite reads, including the reviewed catalogue POST."""
     operation = None
     try:
-        if scope.get("type") == "http" and scope.get("method") == "GET":
+        if scope.get("type") == "http" and (scope.get("method") == "GET"
+                or (scope.get("method") == "POST" and scope.get("path") == "/research/queries/execute")):
             operation = HTTP_ROUTES.get(scope.get("path"))
         enabled = operation is not None and telemetry.is_enabled()
     except Exception:

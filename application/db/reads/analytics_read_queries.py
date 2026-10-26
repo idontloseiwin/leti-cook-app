@@ -360,8 +360,9 @@ selected as materialized (
     order by limited.recorded_at asc
 """
 
-# The growth comparison spans exactly 28 days (ANALYTICS_WINDOW), inside the
-# 29-day retention window; its two '672 hours' are that analytics span.
+# The growth comparison spans 28 days (ANALYTICS_WINDOW) before each video's own
+# last snapshot, inside the 29-day retention window; its two '672 hours' are
+# that analytics span (the hot read floor and the per-video window start).
 GROWTH_SQL = """
 WITH read_clock AS MATERIALIZED (SELECT statement_timestamp() AS read_at),
 bounds AS MATERIALIZED (SELECT read_at,
@@ -398,11 +399,16 @@ requested as materialized (
                 and inventory.source_checked_at between (SELECT hot_floor FROM bounds) and (SELECT read_through FROM bounds)
             limit 1
         ) as membership on true
-        left join readable.videos as video
-            on video.video_id = membership.video_id and video.channel_id = %(channel_id)s::text
+        -- One protected video row per requested ID, never the whole channel.
+        left join lateral (
+            select video.* from readable.videos as video
+            where video.video_id = membership.video_id and video.channel_id = %(channel_id)s::text
+            offset 0
+        ) as video on true
     ), observations as materialized (
-        select scoped.*, endpoint.recorded_at as endpoint_at,
-            first_point.recorded_at as start_at, first_point.views as start_views
+        select scoped.*, endpoint.recorded_at as endpoint_at, window_start.at as window_start_at,
+            coalesce(full_point.recorded_at, first_point.recorded_at) as start_at,
+            coalesce(full_point.views, first_point.views) as start_views
         from scoped
         left join lateral (
             select snapshot.recorded_at
@@ -414,11 +420,27 @@ requested as materialized (
                 and (%(video_type)s::text <> 'stream' or snapshot.recorded_at >= scoped.stream_actual_end_at)
             order by snapshot.id desc limit 1
         ) as endpoint on true
+        -- The window is the 28 days before the video's last snapshot, not before
+        -- this read. A full window starts at the latest snapshot at or before
+        -- that start (retention keeps at most one more day), otherwise at the
+        -- earliest snapshot after it.
+        cross join lateral (select endpoint.recorded_at - interval '672 hours' as at) as window_start
         left join lateral (
             select snapshot.recorded_at, snapshot.views
             from readable.video_snapshots as snapshot
-            where snapshot.video_id = scoped.scoped_video_id and endpoint.recorded_at is not null
-                and snapshot.recorded_at >= (SELECT hot_floor FROM bounds)
+            where snapshot.video_id = scoped.scoped_video_id
+                and snapshot.recorded_at <= window_start.at
+                and snapshot.recorded_at >= coalesce(%(recorded_from)s::timestamptz, '-infinity'::timestamptz)
+                and snapshot.views is not null and snapshot.views >= 0
+                and (%(video_type)s::text <> 'stream' or snapshot.recorded_at >= scoped.stream_actual_end_at)
+            order by snapshot.recorded_at desc, snapshot.id desc limit 1
+        ) as full_point on true
+        left join lateral (
+            select snapshot.recorded_at, snapshot.views
+            from readable.video_snapshots as snapshot
+            where snapshot.video_id = scoped.scoped_video_id and full_point.recorded_at is null
+                and snapshot.recorded_at > window_start.at
+                and snapshot.recorded_at >= coalesce(%(recorded_from)s::timestamptz, '-infinity'::timestamptz)
                 and snapshot.recorded_at <= endpoint.recorded_at
                 and snapshot.views is not null and snapshot.views >= 0
                 and (%(video_type)s::text <> 'stream' or snapshot.recorded_at >= scoped.stream_actual_end_at)
@@ -433,7 +455,7 @@ requested as materialized (
                 when scoped_video_id is null or not current_fresh
                     or current_views is null or current_views < 0 or endpoint_at is null
                     then 'unavailable'
-                when measured_interval = interval '672 hours' then 'ready'
+                when start_at <= window_start_at then 'ready'
                 when measured_interval >= interval '24 hours' then 'partial'
                 when timezone('UTC', start_at)::date = timezone('UTC', (SELECT read_at FROM bounds))::date
                     then 'started_today'
@@ -451,7 +473,8 @@ requested as materialized (
         case when current_fresh then current_views else null end AS observed_current_views,
         case when resolved_status <> 'unavailable'
             then floor(extract(epoch from measured_interval))::bigint else null end AS actual_interval_seconds,
-        case when resolved_status = 'ready' then 0::bigint else null end AS boundary_distance_seconds,
+        case when resolved_status = 'ready'
+            then floor(extract(epoch from window_start_at - start_at))::bigint else null end AS boundary_distance_seconds,
         case
             when resolved_status = 'ready' then null
             when resolved_status = 'partial' then 'full_window_history_unavailable'

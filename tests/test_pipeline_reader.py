@@ -50,6 +50,48 @@ class ReaderTests(unittest.TestCase):
         self.assertAlmostEqual(metric["average_in_observed_window"], 40/30)
         self.assertEqual(result["transport"]["request_sizes"], {"videos": {50: 2}})
 
+    def test_video_history_keeps_followup_and_later_evidence_without_inventing_cause(self):
+        video = "v0000000001"
+        rows = [
+            self.row("video_provider_item", "observed", sync_run_id=604, video_id=video,
+                     endpoint="videos:batchGetStats", reason="id_omitted"),
+            self.row("video_write", "confirmed", sync_run_id=604, video_id=video,
+                     reason="youtube_stats_counters_unavailable", retry_after_seconds=30),
+            self.row("video_provider_item", "observed", sync_run_id=605, video_id=video,
+                     endpoint="videos", reason="id_omitted", batch_id="shared"),
+            self.row("video_write", "confirmed", sync_run_id=605, video_id=video,
+                     reason="unavailable", batch_id="shared"),
+            self.row("video_write", "confirmed", sync_run_id=605, video_id="v0000000002",
+                     reason="complete_batch", batch_id="shared"),
+        ]
+        self.write(*rows)
+        result = read_journal(self.path, video_id=video)
+        history = result["video_history"]
+        self.assertEqual([r["id"] for r in history["observations"]], [r["id"] for r in rows[:4]])
+        self.assertEqual(history["current_state"], "not_evaluated")
+        self.assertEqual(history["causal_recovery"], "not_inferred")
+        self.assertNotIn("deleted", json.dumps(history))
+        self.assertNotIn("video_history", read_journal(self.path))
+        limited = read_journal(self.path, video_id=video, limit=1)["video_history"]
+        self.assertTrue(limited["output_truncated"])
+        self.assertEqual(limited["observations"][0]["id"], rows[3]["id"])
+        scoped = read_journal(self.path, video_id=video, sync_run_id=604)["video_history"]
+        self.assertEqual(len(scoped["observations"]), 2)
+
+    def test_returned_manifest_is_not_a_confirmed_write_or_recovery(self):
+        video = "v0000000001"
+        self.write(self.row("video_provider_manifest", "received", video_ids=[video], endpoint="videos"),
+                   self.row("video_write", "unknown", video_id=video, reason="complete_batch"))
+        history = read_journal(self.path, video_id=video)["video_history"]
+        self.assertEqual(history["observations"][0]["observation"], "returned_by_provider")
+        self.assertEqual(history["observations"][1]["status"], "unknown")
+        self.assertEqual(history["causal_recovery"], "not_inferred")
+        self.write(self.row("step", "ok", video_id=video))
+        self.assertEqual(read_journal(self.path, video_id=video)["video_history"]["observations"], [])
+        for invalid in ("secret=value", "https://example.invalid", 5, True):
+            with self.assertRaisesRegex(ValueError, "journal_video_id_invalid"):
+                read_journal(self.path, video_id=invalid)
+
     def test_loss_corruption_rotation_and_limits_are_visible(self):
         rows = [self.row("step", "ok", sequence=i, dropped_total=2) for i in (1,4,5)]
         self.write(*rows)

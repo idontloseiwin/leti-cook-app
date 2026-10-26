@@ -52,3 +52,31 @@ def folder_label_management(f):
     f.reset();f.check(repo.import_document(fixture_json(f,'labels_deleted_preset_expression.sql'))['outcome']=='ready','deleted_preset_import')
     f.check(f.scalar("SELECT NOT EXISTS(SELECT 1 FROM public.channel_labels WHERE label_key='monetized')") is True,'preset_stays_deleted')
     f.reset();expect_error(f,lambda:repo.import_document(fixture_json(f,'labels_invalid_version_expression.sql')),DatabaseError,code='P0001')
+
+def user_work_limit_race(f):
+    # Two writers at the folder limit: the second waits for the first to commit,
+    # then counts its row and is refused, so a backup stays exportable.
+    import threading
+    import psycopg
+    from .fixtures import dsns
+    f.rows("INSERT INTO public.folders(name) SELECT 'race '||v FROM generate_series(1,999) v")
+    admin_dsn=dsns()[0]
+    first=psycopg.connect(admin_dsn,connect_timeout=5);second=psycopg.connect(admin_dsn,connect_timeout=5)
+    outcome={}
+    try:
+        first.execute("SET lock_timeout='10s'");second.execute("SET lock_timeout='10s'")
+        first.execute("INSERT INTO public.folders(name) VALUES ('race first')")
+        def insert_second():
+            try:
+                second.execute("INSERT INTO public.folders(name) VALUES ('race second')");second.commit()
+                outcome['second']='committed'
+            except psycopg.Error as error:
+                second.rollback();outcome['second']=error.diag.message_primary
+        worker=threading.Thread(target=insert_second);worker.start()
+        worker.join(1.0);waited=worker.is_alive()
+        first.commit();worker.join(15)
+        f.check(waited and outcome.get('second')=='user_work_limit_reached','limit_race_second_refused')
+        f.check(f.scalar('SELECT count(*) FROM public.folders')==1000,'limit_race_exact_cap')
+    finally:
+        first.close();second.close()
+        f.rows("DELETE FROM public.folders WHERE name LIKE 'race %%'")

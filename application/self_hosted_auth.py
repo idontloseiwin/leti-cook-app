@@ -109,6 +109,23 @@ class SelfHostedAuthMiddleware:
         value=request.cookies.get(self.cookie,'')
         return value if TOKEN.fullmatch(value) else None
 
+    def access_recheck(self, mode, token=None):
+        """Recheck a bounded read at completion without extending its session."""
+        identity = token_hash(token) if token else None
+        def check():
+            try:
+                now = int(self.clock())
+                if self.repository.access_state(now)['mode'] != mode:
+                    return None
+                if mode == 'local':
+                    return 'owner.local'
+                if identity and self.repository.session(identity, now, touch=False):
+                    return 'owner.' + identity
+            except (AuthStoreError, OSError):
+                pass
+            return None
+        return check
+
     async def __call__(self,scope,receive,send):
         if scope['type']=='lifespan': return await self.app(scope,receive,send)
         if scope['type']!='http':
@@ -168,7 +185,8 @@ class SelfHostedAuthMiddleware:
                 if state['mode']=='local':
                     if urlsplit(self.origin).hostname not in ('127.0.0.1','localhost','::1'):
                         return await self.reply('local_access_requires_loopback',403)(scope,receive,secure_send)
-                    scope.setdefault('state',{}).update(installation_access=True,access_mode='local')
+                    scope.setdefault('state',{}).update(installation_access=True,access_mode='local',
+                        owner_access_recheck=self.access_recheck('local'))
                     return await self.app(scope,receive,secure_send)
                 owner=await run_in_threadpool(self.repository.session,token_hash(token),int(self.clock())) if token else None
                 if not owner:
@@ -177,7 +195,8 @@ class SelfHostedAuthMiddleware:
                     else:
                         response=self.reply('authentication_required',401)
                 else:
-                    scope.setdefault('state',{}).update(owner_username=owner['username'],installation_access=True,access_mode='password')
+                    scope.setdefault('state',{}).update(owner_username=owner['username'],installation_access=True,access_mode='password',
+                        owner_access_recheck=self.access_recheck('password', token))
                     return await self.app(scope,receive,secure_send)
         except (AuthStoreError,OSError):
             response=self.reply('owner_access_unavailable',503)

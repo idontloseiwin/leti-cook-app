@@ -19,7 +19,6 @@ from ..base.sql_values import projection
 
 INVENTORY_PAGE_SIZE = 1000
 DB_BATCH_SIZE = 500
-CURSOR_TIMESTAMP_RE = re.compile(r"^[0-9T:+.Z-]+$")
 CURSOR_VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 VIDEO_TYPES = frozenset({"long", "short", "stream"})
 
@@ -79,43 +78,17 @@ _LIST_INVENTORY = """WITH args AS MATERIALIZED(SELECT %s::text AS channel_id,%s:
  'source_expires_at',source_expires_at)) AS formats FROM proofs"""
 
 
-def _cursor_values(row: dict[str, Any]) -> tuple[str | None, str]:
-    published_at = row.get("published_at")
-    published = str(published_at).strip() if published_at is not None else None
-    video_id = str(row.get("video_id") or "").strip()
-    if published == "":
-        published = None
-    if published is not None and not CURSOR_TIMESTAMP_RE.fullmatch(published):
-        raise RuntimeError("inventory cursor has an invalid publication timestamp")
-    if not CURSOR_VIDEO_ID_RE.fullmatch(video_id):
-        raise RuntimeError("inventory cursor has an invalid video ID")
-    return published, video_id
-
-
 class ChannelExplorerRepository(DatabaseRepository):
     """Own the fixed, bounded query shapes used by Channel Explorer."""
 
     def _inventory_page(
         self, channel_id: str, *, video_type: str, page_size: int,
-        cursor_published: str | None, cursor_video_id: str | None,
-        strict: bool = False,
     ) -> list[dict[str, Any]]:
         statement = (
             "SELECT video_id,published_at,source_checked_at,source_expires_at FROM readable.hot_video_inventory "
             "WHERE channel_id = %s AND video_type = %s"
         )
         params = [channel_id, video_type]
-        if cursor_video_id is not None:
-            if cursor_published is None:
-                statement += " AND published_at IS NULL AND video_id > %s"
-                params.append(cursor_video_id)
-            else:
-                statement += (
-                    " AND (published_at < %s::timestamptz"
-                    " OR (published_at = %s::timestamptz AND video_id > %s)"
-                    " OR published_at IS NULL)"
-                )
-                params.extend((cursor_published, cursor_published, cursor_video_id))
         statement += " ORDER BY published_at DESC NULLS LAST, video_id ASC LIMIT %s"
         params.append(page_size)
         data = execute_recoverable_read(
@@ -125,8 +98,6 @@ class ChannelExplorerRepository(DatabaseRepository):
             ),
             operation="channel_explorer.inventory_page",
         )
-        if strict and (not isinstance(data, list) or any(not isinstance(row, dict) for row in data)):
-            raise CatalogueScopeError("catalogue_inventory_response_invalid")
         return self.admit_source_deadlines([dict(row) for row in (data or [])])
 
     @contextmanager
@@ -222,23 +193,12 @@ class ChannelExplorerRepository(DatabaseRepository):
         if video_type not in VIDEO_TYPES:
             raise ValueError("unsupported video type")
         requested = max(0, int(limit))
-        rows: list[dict[str, Any]] = []
-        cursor_published: str | None = None
-        cursor_video_id: str | None = None
-        while len(rows) < requested:
-            page_size = min(INVENTORY_PAGE_SIZE, requested - len(rows))
-            batch = self._inventory_page(
-                channel_id, video_type=video_type, page_size=page_size,
-                cursor_published=cursor_published, cursor_video_id=cursor_video_id,
-            )
-            rows.extend(dict(row) for row in batch)
-            if len(batch) < page_size:
-                break
-            next_cursor = _cursor_values(dict(batch[-1]))
-            if next_cursor == (cursor_published, cursor_video_id):
-                raise RuntimeError("inventory keyset cursor did not advance")
-            cursor_published, cursor_video_id = next_cursor
-        return rows
+        if requested == 0:
+            return []
+        # One statement: the protected view cannot be read in pages by its order
+        # key, so every 1000-row page rebuilt the channel's whole inventory. One
+        # read is also one snapshot of the catalogue.
+        return self._inventory_page(channel_id, video_type=video_type, page_size=requested)
 
     def load_format_inventory(
         self, channel_id: str, *, video_type: str, limit: int,

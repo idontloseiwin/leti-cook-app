@@ -59,3 +59,11 @@ def initial_handoff(f):
     f.check(channels['sync_control']['mode_counts'] == {'initial_inventory': 1}, 'initial_channel_still_incomplete')
     f.check(long['due'] == 1 and long['policy_paused'] == 0, 'completed_initial_target_remains_eligible')
     f.check(all(typed['video_types'][k]['due'] == 1 for k in ('short', 'stream')), 'all_initial_handoffs_remain_eligible')
+
+
+CASES = (queue_policy, initial_handoff)
+
+
+if __name__ == "__main__":
+    from native_case_runner import run_cases
+    raise SystemExit(run_cases("native_health_queue_projection", CASES))

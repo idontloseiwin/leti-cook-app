@@ -70,6 +70,25 @@ class SyncRunProgressProjectionTests(unittest.TestCase):
                 for projected in self.projections(value):
                     self.assertEqual(projected, value)
 
+    def test_phase_timings_survive_actual_write_and_read_projections(self):
+        timings = {"preflight_seconds": 0.0, "lifecycle_recovery_seconds": 0.125,
+                   "video_collection_seconds": 16.416, "regular_video_stats_seconds": 16.416,
+                   "channel_metadata_seconds": 6.548, "typed_inventory_seconds": 22.282,
+                   "total_seconds": 45.52}
+        compact = compact_sync_run_summary({"timings": {**timings,
+            "provider_payload": "private", "unknown_phase_seconds": 99}, "errors": 0})
+        tx = Database(row(json.dumps(compact), errors=0), 1)
+        self.assertEqual(update_sync_run(tx, 23, {"summary_json": compact}), 1)
+        stored = json.loads(tx.calls[-1][2][0])
+        response = _response_rows([{"id": 23, "status": "completed", "errors": 0,
+                                    "summary_json": stored}])[0]
+        self.assertEqual(stored["timings"], timings)
+        self.assertEqual(response["summary_json"]["timings"], timings)
+        self.assertNotIn("private", json.dumps(response))
+        for projected in self.projections({"timings": {"total_seconds": 45.52}}):
+            self.assertEqual(projected, {"timings": {"total_seconds": 45.52}})
+
+
     def test_cycle_producers_use_the_finite_progress_vocabulary(self):
         tree = ast.parse((ROOT / "application/collection/cycle.py").read_text())
         phases, states = set(), set()

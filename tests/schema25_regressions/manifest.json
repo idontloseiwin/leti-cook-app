@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 16,
+  "expected_python_count": 25,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -143,7 +143,7 @@
         "HotRetentionRepository.cleanup_page",
         "current video queue ensure owner"
       ],
-      "assertions": "Fresh review revision4 survives; stale revision5 cleared once; repeat no-op; paused reason availability_unsupported",
+      "assertions": "Fresh review revision4 survives; stale revision5 cleared once; repeat no-op; paused reason availability_unsupported; a running profile refresh keeps the confirmed profile until its clock expires",
       "row_budget": 1000,
       "fixtures": [
         "review_retention_seed.sql"
@@ -176,7 +176,7 @@
         "HotRetentionRepository.cleanup_page"
       ],
       "assertions": "1500 inventory plus1500 memberships;five every300th stale;only the five stale memberships selected,work<=100;one page;1495membership survivors",
-      "row_budget": 3500,
+      "row_budget": 6500,
       "fixtures": [
         "inventory_window_seed.sql"
       ],
@@ -225,6 +225,94 @@
       "row_budget": 1000,
       "fixtures": [],
       "callable": "cases_readiness.negative_intrinsic_guard"
+    },
+    "trashed_channel_removal": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page",
+        "HotCleanupCycle.run_slice"
+      ],
+      "assertions": "110-video channel kept in the trash past the window; every owned row removed within two full cleanup passes",
+      "row_budget": 1000,
+      "fixtures": [
+        "trashed_channel_seed.sql"
+      ],
+      "callable": "cases_retention.trashed_channel_removal"
+    },
+    "inventory_queue_seek": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page"
+      ],
+      "assertions": "150 long-only videos, no typed queue fields; the inventory page reads at most three queue rows per video and changes nothing",
+      "row_budget": 1000,
+      "fixtures": [
+        "inventory_queue_seed.sql"
+      ],
+      "callable": "cases_retention.inventory_queue_seek"
+    },
+    "receipt_scan_index": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page"
+      ],
+      "assertions": "with sequential scans off, the scan cleanup receipt probe and the FK cascade shape both use typed_inventory_receipts_scan_id_idx; the scan delete succeeds",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.receipt_scan_index"
+    },
+    "growth_window_from_last_snapshot": {
+      "owners": [
+        "read_video_view_growth_28d"
+      ],
+      "assertions": "28-day growth ends at each video's last snapshot: starts 674 h and 672 h earlier are ready (boundary 2 h, 0), 600 h earlier is partial (25 days); the ready row passes the application contract",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.growth_window_from_last_snapshot"
+    },
+    "claim_window_skips_leases": {
+      "owners": [
+        "VideoCollectionRepository.claim_due_video_collection_batch"
+      ],
+      "assertions": "1000 earliest due rows under live leases, five free: the due window holds the five free rows; an expired lease is due again",
+      "row_budget": 4500,
+      "fixtures": [
+        "claim_window_seed.sql"
+      ],
+      "callable": "cases_jobs.claim_window_skips_leases"
+    },
+    "user_work_limit_race": {
+      "owners": [
+        "enforce_user_work_backup_limits"
+      ],
+      "assertions": "999 folders, two concurrent inserts: the second waits for the first commit and is refused with user_work_limit_reached; exactly 1000 folders",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_user_work.user_work_limit_race"
+    },
+    "evidence_page_locks": {
+      "owners": [
+        "PostgresDatabase.cleanup_hot_evidence"
+      ],
+      "assertions": "expired snapshots of five videos: a live lease, a queue row held by another transaction and a held snapshot are deferred, the rest of the page is deleted; once released they are deleted on the next page and a fresh snapshot stays",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.evidence_page_locks"
+    },
+    "current_source_page_locks": {
+      "owners": [
+        "PostgresDatabase.cleanup_hot_current_source"
+      ],
+      "assertions": "expired counters of five videos: a live lease, a queue row and a video row held by other transactions are deferred, the rest of the page is scrubbed; once released they are scrubbed on the next page; fresh counters and every clock stay",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.current_source_page_locks"
+    },
+    "job_targets_page_locks": {
+      "owners": [
+        "PostgresDatabase.cleanup_hot_operational_copies"
+      ],
+      "assertions": "a job whose source expired 700 hours ago has four targets; one held by another transaction is deferred and the other three are deleted on one page; once released it is deleted on the next",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.job_targets_page_locks"
     }
   },
   "fixtures": {
@@ -289,6 +377,27 @@
       "kind": "expression",
       "cases": [
         "folder_label_management"
+      ]
+    },
+    "trashed_channel_seed.sql": {
+      "sha256": "c262f1763bf703b764bc39d3e3a27f02c1a29177e3b69505f28ac2f7c1599040",
+      "kind": "seed",
+      "cases": [
+        "trashed_channel_removal"
+      ]
+    },
+    "inventory_queue_seed.sql": {
+      "sha256": "13c66f7b2db043678986479113b95b60af4c7a27b12da4ea42e8953220b481c6",
+      "kind": "seed",
+      "cases": [
+        "inventory_queue_seek"
+      ]
+    },
+    "claim_window_seed.sql": {
+      "sha256": "ecfaeee76eb80f9717dcf898be4b817fcf6d9b8773f9d6ab283f673484b8beff",
+      "kind": "seed",
+      "cases": [
+        "claim_window_skips_leases"
       ]
     }
   }

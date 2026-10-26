@@ -79,12 +79,13 @@ class TypedAggregateLoaderTests(unittest.TestCase):
         prefix = [inventory("z", published=iso(NOW), expiry=late),
                   inventory("y", published=iso(NOW-timedelta(days=1)), expiry=late),
                   inventory("x", expiry=late)]
-        repo, db = self.repository(discarded, [inventory("c", expiry=early)], prefix[:2], prefix[2:])
+        # The overflow falls back to the publication prefix, read in one statement.
+        repo, db = self.repository(discarded, [inventory("c", expiry=early)], prefix)
         with patch.object(owner, "INVENTORY_PAGE_SIZE", 2), capture_read_lifetime() as lifetime:
             self.assertEqual(prefix, repo.load_format_inventory("c", video_type="stream", limit=3))
         self.assertEqual(late, lifetime.expires_at)
-        self.assertEqual(4, len(db.calls))
-        self.assertEqual(db.calls[2][3], ("c", "stream", 2))
+        self.assertEqual(3, len(db.calls))
+        self.assertEqual(db.calls[2][3], ("c", "stream", 3))
         self.assertIn("ORDER BY published_at DESC NULLS LAST, video_id ASC", db.calls[2][2])
         self.assertEqual(len(discarded), 2)  # Do not mutate a supplied DB result.
 

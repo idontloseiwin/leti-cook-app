@@ -58,6 +58,8 @@ class SearchPathTests(unittest.TestCase):
             'guard_hot_storage_collection_delete', 'guard_manual_video_type_decision',
             'guard_inventory_chain_identity', 'guard_inventory_chain_parent_version',
             'guard_inventory_chain_consistency',
+            # Schema35: read-model queue and inventory tracking hooks.
+            'queue_video_search_projection', 'track_video_search_inventory',
         })
         self.assertEqual(len(names), len(set(names)))
         for name in names:

@@ -14,6 +14,8 @@ DEFAULT_BODY_LIMIT = 1024 * 1024
 # code; this outer bound only stops bodies that bypass it.
 BACKUP_BODY_LIMIT = 17 * 1024 * 1024
 PATH_BODY_LIMITS = {
+    "/research/queries/validate": 64 * 1024,
+    "/research/queries/execute": 64 * 1024,
     "/user-work/restore": BACKUP_BODY_LIMIT,
     "/user-work/restore/preview": BACKUP_BODY_LIMIT,
 }

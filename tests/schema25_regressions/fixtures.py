@@ -101,6 +101,9 @@ class Fixture:
     def reset(self):
         self.gate.ready=True
         with self.admin.transaction():
+            # Autovacuum yields to TRUNCATE only after deadlock_timeout (1 s);
+            # the session's 250 ms would lose that race on large data.
+            self.rows("SET LOCAL lock_timeout='5s'")
             self.rows('TRUNCATE TABLE '+','.join(self.tables))
             for name,text in self.baseline.items():
                 if text!='[]':self.rows('INSERT INTO '+name+' SELECT * FROM jsonb_populate_recordset(NULL::'+name+',%s::jsonb)',(text,))

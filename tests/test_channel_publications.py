@@ -91,7 +91,7 @@ class ChannelPublicationsTests(unittest.TestCase):
         call = database.read_rows.call_args
         statement = call.args[1]
         self.assertIn("FROM readable.videos", statement)
-        self.assertIn("JOIN readable.video_inventory", statement)
+        self.assertIn("CROSS JOIN LATERAL (SELECT x.video_type,x.source_expires_at FROM readable.video_inventory x", statement)
         self.assertIn("v.availability_status IN ('public','unlisted')", statement)
         self.assertIn("WITH waiting AS MATERIALIZED", statement)
         self.assertIn("FROM readable.video_inventory_type_resolution", statement)

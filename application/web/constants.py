@@ -47,7 +47,12 @@ EXPLORER_RECENT_VIDEO_WINDOWS = {
 EXPLORER_RECENT_VIDEO_PAGE_SIZE = 20
 
 
-EXPLORER_RECENT_VIDEO_SCAN_SIZE = 100
+EXPLORER_RECENT_VIDEO_SCAN_SIZE = 500
+
+
+# Each scan page builds the stored catalogue for the whole window, so one
+# request reads at most this many; a short page then continues by cursor.
+EXPLORER_RECENT_VIDEO_MAX_PAGES = 3
 
 
 LABEL_NAME_MAX_LENGTH = 40

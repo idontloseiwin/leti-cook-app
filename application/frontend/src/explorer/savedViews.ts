@@ -4,8 +4,9 @@ import { normalizeCatalogueConditions, serializeCatalogueConditions, writeCatalo
 import { SavedWorkContractError, newSavedWorkId, savedId, savedName, savedRecord, savedRevision, savedTimestamp } from './savedWork';
 
 export const SAVED_VIEWS_PATH = `${EXPLORER_V3_ROOT}/saved`;
-export type ExplorerDestination = { kind: 'home' } | { kind: ExplorerOperationalPage } | { kind: 'saved'; tab?: 'collections'; collectionId?: string; error?: string } | { kind: 'channel'; channelId: string };
+export type ExplorerDestination = { kind: 'home' | 'research' } | { kind: ExplorerOperationalPage } | { kind: 'saved'; tab?: 'collections'; collectionId?: string; error?: string } | { kind: 'channel'; channelId: string };
 export function readExplorerDestination(pathname: string, search = ''): ExplorerDestination {
+  if (pathname.replace(/\/$/, '') === `${EXPLORER_V3_ROOT}/research`) return { kind: 'research' };
   const operationalPage = parseExplorerOperationalPath(pathname);
   if (operationalPage) return { kind: operationalPage };
   if (pathname.startsWith(`${SAVED_VIEWS_PATH}/collections/`)) {

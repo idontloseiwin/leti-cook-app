@@ -9,6 +9,7 @@ import {
   eventIdentity, eventTimestamp, filterTelemetryEvents, loadTelemetryRecent,
   telemetryDuration, telemetryFailed, telemetryFlows, telemetrySourceLabel, telemetryTime, telemetrySummaryText,
   telemetryExact, telemetryDate, telemetryRunContext, telemetryRunDuration, telemetryRunExplanation, telemetryWaitingPublications, telemetryCountLabels, loadTelemetrySystem, TELEMETRY_VIEW_LIMIT,
+  telemetryRunPhases, telemetryVideoObservation,
 } from './telemetryWorkspace';
 import './telemetry.css';
 
@@ -19,6 +20,7 @@ function EventDetails({ event, onClose }: { event: TelemetryEvent; onClose: () =
   useEffect(() => { panel.current?.focus(); }, [event.id]);
   const number = (value: unknown) => typeof value === 'number' ? integer(value) : 'Not recorded';
   const countLabels = telemetryCountLabels(event);
+  const observation = telemetryVideoObservation(event);
   return <aside className="telemetry-v2-inspector" aria-label="Telemetry event details" ref={panel} tabIndex={-1}>
     <header><div><p className="telemetry-v2-eyebrow">Recorded event</p><h3>{event.operation}</h3></div>
       <button type="button" onClick={onClose} aria-label="Close event details"><X size={16} /></button></header>
@@ -40,10 +42,11 @@ function EventDetails({ event, onClose }: { event: TelemetryEvent; onClose: () =
       {event.operation === 'video_provider_manifest' && Array.isArray(event.video_ids) && <div><dt>Returned requested IDs</dt><dd>{event.video_ids.filter((id): id is string => typeof id === 'string' && /^[A-Za-z0-9_-]{11}$/.test(id)).slice(0, 50).join(', ') || 'None'}</dd></div>}
       {event.retry_after_seconds !== undefined && <div><dt>Requested retry delay (seconds)</dt><dd>{number(event.retry_after_seconds)}</dd></div>}
       <div><dt>Duration</dt><dd>{telemetryDuration(event.duration_ms)}</dd></div>
-      <div><dt>Count</dt><dd>{number(event.count)}</dd></div>
+      <div><dt>{countLabels.count ?? 'Count'}</dt><dd>{number(event.count)}</dd></div>
       <div><dt>Reported quota units</dt><dd>{number(event.quota)}</dd></div>
       <div><dt>HTTP status</dt><dd>{number(event.http_status)}</dd></div>
     </dl>
+    {observation && <p className="telemetry-v2-note">{observation}</p>}
     {event.detail && <div className="telemetry-v2-event-note"><h4>Detail</h4><p>{plainServerText(event.detail, 640) ?? 'Withheld: the detail looked like a URL, a token or a stack trace.'}</p></div>}
     <details><summary>Event identity</summary><code>{event.id}</code><p>Envelope v{number(event.schema_version ?? 1)} · source: {event.source} · target: {event.target}</p></details>
     <p className="telemetry-v2-note">One diagnostic event, not an incident or a complete request trace. Counts keep the producer's meaning; quota is not a remaining balance.</p>
@@ -141,7 +144,7 @@ export function TelemetryPage() {
     <section className="telemetry-v2-events-section" aria-labelledby="telemetry-v2-events-title">
       <div className="telemetry-v2-section-heading"><h2 id="telemetry-v2-events-title">Event log</h2><span>{visible.length} of {events.length} retained events</span></div>
       <div className="telemetry-v2-toolbar">
-        <label className="telemetry-v2-search"><Search size={16} aria-hidden="true" /><input ref={searchInput} type="search" value={query} maxLength={160} onChange={(event) => setQuery(event.target.value)} placeholder="Search operation, source or detail" aria-label="Search telemetry events" /></label>
+        <label className="telemetry-v2-search"><Search size={16} aria-hidden="true" /><input ref={searchInput} type="search" value={query} maxLength={160} onChange={(event) => setQuery(event.target.value)} placeholder="Search operation, reason or Video ID" aria-label="Search telemetry events" /></label>
         <label className="telemetry-v2-kind"><span>Kind</span><select value={kind} onChange={(event) => setKind(event.target.value)}><option value="">All kinds</option>{[...new Set([...kinds, ...(kind ? [kind] : [])])].map((value) => <option key={value}>{value}</option>)}</select></label>
         <label className="telemetry-v2-errors"><input type="checkbox" checked={failedOnly} onChange={(event) => setFailedOnly(event.target.checked)} />Errors only</label>
         {hasFilters && <button type="button" onClick={resetFilters}>Clear filters</button>}
@@ -194,9 +197,12 @@ export function TelemetryPage() {
           <div><dt>New videos</dt><dd>{run.new_videos === undefined ? 'Not recorded' : integer(run.new_videos)}</dd></div>
           <div><dt>Recorded errors</dt><dd>{run.errors === undefined ? 'Not recorded' : integer(run.errors)}</dd></div>
           {run.collection?.claimed !== undefined && <div><dt>Videos claimed for collection</dt><dd>{integer(run.collection.claimed)}</dd></div>}
-          {run.collection?.unavailable_marked !== undefined && <div><dt>Videos marked unavailable</dt><dd>{integer(run.collection.unavailable_marked)}</dd></div>}
+          {run.collection?.unavailable_marked !== undefined && <div><dt>Videos recorded as unavailable via API</dt><dd>{integer(run.collection.unavailable_marked)}</dd></div>}
           {telemetryWaitingPublications(run.collection) !== undefined && <div><dt>Waiting publications handled</dt><dd>{integer(telemetryWaitingPublications(run.collection)!)}</dd></div>}
         </dl>
+        <h3>Recorded phase durations</h3>
+        <dl>{telemetryRunPhases.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{telemetryRunDuration(run.timings?.[key])}</dd></div>)}</dl>
+        <p className="telemetry-v2-note">Phase durations include waits inside each phase. Missing measurements are not zero; older runs may only have a total duration.</p>
       </details>)}
       {!system.payload?.recent_runs.length && <p className="telemetry-v2-empty">{system.loading ? 'Loading run history…' : system.payload ? 'No run records returned.' : 'Run history unavailable.'}</p>}
       <p className="telemetry-v2-note">Stored runs, refreshed every 60 seconds. Counts describe each recorded run, not the current queue. Next checks follow the queue's current deadlines.</p>

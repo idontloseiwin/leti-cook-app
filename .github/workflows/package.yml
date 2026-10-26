@@ -29,7 +29,8 @@ jobs:
         # The updater accepts only root-owned trees. Exercise that real Linux
         # boundary in this disposable runner, without mocking its permission
         # checks. Keep setup-python's exact interpreter and locked dependencies.
-        run: sudo -n -- env TMPDIR=/tmp "$(command -v python)" -B -m unittest discover -s tests -v
+        # The slowest tests are listed so the 10-minute job limit stays visible.
+        run: sudo -n -- env TMPDIR=/tmp "$(command -v python)" -B -m unittest discover -s tests -v --durations 20
       - name: Install locked frontend dependencies
         run: npm --prefix application/frontend ci --no-audit --no-fund
       - name: Check browser behavior (offline)
@@ -43,6 +44,11 @@ jobs:
           node tests/test_pipeline_telemetry.mjs
           node tests/test_collection_explanation.mjs
           node tests/test_health_presentation.mjs
+          node tests/test_channel_trash_titles.mjs
+          node tests/test_research_query_ui.mjs
+          node tests/test_ui_read_recovery.mjs
+          node tests/test_video_type_review_presentation.mjs
+          node --test tests/test_user_work_reconnect.mjs
           node --test tests/test_chromium_bridge.mjs tests/test_chromium_content.mjs
       - name: Check frontend resilience (offline)
         run: node tests/test_frontend_resilience.mjs
@@ -71,6 +77,10 @@ jobs:
           LIC_SCHEMA_CI_MAX_ROWS: '15000'
           LIC_SCHEMA_CI_DEPS: ${{ runner.temp }}/schema-python-deps
         run: bash tools/check_schema_postgres.sh
+      - name: Check research query SQL on an empty PostgreSQL
+        env:
+          LIC_SCHEMA_CI_DEPS: ${{ runner.temp }}/schema-python-deps
+        run: bash tools/check_research_query_postgres.sh
       - name: Check schema upgrades against a fresh PostgreSQL schema
         env:
           LIC_SCHEMA_UPGRADES_MAX_ROWS: '1000'

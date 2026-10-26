@@ -29,8 +29,12 @@ and cleans up data while running. See
 - **History is temporary.** Each statistics snapshot expires independently.
   A fresh counter cannot recreate expired history or observations missed while
   your server was off.
+- **Growth is counted between snapshots.** A video's 28-day growth ends at its
+  latest snapshot. It counts as full history when a snapshot from at least 28
+  days before that one is still kept; the comparison then spans 28 to 29 days.
+  Otherwise the actual number of tracked days is shown.
 - **Expired fields are hidden.** They stop appearing even if cleanup has not
-  yet removed them. An open browser page requests current data automatically;
+  yet removed them. The main Explorer requests current data automatically;
   if that fails, it offers a reload.
 - **Your work remains.** Folders, labels, saved references and your edits are
   retained, subject to permanent channel deletion below.
@@ -53,11 +57,59 @@ from a typed catalogue. Missing details do not necessarily mean your saved work
 was deleted. Check collection status and quota before removing and re-adding
 a channel.
 
+## Experimental folder catalogue
+
+Development builds include a separate preview at `/app-explorer-v3/research`.
+It is off by default. For an API process you run directly during development,
+set `LIC_RESEARCH_QUERY_PREVIEW=1` in that process's environment before starting
+it. Remove the variable and restart that process to disable the preview.
+Owner sign-in and the usual data-read checks still apply.
+
+The managed Docker installation does not yet provide a supported preview switch.
+Do not add this variable to its generated `backend.env` or `config.ini`: those
+files are validated by the updater. A Docker container restart does not load
+changes to its environment. The preview switch is not an agent credential.
+
+Choose a folder, one format, title text, an optional minimum view count and a
+sort order, then select **Refresh**. The table returns 25 stored videos per page.
+Long-form, Shorts and completed Streams use the same query rules. Type comes
+from recorded YouTube playlist membership and the application's conflict
+resolution; a short duration alone does not make a video a Short.
+
+Unknown, expired and unavailable values are shown explicitly and sort last.
+Coverage describes the channels' stored inventory, not all videos on YouTube.
+**Next page** continues a live selection: updates can move rows between pages.
+A continuation expires within two minutes, possibly sooner when a source field
+expires. An expired page is cleared; select **Refresh** to start again. Switching
+filters or format also clears the previous result immediately.
+
+Every page is computed from the whole folder. A background task prepares stored
+type checks, duration and title search keys to speed up these reads. On startup,
+the preview can show **Preparing the catalogue** until that task has caught up
+with the changes waiting at startup; videos collected meanwhile do not hold it
+back. Leave the server running; the page retries twice, then offers **Refresh**.
+A failed preparation step is retried within seconds. Only repeated failures are
+shown as unavailable, never as an empty list.
+
+After initial preparation, changed videos are checked directly against stored
+source data until their prepared values catch up. Results stay current, but
+pages can be slower. Heavy catalogue reads wait in a limited queue; a busy
+response asks you to try again shortly. A query that exceeds its time limit
+asks you to narrow the selection. Neither condition returns a partial page as
+if the query had succeeded.
+
+The preview reads the local database without requesting YouTube data or changing
+collection schedules. It requires the installation's existing owner access and
+data-read readiness. Existing channel pages remain available. Saving queries,
+gallery views and the complete Shorts/Streams overview are not part of this preview.
+
 ## Removing a channel
 
 Select the channel and choose **Remove selected channel**. It stops being
 collected and moves to **Deleted channels**, where you can restore it for 29 days.
-After that, its stored data and associated saved work are permanently deleted.
+After that, routine cleanup permanently deletes its stored data, every video it
+collected and its associated saved work, usually within minutes; collection of
+your other channels continues meanwhile.
 Your unrelated channels and workspace organisation remain.
 
 ## Backing up your work

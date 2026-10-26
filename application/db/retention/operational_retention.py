@@ -164,20 +164,24 @@ def _jobs(tx,target,p,step):
         job['_chain_facts']=chains.inspect_copies(tx,job,p,lock=True)
     stale=tx.fetch_one(_SOURCE_STALE,{**p,**job})['stale']
     linked,ack=_job_expiry(tx,job,p)
+    # From here on the job and its channel are locked: 'fence' records the
+    # decision, which then holds for the job's further targets on this page.
     if not stale and not linked:
         if target=='operator_jobs' and ack:
             cleared=chains.clear_historical_acks(tx,p,job['_chain_facts']) if '_chain_facts' in job else 0
             return 0,cleared+tx.execute("UPDATE public.operator_jobs SET summary_json=summary_json-'inventory_ack' WHERE id=%(id)s::uuid AND summary_json ? 'inventory_ack'",p),0
+        step['fence']='noop'
         return 0,0,0
     if tx.fetch_one(_LEASE,job)['busy'] is True or job.get('_chain_facts',{}).get('busy') is True:
-        step['reason']='lease'
+        step['reason']=step['fence']='lease'
         return 0,0,1
     if target=='operator_jobs':
         scrubbed=chains.scrub_copies(tx,p) if '_chain_facts' in job else 0
         return 0,scrubbed+tx.execute(_SCRUB_JOB,{**p,'stale':stale}),0
     if job['last_error_code']!='source_scope_expired':
-        step['reason']='unfenced_target'
+        step['reason']=step['fence']='unfenced_target'
         return 0,0,1
+    step['fence']='delete'
     tx.fetch_all('SELECT job_id FROM public.operator_job_targets WHERE job_id=%(id)s::uuid AND video_id=%(video)s FOR UPDATE NOWAIT',p,max_rows=1)
     return tx.execute('DELETE FROM public.operator_job_targets WHERE job_id=%(id)s::uuid AND video_id=%(video)s',p),0,0
 
@@ -192,6 +196,20 @@ _NEXT_TARGET_JOB="""SELECT job_id::text AS id FROM public.operator_job_targets
 _JOB_TARGETS="""SELECT job_id::text AS id,video_id AS video,jsonb_build_array(job_id::text,video_id)::text AS cursor
  FROM public.operator_job_targets WHERE job_id=%(job)s::uuid AND (%(after_video)s::text IS NULL OR video_id>%(after_video)s::text)
  ORDER BY video_id LIMIT %(limit)s::integer"""
+
+
+_TARGETS_LOCK="""SELECT t.video_id FROM unnest(%(videos)s::text[]) v(video_id) CROSS JOIN LATERAL(
+ SELECT t.video_id FROM public.operator_job_targets t WHERE t.job_id=%(id)s::uuid AND t.video_id=v.video_id FOR UPDATE SKIP LOCKED) t"""
+
+
+def _delete_targets(tx,job_id,rows):
+    """Further targets of a job already fenced for deletion: lock the free ones and
+    delete them in one statement. Returns (deleted, rows another transaction holds)."""
+    videos=[row['video'] for row in rows]
+    free={row['video_id'] for row in tx.fetch_all(_TARGETS_LOCK,dict(id=job_id,videos=videos),max_rows=len(videos))}
+    removed=tx.execute('DELETE FROM public.operator_job_targets WHERE job_id=%(id)s::uuid AND video_id=ANY(%(videos)s::text[])',
+                       dict(id=job_id,videos=sorted(free))) if free else 0
+    return removed,[row for row in rows if row['video'] not in free]
 
 
 def _job_needs_work(tx,job_id,cutoff):
@@ -281,24 +299,53 @@ def cleanup_hot_operational_copies(transaction,*,target,after_id=None,limit=100,
         deleted=scrubbed=deferred=0
         clocks=[]
         unresolved=[]
-        for candidate in rows:
-            step={'source_at':None,'reason':None,'clock_observed':False}
-            try:
-                with tx.savepoint():
-                    p={**candidate,'cutoff':header['cutoff']}
-                    removed,cleared,held=(_jobs(tx,target,p,step) if target in ('operator_jobs','operator_job_targets') else _copies(tx,target,p,step))
+        def hold(candidate,step):
+            step['position']=len(clocks)
+            clocks.append(step)
+            unresolved.append(dict(target=target,key=[candidate['id'],candidate['video']] if target=='operator_job_targets' else [candidate['id']]))
+        # A target's decision reads only its job. Once a job is decided under its
+        # own lock, its further targets on this page take that decision; the ones
+        # to delete are locked and deleted together when the job's run ends.
+        decided=None
+        waiting=[]
+        for candidate in rows+[None]:
+            if waiting and (candidate is None or candidate['id']!=decided['id']):
+                removed,busy=_delete_targets(tx,decided['id'],waiting)
                 deleted+=removed
-                scrubbed+=cleared
+                deferred+=len(busy)
+                for row in busy:
+                    lost={'source_at':decided['source_at'],'clock_observed':True}
+                    lost['reason']='lock'
+                    hold(row,lost)
+                waiting=[]
+            if candidate is None:break
+            step={'source_at':None,'reason':None,'clock_observed':False}
+            if decided is not None and candidate['id']==decided['id']:
+                if decided['fence']=='delete':
+                    waiting.append(candidate)
+                    continue
+                held=int(decided['fence']!='noop')
+                if held:step.update(source_at=decided['source_at'],reason=decided['fence'],clock_observed=True)
                 deferred+=held
-            except DatabaseServerError as error:
-                if error.code!='55P03':raise
-                held=1
-                deferred+=1
-                step['reason']='lock'
-            if held:
-                step['position']=len(clocks)
-                clocks.append(step)
-                unresolved.append(dict(target=target,key=[candidate['id'],candidate['video']] if target=='operator_job_targets' else [candidate['id']]))
+            else:
+                try:
+                    with tx.savepoint():
+                        p={**candidate,'cutoff':header['cutoff']}
+                        removed,cleared,held=(_jobs(tx,target,p,step) if target in ('operator_jobs','operator_job_targets') else _copies(tx,target,p,step))
+                    deleted+=removed
+                    scrubbed+=cleared
+                    deferred+=held
+                    fence=step.pop('fence',None)
+                    # Only a committed savepoint keeps the job and channel locks.
+                    if target=='operator_job_targets' and fence is not None:
+                        decided=dict(id=candidate['id'],fence=fence,source_at=step['source_at'])
+                except DatabaseServerError as error:
+                    if error.code!='55P03':raise
+                    held=1
+                    deferred+=1
+                    step.pop('fence',None)
+                    step['reason']='lock'
+            if held:hold(candidate,step)
         telemetry=tx.fetch_one(_TELEMETRY,(Jsonb(clocks),header['cutoff'],header['cutoff'])) if clocks else {'oldest':None,'invalid':0,'unsafe_positions':[]}
         if references is None:
             unsafe=set(telemetry['unsafe_positions'])

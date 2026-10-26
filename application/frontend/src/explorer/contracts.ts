@@ -1068,7 +1068,7 @@ export function parseVideoGrowthV1(
   validateRequiredFields(window, contract, 'window', {
     metric: (value) => value === 'views',
     requested_days: (value) => value === 28,
-    boundary_tolerance_days: (value) => value === 0,
+    boundary_tolerance_days: (value) => value === 1,
     endpoint: (value) => value === 'per_video_current_checked_at',
   });
   const methods = requireRecord(root, 'methods', contract);
@@ -1077,8 +1077,8 @@ export function parseVideoGrowthV1(
     && Object.keys(requestedFilters.growth).length > 0;
   validateRequiredFields(methods, contract, 'methods', {
     endpoint_observation: (value) => value === 'current_video_row_with_matching_snapshot',
-    full_window_start: (value) => value === 'exact_28d_interval_inside_hot_window',
-    partial_window_start: (value) => value === 'earliest_snapshot_inside_hot_window',
+    full_window_start: (value) => value === 'latest_snapshot_at_or_before_28d_before_endpoint',
+    partial_window_start: (value) => value === 'earliest_snapshot_within_28d_before_endpoint',
     partial_minimum_seconds: (value) => value === 86400,
     counter_decrease: (value) => value === 'reported_as_correction_not_clamped',
     sorting: (value) => value === 'signed_delta_ready_and_partial_nulls_last_then_video_id',

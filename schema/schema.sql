@@ -193,6 +193,9 @@ CREATE FUNCTION public.enforce_user_work_backup_limits() RETURNS trigger
 -- already has the item's id as user_work_id before the item is removed.
 DECLARE exceeded boolean;
 BEGIN
+ -- Two writers at a limit must not both see room: the count is serialized per
+ -- table until commit, so a later writer counts an earlier writer's rows.
+ PERFORM pg_advisory_xact_lock(hashtextextended('user_work_limits:'||TG_TABLE_NAME,0));
  exceeded:=CASE TG_TABLE_NAME
   WHEN 'channels' THEN
    (SELECT count(*) FROM public.channels)
@@ -4614,7 +4617,7 @@ ALTER TABLE operator_private.schema_migrations ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE operator_private.schema_migrations FROM PUBLIC,anon,authenticated,authenticator,service_role,lic_reader;
 
 INSERT INTO operator_private.schema_state(singleton,baseline_id,initial_version,current_version)
-VALUES (true,'leti-cook-release-01',34,34);
+VALUES (true,'leti-cook-release-01',38,38);
 
 CREATE VIEW readable.schema_version WITH (security_barrier=true,security_invoker=false) AS
 SELECT baseline_id,current_version FROM operator_private.schema_state WHERE singleton;
@@ -5670,5 +5673,275 @@ SELECT jsonb_build_object(
   'schema_version',2,'scope','all_types','unit','videos','channel_eligibility_checked',true,
   'operational_eligibility_checked',false,'by_type',typed.value)) AS value
 FROM groups summary CROSS JOIN typed CROSS JOIN legacy WHERE summary.overall=1;
+
+-- Schema step 0035-research-read-model
+-- Research catalogue read model. One row per inventory video keeps the type
+-- proof of the protected views, duration seconds and the casefold title key as
+-- of its last refresh, valid until the first source clock at which those views
+-- could answer differently. A write to a proof source queues the video; readers
+-- use a row only while it is current and unqueued and otherwise read the
+-- protected views, so a late refresh costs speed, never results. The backend
+-- refreshes rows with ordinary statements; these hooks only queue and track.
+CREATE TABLE public.video_search_projection (
+    video_id text PRIMARY KEY REFERENCES public.video_inventory(video_id) ON UPDATE CASCADE ON DELETE CASCADE,
+    channel_id text NOT NULL,
+    inventory_type text,
+    hot_present boolean NOT NULL DEFAULT false,
+    identity_clock timestamptz,
+    identity_expiry timestamptz,
+    title_key text,
+    duration_seconds numeric,
+    valid_until timestamptz NOT NULL DEFAULT '-infinity',
+    refreshed_at timestamptz
+);
+CREATE INDEX video_search_projection_channel_idx ON public.video_search_projection (channel_id);
+CREATE INDEX video_search_projection_valid_idx ON public.video_search_projection (valid_until);
+
+-- One marker per video; a write bumps its generation, so a refresh that read an
+-- older generation cannot remove the marker of a later write.
+CREATE TABLE public.video_search_projection_queue (
+    video_id text PRIMARY KEY,
+    generation bigint NOT NULL DEFAULT 1
+);
+
+CREATE FUNCTION public.queue_video_search_projection() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'pg_catalog', 'pg_temp'
+    AS $$
+BEGIN
+ -- Detached review cases have no video and queue nothing.
+ IF TG_OP IN ('UPDATE','DELETE') AND OLD.video_id IS NOT NULL THEN
+  INSERT INTO public.video_search_projection_queue AS q(video_id) VALUES (OLD.video_id)
+  ON CONFLICT (video_id) DO UPDATE SET generation=q.generation+1;
+ END IF;
+ IF TG_OP IN ('INSERT','UPDATE') AND NEW.video_id IS NOT NULL THEN
+  IF TG_OP = 'INSERT' OR NEW.video_id IS DISTINCT FROM OLD.video_id THEN
+   INSERT INTO public.video_search_projection_queue AS q(video_id) VALUES (NEW.video_id)
+   ON CONFLICT (video_id) DO UPDATE SET generation=q.generation+1;
+  END IF;
+ END IF;
+ -- Derived search fields never outlive their source columns: a cleanup that
+ -- removes a title, a duration or the video removes them in the same write.
+ IF TG_TABLE_NAME = 'videos' THEN
+  IF TG_OP = 'DELETE' THEN
+   UPDATE public.video_search_projection SET title_key=NULL,duration_seconds=NULL WHERE video_id=OLD.video_id;
+  ELSE
+   IF TG_OP = 'UPDATE' AND NEW.video_id IS DISTINCT FROM OLD.video_id THEN
+    UPDATE public.video_search_projection SET title_key=NULL,duration_seconds=NULL WHERE video_id=OLD.video_id;
+   END IF;
+   IF NEW.title IS NULL OR NEW.duration IS NULL THEN
+    UPDATE public.video_search_projection
+    SET title_key=CASE WHEN NEW.title IS NULL THEN NULL ELSE title_key END,
+        duration_seconds=CASE WHEN NEW.duration IS NULL THEN NULL ELSE duration_seconds END
+    WHERE video_id=NEW.video_id
+      AND ((NEW.title IS NULL AND title_key IS NOT NULL) OR (NEW.duration IS NULL AND duration_seconds IS NOT NULL));
+   END IF;
+  END IF;
+ END IF;
+ RETURN NULL;
+END $$;
+
+CREATE FUNCTION public.track_video_search_inventory() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    SET search_path TO 'pg_catalog', 'pg_temp'
+    AS $$
+BEGIN
+ IF TG_OP = 'INSERT' THEN
+  INSERT INTO public.video_search_projection AS p(video_id,channel_id) VALUES (NEW.video_id,NEW.channel_id)
+  ON CONFLICT (video_id) DO NOTHING;
+ ELSE
+  UPDATE public.video_search_projection SET channel_id=NEW.channel_id
+  WHERE video_id=NEW.video_id AND channel_id IS DISTINCT FROM NEW.channel_id;
+ END IF;
+ RETURN NULL;
+END $$;
+
+ALTER TABLE public.video_search_projection OWNER TO postgres;
+ALTER TABLE public.video_search_projection_queue OWNER TO postgres;
+ALTER FUNCTION public.queue_video_search_projection() OWNER TO postgres;
+ALTER FUNCTION public.track_video_search_inventory() OWNER TO postgres;
+REVOKE ALL ON FUNCTION public.queue_video_search_projection() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.track_video_search_inventory() FROM PUBLIC;
+GRANT SELECT,UPDATE ON TABLE public.video_search_projection TO service_role;
+GRANT SELECT,DELETE ON TABLE public.video_search_projection_queue TO service_role;
+
+-- Title key and duration seconds are exposed only with their sources.
+CREATE VIEW readable.video_search_projection WITH (security_barrier=true, security_invoker=false) AS
+SELECT p.video_id,p.channel_id,
+ (p.valid_until>statement_timestamp() AND p.refreshed_at<=statement_timestamp()
+  AND NOT EXISTS (SELECT 1 FROM public.video_search_projection_queue q WHERE q.video_id=p.video_id)) AS proof_current,
+ p.inventory_type,p.hot_present,p.identity_clock,p.identity_expiry,
+ CASE WHEN v.title IS NOT NULL THEN p.title_key END AS title_key,
+ CASE WHEN v.duration IS NOT NULL THEN p.duration_seconds END AS duration_seconds,
+ v.video_id AS v_video_id,v.channel_id AS v_channel_id,v.title,v.published_at,v.duration,v.views,v.checked_at,
+ v.metadata_checked_at,v.availability_checked_at,v.source_expires_at AS video_expiry,v.availability_status,
+ v.publication_status,v.stream_actual_end_at
+FROM public.video_search_projection p LEFT JOIN readable.videos v ON v.video_id=p.video_id;
+ALTER VIEW readable.video_search_projection OWNER TO postgres;
+GRANT SELECT ON readable.video_search_projection TO lic_reader;
+
+CREATE TRIGGER video_inventory_search_projection AFTER INSERT OR UPDATE OF channel_id ON public.video_inventory
+ FOR EACH ROW EXECUTE FUNCTION public.track_video_search_inventory();
+CREATE TRIGGER video_inventory_search_queue AFTER INSERT OR UPDATE OR DELETE ON public.video_inventory
+ FOR EACH ROW EXECUTE FUNCTION public.queue_video_search_projection();
+CREATE TRIGGER video_membership_search_queue AFTER INSERT OR UPDATE OR DELETE ON public.video_inventory_memberships
+ FOR EACH ROW EXECUTE FUNCTION public.queue_video_search_projection();
+CREATE TRIGGER video_review_search_queue AFTER INSERT OR UPDATE OR DELETE ON public.video_type_review_cases
+ FOR EACH ROW EXECUTE FUNCTION public.queue_video_search_projection();
+-- Counters and availability are read live; they do not queue a video.
+CREATE TRIGGER videos_search_queue AFTER INSERT OR DELETE
+ OR UPDATE OF video_id,channel_id,title,published_at,metadata_checked_at,duration,publication_status
+ ON public.videos FOR EACH ROW EXECUTE FUNCTION public.queue_video_search_projection();
+
+-- Existing rows start past their deadline and are read live until refreshed.
+INSERT INTO public.video_search_projection(video_id,channel_id)
+SELECT video_id,channel_id FROM public.video_inventory;
+
+-- Schema step 0036-inventory-receipt-scan-index
+-- Inventory scan cleanup deletes scans together with their receipts. The FK
+-- cascade and the cleanup probe find receipts by scan_id alone, which the
+-- scan_transition partial index cannot serve, so every deleted scan read the
+-- whole receipts table. scan_id = $1 implies scan_id IS NOT NULL.
+CREATE INDEX typed_inventory_receipts_scan_id_idx ON public.typed_inventory_receipts (scan_id)
+    WHERE scan_id IS NOT NULL;
+
+-- Schema step 0037-type-resolution-membership-index
+-- Type resolution reads memberships from the base table, through exactly the
+-- admission filter and source deadline of readable.video_inventory_memberships
+-- (a test compares the two), instead of joining that security_barrier view: a
+-- join into it cannot use the memberships index, so every channel-scoped read
+-- built it for the whole table. The raw inventory type, the aggregate's group
+-- key, is exposed so hot inventory can pass its type into the aggregate.
+CREATE OR REPLACE VIEW readable.video_inventory_type_resolution WITH (security_barrier=true, security_invoker=false) AS
+ WITH evidence AS (
+         SELECT i.video_id,
+            i.channel_id AS canonical_channel_id,
+            i.video_type AS canonical_video_type,i.skeleton_since,min(m.source_expires_at) AS source_expires_at,
+            COALESCE(array_agg(DISTINCT m.video_type ORDER BY m.video_type) FILTER (WHERE (m.membership_status = 'present'::text)), ARRAY[]::text[]) AS present_membership_types,
+            COALESCE(array_agg(DISTINCT m.channel_id ORDER BY m.channel_id) FILTER (WHERE (m.membership_status = 'present'::text)), ARRAY[]::text[]) AS present_membership_channels,
+            count(DISTINCT m.video_type) FILTER (WHERE (m.membership_status = 'present'::text)) AS present_type_count,
+            count(DISTINCT m.channel_id) FILTER (WHERE (m.membership_status = 'present'::text)) AS present_channel_count,
+            COALESCE(bool_or(((m.membership_status = 'present'::text) AND (m.channel_id = i.channel_id) AND (m.video_type = i.video_type))), false) AS canonical_membership_supported
+           FROM (public.video_inventory i
+             LEFT JOIN (SELECT s.video_id,s.channel_id,s.video_type,s.membership_status,
+               least(s.last_seen_at,CASE WHEN s.membership_status='present' THEN s.last_present_at ELSE s.absent_since END,CASE WHEN (isfinite(s.first_seen_at) AND s.first_seen_at BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp()) THEN s.first_seen_at END,CASE WHEN (isfinite(s.last_present_at) AND s.last_present_at BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp()) THEN s.last_present_at END)+interval '696 hours' AS source_expires_at
+               FROM public.video_inventory_memberships s
+               WHERE (isfinite(s.last_seen_at) AND s.last_seen_at BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp()) AND CASE WHEN s.membership_status='present'
+              THEN (isfinite(s.last_present_at) AND s.last_present_at BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp()) ELSE (isfinite(s.absent_since) AND s.absent_since BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp()) END) m ON ((m.video_id = i.video_id)))
+          GROUP BY i.video_id, i.channel_id, i.video_type,i.skeleton_since
+        ), resolved AS (
+         SELECT e.video_id,e.skeleton_since,e.source_expires_at,
+            e.canonical_channel_id,
+            e.canonical_video_type,
+            e.present_membership_types,
+            e.present_membership_channels,
+            e.present_type_count,
+            e.present_channel_count,
+            e.canonical_membership_supported,
+            COALESCE(((c.decision_type = e.canonical_video_type) AND (c.channel_id = e.canonical_channel_id) AND (c.blocked_reason IS NULL) AND (NOT (EXISTS ( SELECT 1
+                   FROM unnest(e.present_membership_channels) x(id)
+                  WHERE (x.id <> e.canonical_channel_id))))), false) AS manual_valid,
+            coalesce(automatic.automatic_type=e.canonical_video_type,false) AS automatic_valid,
+            automatic.source_expires_at AS automatic_source_expires_at
+           FROM (evidence e
+             LEFT JOIN public.video_type_review_cases c ON ((c.video_id = e.video_id)))
+             LEFT JOIN public.video_type_automatic_candidates automatic ON automatic.video_id=e.video_id
+              AND automatic.channel_id=e.canonical_channel_id
+        )
+ SELECT video_id,
+    canonical_channel_id,
+    CASE WHEN skeleton_since IS NULL AND (canonical_membership_supported OR (manual_valid AND metadata.source_checked_at IS NOT NULL)) THEN canonical_video_type END AS canonical_video_type,
+    present_membership_types,
+    present_membership_channels,
+    present_type_count,
+    present_channel_count,
+    canonical_membership_supported,
+        CASE
+            WHEN manual_valid OR automatic_valid THEN 'resolved'::text
+            WHEN (present_type_count = 0) THEN 'unverified'::text
+            WHEN ((present_type_count > 1) OR (present_channel_count > 1)) THEN 'conflict'::text
+            WHEN (NOT canonical_membership_supported) THEN 'canonical_unsupported'::text
+            ELSE 'resolved'::text
+        END AS resolution_status,
+    manual_valid,least(resolved.source_expires_at,CASE WHEN manual_valid THEN metadata.source_checked_at+interval '696 hours' END,
+      CASE WHEN automatic_valid THEN automatic_source_expires_at END) AS source_expires_at,
+    automatic_valid,
+    canonical_video_type AS inventory_video_type
+   FROM resolved LEFT JOIN LATERAL (SELECT v.metadata_checked_at AS source_checked_at FROM public.videos v
+   WHERE manual_valid AND v.video_id=resolved.video_id AND v.channel_id=resolved.canonical_channel_id AND (isfinite(v.metadata_checked_at) AND v.metadata_checked_at BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp()) LIMIT 1) metadata ON true;
+
+CREATE OR REPLACE VIEW readable.hot_video_inventory WITH (security_barrier=true, security_invoker=false) AS
+ SELECT inv.video_id,
+    inv.channel_id,
+    inv.video_type,
+    proof.source_published_at AS published_at,
+    proof.last_present_at AS source_checked_at,
+    least(resolution.source_expires_at,membership_proof.source_expires_at,proof.last_present_at+interval '696 hours',CASE WHEN membership_proof.source_published_at IS NULL THEN manual_proof.last_present_at+interval '696 hours' END) AS source_expires_at
+   FROM ((public.video_inventory inv
+     JOIN readable.video_inventory_type_resolution resolution ON (((resolution.video_id = inv.video_id) AND (resolution.inventory_video_type = inv.video_type) AND (resolution.canonical_channel_id = inv.channel_id) AND (resolution.resolution_status = 'resolved'::text) AND (resolution.canonical_video_type = inv.video_type) AND ((resolution.manual_valid IS TRUE) OR (resolution.automatic_valid IS TRUE) OR ((resolution.present_membership_types = ARRAY[inv.video_type]) AND (resolution.present_membership_channels = ARRAY[inv.channel_id]))))))
+     LEFT JOIN LATERAL ( SELECT membership.source_published_at,
+            membership.last_present_at,membership.source_expires_at
+           FROM readable.video_inventory_memberships membership
+          WHERE ((membership.video_id = inv.video_id) AND (membership.channel_id = inv.channel_id) AND (membership.membership_status = 'present'::text) AND ((resolution.manual_valid IS TRUE) OR (membership.video_type = inv.video_type)) AND isfinite(membership.last_present_at) AND ((membership.last_present_at >= (statement_timestamp() - '696:00:00'::interval)) AND (membership.last_present_at <= statement_timestamp())))
+          ORDER BY membership.last_present_at DESC, membership.video_type, membership.playlist_id
+         LIMIT 1) membership_proof ON true)
+     LEFT JOIN LATERAL (SELECT v.published_at AS source_published_at,v.metadata_checked_at AS last_present_at
+       FROM readable.videos v WHERE resolution.manual_valid IS TRUE AND v.video_id=inv.video_id
+       AND v.channel_id=inv.channel_id AND isfinite(v.metadata_checked_at)
+       AND v.metadata_checked_at BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp()
+       LIMIT 1) manual_proof ON true
+     CROSS JOIN LATERAL (SELECT coalesce(membership_proof.source_published_at,manual_proof.source_published_at) AS source_published_at,
+       coalesce(membership_proof.last_present_at,manual_proof.last_present_at) AS last_present_at) proof
+   WHERE inv.skeleton_since IS NULL AND proof.last_present_at IS NOT NULL
+ AND NOT EXISTS(SELECT 1 FROM public.videos publication WHERE publication.video_id=inv.video_id
+ AND publication.channel_id=inv.channel_id AND publication.publication_status IS NOT NULL);
+
+-- Schema step 0038-user-work-limit-lock
+-- Workspace limits are checked after an insert, by counting. Two writers at a
+-- limit could both count before either committed and both pass, after which a
+-- backup could no longer be exported. The check now takes a per-table
+-- transaction lock first.
+CREATE OR REPLACE FUNCTION public.enforce_user_work_backup_limits() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path TO 'pg_catalog', 'public', 'pg_temp'
+    AS $$
+-- Ordinary writes stay within the limits that export_user_work_backup and
+-- import_user_work_backup accept, so using the app can never make a backup
+-- fail. A restore item bound in this transaction is counted once: its channel
+-- already has the item's id as user_work_id before the item is removed.
+DECLARE exceeded boolean;
+BEGIN
+ -- Two writers at a limit must not both see room: the count is serialized per
+ -- table until commit, so a later writer counts an earlier writer's rows.
+ PERFORM pg_advisory_xact_lock(hashtextextended('user_work_limits:'||TG_TABLE_NAME,0));
+ exceeded:=CASE TG_TABLE_NAME
+  WHEN 'channels' THEN
+   (SELECT count(*) FROM public.channels)
+   +(SELECT count(*) FROM public.user_channel_restore_items p
+     WHERE NOT EXISTS(SELECT 1 FROM public.channels c WHERE c.user_work_id=p.id))>10000
+  WHEN 'saved_objects' THEN
+   (SELECT count(*) FROM public.saved_objects WHERE deleted_at IS NULL)
+   +coalesce((SELECT sum(jsonb_array_length(p.saved_views)) FROM public.user_channel_restore_items p
+     WHERE NOT EXISTS(SELECT 1 FROM public.channels c WHERE c.user_work_id=p.id)),0)>1000
+  WHEN 'folders' THEN (SELECT count(*) FROM(SELECT 1 FROM public.folders LIMIT 1001)x)>1000
+  WHEN 'channel_labels' THEN (SELECT count(*) FROM(SELECT 1 FROM public.channel_labels LIMIT 1002)x)>1001
+  WHEN 'channel_label_assignments' THEN
+   (SELECT count(*) FROM public.channel_label_assignments)
+   +coalesce((SELECT sum(cardinality(p.label_keys)) FROM public.user_channel_restore_items p
+     WHERE NOT EXISTS(SELECT 1 FROM public.channels c WHERE c.user_work_id=p.id)),0)>100000
+  WHEN 'saved_collection_members' THEN
+   (SELECT count(*) FROM(SELECT 1 FROM public.saved_collection_members LIMIT 100001)x)>100000
+  -- Every decision adds history, so both review limits are checked here.
+  WHEN 'video_type_review_history' THEN
+   (SELECT count(*) FROM(SELECT 1 FROM public.video_type_review_history LIMIT 10001)x)>10000
+   OR (SELECT count(*) FROM(SELECT 1 FROM public.video_type_review_cases c WHERE c.decision_type IS NOT NULL
+       OR EXISTS(SELECT 1 FROM public.video_type_review_history h WHERE h.case_id=c.case_id) LIMIT 1001)x)>1000
+  ELSE false
+ END;
+ IF exceeded THEN
+  RAISE EXCEPTION 'user_work_limit_reached' USING DETAIL=TG_TABLE_NAME;
+ END IF;
+ RETURN NULL;
+END $$;
 
 COMMIT;

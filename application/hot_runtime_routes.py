@@ -6,6 +6,9 @@ import re
 # Local user work never requires the API/collection gate. Any database query
 # still requires a live database and the exact installed schema.
 ROUTE_ACCESS = {
+    'GET /research/capabilities': 'user_work',
+    'POST /research/queries/validate': 'user_work',
+    'POST /research/queries/execute': 'api_read',
     'GET /saved/collections/{collection_id}/member-identities': 'user_work',
     'DELETE /folders/{folder_id}': 'user_work',
     'DELETE /labels/{label_key}': 'user_work',

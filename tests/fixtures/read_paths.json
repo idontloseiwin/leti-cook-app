@@ -7,9 +7,12 @@
   },
   "gaps_outside_routes": ["G7", "G9"],
   "summary": {
-    "routes": {"protected": 41, "partial": 0, "unprotected": 0, "no_youtube_data": 67}
+    "routes": {"protected": 42, "partial": 0, "unprotected": 0, "no_youtube_data": 69}
   },
   "routes": {
+    "POST /research/queries/execute": {"verdict": "protected", "reads": "registered SQL source clocks including unreturned predicate/sort dependencies; final scope, owner and HOT recheck; response lifetime"},
+    "POST /research/queries/validate": {"verdict": "no_youtube_data", "reads": "bounded query validation; no source read"},
+    "GET /research/capabilities": {"verdict": "no_youtube_data", "reads": "effective owner query capabilities; no source read"},
     "GET /sidebar-user-data": {"verdict": "no_youtube_data", "reads": "readable.channel_user_work local identities/folder membership; local folders and labels only; no API payload or source clock"},
     "GET /saved/collections/{collection_id}/member-identities": {"verdict": "no_youtube_data", "reads": "local saved collection metadata, revision and member video IDs with user save times; never loads API sources"},
     "GET /system/video-type-reviews/hidden": {"verdict": "no_youtube_data", "reads": "R04B: retained video/channel IDs and their count only; no API title, type, thumbnail or clock. No review task is created."},

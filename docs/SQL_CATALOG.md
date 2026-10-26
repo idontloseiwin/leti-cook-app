@@ -8,7 +8,7 @@ schema, run `python3 tools/sql_catalog.py --write`; a unit test fails while
 this file is out of date or a SQL/Python contract pins a stale function
 source. See [Contributing](../CONTRIBUTING.md#changing-the-schema) for schema changes.
 
-36 tables, 39 views and 11 functions (11 in `public`, 0 in `operator_private`; 5 run as `SECURITY DEFINER`). The backend uses `service_role` for collection and writes, and `lic_reader` for HTTP reads through admitted views and user-work tables; `PUBLIC` cannot execute any function.
+38 tables, 40 views and 13 functions (13 in `public`, 0 in `operator_private`; 7 run as `SECURITY DEFINER`). The backend uses `service_role` for collection and writes, and `lic_reader` for HTTP reads through admitted views and user-work tables; `PUBLIC` cannot execute any function.
 
 Columns in the function tables:
 
@@ -53,6 +53,8 @@ Columns in the function tables:
 | `public.video_collection_state` | 31 | on | delete | nothing |
 | `public.video_inventory` | 9 | on | select, insert, delete, update | nothing |
 | `public.video_inventory_memberships` | 16 | on | select, insert, delete, update | nothing |
+| `public.video_search_projection` | 10 | off | select, update | nothing |
+| `public.video_search_projection_queue` | 2 | off | select, delete | nothing |
 | `public.video_snapshots` | 7 | on | select, insert, delete, update | nothing |
 | `public.video_type_review_cases` | 19 | on | delete | nothing |
 | `public.video_type_review_history` | 7 | on | delete | select |
@@ -98,6 +100,7 @@ Columns in the function tables:
 | `readable.video_inventory` | owner | select | select |
 | `readable.video_inventory_memberships` | owner | select | select |
 | `readable.video_inventory_type_resolution` | owner | select | select |
+| `readable.video_search_projection` | owner | nothing | select |
 | `readable.video_snapshots` | owner | select | select |
 | `readable.video_type_review_cases` | owner | select | select |
 | `readable.video_type_user_work` | owner | select | select |
@@ -119,6 +122,8 @@ Columns in the function tables:
 | `guard_inventory_chain_identity()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger inventory_chain_identity_guard on operator_job_inventory_chains` |  |
 | `guard_inventory_chain_parent_version()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger inventory_chain_parent_version_guard on operator_jobs` |  |
 | `guard_manual_video_type_decision()` | `trigger` | plpgsql | definer, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger video_type_review_canonical_guard on video_inventory` |  |
+| `queue_video_search_projection()` | `trigger` | plpgsql | definer, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger video_inventory_search_queue on video_inventory`, `trigger video_membership_search_queue on video_inventory_memberships`, `trigger video_review_search_queue on video_type_review_cases`, `trigger videos_search_queue on videos` |  |
+| `track_video_search_inventory()` | `trigger` | plpgsql | definer, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger video_inventory_search_projection on video_inventory` |  |
 
 ## Functions in `operator_private`
 

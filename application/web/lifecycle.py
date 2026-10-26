@@ -11,7 +11,7 @@ def create_lifespan(*, core, cache, YOUTUBE_QUOTA_ATTEMPT_RECORDER):
 
     @asynccontextmanager
     async def app_lifespan(app):
-        runtime = owner_lock = onboarding = maintenance = reference_store = provider = None
+        runtime = owner_lock = onboarding = maintenance = reference_store = provider = projection = None
         try:
             from update_copy_guard import UpdateCopyGuard
             from update_hold import UpdateHoldGuard
@@ -56,6 +56,13 @@ def create_lifespan(*, core, cache, YOUTUBE_QUOTA_ATTEMPT_RECORDER):
                 runtime.time_trust.probe_if_due()
                 await run_in_threadpool(runtime.initialize)
                 runtime.start()
+                # Readers fall back to the protected views whenever it lags.
+                from db.inventory.search_projection import SearchProjectionRepository
+                from research_projection_refresher import SearchProjectionRefresher
+                projection = SearchProjectionRefresher(SearchProjectionRepository(core.database),
+                                                       ready=runtime.require_collection_ready)
+                app.state.research_projection = projection
+                projection.start()
                 if os.getenv('LIC_SETUP_DIRECTORY'):
                     from self_hosted_configuration import ConfigurationStore
                     from self_hosted_onboarding import SetupManager, install_manager
@@ -89,9 +96,14 @@ def create_lifespan(*, core, cache, YOUTUBE_QUOTA_ATTEMPT_RECORDER):
                         if runtime is not None:
                             from hot_runtime import remove_local_runtime
                             try:
-                                await run_in_threadpool(runtime.close)
+                                if projection is not None:
+                                    await run_in_threadpool(projection.close)
+                                    app.state.research_projection = None
                             finally:
-                                remove_local_runtime(runtime)
+                                try:
+                                    await run_in_threadpool(runtime.close)
+                                finally:
+                                    remove_local_runtime(runtime)
                     finally:
                         try:
                             if maintenance is not None:

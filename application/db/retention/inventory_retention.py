@@ -108,7 +108,9 @@ _MEMBERSHIP_PAGE="""WITH page AS MATERIALIZED(
  FROM page LEFT JOIN LATERAL(SELECT i.video_id FROM public.video_inventory i WHERE i.video_id=page.video_id LIMIT 1) iv ON true
  ORDER BY page.branch,page.clock,page.video_id,page.channel_id,page.video_type LIMIT %(size)s::integer"""
 # The list is read whole, by key, a thousand rows a page; the index order lets
-# PostgreSQL stop at the page size.
+# PostgreSQL stop at the page size. Each row seeks only its own queue row (see
+# queue_retention); the typed-field test stays outside the seek, or a queue
+# without typed fields (Shorts/Streams off) is scanned to its end per row.
 _INVENTORY_PAGE="""WITH page AS MATERIALIZED(SELECT x.* FROM public.video_inventory x
  WHERE (x.skeleton_since IS NULL OR x.published_at IS NOT NULL OR x.published_acquired_at IS NOT NULL
  OR EXISTS(SELECT 1 FROM public.video_collection_state q WHERE q.video_id=x.video_id AND
@@ -119,10 +121,10 @@ _INVENTORY_PAGE="""WITH page AS MATERIALIZED(SELECT x.* FROM public.video_invent
  SELECT iv.video_id,iv.channel_id,iv.video_type,iv.video_id AS cursor,
  coalesce("""+_PAGE_NOOP+""",false) AS noop
  FROM page iv LEFT JOIN LATERAL(SELECT q.* FROM public.video_collection_state q
- WHERE q.video_id>=iv.video_id AND (q.typed_collection_checked_at IS NOT NULL
- OR q.typed_source_published_at IS NOT NULL OR q.typed_stream_actual_end_at IS NOT NULL
- OR q.typed_source_published_acquired_at IS NOT NULL OR q.typed_source_stream_end_acquired_at IS NOT NULL)
- ORDER BY q.video_id LIMIT 1) qs ON qs.video_id=iv.video_id
+ WHERE q.video_id>=iv.video_id ORDER BY q.video_id LIMIT 1) qs ON qs.video_id=iv.video_id
+ AND (qs.typed_collection_checked_at IS NOT NULL
+ OR qs.typed_source_published_at IS NOT NULL OR qs.typed_stream_actual_end_at IS NOT NULL
+ OR qs.typed_source_published_acquired_at IS NOT NULL OR qs.typed_source_stream_end_acquired_at IS NOT NULL)
  LEFT JOIN LATERAL("""+_PAGE_WITNESS+""") witness ON true
  ORDER BY iv.video_id"""
 _INVENTORY_REFERENCES="""SELECT iv.video_id,iv.channel_id,iv.video_type,iv.video_id AS cursor,false AS noop
@@ -179,13 +181,14 @@ _RECOVERY_QUEUE="""INSERT INTO public.video_collection_state AS state
 _CHILDREN="""SELECT EXISTS(SELECT 1 FROM public.video_inventory_memberships WHERE video_id=%(video_id)s)
  OR EXISTS(SELECT 1 FROM public.video_snapshots WHERE video_id=%(video_id)s)
  OR EXISTS(SELECT 1 FROM public.typed_video_collection_receipts WHERE video_id=%(video_id)s) AS present"""
-_CURRENT="""SELECT title IS NOT NULL OR views IS NOT NULL OR like_count IS NOT NULL OR comment_count IS NOT NULL
- OR published_at IS NOT NULL OR duration IS NOT NULL OR tags IS NOT NULL OR category_id IS NOT NULL
- OR youtube_topic_categories IS NOT NULL OR default_audio_language IS NOT NULL OR default_language IS NOT NULL
- OR caption_available IS NOT NULL OR stream_actual_end_at IS NOT NULL
- OR publication_status IS NOT NULL OR scheduled_start_at IS NOT NULL OR availability_status IS NOT NULL
- OR privacy_status IS NOT NULL OR upload_status IS NOT NULL AS payload
- FROM public.videos WHERE video_id=%(video_id)s FOR UPDATE NOWAIT"""
+# Every videos column except the identity and the three source clocks.
+VIDEO_PAYLOAD_COLUMNS=('title','views','like_count','comment_count','published_at','duration','tags','category_id',
+    'youtube_topic_categories','default_audio_language','default_language','caption_available','stream_actual_end_at',
+    'publication_status','scheduled_start_at','availability_status','privacy_status','upload_status')
+def video_payload(alias):
+    """True while a video row still carries API data, not only its identity."""
+    return '('+' OR '.join(alias+'.'+column+' IS NOT NULL' for column in VIDEO_PAYLOAD_COLUMNS)+')'
+_CURRENT="SELECT "+video_payload('v')+" AS payload FROM public.videos v WHERE v.video_id=%(video_id)s FOR UPDATE NOWAIT"
 # Four preflight round trips become one native snapshot. The clock is fresh,
 # the page cutoff is fixed, and every writable candidate is rechecked below
 # after the existing ownership locks. No preflight row authorizes a write.

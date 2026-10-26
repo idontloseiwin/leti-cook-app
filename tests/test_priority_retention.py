@@ -52,8 +52,10 @@ class PublicPriorityTests(unittest.TestCase):
         self.queue(one(target=target,cursor=None,cursor_length=None,limit=1,at=AT,cutoff=FLOOR))
 
     def source_candidate(self):
-        self.queue(Result(rows=(dict(id=VIDEO,source_key=OLD,invalid_clock=False,cursor=VIDEO),)),
-                   one(value='{"views":1}'),one(expired=True))
+        self.queue(Result(rows=(dict(id=VIDEO,source_key=OLD,invalid_clock=False,cursor=VIDEO),)),one(ord=1))
+
+    def lease(self,**values):
+        return one(**dict(dict(video_id=VIDEO,present=True,has_token=False,expires_at=None),**values))
 
     def inventory_candidate(self,target='inventory'):
         self.inventory_header(target)
@@ -79,7 +81,7 @@ class PublicPriorityTests(unittest.TestCase):
     def test_live_queue_lease_remains_exact_cause_and_source_is_not_touched(self):
         requested=(ref('video_counters'),)
         self.start();self.source_header();self.source_candidate()
-        self.queue(one(has_token=True,expires_at=AT),one(active=True),one(value=OLD))
+        self.queue(self.lease(has_token=True,expires_at=AT),one(video_id=VIDEO,active=True),one(value=OLD))
         result=self.repository.cleanup_priority(requested)
         self.assertEqual(result.remaining,requested)
         self.assertFalse(any(sql.startswith(('UPDATE','DELETE')) for sql,p in self.connection.queries))
@@ -90,16 +92,18 @@ class PublicPriorityTests(unittest.TestCase):
 
     def test_post_lock_source_refresh_wins_and_clocks_stay_unchanged(self):
         self.start();self.source_header();self.source_candidate()
-        self.queue(one(has_token=False,expires_at=None),one(value='{"views":2}'),one(expired=False))
+        self.queue(self.lease(),one(id=VIDEO),count(0))
         result=self.repository.cleanup_priority((ref('video_counters'),))
         self.assertEqual(result.remaining,());self.assertEqual(result.scrubbed,0)
-        self.assertFalse(any(sql.startswith(('UPDATE','DELETE')) for sql,p in self.connection.queries))
+        # The one scrub rechecks the locked row's clock; a refresh in between wins.
+        writes=[sql for sql,p in self.connection.queries if sql.startswith(('UPDATE','DELETE'))]
+        self.assertEqual(len(writes),1);self.assertIn('t.checked_at<%(cutoff)s::timestamptz',writes[0])
         locks=[sql for sql,p in self.connection.queries if 'FOR UPDATE' in sql]
         self.assertIn('video_collection_state',locks[0]);self.assertIn('public.videos',locks[1])
 
     def test_source_children_precede_inventory_and_only_payload_fields_are_scrubbed(self):
         self.start();self.source_header();self.source_candidate()
-        self.queue(one(has_token=False,expires_at=None),one(value='{"views":1}'),one(expired=True),count())
+        self.queue(self.lease(),one(id=VIDEO),count())
         self.inventory_header();self.queue(Result())
         requested=(ref('inventory'),ref('video_counters'))
         result=self.repository.cleanup_priority(requested)
@@ -110,7 +114,7 @@ class PublicPriorityTests(unittest.TestCase):
         root=next(i for i,sql in enumerate(queries) if 'FROM public.video_inventory iv WHERE iv.video_id=ANY' in sql)
         self.assertLess(write,root)
         self.assertIn('views=NULL,like_count=NULL,comment_count=NULL',queries[write])
-        self.assertNotIn('checked_at=',queries[write])
+        self.assertNotIn('checked_at=',queries[write].split(' WHERE ')[0])
 
     def test_membership_retry_locks_original_and_current_owner_and_keeps_native_effect(self):
         requested=(ref('memberships',VIDEO,ORIGINAL,'long'),)

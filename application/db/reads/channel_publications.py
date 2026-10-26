@@ -11,7 +11,10 @@ _PAGE = """WITH waiting AS MATERIALIZED (
  v.scheduled_start_at,v.metadata_checked_at AS checked_at,
  v.source_expires_at AS video_expires_at,i.source_expires_at AS inventory_expires_at
  FROM readable.videos v
- JOIN readable.video_inventory i ON i.video_id=v.video_id AND i.channel_id=v.channel_id
+ -- One protected inventory row per waiting video (video_id is its key). A plain
+ -- join builds the view for every video of the channel before the page limit.
+ CROSS JOIN LATERAL (SELECT x.video_type,x.source_expires_at FROM readable.video_inventory x
+ WHERE x.video_id=v.video_id AND x.channel_id=v.channel_id OFFSET 0) i
  WHERE v.channel_id=%s AND v.publication_status IN ('upcoming','live','awaiting_completion')
  AND v.availability_status IN ('public','unlisted')
  AND (%s::text IS NULL OR v.video_id>%s)

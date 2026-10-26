@@ -18,6 +18,19 @@ _REAL_ENABLED = trace.telemetry.is_enabled
 
 
 class UiReadTraceTests(unittest.TestCase):
+    def test_reviewed_query_post_records_only_fixed_phases(self):
+        async def app(scope, receive, send):
+            with trace.database_scope('research_query_page', 'db_execution'):
+                pass
+            with trace.database_scope('research_query_scope', 'db_execution'):
+                pass
+            await self.complete(send)
+        self.request(app, path='/research/queries/execute', method='POST',
+                     query_string=b'PRIVATE_FILTER_CURSOR', headers=[(b'cookie', b'PRIVATE_SESSION')])
+        self.assertEqual(self.terminals()[0]['http_status'], 200)
+        self.assertEqual(self.terminals()[0]['operation'], 'research_query')
+        self.assertNotIn('PRIVATE_', json.dumps(self.events))
+
     def setUp(self):
         self.events = []
         self.env = patch.dict(os.environ, LIC_DEPLOYMENT_PROFILE="self-hosted")

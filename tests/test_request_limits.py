@@ -91,7 +91,10 @@ class BodyLimitTests(unittest.TestCase):
         self.assertGreater(request_limits.BACKUP_BODY_LIMIT,user_work_backup.MAX_BYTES)
         for own in (saved_work.MAX_BODY_BYTES,video_type_reviews.MAX_BODY_BYTES,4096,8192):
             self.assertLess(own,request_limits.DEFAULT_BODY_LIMIT)
-        self.assertEqual(set(request_limits.PATH_BODY_LIMITS),{'/user-work/restore','/user-work/restore/preview'})
+        self.assertEqual(set(request_limits.PATH_BODY_LIMITS),{'/user-work/restore','/user-work/restore/preview',
+            '/research/queries/validate','/research/queries/execute'})
+        for path in ('/research/queries/validate','/research/queries/execute'):
+            self.assertEqual(request_limits.PATH_BODY_LIMITS[path],64*1024)
 
     def test_registered_inside_owner_access(self):
         source=(ROOT/'application/server.py').read_text(encoding='utf-8')

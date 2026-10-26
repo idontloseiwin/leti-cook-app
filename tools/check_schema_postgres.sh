@@ -17,6 +17,7 @@ schema_ci_resources_init
 
 schema_ci_create postgres "$image" --network none --memory 768m --memory-swap 768m --cpus 1.5 --log-driver none --pids-limit 128 \
   -e POSTGRES_USER=postgres -e POSTGRES_DB=leti-cook -e POSTGRES_PASSWORD="$LIC_SCHEMA_CI_ADMIN_PASSWORD" \
+  -e POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256 \
   -e AUTHENTICATOR_PASSWORD="$LIC_SCHEMA_CI_RUNTIME_PASSWORD" -e SELF_HOSTED_SCHEMA_SHA256="$digest" \
   -v "$root/database/bootstrap.sh:/docker-entrypoint-initdb.d/10-self-hosted.sh:ro" \
   -v "$root/schema/schema.sql:/opt/leti-cook/schema.sql:ro" \
@@ -82,4 +83,4 @@ docker exec "$name" rm -- /tmp/schema-ci-runtime.dump
 printf '%s\n' '{"stage":"postgres_image_runtime","status":"pass","checks":["nonroot_uid_gid","no_process_capabilities","postgres_home","gosu_absent","dump_restore","term_shutdown","existing_volume_restart"]}'
 
 bash "$root/tools/check_schema_ci_suite.sh" "$name"
-echo "Fresh schema passes the complete 10 SQL + 16 Python suite."
+echo "Fresh schema passes the SQL checks, the schema25 suite and the native suites."

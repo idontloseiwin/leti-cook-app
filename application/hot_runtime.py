@@ -37,6 +37,10 @@ RETRY_MAX_SECONDS = 600
 # passes in a row, or when its data is this close to YouTube's 30-day limit.
 PAUSE_AFTER_PASSES = 3
 PAUSE_MARGIN_SECONDS = 12 * 3600
+# While startup cleanup holds API reads after downtime, one step runs up to this
+# many pages, each its own short transaction, within the step's 2-second budget.
+# Otherwise a step is one page.
+CATCHUP_PAGES_PER_STEP = 20
 _MAINTENANCE = ContextVar('hot_maintenance', default=False)
 _COLLECTION_CONTROL = ContextVar('hot_collection_control', default=False)
 _COLLECTION_INTERRUPTED = ContextVar('hot_collection_interrupted', default=False)
@@ -476,7 +480,7 @@ class HotRuntimeController:
         self.time_trust = _time_trust.monitor() if time_trust is None else time_trust
         self.on_ready, self._ready_notified = on_ready, False
         self.clock, self.monotonic = clock, monotonic
-        self.cycle = HotCleanupCycle(repository)
+        self.cycle = HotCleanupCycle(repository, clock=monotonic)
         self._priority = PriorityRetrySet()
         self._lock = threading.RLock()
         self._stop = threading.Event()
@@ -790,7 +794,8 @@ class HotRuntimeController:
                     # the repository call has already finished before callback.
                     with self._lock:
                         self._priority.observe(page, self.monotonic())
-                summary = self.cycle.run_slice(max_batches=1, max_seconds=10, on_page=observe_priority)
+                summary = self.cycle.run_slice(max_batches=CATCHUP_PAGES_PER_STEP if self._catchup else 1,
+                                               max_seconds=10, on_page=observe_priority)
             if self._drift():
                 self._clock_invalid = True
                 self._recheck_pending = True
@@ -818,6 +823,8 @@ class HotRuntimeController:
                     'invalid_clocks_observed', 'unknown_expiry_observed',
                     'oldest_observed_expired_source_at')}
                 self._summary['confirmed_expired_observed'] = summary.get('confirmed_expired_observed', 0)
+                # A target that keeps failing waits behind the others; keep it visible.
+                self._summary['targets_failing'] = list(summary.get('targets_failing', ()))
                 self._last_tick, self._last_wall = self.monotonic(), self.clock()
                 removed = summary['counts']['deleted'] + summary['counts']['scrubbed']
                 if self._catchup:
@@ -995,7 +1002,8 @@ class HotRuntimeMiddleware:
             nonlocal denied
             if denied:
                 return
-            if message['type'] == 'http.response.start' and scope.get('method') in ('GET', 'HEAD'):
+            if message['type'] == 'http.response.start' and (scope.get('method') in ('GET', 'HEAD')
+                    or (scope.get('method') == 'POST' and path == '/research/queries/execute')):
                 try:
                     require_hot_runtime_ready(operation='http')
                 except HotRuntimeUnavailable:
