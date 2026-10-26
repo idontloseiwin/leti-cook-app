@@ -49,7 +49,7 @@ class Schema25SuiteTests(unittest.TestCase):
         source=(ROOT/'tests/schema25_regressions/cases_retention.py').read_text()
         self.assertIn('pages==1 and deleted==5',source);self.assertIn("page.scanned==5 and page.complete",source);self.assertIn('==1495',source)
         self.assertEqual(data['sql']['40_user_work_limits.sql']['row_budget'],15000)
-        self.assertEqual(data['python']['inventory_window']['row_budget'],3500)
+        self.assertEqual(data['python']['inventory_window']['row_budget'],6500)
 
     def test_current_sql_does_not_call_retired_functions(self):
         schema=(ROOT/'schema/schema.sql').read_text()
@@ -62,7 +62,7 @@ class Schema25SuiteTests(unittest.TestCase):
     def test_intrinsic_pins_match_current_baseline(self):
         pins=json.loads((ROOT/'schema/function-body-pins.json').read_text())
         actual={f.key:hashlib.sha256(f.body.encode()).hexdigest() for f in (parse_function(s) for s in statements((ROOT/'schema/schema.sql').read_text()) if s.startswith('CREATE FUNCTION '))}
-        self.assertEqual(len(actual),11);self.assertEqual(actual,pins['functions'])
+        self.assertEqual(len(actual),13);self.assertEqual(actual,pins['functions'])
         self.assertEqual(hashlib.sha256((ROOT/'schema/schema.sql').read_bytes()).hexdigest(),pins['schema_sha256'])
 
     def test_current_identity_checks_real_body_digests_and_readiness(self):

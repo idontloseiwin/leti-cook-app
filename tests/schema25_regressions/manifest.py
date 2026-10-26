@@ -39,7 +39,9 @@ def load(root=ROOT):
     consumers = {name: set() for name in data["fixtures"]}
     for name, entry in data["python"].items():
         require(re.fullmatch(r"[a-z][a-z_]+", name), "case_name")
-        require(entry["row_budget"] == (3500 if name == "inventory_window" else 1000), "python_row_bound")
+        # inventory_window: 3000 core rows plus one read-model row and one queue
+        # marker per inventory video (schema 35).
+        require(entry["row_budget"] == (6500 if name == "inventory_window" else 1000), "python_row_bound")
         require(entry["owners"] and entry["assertions"] and isinstance(entry["fixtures"], list), "case_contract")
         require(len(entry["fixtures"]) == len(set(entry["fixtures"])), "case_fixture_duplicate")
         require(entry["callable"] in {module + "." + name for module in CASE_MODULES}, "case_binding")

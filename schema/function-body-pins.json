@@ -10,7 +10,9 @@
     "public.guard_inventory_chain_consistency()": "1f4108fa58b203d04963f5a22c6d4f85b9db8055d39ed773943dcc52dea26e18",
     "public.guard_inventory_chain_identity()": "cb180885f8b8b1214276af600da98f3fb8ab221972c7141dba45e52a619c7d1a",
     "public.guard_inventory_chain_parent_version()": "621764115c92ee48e3013b2d65fa4d39f6004d1762aafca3ae11887db52fc23e",
-    "public.guard_manual_video_type_decision()": "ce154301251f1ed40977f4aaa4fb3d66b08039a806e199b20f85371c1b025997"
+    "public.guard_manual_video_type_decision()": "ce154301251f1ed40977f4aaa4fb3d66b08039a806e199b20f85371c1b025997",
+    "public.queue_video_search_projection()": "343eeccee2186f266dc52df9d54d3243ad79ac9e27bfb4f91a74727d10fca0f0",
+    "public.track_video_search_inventory()": "8b8f6005d6b8a00639ea8fe16e769afd23ec3e93fb5fe5400c22d4361a65d667"
   },
-  "schema_sha256": "2cfd4e46fae00cc2508f8fbc50789810f088a31380db9fd67f14b5f37d50d74a"
+  "schema_sha256": "54ecd55ad5f57b09cf533148508ed8b7c2aa78c540a2750012736c13ff10a027"
 }

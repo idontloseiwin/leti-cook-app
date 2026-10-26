@@ -28,7 +28,7 @@ class SqlCatalogTests(unittest.TestCase):
     def test_every_source_pin_matches_its_function(self):
         _, functions, problems = sql_catalog.build()
         self.assertEqual(problems, [])
-        self.assertEqual(len(functions),11)
+        self.assertEqual(len(functions),13)
         self.assertTrue(all(f.pinned_by=={'db.readiness.intrinsic_capabilities'} for f in functions))
 
     def test_a_changed_pinned_body_is_reported(self):
@@ -52,7 +52,7 @@ class SqlCatalogTests(unittest.TestCase):
         self.assertTrue(all(not name.startswith('tests/') for name in files))
         expected={p.relative_to(ROOT).as_posix() for p in (ROOT/'application/db').rglob('*.py')}
         self.assertTrue(expected <= set(files))
-        self.assertEqual(len(functions),11);self.assertEqual(problems,[])
+        self.assertEqual(len(functions),13);self.assertEqual(problems,[])
 
     def test_view_grants_without_optional_table_keyword_are_recorded_per_role(self):
         schema = (ROOT/'schema/schema.sql').read_bytes()

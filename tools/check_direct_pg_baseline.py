@@ -33,6 +33,7 @@ DOMAIN_TABLES = tuple("public." + name for name in (
     "saved_objects", "sync_runs", "typed_inventory_receipts", "typed_video_collection_receipts",
     "user_channel_restore_items", "video_availability_events", "video_snapshots",
     "video_type_review_history", "videos", "youtube_api_request_attempts",
+    "video_search_projection", "video_search_projection_queue",
 )) + ("operator_private.operator_job_retry_requests",)
 SEED_TABLES = tuple("public." + name for name in (
     "channel_labels", "channel_discovery_queue_control", "video_collection_control",

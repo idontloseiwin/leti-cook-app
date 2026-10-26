@@ -136,6 +136,7 @@
   "application/db/inventory/membership_page_effects.py": "application/db/inventory/membership_page_effects.py",
   "application/db/inventory/page_effect_batches.py": "application/db/inventory/page_effect_batches.py",
   "application/db/inventory/review_effect_batches.py": "application/db/inventory/review_effect_batches.py",
+  "application/db/inventory/search_projection.py": "application/db/inventory/search_projection.py",
   "application/db/inventory/typed_inventory.py": "application/db/inventory/typed_inventory.py",
   "application/db/jobs/__init__.py": "application/db/jobs/__init__.py",
   "application/db/jobs/operator_job_chunk_settlement.py": "application/db/jobs/operator_job_chunk_settlement.py",
@@ -514,6 +515,7 @@
   "application/request_limits.py": "application/request_limits.py",
   "application/requirements.lock": "application/requirements.lock",
   "application/requirements.txt": "application/requirements.txt",
+  "application/research_projection_refresher.py": "application/research_projection_refresher.py",
   "application/research_query/__init__.py": "application/research_query/__init__.py",
   "application/research_query/contracts.py": "application/research_query/contracts.py",
   "application/research_query/cursor.py": "application/research_query/cursor.py",
@@ -661,6 +663,7 @@
   "schema/steps/0032-automatic-type-read-plan.sql": "schema/steps/0032-automatic-type-read-plan.sql",
   "schema/steps/0033-health-queue-projections.sql": "schema/steps/0033-health-queue-projections.sql",
   "schema/steps/0034-all-type-queue-health.sql": "schema/steps/0034-all-type-queue-health.sql",
+  "schema/steps/0035-research-read-model.sql": "schema/steps/0035-research-read-model.sql",
   "tests/schema25_regressions/README.md": "tests/schema25_regressions/README.md",
   "tools/package_release.py": "tools/package_release.py"
 }

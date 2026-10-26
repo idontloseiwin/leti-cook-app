@@ -42,6 +42,38 @@ def casefold_special():
                    and (chr(n).casefold() != chr(n).lower() or len(chr(n).lower()) != 1))
 
 
+# Normalization rules shared by the catalogue and the read-model refresh: the
+# same SQL text computes a stored row and a row that is read live.
+DURATION_PATTERN = "^P(?:([0-9]+)D)?(?:T(?:([0-9]+)H)?(?:([0-9]+)M)?(?:([0-9]+)S)?)?$"
+
+
+def duration_seconds_sql(text, parts):
+    """Seconds of an upper-cased, trimmed ISO 8601 duration `text`, whose
+    regexp_match against DURATION_PATTERN is `parts`. At most 20 digits per part
+    (leading zeros included); a bounded {1,20} repeat is several times slower."""
+    return (f"CASE WHEN {text} ~ '^[0-9]+$' THEN CASE WHEN char_length({text})<=20 THEN {text}::numeric END"
+            f" WHEN {parts} IS NOT NULL AND coalesce(char_length({parts}[1]),0)<=20 AND coalesce(char_length({parts}[2]),0)<=20"
+            f" AND coalesce(char_length({parts}[3]),0)<=20 AND coalesce(char_length({parts}[4]),0)<=20"
+            f" AND {text} ~ '[0-9]' AND (strpos({text},'T')=0 OR {text} ~ 'T.*[0-9]')"
+            f" THEN coalesce({parts}[1]::numeric,0)*86400+coalesce({parts}[2]::numeric,0)*3600"
+            f"+coalesce({parts}[3]::numeric,0)*60+coalesce({parts}[4]::numeric,0) END")
+
+
+def casefold_sql(title):
+    """Unicode 15.0 casefold of `title`. PostgreSQL 17's builtin pg_c_utf8
+    lowercase is exact except for casefold_special(); only a title containing
+    one of those takes the per-character map, about eight times slower."""
+    return (f"CASE WHEN {title} IS NULL THEN NULL WHEN {title} !~ '[^ -~]' THEN"
+            f" translate({title},'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')"
+            f" WHEN {title} !~ %(fold_special)s THEN lower({title} COLLATE pg_c_utf8) ELSE"
+            f" (SELECT coalesce(string_agg(coalesce(%(fold_map)s::jsonb->>ch,ch),'' ORDER BY ordinal),'')"
+            f" FROM regexp_split_to_table({title},'') WITH ORDINALITY AS chars(ch,ordinal)) END")
+
+
+def casefold_parameters():
+    return {"fold_map": Jsonb(casefold_map()), "fold_special": "[" + casefold_special() + "]"}
+
+
 def _value(field, *, sort=False):
     column, kind = MAPPINGS[field]
     if sort and field == "video.title":
@@ -102,15 +134,14 @@ def _continuation(order, keys, params):
     return "(" + " OR ".join(terms) + ")" if terms else "FALSE"
 
 
-# Type proof is read per inventory row from the protected view, its sole policy
-# owner: the equality keys are leakproof, so they reach its indexes, while a join
-# against the whole view is estimated at one row and becomes a quadratic loop.
-# video_inventory is keyed by video_id, so the view yields at most one row and
-# LIMIT 1 only keeps PostgreSQL from flattening the subquery. Duration parts and
-# numeric seconds are each evaluated once; inlined LATERAL aliases would repeat
-# the parser for value/state checks. A bounded {1,20} repeat is several times
-# slower than + in PostgreSQL regular expressions, so part lengths are checked
-# separately. The source lifetime is one bound parameter, the HOT window.
+# Rows come from readable.video_search_projection: the protected views' type
+# proof as of its last refresh, used only while proof_current, plus the exact
+# stored duration seconds and casefold title key, masked by readable.videos.
+# A row that is queued after a write or past a source clock is read from the
+# protected views instead, which stay the sole owners of type policy. Their
+# keys are leakproof and reach indexes; video_inventory is keyed by video_id,
+# so each yields at most one row, and LIMIT 1 only prevents flattening. The
+# source lifetime is one bound parameter, the HOT window in hours.
 _SOURCE = """WITH args AS MATERIALIZED (
  SELECT statement_timestamp() AS evaluated_at, %(scope_id)s::text AS scope_id,
  %(scope_kind)s::text AS scope_kind, %(video_type)s::text AS video_type),
@@ -140,43 +171,39 @@ inventory_state AS MATERIALIZED (
  AND s.status='completed' AND s.coverage='complete' AND s.scan_kind IN('initial_inventory','full_reconciliation')
  AND s.completed_at<=a.evaluated_at ORDER BY s.completed_at DESC,s.scan_id DESC LIMIT 1) full_scan ON true),
 raw AS MATERIALIZED (
- SELECT i.video_id,i.channel_id,i.video_type,h.source_checked_at AS identity_clock,h.source_expires_at AS identity_expiry,
- v.title,v.published_at,v.duration,v.views,v.checked_at,v.metadata_checked_at,v.availability_checked_at,
- v.source_expires_at AS video_expiry,v.availability_status,v.publication_status,v.stream_actual_end_at,
+ SELECT p.video_id,p.channel_id,i.video_type,h.source_checked_at AS identity_clock,h.source_expires_at AS identity_expiry,
+ p.title,p.published_at,p.duration,p.views,p.checked_at,p.metadata_checked_at,p.availability_checked_at,
+ p.video_expiry,p.availability_status,p.publication_status,p.stream_actual_end_at,
+ {stored_title_key} AS stored_title_key,
+ CASE WHEN p.proof_current THEN p.duration_seconds ELSE {live_duration} END AS stored_duration_seconds,
  a.evaluated_at,
- coalesce(isfinite(v.metadata_checked_at) AND v.metadata_checked_at>a.evaluated_at-%(window)s::interval
- AND v.metadata_checked_at<=a.evaluated_at,false) AS metadata_fresh,
- coalesce(isfinite(v.checked_at) AND v.checked_at>a.evaluated_at-%(window)s::interval
- AND v.checked_at<=a.evaluated_at,false) AS counters_fresh,
+ coalesce(isfinite(p.metadata_checked_at) AND p.metadata_checked_at>a.evaluated_at-%(window)s::interval
+ AND p.metadata_checked_at<=a.evaluated_at,false) AS metadata_fresh,
+ coalesce(isfinite(p.checked_at) AND p.checked_at>a.evaluated_at-%(window)s::interval
+ AND p.checked_at<=a.evaluated_at,false) AS counters_fresh,
  coalesce(h.video_id IS NOT NULL AND h.source_expires_at>a.evaluated_at
- AND v.video_id IS NOT NULL AND v.channel_id=i.channel_id
- AND v.availability_status='public' AND v.availability_checked_at<=a.evaluated_at
- AND v.availability_checked_at>a.evaluated_at-%(window)s::interval
- AND v.publication_status IS NULL AND (v.published_at IS NULL OR v.published_at<=a.evaluated_at)
- AND (i.video_type<>'stream' OR (v.stream_actual_end_at IS NOT NULL AND v.stream_actual_end_at<=a.evaluated_at
- AND v.stream_actual_end_at<=v.checked_at AND v.stream_actual_end_at<=v.metadata_checked_at
- AND v.checked_at>a.evaluated_at-%(window)s::interval AND v.metadata_checked_at>a.evaluated_at-%(window)s::interval
- AND v.checked_at<=a.evaluated_at AND v.metadata_checked_at<=a.evaluated_at)),false) AS admitted
- FROM scope JOIN readable.video_inventory i USING(channel_id) CROSS JOIN args a
- LEFT JOIN LATERAL (SELECT p.video_id,p.source_checked_at,p.source_expires_at FROM readable.hot_video_inventory p
- WHERE p.video_id=i.video_id AND p.channel_id=i.channel_id AND p.video_type=i.video_type LIMIT 1) h ON true
- LEFT JOIN readable.videos v ON v.video_id=i.video_id
- WHERE i.video_type=%(video_type)s::text{inventory_scope} AND i.video_id ~ '^[A-Za-z0-9_-]{11}$'),
-duration_inputs AS MATERIALIZED (
- SELECT video_id, text, regexp_match(text,
- '^P(?:([0-9]+)D)?(?:T(?:([0-9]+)H)?(?:([0-9]+)M)?(?:([0-9]+)S)?)?$') AS parts
- FROM raw CROSS JOIN LATERAL (SELECT upper(btrim(duration)) AS text) t
- WHERE admitted AND metadata_fresh),
-duration_values AS MATERIALIZED (
- SELECT video_id, CASE WHEN text ~ '^[0-9]+$' THEN CASE WHEN char_length(text)<=20 THEN text::numeric END
- WHEN parts IS NOT NULL AND coalesce(char_length(parts[1]),0)<=20 AND coalesce(char_length(parts[2]),0)<=20
- AND coalesce(char_length(parts[3]),0)<=20 AND coalesce(char_length(parts[4]),0)<=20
- AND text ~ '[0-9]' AND (strpos(text,'T')=0 OR text ~ 'T.*[0-9]')
- THEN coalesce(parts[1]::numeric,0)*86400+coalesce(parts[2]::numeric,0)*3600+
- coalesce(parts[3]::numeric,0)*60+coalesce(parts[4]::numeric,0) END AS seconds
- FROM duration_inputs),
+ AND p.v_video_id IS NOT NULL AND p.v_channel_id=p.channel_id
+ AND p.availability_status='public' AND p.availability_checked_at<=a.evaluated_at
+ AND p.availability_checked_at>a.evaluated_at-%(window)s::interval
+ AND p.publication_status IS NULL AND (p.published_at IS NULL OR p.published_at<=a.evaluated_at)
+ AND (i.video_type<>'stream' OR (p.stream_actual_end_at IS NOT NULL AND p.stream_actual_end_at<=a.evaluated_at
+ AND p.stream_actual_end_at<=p.checked_at AND p.stream_actual_end_at<=p.metadata_checked_at
+ AND p.checked_at>a.evaluated_at-%(window)s::interval AND p.metadata_checked_at>a.evaluated_at-%(window)s::interval
+ AND p.checked_at<=a.evaluated_at AND p.metadata_checked_at<=a.evaluated_at)),false) AS admitted
+ FROM scope JOIN readable.video_search_projection p USING(channel_id) CROSS JOIN args a
+ LEFT JOIN LATERAL (SELECT x.video_type FROM readable.video_inventory x
+ WHERE NOT p.proof_current AND x.video_id=p.video_id LIMIT 1) live ON true
+ CROSS JOIN LATERAL (SELECT CASE WHEN p.proof_current THEN p.inventory_type ELSE live.video_type END AS video_type) i
+ LEFT JOIN LATERAL (SELECT upper(btrim(p.duration)) AS text WHERE NOT p.proof_current LIMIT 1) duration_text ON true
+ LEFT JOIN LATERAL (SELECT regexp_match(duration_text.text,%(duration_pattern)s) AS parts
+ WHERE duration_text.text IS NOT NULL LIMIT 1) duration_parts ON true
+ LEFT JOIN LATERAL ((SELECT p.video_id AS video_id,p.identity_clock AS source_checked_at,p.identity_expiry AS source_expires_at
+ WHERE p.proof_current AND p.hot_present)
+ UNION ALL (SELECT h0.video_id,h0.source_checked_at,h0.source_expires_at FROM readable.hot_video_inventory h0
+ WHERE NOT p.proof_current AND h0.video_id=p.video_id AND h0.channel_id=p.channel_id AND h0.video_type=i.video_type LIMIT 1)) h ON true
+ WHERE i.video_type=%(video_type)s::text{inventory_scope} AND p.video_id ~ '^[A-Za-z0-9_-]{11}$'),
 normalized AS MATERIALIZED (
- SELECT video_id,channel_id,video_type,identity_clock,identity_expiry,metadata_checked_at,checked_at,
+ SELECT {title_key} AS title_key,video_id,channel_id,video_type,identity_clock,identity_expiry,metadata_checked_at,checked_at,
  least(identity_expiry,availability_checked_at+%(window)s::interval) AS core_expiry,
  CASE WHEN metadata_fresh AND char_length(title)<=1000 THEN title END AS title,
  CASE WHEN metadata_fresh AND isfinite(published_at) AND published_at>='0001-01-01Z'::timestamptz
@@ -194,9 +221,9 @@ normalized AS MATERIALIZED (
  OR parsed.seconds NOT BETWEEN 0 AND 18446744073709551615 THEN 'unknown' ELSE 'known' END AS duration_seconds_state,
  CASE WHEN isfinite(checked_at) AND checked_at<=evaluated_at-%(window)s::interval THEN 'expired'
  WHEN checked_at>evaluated_at THEN 'unavailable' WHEN NOT counters_fresh OR views IS NULL OR views<0 THEN 'unknown' ELSE 'known' END AS views_state
- FROM raw LEFT JOIN duration_values parsed USING(video_id)
+ FROM raw CROSS JOIN LATERAL (SELECT CASE WHEN raw.metadata_fresh THEN raw.stored_duration_seconds END AS seconds) parsed
  WHERE admitted),
-prepared AS MATERIALIZED (SELECT normalized.*, {fold} AS title_key FROM normalized),
+prepared AS MATERIALIZED (SELECT normalized.* FROM normalized),
 coverage AS MATERIALIZED (
  SELECT (SELECT count(*) FROM inventory_state WHERE complete) AS channels_complete,
  (SELECT count(*) FROM raw WHERE NOT admitted) AS rejected_rows,
@@ -227,18 +254,16 @@ def compile_query(plan, continuation=None):
     obj = request.model_dump(mode="json", by_alias=True)
     order = sort_definition(request)
     need_fold = any(field == "video.title" for field, _ in order) or b'"contains_casefold_v1"' in plan.encoded
-    fold = "NULL::text"
+    # public.casefold_v1 stores the key when a title is written; it is exposed
+    # only with the same gating as the title itself.
+    title_key = ("CASE WHEN metadata_fresh AND char_length(title)<=1000 THEN stored_title_key END"
+                 if need_fold else "NULL::text")
+    stored_title_key = "NULL::text"
     if need_fold:
-        params["fold_map"] = Jsonb(casefold_map())
-        params["fold_special"] = "[" + casefold_special() + "]"
-        # Most non-ASCII titles (Cyrillic, CJK, ...) fold exactly by the builtin,
-        # locale-independent lowercase; only titles with a special character
-        # take the per-character map, which is about eight times slower.
-        fold = """CASE WHEN title IS NULL THEN NULL WHEN title !~ '[^ -~]' THEN
- translate(title,'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')
- WHEN title !~ %(fold_special)s THEN lower(title COLLATE pg_c_utf8) ELSE
- (SELECT coalesce(string_agg(coalesce(%(fold_map)s::jsonb->>ch,ch),'' ORDER BY ordinal),'')
- FROM regexp_split_to_table(title,'') WITH ORDINALITY AS chars(ch,ordinal)) END"""
+        # Literals fold in Python: casefold_map refuses another Unicode version.
+        params.update(casefold_parameters())
+        stored_title_key = "CASE WHEN p.proof_current THEN p.title_key ELSE " + casefold_sql("p.title") + " END"
+    params["duration_pattern"] = DURATION_PATTERN
     required = " AND ".join(MAPPINGS[f][0] + " IS NOT NULL" for f in request.coverage.required_fields) or "TRUE"
     predicate = _condition(obj["where"], params)
     keyset = _continuation(order, continuation["keys"] if continuation else None, params)
@@ -250,8 +275,10 @@ def compile_query(plan, continuation=None):
     channel = request.scope.kind == "channel"
     scope_predicate = "c.channel_id=%(scope_id)s::text" if channel else "c.folder_id=%(scope_id)s::uuid"
     statement = _SOURCE.replace("{scope_predicate}", scope_predicate)
-    statement = statement.replace("{inventory_scope}", " AND i.channel_id=%(scope_id)s::text" if channel else "")
-    for key, value in {"fold": fold, "required": required, "predicate": predicate,
+    statement = statement.replace("{inventory_scope}", " AND p.channel_id=%(scope_id)s::text" if channel else "")
+    for key, value in {"title_key": title_key, "stored_title_key": stored_title_key,
+                       "live_duration": duration_seconds_sql("duration_text.text", "duration_parts.parts"),
+                       "required": required, "predicate": predicate,
                        "continuation": keyset, "order": ordering, "page_order": ordering,
                        "sort_keys": "jsonb_build_array("+key_values+")"}.items():
         statement = statement.replace("{"+key+"}", value)

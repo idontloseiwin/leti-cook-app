@@ -74,10 +74,13 @@ expires. An expired page is cleared; select **Refresh** to start again. Switchin
 filters or format also clears the previous result immediately.
 
 Every page is computed from the whole folder, so later pages take as long as the
-first. A single channel answers quickly; a folder with tens of thousands of
-stored videos of one format can take several seconds per page. A page that
-cannot finish within its time limit is not shown: the preview asks you to narrow
-the selection, for example to a smaller folder or one channel.
+first. A background task keeps a ready copy of each stored video's type check,
+duration and title search key, so a folder with tens of thousands of videos of
+one format usually answers within one or two seconds. After an update, or while
+many videos change at once, the copy catches up for a few minutes. Until then
+the affected videos are checked directly in the stored data: results are the
+same, pages are slower. A page that cannot finish within its time limit is not
+shown: the preview asks you to narrow the selection, for example to one channel.
 
 The preview reads the local database without requesting YouTube data or changing
 collection schedules. It requires the installation's existing owner access and

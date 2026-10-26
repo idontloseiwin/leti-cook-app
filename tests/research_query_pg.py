@@ -126,12 +126,23 @@ class NativeQueryTests(unittest.TestCase):
                                 admission=lambda _:None).open()
         cls.repo=ResearchQueryRepository(cls.db)
         cls.service=QueryService(cls.repo,lambda:cls.context)
+        # As on an installation: the background refresher keeps the read model
+        # current; rows queued by a test's own writes are read from the views.
+        cls.refresh()
         print('Synthetic PostgreSQL query fixture ready; server_version_num='+version,flush=True)
 
     @classmethod
     def tearDownClass(cls):
         cls.db.close()
         cls.admin.close()
+
+    @classmethod
+    def refresh(cls):
+        # The production refresh, as the backend role through the gateway.
+        from db.inventory.search_projection import SearchProjectionRepository
+        repository = SearchProjectionRepository(cls.db)
+        while repository.refresh(10000):
+            pass
 
     def run_query(self, value):
         return self.service.execute(canonical(shift_dates(value,self.delta)))
@@ -371,5 +382,116 @@ class NativeQueryTests(unittest.TestCase):
                                   (samples,)).fetchone()[0]
         self.assertEqual(folded,[t.casefold() for t in samples])
 
+
+    def test_18_casefold_rule_equals_python_for_every_code_point(self):
+        import random
+        from db.reads.research_sql import casefold_parameters, casefold_special, casefold_sql
+        params=casefold_parameters()
+        rows=self.admin.execute("SELECT n,"+casefold_sql('chr(n)')+""" FROM generate_series(1,1114111) n
+                                   WHERE n NOT BETWEEN 55296 AND 57343""",params).fetchall()
+        self.assertEqual([n for n,key in rows if key!=chr(n).casefold()],[])
+        rng=random.Random(18)
+        alphabet=list(casefold_special())+list('AaZzЁёΣσ測 1-')
+        samples=['Straße ΣΑΣ ﬁ','STRASSE','İstanbul','µ','ꭰ','','Обзор ЁЛКА']
+        samples+=[''.join(rng.choice(alphabet) for _ in range(rng.randint(1,30))) for _ in range(3000)]
+        folded=self.admin.execute('SELECT array_agg('+casefold_sql('x.t')+' ORDER BY x.i) FROM unnest(%(samples)s::text[]) WITH ORDINALITY AS x(t,i)',
+                                  {**params,'samples':samples}).fetchone()[0]
+        self.assertEqual(folded,[t.casefold() for t in samples])
+
+    def test_19_duration_rule_matches_the_boundaries(self):
+        from db.reads.research_sql import DURATION_PATTERN, duration_seconds_sql
+        cases=[(None,None),('',None),('0',0),(' 0012 ',12),('pt12s',12),('P1DT2H3M4S',93784),('P0D',0),('PT0S',0),
+               ('P',None),('PT',None),('P1DT',None),('PT1.5S',None),('-1',None),('NaN',None),('1e3',None),
+               ('18446744073709551615',18446744073709551615),('PT'+'0'*19+'1S',1),('PT'+'0'*20+'1S',None),
+               ('0'*20,0),('0'*21,None),('P'+'0'*19+'1D',86400),('P'+'0'*20+'1D',None),('PT1H'+'0'*21+'M',None)]
+        sql=('SELECT '+duration_seconds_sql('d.text','m.parts')+' FROM (SELECT upper(btrim(%(duration)s::text)) AS text) d'
+             ' CROSS JOIN LATERAL (SELECT regexp_match(d.text,%(pattern)s) AS parts) m')
+        for duration,expected in cases:
+            with self.subTest(duration=duration):
+                value=self.admin.execute(sql,{'duration':duration,'pattern':DURATION_PATTERN}).fetchone()[0]
+                self.assertEqual(value,expected)
+
+    def test_20_read_model_answers_equal_the_protected_views(self):
+        # Same answers from current rows, from rows all past their deadline
+        # (read live), and from rows queued by writes before a refresh.
+        def answers():
+            out=[]
+            for kind in ('long','short','stream'):
+                for order in ('video.views','video.title','video.duration_seconds'):
+                    for scope in (None,{'kind':'channel','id':FIXTURE['channels'][0]['id']}):
+                        q=query(video_types=[kind],order_by=[{'field':order,'direction':'asc'}],page={'size':3,'after':None},
+                                select=['video.id','video.title','video.views','video.duration_seconds','video.published_at'],
+                                **({'scope':scope} if scope else {}))
+                        pages=[]
+                        for _ in range(20):
+                            try: result=self.run_query(q)
+                            except QueryRejected as error:
+                                pages.append(error.code); break
+                            pages.append((result['rows'],result['coverage'],result['page']['has_more']))
+                            if not result['page']['has_more']: break
+                            q['page']['after']=result['page']['next_cursor']
+                        out.append(pages)
+                q=query(video_types=[kind],where={'field':'video.title','op':'contains_casefold_v1','value':'STRASSE'})
+                out.append(self.run_query(q)['rows'])
+            return out
+        self.refresh()
+        current=answers()
+        self.admin.execute("UPDATE public.video_search_projection SET valid_until='-infinity'")
+        self.assertEqual(answers(),current)
+        self.refresh()
+        row=self.admin.execute("SELECT v.video_id,v.title,v.duration FROM public.videos v JOIN public.video_search_projection p USING(video_id) "
+                               "WHERE v.title IS NOT NULL AND v.duration IS NOT NULL ORDER BY v.video_id LIMIT 1").fetchone()
+        try:
+            self.admin.execute("UPDATE public.videos SET title='Straße STRASSE',duration='PT2M' WHERE video_id=%s",(row[0],))
+            self.admin.execute("UPDATE public.video_inventory_memberships SET last_present_at=clock_timestamp() WHERE video_id=%s",(row[0],))
+            self.assertEqual(self.admin.execute('SELECT count(*) FROM public.video_search_projection_queue WHERE video_id=%s',(row[0],)).fetchone()[0],1)
+            queued=answers()  # the queued video is read live
+            self.refresh()
+            self.assertEqual(answers(),queued)
+            self.assertEqual(self.admin.execute('SELECT count(*) FROM public.video_search_projection_queue').fetchone()[0],0)
+            stored=self.admin.execute('SELECT title_key,duration_seconds FROM public.video_search_projection WHERE video_id=%s',(row[0],)).fetchone()
+            self.assertEqual(stored,('strasse strasse',120))
+            # Counters are read live and do not queue the video.
+            self.admin.execute('UPDATE public.videos SET views=coalesce(views,0)+1 WHERE video_id=%s',(row[0],))
+            self.assertEqual(self.admin.execute('SELECT count(*) FROM public.video_search_projection_queue').fetchone()[0],0)
+        finally:
+            self.admin.execute('UPDATE public.videos SET title=%s,duration=%s WHERE video_id=%s',(row[1],row[2],row[0]))
+            self.refresh()
+
+    def test_21_read_model_follows_inventory_and_lic_reader_sees_only_the_view(self):
+        rows=self.admin.execute('SELECT count(*) FROM public.video_inventory').fetchone()[0]
+        self.assertEqual(self.admin.execute('SELECT count(*) FROM public.video_search_projection').fetchone()[0],rows)
+        with self.admin.transaction():
+            self.admin.execute('SET LOCAL ROLE lic_reader')
+            self.assertGreater(self.admin.execute('SELECT count(*) FROM readable.video_search_projection').fetchone()[0],0)
+        for statement in ('SELECT 1 FROM public.video_search_projection LIMIT 1',
+                          'SELECT 1 FROM public.video_search_projection_queue LIMIT 1',
+                          "UPDATE public.video_search_projection SET valid_until='infinity'"):
+            with self.subTest(statement=statement), self.assertRaises(psycopg.errors.InsufficientPrivilege):
+                with self.admin.transaction():
+                    self.admin.execute('SET LOCAL ROLE lic_reader')
+                    self.admin.execute(statement)
+
+
+    def test_22_hooks_skip_detached_reviews_and_drop_derived_fields_with_sources(self):
+        before=self.admin.execute('SELECT count(*) FROM public.video_search_projection_queue').fetchone()[0]
+        self.admin.execute("INSERT INTO public.video_type_review_cases(video_id,channel_id,observed_canonical_type,observed_types,"
+                           "observed_channels,state,source_detached_at) VALUES(NULL,NULL,NULL,ARRAY[]::text[],ARRAY[]::text[],'open',now())")
+        self.assertEqual(self.admin.execute('SELECT count(*) FROM public.video_search_projection_queue').fetchone()[0],before)
+        self.refresh()
+        row=self.admin.execute("SELECT p.video_id,v.title,v.duration FROM public.video_search_projection p JOIN public.videos v USING(video_id) "
+                               "WHERE p.title_key IS NOT NULL AND p.duration_seconds IS NOT NULL ORDER BY p.video_id LIMIT 1").fetchone()
+        try:
+            # A retention scrub removes the sources; their derived copies go in the same write.
+            self.admin.execute('UPDATE public.videos SET title=NULL WHERE video_id=%s',(row[0],))
+            self.assertEqual(self.admin.execute('SELECT title_key IS NULL,duration_seconds IS NOT NULL FROM public.video_search_projection '
+                                                'WHERE video_id=%s',(row[0],)).fetchone(),(True,True))
+            self.admin.execute('UPDATE public.videos SET duration=NULL WHERE video_id=%s',(row[0],))
+            self.assertEqual(self.admin.execute('SELECT title_key,duration_seconds FROM public.video_search_projection '
+                                                'WHERE video_id=%s',(row[0],)).fetchone(),(None,None))
+        finally:
+            self.admin.execute('UPDATE public.videos SET title=%s,duration=%s WHERE video_id=%s',(row[1],row[2],row[0]))
+            self.admin.execute('DELETE FROM public.video_type_review_cases WHERE video_id IS NULL')
+            self.refresh()
 
 if __name__=='__main__': unittest.main(verbosity=2)

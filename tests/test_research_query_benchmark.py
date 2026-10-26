@@ -60,13 +60,18 @@ class BenchmarkFixtureTests(unittest.TestCase):
     def test_executor_keeps_protected_sources(self):
         from db.reads.research_sql import _SOURCE
         source=_SOURCE
-        self.assertIn('FROM readable.hot_video_inventory p',source)
-        self.assertIn('JOIN readable.videos v',source)
-        self.assertNotIn('FROM public.videos',source)
-        # Type proof is read per row by its keys, not materialized for the scope.
+        self.assertIn('FROM scope JOIN readable.video_search_projection p USING(channel_id)',source)
+        self.assertNotIn('public.video',source)  # only protected views and the readable projection
+        # A stale or queued row reads the protected views by its keys instead.
         self.assertEqual(source.count('readable.hot_video_inventory'),1)
-        self.assertIn('p.video_id=i.video_id AND p.channel_id=i.channel_id AND p.video_type=i.video_type LIMIT 1) h ON true',source)
+        self.assertIn('WHERE NOT p.proof_current AND h0.video_id=p.video_id AND h0.channel_id=p.channel_id AND h0.video_type=i.video_type LIMIT 1',source)
+        self.assertIn('WHERE NOT p.proof_current AND x.video_id=p.video_id LIMIT 1',source)
+        self.assertIn('WHERE p.proof_current AND p.hot_present',source)
         self.assertNotIn('hot_scoped',source)
+        # Durations are parsed only for rows read live, once per row.
+        self.assertEqual(source.count('regexp_match'),1)
+        self.assertIn('WHERE NOT p.proof_current LIMIT 1) duration_text ON true',source)
+        self.assertIn('CASE WHEN p.proof_current THEN p.duration_seconds ELSE',source)
 
     def test_browser_fixture_setup_crosses_a_second_boundary(self):
         from research_query_preview import create_preview_app

@@ -128,24 +128,29 @@ class ValidatorTests(unittest.TestCase):
         self.assertNotRegex(statement,r"interval '\d+ (hours?|days?)'")
         self.assertIn('%(window)s::interval',statement)
 
-    def test_casefold_fast_path_excludes_only_special_characters(self):
+    def test_stored_title_key_follows_the_title_and_unicode_rule(self):
         from db.reads.research_sql import casefold_special
         special=casefold_special()
         self.assertEqual(len(special),298)
         for char in 'ßẞςµſİŉǰﬁꭰ':
             self.assertIn(char,special)
-        for char in 'АаЁёЖжЯяΣσΑαÄäŁłЖ測試ÉéÇç':
+        for char in 'АаЁёЖжЯяΣσΑαÄäŁł測試ÉéÇç':
             self.assertNotIn(char,special)
         statement,params=compile_query(self.plan(query(order_by=[{'field':'video.title','direction':'asc'}])))
+        # A current read-model row supplies the key; any other row folds live.
+        self.assertIn('CASE WHEN p.proof_current THEN p.title_key ELSE CASE WHEN p.title IS NULL',statement)
+        self.assertIn('WHEN p.title !~ %(fold_special)s THEN lower(p.title COLLATE pg_c_utf8)',statement)
         self.assertEqual(params['fold_special'],'['+special+']')
-        self.assertIn('WHEN title !~ %(fold_special)s THEN lower(title COLLATE pg_c_utf8)',statement)
+        self.assertIn('CASE WHEN metadata_fresh AND char_length(title)<=1000 THEN stored_title_key END AS title_key',statement)
         statement,params=compile_query(self.plan(query()))
-        self.assertNotIn('fold_special',params)
+        self.assertIn('SELECT NULL::text AS title_key,video_id',statement)
+        self.assertIn('NULL::text AS stored_title_key',statement)
+        self.assertFalse({'fold_map','fold_special'}&set(params))
 
     def test_channel_scope_bounds_inventory_and_folder_does_not(self):
         channel,_=compile_query(self.plan(query(scope={'kind':'channel','id':'UC'+'0'*22})))
         folder,_=compile_query(self.plan(query()))
-        bound=' AND i.channel_id=%(scope_id)s::text'
+        bound=' AND p.channel_id=%(scope_id)s::text'
         self.assertIn('c.channel_id=%(scope_id)s::text',channel)
         self.assertIn(bound,channel)
         self.assertNotIn(bound,folder)

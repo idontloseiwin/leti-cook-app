@@ -2,7 +2,7 @@
 
 Each fact query returns exactly one row. Catalog predicates and aggregate counts
 stay in PostgreSQL; Python owns rejection, dependencies and the public report.
-Final schema retains only eleven intrinsic guard functions; workflow belongs to Python.
+Final schema retains only thirteen intrinsic trigger hooks; workflow belongs to Python.
 No cross-call cache, transaction writes, runtime source parser or RPC fallback.
 """
 from __future__ import annotations

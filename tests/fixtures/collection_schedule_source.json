@@ -1,7 +1,7 @@
 {
   "source_files": {
     "application/collection_policy.py": "74a04ca1286bbf888206af2d0a1ef2e68ada8100c9972ac3e0a0b0313a8901fa",
-    "schema/schema.sql": "2cfd4e46fae00cc2508f8fbc50789810f088a31380db9fd67f14b5f37d50d74a",
+    "schema/schema.sql": "54ecd55ad5f57b09cf533148508ed8b7c2aa78c540a2750012736c13ff10a027",
     "application/collection_schedule_model.py": "1862ce304bbfd69f5180ed71f02cc3e8391dbcc890bb8f6cdee143aa6e4df63f"
   },
   "default_sql_fixture_sha256": "ad2fe7a808f8a6d36e701cf259f3c8d5c2c35e32610448e9acf874c6546f5d84",

@@ -176,7 +176,7 @@
         "HotRetentionRepository.cleanup_page"
       ],
       "assertions": "1500 inventory plus1500 memberships;five every300th stale;only the five stale memberships selected,work<=100;one page;1495membership survivors",
-      "row_budget": 3500,
+      "row_budget": 6500,
       "fixtures": [
         "inventory_window_seed.sql"
       ],

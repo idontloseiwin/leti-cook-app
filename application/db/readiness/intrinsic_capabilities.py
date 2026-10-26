@@ -1,4 +1,4 @@
-"""Strict final-schema catalog contract: eleven intrinsic guards, twenty hooks.
+"""Strict final-schema catalog contract: thirteen intrinsic hooks, twenty-five triggers.
 
 No stored workflow calls, source data reads, writes or permissive old-schema mode.
 Runtime verifies the delivered integrity definitions; the fresh installer
@@ -18,7 +18,9 @@ WITH expected_functions(signature,body_md5,security_definer,search_path,service_
 ('public.guard_inventory_chain_identity()','41a4ae471fec205764ff7297df39d1e7',false,'search_path=pg_catalog, public, pg_temp',false),
 ('public.guard_inventory_chain_parent_version()','a3d0878943b715db20fe7e67e1a2337f',false,'search_path=pg_catalog, public, pg_temp',false),
 ('public.guard_inventory_chain_consistency()','1571f968fcb209904f9fb6a57351632b',false,'search_path=pg_catalog, public, pg_temp',false),
-('public.guard_manual_video_type_decision()','6fb0c0250c6ade3c1216d0f93c5fa2ba',true,'search_path=pg_catalog, public, pg_temp',false)), expected_triggers(table_name,trigger_name,signature,type_bits,columns,deferred_constraint) AS (VALUES
+('public.guard_manual_video_type_decision()','6fb0c0250c6ade3c1216d0f93c5fa2ba',true,'search_path=pg_catalog, public, pg_temp',false),
+('public.queue_video_search_projection()','4f05611bac9bbb932fda3be3dc23353c',true,'search_path=pg_catalog, pg_temp',false),
+('public.track_video_search_inventory()','c91a70da80050a353b6575c0299a40df',true,'search_path=pg_catalog, pg_temp',false)), expected_triggers(table_name,trigger_name,signature,type_bits,columns,deferred_constraint) AS (VALUES
 ('public.operator_job_inventory_chains','inventory_chain_identity_guard','public.guard_inventory_chain_identity()',19,ARRAY[]::text[],false),
 ('public.operator_jobs','inventory_chain_parent_version_guard','public.guard_inventory_chain_parent_version()',23,ARRAY[]::text[],false),
 ('public.operator_job_inventory_chains','inventory_chain_children_consistency_guard','public.guard_inventory_chain_consistency()',29,ARRAY[]::text[],true),
@@ -38,7 +40,12 @@ WITH expected_functions(signature,body_md5,security_definer,search_path,service_
 ('public.operator_job_targets','hot_operator_target_scope','public.guard_hot_operator_target_scope()',23,ARRAY[]::text[],false),
 ('public.video_collection_state','hot_storage_collection_delete_guard','public.guard_hot_storage_collection_delete()',11,ARRAY[]::text[],false),
 ('public.channel_playlist_state','hot_storage_playlist_delete_guard','public.guard_hot_storage_collection_delete()',11,ARRAY[]::text[],false),
-('public.video_inventory','video_type_review_canonical_guard','public.guard_manual_video_type_decision()',19,ARRAY['video_id','video_type','channel_id']::text[],false)), roles AS (
+('public.video_inventory','video_type_review_canonical_guard','public.guard_manual_video_type_decision()',19,ARRAY['video_id','video_type','channel_id']::text[],false),
+('public.video_inventory','video_inventory_search_projection','public.track_video_search_inventory()',21,ARRAY['channel_id']::text[],false),
+('public.video_inventory','video_inventory_search_queue','public.queue_video_search_projection()',29,ARRAY[]::text[],false),
+('public.video_inventory_memberships','video_membership_search_queue','public.queue_video_search_projection()',29,ARRAY[]::text[],false),
+('public.video_type_review_cases','video_review_search_queue','public.queue_video_search_projection()',29,ARRAY[]::text[],false),
+('public.videos','videos_search_queue','public.queue_video_search_projection()',29,ARRAY['video_id','channel_id','title','published_at','metadata_checked_at','duration','publication_status']::text[],false)), roles AS (
  SELECT (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='postgres') AS owner_oid,
  (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='service_role') AS service_oid,
  (SELECT count(*)=3 FROM pg_catalog.pg_roles WHERE rolname IN ('anon','authenticated','service_role'))
@@ -52,7 +59,7 @@ WITH expected_functions(signature,body_md5,security_definer,search_path,service_
  WHERE n.nspname IN ('public','operator_private') AND NOT t.tgisinternal
 )
 SELECT coalesce(roles.valid,false) AS roles_valid,
- ((SELECT count(*) FROM functions)=11 AND NOT EXISTS(
+ ((SELECT count(*) FROM functions)=13 AND NOT EXISTS(
   SELECT 1 FROM expected_functions expected LEFT JOIN functions p ON p.oid=to_regprocedure(expected.signature)
   WHERE p.oid IS NULL OR p.proowner IS DISTINCT FROM roles.owner_oid
    OR p.prokind<>'f' OR p.prorettype<>'trigger'::regtype OR p.proretset OR p.pronargs<>0
@@ -71,7 +78,7 @@ SELECT coalesce(roles.valid,false) AS roles_valid,
     WHERE acl.grantee<>roles.owner_oid AND (acl.grantee IS DISTINCT FROM roles.service_oid
      OR NOT expected.service_execute OR acl.privilege_type<>'EXECUTE' OR acl.is_grantable))
  )) AS functions_valid,
- ((SELECT count(*) FROM triggers)=20 AND NOT EXISTS(
+ ((SELECT count(*) FROM triggers)=25 AND NOT EXISTS(
   SELECT 1 FROM expected_triggers expected LEFT JOIN triggers t ON t.tgrelid=to_regclass(expected.table_name)
    AND t.tgname=expected.trigger_name
   LEFT JOIN pg_catalog.pg_constraint constraint_hook ON constraint_hook.oid=t.tgconstraint

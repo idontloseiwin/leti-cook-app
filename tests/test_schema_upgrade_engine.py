@@ -78,7 +78,7 @@ class SchemaManifestTests(unittest.TestCase):
     def test_current_release_preserves_the_baseline_and_carries_real_steps(self):
         plan = validate_schema_bundle(source_files())
         self.assertEqual((plan.baseline_id, plan.baseline_version, plan.schema_version),
-                         (BASELINE_ID, 25, 34))
+                         (BASELINE_ID, 25, 35))
         self.assertEqual(plan.baseline_sha256,
                          'c349be588ffd48cf170095755aeb96145e4a9371ecf559cbf4566145a0f4c8ec')
         self.assertEqual([step.filename for step in plan.steps],
@@ -90,7 +90,8 @@ class SchemaManifestTests(unittest.TestCase):
                           'steps/0031-publication-lifecycle.sql',
                           'steps/0032-automatic-type-read-plan.sql',
                           'steps/0033-health-queue-projections.sql',
-                          'steps/0034-all-type-queue-health.sql'])
+                          'steps/0034-all-type-queue-health.sql',
+                          'steps/0035-research-read-model.sql'])
         self.assertNotEqual(plan.baseline_sql, plan.schema_sql)
         baseline = validate_schema_bundle(fixture(0))
         self.assertEqual(baseline.steps, ())

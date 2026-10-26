@@ -12,7 +12,7 @@
   "files": {
     "baseline/schema.sql": "c349be588ffd48cf170095755aeb96145e4a9371ecf559cbf4566145a0f4c8ec",
     "configuration-seeds.sql": "7a9c51474bc4d6847dc14f358f7e2a15437005b05288bc680e7e8ec9a81ccbee",
-    "schema.sql": "2cfd4e46fae00cc2508f8fbc50789810f088a31380db9fd67f14b5f37d50d74a",
+    "schema.sql": "54ecd55ad5f57b09cf533148508ed8b7c2aa78c540a2750012736c13ff10a027",
     "steps/0026-release-readiness.sql": "154e70d6f3e3de9d2f7ca208b479c3fb22b40b12ce8a9c08fa9acd8b757f6aab",
     "steps/0027-data-source-provenance.sql": "dd64e77b747186c6f08bf64cfedd05bd80d522e2a85b5bbdd3127d0158edba57",
     "steps/0028-unified-video-availability.sql": "c246afb005e40192c9aa9d77c166d936fb06fbec26e950c8a0cdcfe0654b4427",
@@ -21,12 +21,13 @@
     "steps/0031-publication-lifecycle.sql": "c618585ab3302d1d985745a63a67924b0cf931d0608b88c86959bacac1001c15",
     "steps/0032-automatic-type-read-plan.sql": "3f7c48263e66708518b40fd6644c37f412d4668c981841edea3e58bd5d024b62",
     "steps/0033-health-queue-projections.sql": "52e8a42737cb1fd754b9590e74140083d30e3d16b99559e28964a136be7baeec",
-    "steps/0034-all-type-queue-health.sql": "21bfdc681571ff0b6268cddccb326e248a6440946a7bdffde72631b3d32c1164"
+    "steps/0034-all-type-queue-health.sql": "21bfdc681571ff0b6268cddccb326e248a6440946a7bdffde72631b3d32c1164",
+    "steps/0035-research-read-model.sql": "b9aee237a0b4b953bb3b0166ec7c9c699afe9e362eaf90085d580d0c30cdde43"
   },
   "format": "leti-cook-self-hosted-schema",
   "fresh_database_only": true,
   "postgres_major": 17,
-  "schema_version": 34,
+  "schema_version": 35,
   "schemas": [
     "public",
     "operator_private"
@@ -76,6 +77,11 @@
       "file": "steps/0034-all-type-queue-health.sql",
       "sha256": "21bfdc681571ff0b6268cddccb326e248a6440946a7bdffde72631b3d32c1164",
       "version": 34
+    },
+    {
+      "file": "steps/0035-research-read-model.sql",
+      "sha256": "b9aee237a0b4b953bb3b0166ec7c9c699afe9e362eaf90085d580d0c30cdde43",
+      "version": 35
     }
   ],
   "user_work_rows": 0,

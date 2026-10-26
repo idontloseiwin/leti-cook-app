@@ -151,7 +151,7 @@ class FinalReadiness(unittest.TestCase):
  def test_no_permissive_old_schema_or_unknown_processing_hooks(self):
   sql=g.READINESS_SQL
   self.assertNotIn("obj_description",sql);self.assertNotIn("schema_migrations",sql)
-  self.assertIn('(SELECT count(*) FROM functions)=11',sql);self.assertIn('(SELECT count(*) FROM triggers)=20',sql)
+  self.assertIn('(SELECT count(*) FROM functions)=13',sql);self.assertIn('(SELECT count(*) FROM triggers)=25',sql)
   self.assertIn("n.nspname IN ('public','operator_private')",sql);self.assertIn('NOT t.tgisinternal',sql)
   for field in ('proowner','proargnames','proconfig','prosrc','prosecdef','prolang','provolatile','proretset','proparallel','is_grantable','tgattr','tgenabled','tgtype','tgqual','tgfoid','tgargs','tgconstraint','tgoldtable','tgnewtable','procost','prorows','prosupport','provariadic'):self.assertIn(field,sql)
   self.assertNotIn('schema_migrations ',sql);self.assertNotIn('FROM operator_private.schema_migrations',sql)
@@ -182,12 +182,12 @@ class FinalReadiness(unittest.TestCase):
   rows=sql.split('expected_triggers(',1)[1].split(')), roles AS (',1)[0]
   rows=rows[rows.index('AS (VALUES')+10:]+')'
   parsed=re.findall(r"^\('([^']+)','([^']+)','([^']+)',([0-9]+),ARRAY\[([^\]]*)\]::text\[\],(true|false)\)",rows,re.M)
-  self.assertEqual(len(parsed),20)
+  self.assertEqual(len(parsed),25)
   expected={('public.operator_job_inventory_chains','inventory_chain_children_consistency_guard',29),
             ('public.operator_jobs','inventory_chain_parent_consistency_guard',21)}
   deferred={(table,name,int(bits)) for table,name,signature,bits,columns,flag in parsed if flag=='true'}
   self.assertEqual(deferred,expected)
-  self.assertEqual(len({(table,name) for table,name,*_ in parsed}),20)
+  self.assertEqual(len({(table,name) for table,name,*_ in parsed}),25)
   for table,name,signature,bits,columns,flag in parsed:
    if flag=='true':
     self.assertEqual(signature,'public.guard_inventory_chain_consistency()');self.assertEqual(columns,'')
