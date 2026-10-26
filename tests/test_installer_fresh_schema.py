@@ -39,11 +39,11 @@ class FreshSchemaDeliveryTests(unittest.TestCase):
         self.assertEqual(schema.splitlines()[0], FIRST_LINE)
         self.assertIn(b'CREATE TABLE operator_private.schema_migrations', schema)
         self.assertNotIn(b'INSERT INTO operator_private.schema_migrations', schema)
-        self.assertIn(b"VALUES (true,'leti-cook-release-01',36,36)", schema)
+        self.assertIn(b"VALUES (true,'leti-cook-release-01',37,37)", schema)
         self.assertEqual(digest(SCHEMA / 'baseline/schema.sql'),
                          'c349be588ffd48cf170095755aeb96145e4a9371ecf559cbf4566145a0f4c8ec')
         self.assertEqual(sorted(path.name for path in (SCHEMA / 'steps').glob('*.sql')),
-                         ['0026-release-readiness.sql', '0027-data-source-provenance.sql', '0028-unified-video-availability.sql', '0029-automatic-long-short-policy.sql', '0030-automatic-type-reader-permissions.sql', '0031-publication-lifecycle.sql', '0032-automatic-type-read-plan.sql', '0033-health-queue-projections.sql', '0034-all-type-queue-health.sql', '0035-research-read-model.sql', '0036-inventory-receipt-scan-index.sql'])
+                         ['0026-release-readiness.sql', '0027-data-source-provenance.sql', '0028-unified-video-availability.sql', '0029-automatic-long-short-policy.sql', '0030-automatic-type-reader-permissions.sql', '0031-publication-lifecycle.sql', '0032-automatic-type-read-plan.sql', '0033-health-queue-projections.sql', '0034-all-type-queue-health.sql', '0035-research-read-model.sql', '0036-inventory-receipt-scan-index.sql', '0037-type-resolution-membership-index.sql'])
         self.assertNotIn(b'Draft', schema)
 
     def test_manifest_states_only_facts_that_match_the_files(self):
@@ -54,7 +54,7 @@ class FreshSchemaDeliveryTests(unittest.TestCase):
         self.assertEqual((manifest['format'], manifest['version'], manifest['postgres_major']),
                          ('leti-cook-self-hosted-schema', 1, 17))
         self.assertEqual(manifest['schemas'], ['public', 'operator_private'])
-        self.assertEqual(manifest['schema_version'], 36)
+        self.assertEqual(manifest['schema_version'], 37)
         self.assertEqual((manifest['baseline_id'], manifest['baseline_version']),
                          ('leti-cook-release-01', 25))
         self.assertEqual(manifest['steps'], [{'version': 26, 'file': 'steps/0026-release-readiness.sql',
@@ -78,12 +78,14 @@ class FreshSchemaDeliveryTests(unittest.TestCase):
                                             {'version': 35, 'file': 'steps/0035-research-read-model.sql',
                                              'sha256': digest(SCHEMA / 'steps/0035-research-read-model.sql')},
                                             {'version': 36, 'file': 'steps/0036-inventory-receipt-scan-index.sql',
-                                             'sha256': digest(SCHEMA / 'steps/0036-inventory-receipt-scan-index.sql')}])
+                                             'sha256': digest(SCHEMA / 'steps/0036-inventory-receipt-scan-index.sql')},
+                                            {'version': 37, 'file': 'steps/0037-type-resolution-membership-index.sql',
+                                             'sha256': digest(SCHEMA / 'steps/0037-type-resolution-membership-index.sql')}])
         self.assertIs(manifest['fresh_database_only'], True)
         self.assertEqual((manifest['api_data_rows'], manifest['user_work_rows']), (0, 0))
         self.assertEqual(manifest['files'], {name: digest(SCHEMA / name) for name in
                                              ('schema.sql', 'baseline/schema.sql', 'configuration-seeds.sql',
-                                              'steps/0026-release-readiness.sql', 'steps/0027-data-source-provenance.sql', 'steps/0028-unified-video-availability.sql', 'steps/0029-automatic-long-short-policy.sql', 'steps/0030-automatic-type-reader-permissions.sql', 'steps/0031-publication-lifecycle.sql', 'steps/0032-automatic-type-read-plan.sql', 'steps/0033-health-queue-projections.sql', 'steps/0034-all-type-queue-health.sql', 'steps/0035-research-read-model.sql', 'steps/0036-inventory-receipt-scan-index.sql')})
+                                              'steps/0026-release-readiness.sql', 'steps/0027-data-source-provenance.sql', 'steps/0028-unified-video-availability.sql', 'steps/0029-automatic-long-short-policy.sql', 'steps/0030-automatic-type-reader-permissions.sql', 'steps/0031-publication-lifecycle.sql', 'steps/0032-automatic-type-read-plan.sql', 'steps/0033-health-queue-projections.sql', 'steps/0034-all-type-queue-health.sql', 'steps/0035-research-read-model.sql', 'steps/0036-inventory-receipt-scan-index.sql', 'steps/0037-type-resolution-membership-index.sql')})
         schema_digest = manifest['files']['schema.sql']
         self.assertEqual((SCHEMA / 'schema.sql.sha256').read_text(encoding='utf-8').split(),
                          [schema_digest, 'schema.sql'])

@@ -12,7 +12,7 @@
   "files": {
     "baseline/schema.sql": "c349be588ffd48cf170095755aeb96145e4a9371ecf559cbf4566145a0f4c8ec",
     "configuration-seeds.sql": "7a9c51474bc4d6847dc14f358f7e2a15437005b05288bc680e7e8ec9a81ccbee",
-    "schema.sql": "d176813d28f92a4ea71f32aadce21b3e9c7ac75e16d66b60f0466a4b57f51532",
+    "schema.sql": "ea831900aed2a0ab1d0799e5a215d11544ab72bf53225e91695dab0e9ce29ad2",
     "steps/0026-release-readiness.sql": "154e70d6f3e3de9d2f7ca208b479c3fb22b40b12ce8a9c08fa9acd8b757f6aab",
     "steps/0027-data-source-provenance.sql": "dd64e77b747186c6f08bf64cfedd05bd80d522e2a85b5bbdd3127d0158edba57",
     "steps/0028-unified-video-availability.sql": "c246afb005e40192c9aa9d77c166d936fb06fbec26e950c8a0cdcfe0654b4427",
@@ -23,12 +23,13 @@
     "steps/0033-health-queue-projections.sql": "52e8a42737cb1fd754b9590e74140083d30e3d16b99559e28964a136be7baeec",
     "steps/0034-all-type-queue-health.sql": "21bfdc681571ff0b6268cddccb326e248a6440946a7bdffde72631b3d32c1164",
     "steps/0035-research-read-model.sql": "b9aee237a0b4b953bb3b0166ec7c9c699afe9e362eaf90085d580d0c30cdde43",
-    "steps/0036-inventory-receipt-scan-index.sql": "54cafeb3e68e487a79a97ad125330a4932503c86f2c076ab93cf043b4bea24fa"
+    "steps/0036-inventory-receipt-scan-index.sql": "54cafeb3e68e487a79a97ad125330a4932503c86f2c076ab93cf043b4bea24fa",
+    "steps/0037-type-resolution-membership-index.sql": "a36acc9a9fe4a942c56e4eb6115b71a6cec90cfec8ede8e5eff9e52c215958a8"
   },
   "format": "leti-cook-self-hosted-schema",
   "fresh_database_only": true,
   "postgres_major": 17,
-  "schema_version": 36,
+  "schema_version": 37,
   "schemas": [
     "public",
     "operator_private"
@@ -88,6 +89,11 @@
       "file": "steps/0036-inventory-receipt-scan-index.sql",
       "sha256": "54cafeb3e68e487a79a97ad125330a4932503c86f2c076ab93cf043b4bea24fa",
       "version": 36
+    },
+    {
+      "file": "steps/0037-type-resolution-membership-index.sql",
+      "sha256": "a36acc9a9fe4a942c56e4eb6115b71a6cec90cfec8ede8e5eff9e52c215958a8",
+      "version": 37
     }
   ],
   "user_work_rows": 0,

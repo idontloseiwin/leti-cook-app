@@ -92,7 +92,9 @@ class RetentionWindowTests(unittest.TestCase):
             # These17 plus schema27's5 leave the original77 schema literals.
             # Schema31 replaces4 reader scopes: videos(4), two hot inventories(6),
             # and hydration proof(4). All14 retain the same29-day bounds.
-            'schema/schema.sql': (113, 36),
+            # Schema37 restates type resolution with the membership view's
+            # admission inline (8) and hot inventory (4): the same bounds.
+            'schema/schema.sql': (125, 48),
             'application/db/inventory/automatic_type_policy.py': (4, 4),
             'application/db/inventory/automatic_type_reconciliation.py': (2, 2),
             'application/db/videos/video_queue_initialization.py': (2, 2),
