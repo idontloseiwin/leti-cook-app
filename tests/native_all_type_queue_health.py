@@ -191,3 +191,12 @@ def metadata_policy(f):
     f.rows("UPDATE public.channels SET channel_metadata_status=NULL WHERE channel_id=%s", (CHANNEL,))
     observed = read()
     f.check(observed["due"] == 1 and observed["status_counts"] == {"unknown": 1}, "unscheduled_metadata_explicit_unknown")
+
+
+CASES = (queue_policy, scope_independence, initial_handoff, legacy_initial_typed_work,
+         shared_switch_and_recovery, metadata_policy)
+
+
+if __name__ == "__main__":
+    from native_case_runner import run_cases
+    raise SystemExit(run_cases("native_all_type_queue_health", CASES))

@@ -32,6 +32,22 @@ class SchemaCiTests(unittest.TestCase):
         self.assertIn('schema_ci_postgres_build "$root"',prepare)
         self.assertNotIn('docker pull',script)
 
+    def test_every_native_suite_runs_in_ci_or_says_why_not(self):
+        script=(ROOT/'tools/check_schema_ci_suite.sh').read_text(encoding='utf-8')
+        in_ci=set(re.findall(r'/repo/tests/(native_\w+)\.py',script))
+        not_in_ci={
+            'native_case_runner':'the runner other suites use',
+            'native_initial_type_conflict':'its cases run inside native_automatic_type_policy',
+            'native_quota_operation_packing':'a long measurement harness with variants, run by hand',
+            'native_stats_availability':'superseded by native_unified_availability since step 28 (audit A-N5)',
+            'native_data_lifecycle_acquisition':'superseded by native_publication_lifecycle since step 31 (audit A-N6)',
+            'native_data_lifecycle_reviews':'superseded by native_automatic_type_policy since steps 29/32 (audit A-N7)',
+            'native_data_lifecycle_migration':'needs a schema 26 database (audit A-N8)',
+        }
+        present={path.stem for path in (ROOT/'tests').glob('native_*.py')}
+        self.assertEqual(in_ci|set(not_in_ci),present)
+        self.assertFalse(in_ci&set(not_in_ci))
+
     def test_ci_databases_require_passwords_like_an_installation(self):
         # Without it initdb trusts every 127.0.0.1 connection, and CI never
         # checks the authenticator password an installation requires.

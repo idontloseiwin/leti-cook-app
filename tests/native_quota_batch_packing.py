@@ -49,8 +49,9 @@ def seed(f, sizes):
     old, due, future = f.now-timedelta(days=2), f.now-timedelta(minutes=1), f.now+timedelta(days=2)
     with f.admin.transaction():
         for video, identity in identities.items():
-            f.rows("INSERT INTO public.video_inventory(video_id,channel_id,video_type,published_at) VALUES(%s,%s,'long',%s)",
-                   (video, identity, old))
+            # Schema 27: a publication date always comes with when it was acquired.
+            f.rows("INSERT INTO public.video_inventory(video_id,channel_id,video_type,published_at,published_acquired_at) VALUES(%s,%s,'long',%s,%s)",
+                   (video, identity, old, old))
             f.rows("""INSERT INTO public.videos(video_id,channel_id,published_at,checked_at,metadata_checked_at,
                 availability_checked_at,availability_status,privacy_status,upload_status,views,like_count,comment_count)
                 VALUES(%s,%s,%s,%s,%s,%s,'public','public','processed',1,1,0)""",
@@ -166,7 +167,8 @@ def packed(f, sizes, expected):
 def fair_refill(f):
     from db.videos.video_scheduled_claims import _MIXED_WINDOW
     identities = seed(f, [60]+[1]*48+[0])
-    parameters = dict(channels=[channel(index) for index in range(1, 51)], types=['long']*50, scope_limit=20)
+    parameters = dict(channels=[channel(index) for index in range(1, 51)], types=['long']*50, scope_limit=20,
+                      operation=None, run_id=str(uuid4()))
     raw = f.rows(_MIXED_WINDOW, parameters)[0]
     f.check(len(raw['ids']) == len(set(raw['ids'])) == 108 and raw['scan_exhausted'], 'raw_refill_covers_large_small_empty')
     plan = f.rows('EXPLAIN (ANALYZE, FORMAT JSON) '+_MIXED_WINDOW, parameters)[0]
