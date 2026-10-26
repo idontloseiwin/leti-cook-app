@@ -158,3 +158,21 @@ def trashed_channel_removal(f):
     f.check(passes<=2,'trashed_channel_passes')
     f.check(set(remaining().values())=={0},'trashed_channel_removed')
     f.check(f.scalar("SELECT count(*) FROM public.video_snapshots WHERE video_id LIKE 't%%'")==0,'trashed_snapshots_removed')
+
+def inventory_queue_seek(f):
+    # Each inventory row reads only its own queue row, also when no queue row has
+    # typed fields: the page reads O(page) queue rows, never the queue's tail.
+    from db.retention import inventory_retention as cleanup
+    f.channel()
+    f.seed_sql('inventory_queue_seed.sql')
+    p=dict(target='inventory',after_branch=None,after_clock=None,after_video=None,after_channel=None,after_type=None,
+           cutoff=f.scalar("SELECT now()-interval '696 hours'"),upper=f.scalar('SELECT now()'),size=1000)
+    plan=f.rows('EXPLAIN (ANALYZE, FORMAT JSON) '+cleanup._INVENTORY_PAGE,p)[0]['QUERY PLAN'][0]['Plan']
+    def nodes(node):
+        yield node
+        for child in node.get('Plans',()):yield from nodes(child)
+    queue=[n for n in nodes(plan) if n.get('Relation Name')=='video_collection_state']
+    read=sum((n['Actual Rows']+n.get('Rows Removed by Filter',0))*n['Actual Loops'] for n in queue)
+    f.check(queue and read<=3*150,'inventory_queue_seek_bound')
+    page=f.cleanup('inventory',limit=100)
+    f.check(page.scanned==0 and page.complete and page.deferred==0,'inventory_queue_noop_page')

@@ -108,7 +108,9 @@ _MEMBERSHIP_PAGE="""WITH page AS MATERIALIZED(
  FROM page LEFT JOIN LATERAL(SELECT i.video_id FROM public.video_inventory i WHERE i.video_id=page.video_id LIMIT 1) iv ON true
  ORDER BY page.branch,page.clock,page.video_id,page.channel_id,page.video_type LIMIT %(size)s::integer"""
 # The list is read whole, by key, a thousand rows a page; the index order lets
-# PostgreSQL stop at the page size.
+# PostgreSQL stop at the page size. Each row seeks only its own queue row (see
+# queue_retention); the typed-field test stays outside the seek, or a queue
+# without typed fields (Shorts/Streams off) is scanned to its end per row.
 _INVENTORY_PAGE="""WITH page AS MATERIALIZED(SELECT x.* FROM public.video_inventory x
  WHERE (x.skeleton_since IS NULL OR x.published_at IS NOT NULL OR x.published_acquired_at IS NOT NULL
  OR EXISTS(SELECT 1 FROM public.video_collection_state q WHERE q.video_id=x.video_id AND
@@ -119,10 +121,10 @@ _INVENTORY_PAGE="""WITH page AS MATERIALIZED(SELECT x.* FROM public.video_invent
  SELECT iv.video_id,iv.channel_id,iv.video_type,iv.video_id AS cursor,
  coalesce("""+_PAGE_NOOP+""",false) AS noop
  FROM page iv LEFT JOIN LATERAL(SELECT q.* FROM public.video_collection_state q
- WHERE q.video_id>=iv.video_id AND (q.typed_collection_checked_at IS NOT NULL
- OR q.typed_source_published_at IS NOT NULL OR q.typed_stream_actual_end_at IS NOT NULL
- OR q.typed_source_published_acquired_at IS NOT NULL OR q.typed_source_stream_end_acquired_at IS NOT NULL)
- ORDER BY q.video_id LIMIT 1) qs ON qs.video_id=iv.video_id
+ WHERE q.video_id>=iv.video_id ORDER BY q.video_id LIMIT 1) qs ON qs.video_id=iv.video_id
+ AND (qs.typed_collection_checked_at IS NOT NULL
+ OR qs.typed_source_published_at IS NOT NULL OR qs.typed_stream_actual_end_at IS NOT NULL
+ OR qs.typed_source_published_acquired_at IS NOT NULL OR qs.typed_source_stream_end_acquired_at IS NOT NULL)
  LEFT JOIN LATERAL("""+_PAGE_WITNESS+""") witness ON true
  ORDER BY iv.video_id"""
 _INVENTORY_REFERENCES="""SELECT iv.video_id,iv.channel_id,iv.video_type,iv.video_id AS cursor,false AS noop

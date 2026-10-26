@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 17,
+  "expected_python_count": 18,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -237,6 +237,17 @@
         "trashed_channel_seed.sql"
       ],
       "callable": "cases_retention.trashed_channel_removal"
+    },
+    "inventory_queue_seek": {
+      "owners": [
+        "HotRetentionRepository.cleanup_page"
+      ],
+      "assertions": "150 long-only videos, no typed queue fields; the inventory page reads at most three queue rows per video and changes nothing",
+      "row_budget": 1000,
+      "fixtures": [
+        "inventory_queue_seed.sql"
+      ],
+      "callable": "cases_retention.inventory_queue_seek"
     }
   },
   "fixtures": {
@@ -308,6 +319,13 @@
       "kind": "seed",
       "cases": [
         "trashed_channel_removal"
+      ]
+    },
+    "inventory_queue_seed.sql": {
+      "sha256": "13c66f7b2db043678986479113b95b60af4c7a27b12da4ea42e8953220b481c6",
+      "kind": "seed",
+      "cases": [
+        "inventory_queue_seek"
       ]
     }
   }
