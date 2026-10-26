@@ -136,6 +136,32 @@ class CleanupTests(unittest.TestCase):
   value=self.run_page('operator_job_targets');self.assertEqual(value['oldest_remaining_expired_source_at'],'-infinity')
   self.assertEqual(self.connection.queries[-1][1][0].obj,[dict(source_at='-infinity',reason='unfenced_target',clock_observed=True,position=0)])
   self.assertIn("reason='unfenced_target' THEN source_at",cleanup._TELEMETRY)
+ def targets(self,*videos,**changes):
+  # One job that needs work, several of its targets on the page, then its full check.
+  self.header('operator_job_targets')
+  self.queue(one(id=ID),job(**changes),one(present=False),one(hot=False))
+  self.queue(Result(rows=tuple(dict(id=ID,video=v,cursor='native_'+v) for v in videos)),Result())
+  self.queue(job(**changes),one(present=False),one(hot=False),Result(),job(**changes),one(stale=True),one(present=False),one(busy=False))
+ def test_a_job_decided_under_its_lock_deletes_its_other_targets_together(self):
+  self.targets('aaaaaaaaaaa','bbbbbbbbbbb','ccccccccccc',last_error_code='source_scope_expired')
+  self.queue(Result(),count(),Result(rows=(dict(video_id='bbbbbbbbbbb'),)),count(),one(oldest=OLD,invalid=0))
+  value=self.run_page('operator_job_targets')
+  self.assertEqual((value['scanned'],value['deleted'],value['deferred']),(3,2,1))
+  self.assertEqual(value['priority_references'],[dict(target='operator_job_targets',key=[ID,'ccccccccccc'])])
+  self.assertEqual(sum('public.channels' in q and 'FOR UPDATE' in q for q,p in self.connection.queries),1)
+  locked,deleted=self.connection.queries[-3],self.connection.queries[-2]
+  self.assertIn('FOR UPDATE SKIP LOCKED',locked[0]);self.assertEqual(locked[1]['videos'],['bbbbbbbbbbb','ccccccccccc'])
+  self.assertTrue(deleted[0].startswith('DELETE FROM public.operator_job_targets'));self.assertEqual(deleted[1]['videos'],['bbbbbbbbbbb'])
+  self.assertEqual(self.connection.queries[-1][1][0].obj,[dict(source_at=OLD,reason='lock',clock_observed=True,position=0)])
+ def test_a_leased_job_defers_its_other_targets_without_another_check(self):
+  self.header('operator_job_targets')
+  self.queue(one(id=ID),job(),one(present=False),one(hot=False))
+  self.queue(Result(rows=tuple(dict(id=ID,video=v,cursor='native_'+v) for v in ('aaaaaaaaaaa','bbbbbbbbbbb'))),Result())
+  self.queue(job(),one(present=False),one(hot=False),Result(),job(),one(stale=True),one(present=False),one(busy=True),one(oldest=OLD,invalid=0,unsafe_positions=[0,1]))
+  value=self.run_page('operator_job_targets')
+  self.assertEqual((value['deferred'],value['deleted']),(2,0))
+  self.assertEqual([x['reason'] for x in self.connection.queries[-1][1][0].obj],['lease','lease'])
+  self.assertEqual(sum(cleanup._LEASE in q for q,p in self.connection.queries),1)
  def test_target_deleted_only_after_header_fence_and_row_lock(self):
   self.expired_job('operator_job_targets',last_error_code='source_scope_expired');self.queue(Result(),count())
   self.assertEqual(self.run_page('operator_job_targets')['deleted'],1)

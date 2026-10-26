@@ -307,3 +307,38 @@ def current_source_page_locks(f):
     page=repo.cleanup_page('video_counters',limit=100)
     f.check((page.scrubbed,page.deferred)==(3,0),'source_page_released_scrubbed')
     f.check(counted()==[videos[5]] and f.scalar("SELECT count(*) FROM public.videos WHERE checked_at IS NOT NULL")==6,'source_page_fresh_and_clocks_kept')
+
+def job_targets_page_locks(f):
+    # A job whose source expired 700 hours ago: its targets are deleted page by
+    # page. The job is decided once under its lock; a target another transaction
+    # holds is deferred and deleted on the next page.
+    import psycopg
+    from .fixtures import dsns
+    f.channel()
+    videos=['j%010d'%n for n in range(1,5)]
+    for video in videos:
+        f.rows("INSERT INTO public.video_inventory(video_id,channel_id,video_type) VALUES(%s,%s,'long')",(video,CHANNEL))
+    guards=(('public.operator_jobs','hot_operator_source_scope'),('public.operator_job_targets','hot_operator_target_scope'))
+    # Jobs this old were written before their window closed; only their two age guards are off while they are seeded.
+    for table,trigger in guards:f.rows('ALTER TABLE '+table+' DISABLE TRIGGER '+trigger)
+    try:
+        job=f.scalar("""INSERT INTO public.operator_jobs(job_type,channel_id,status,requested_at,started_at,finished_at,max_items,max_quota_units,
+            target_count,processed_count,updated_count,initial_scope_version,phase,last_error_code,summary_json)
+            VALUES('channel_current_stats_backfill',%s,'error',now()-interval '700 hours',now()-interval '700 hours',now()-interval '699 hours',
+            4,4,4,4,4,0,'video_targets','source_scope_expired','{"source_scope_expired":true}'::jsonb) RETURNING id::text""",(CHANNEL,))
+        for video in videos:
+            f.rows("INSERT INTO public.operator_job_targets(job_id,video_id,status,job_attempts,completed_at,video_type) VALUES(%s::uuid,%s,'updated',1,now()-interval '699 hours','long')",(job,video))
+    finally:
+        for table,trigger in guards:f.rows('ALTER TABLE '+table+' ENABLE TRIGGER '+trigger)
+    def left():
+        return [r['video_id'] for r in f.rows('SELECT video_id FROM public.operator_job_targets WHERE job_id=%s::uuid ORDER BY video_id',(job,))]
+    held=psycopg.connect(dsns()[0],connect_timeout=5)
+    try:
+        held.execute('SELECT 1 FROM public.operator_job_targets WHERE job_id=%s::uuid AND video_id=%s FOR UPDATE',(job,videos[2]))
+        page=f.cleanup('operator_job_targets',limit=100)
+        f.check((page.scanned,page.deleted,page.deferred)==(4,3,1),'job_targets_held_deferred')
+        f.check(left()==[videos[2]],'job_targets_deleted_rest')
+    finally:
+        held.rollback();held.close()
+    page=f.cleanup('operator_job_targets',limit=100)
+    f.check((page.deleted,page.deferred,left())==(1,0,[]),'job_targets_released_deleted')

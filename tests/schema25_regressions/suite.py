@@ -13,4 +13,5 @@ CASES={
 'claim_window_skips_leases':j.claim_window_skips_leases,
 'user_work_limit_race':u.user_work_limit_race,
 'evidence_page_locks':r.evidence_page_locks,
-'current_source_page_locks':r.current_source_page_locks}
+'current_source_page_locks':r.current_source_page_locks,
+'job_targets_page_locks':r.job_targets_page_locks}

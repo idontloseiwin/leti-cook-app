@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 24,
+  "expected_python_count": 25,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -304,6 +304,15 @@
       "row_budget": 1000,
       "fixtures": [],
       "callable": "cases_retention.current_source_page_locks"
+    },
+    "job_targets_page_locks": {
+      "owners": [
+        "PostgresDatabase.cleanup_hot_operational_copies"
+      ],
+      "assertions": "a job whose source expired 700 hours ago has four targets; one held by another transaction is deferred and the other three are deleted on one page; once released it is deleted on the next",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.job_targets_page_locks"
     }
   },
   "fixtures": {
