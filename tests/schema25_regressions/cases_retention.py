@@ -271,3 +271,39 @@ def evidence_page_locks(f):
     f.check((page.deleted,page.deferred)==(5,0),'evidence_page_released_deleted')
     f.check(f.rows('SELECT video_id,views FROM public.video_snapshots')==[{'video_id':videos[3],'views':3}],'evidence_page_fresh_kept')
 
+def current_source_page_locks(f):
+    # Expired counters are scrubbed a page at a time, under the same ownership
+    # rules as snapshots: a live lease, a queue row or a video row another
+    # transaction holds defers the video; fresh counters are never touched.
+    import psycopg
+    from .fixtures import dsns
+    from db.hot.hot_retention import HotRetentionRepository
+    f.channel()
+    videos=['s%010d'%n for n in range(1,7)]
+    for n,video in enumerate(videos,1):
+        age='1 hour' if n==6 else '700 hours'
+        f.rows("INSERT INTO public.video_inventory(video_id,channel_id,video_type) VALUES(%s,%s,'long')",(video,CHANNEL))
+        f.rows("INSERT INTO public.videos(video_id,channel_id,title,views,like_count,checked_at,metadata_checked_at) VALUES(%s,%s,'Counters',100,5,now()-%s::interval,now())",(video,CHANNEL,age))
+    # s1 under a live lease, s2 and s3 free, s4 without a queue row, s5 with an expired lease.
+    for video in (videos[0],videos[1],videos[2],videos[4]):
+        f.rows("INSERT INTO public.video_collection_state(video_id,channel_id,video_type) VALUES(%s,%s,'long')",(video,CHANNEL))
+    lease="UPDATE public.video_collection_state SET lease_token=gen_random_uuid(),lease_owner='other-collector',lease_started_at=now()+%s::interval,lease_expires_at=now()+%s::interval WHERE video_id=%s"
+    f.rows(lease,('-1 minute','5 minutes',videos[0]))
+    f.rows(lease,('-10 minutes','-1 second',videos[4]))
+    def counted():
+        return [r['video_id'] for r in f.rows('SELECT video_id FROM public.videos WHERE views IS NOT NULL ORDER BY video_id')]
+    held=psycopg.connect(dsns()[0],connect_timeout=5)
+    try:
+        # Another transaction holds s2's queue row and s3's video row.
+        held.execute('SELECT 1 FROM public.video_collection_state WHERE video_id=%s FOR UPDATE',(videos[1],))
+        held.execute('SELECT 1 FROM public.videos WHERE video_id=%s FOR UPDATE',(videos[2],))
+        repo=HotRetentionRepository(f.database)
+        page=repo.cleanup_page('video_counters',limit=100)
+        f.check((page.scanned,page.scrubbed,page.deferred,len(page.priority_references))==(5,2,3,3),'source_page_held_deferred')
+        f.check(counted()==[videos[0],videos[1],videos[2],videos[5]],'source_page_scrubbed_rest')
+    finally:
+        held.rollback();held.close()
+    f.rows("UPDATE public.video_collection_state SET lease_started_at=now()-interval '10 minutes',lease_expires_at=now()-interval '1 second' WHERE video_id=%s",(videos[0],))
+    page=repo.cleanup_page('video_counters',limit=100)
+    f.check((page.scrubbed,page.deferred)==(3,0),'source_page_released_scrubbed')
+    f.check(counted()==[videos[5]] and f.scalar("SELECT count(*) FROM public.videos WHERE checked_at IS NOT NULL")==6,'source_page_fresh_and_clocks_kept')

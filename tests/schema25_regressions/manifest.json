@@ -2,7 +2,7 @@
   "format": 2,
   "schema_version": 25,
   "expected_sql_count": 10,
-  "expected_python_count": 23,
+  "expected_python_count": 24,
   "sql": {
     "01_contract_and_privileges.sql": {
       "sha256": "e33b2786885fe8976b73bb7eb2ea5c1ebb0995fdaf930c4df6846ef8a1276dc4",
@@ -295,6 +295,15 @@
       "row_budget": 1000,
       "fixtures": [],
       "callable": "cases_retention.evidence_page_locks"
+    },
+    "current_source_page_locks": {
+      "owners": [
+        "PostgresDatabase.cleanup_hot_current_source"
+      ],
+      "assertions": "expired counters of five videos: a live lease, a queue row and a video row held by other transactions are deferred, the rest of the page is scrubbed; once released they are scrubbed on the next page; fresh counters and every clock stay",
+      "row_budget": 1000,
+      "fixtures": [],
+      "callable": "cases_retention.current_source_page_locks"
     }
   },
   "fixtures": {

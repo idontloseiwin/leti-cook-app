@@ -37,6 +37,7 @@ EXPECTED_CASE_MODULES = {
     "claim_window_skips_leases": "cases_jobs",
     "user_work_limit_race": "cases_user_work",
     "evidence_page_locks": "cases_retention",
+    "current_source_page_locks": "cases_retention",
 }
 EXPECTED_CASE_FIXTURES = {
     "availability_recheck": ("availability_recheck_seed.sql",),
@@ -68,6 +69,7 @@ EXPECTED_CASE_FIXTURES = {
     "claim_window_skips_leases": ("claim_window_seed.sql",),
     "user_work_limit_race": (),
     "evidence_page_locks": (),
+    "current_source_page_locks": (),
 }
 MANIFEST_PATH = Path("tests/schema25_regressions/manifest.json")
 FIXTURE_PATH = Path("tests/schema25_regressions/data")

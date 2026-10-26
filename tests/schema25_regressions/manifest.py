@@ -29,7 +29,7 @@ def load(root=ROOT):
     data = json.loads((root / "tests/schema25_regressions/manifest.json").read_text(encoding="utf-8"))
     require(data["format"] == 2 and data["schema_version"] == 25, "manifest_version")
     require(len(data["sql"]) == data["expected_sql_count"] == 10, "sql_manifest_count")
-    require(len(data["python"]) == data["expected_python_count"] == 23, "python_manifest_count")
+    require(len(data["python"]) == data["expected_python_count"] == 24, "python_manifest_count")
     require(set(data["sql"]) == {p.name for p in (root / "tests/sql").glob("*.sql")}, "sql_manifest_coverage")
     for name, entry in data["sql"].items():
         require(re.fullmatch(r"[0-9]{2}_[a-z_]+\.sql", name), "sql_path")

@@ -53,27 +53,44 @@ class CurrentCleanupTests(unittest.TestCase):
         self.header(limit=1);self.queue(Result(rows=(first,)),Result(rows=()))
         result=self.run_page(limit=1)
         self.assertTrue(result['complete']);self.assertEqual(result['next_cursor'],first['cursor'])
+    # Video sources run the row protocol once per page: proof, queue locks,
+    # lease clock, row locks, then one scrub that rechecks the locked rows.
+    def proof(self,*ords):return Result(rows=tuple(dict(ord=n) for n in ords))
+    def lease(self,**values):return Result(rows=(dict(dict(video_id='aaaaaaaaaaa',present=True,has_token=False,expires_at=None),**values),))
     def test_noop_proof_precedes_owner_locks(self):
-        self.header();self.queue(Result(rows=(item(),)),one(value={'views':0}),one(expired=False))
+        self.header();self.queue(Result(rows=(item(),)),self.proof())
         self.assertEqual(self.run_page()['deferred'],0)
         self.assertFalse(any('FOR UPDATE' in query for query,params in self.connection.queries))
     def test_busy_queue_defers_without_touching_source_or_user_work(self):
-        self.header();self.queue(Result(rows=(item(),)),one(value={'views':1}),one(expired=True),Result(rows=()),one(present=True),one(value=OLD))
+        self.header();self.queue(Result(rows=(item(),)),self.proof(1),self.lease(has_token=None),one(value=OLD))
         result=self.run_page();self.assertEqual((result['deferred'],result['scrubbed'],result['oldest_remaining_expired_source_at']),(1,0,OLD))
-        self.assertFalse(any(query.startswith('UPDATE') for query,params in self.connection.queries))
+        self.assertFalse(any(query.startswith('UPDATE') or 'public.videos t WHERE' in query for query,params in self.connection.queries))
     def test_post_lock_refresh_wins(self):
-        self.header();self.queue(Result(rows=(item(),)),one(value={'views':1}),one(expired=True),one(has_token=False,expires_at=None),one(value={'views':2}),one(expired=False))
+        self.header();self.queue(Result(rows=(item(),)),self.proof(1),self.lease(),Result(rows=(dict(id='aaaaaaaaaaa'),)),count(0))
         self.assertEqual(self.run_page()['scrubbed'],0)
-        self.assertFalse(any(query.startswith('UPDATE') for query,params in self.connection.queries))
+        # The scrub itself rechecks the clock of the locked row.
+        self.assertIn('t.checked_at<%(cutoff)s::timestamptz',self.connection.queries[-1][0])
     def test_scrub_payload_only_no_clocks_or_inventory_delete(self):
-        self.header();self.queue(Result(rows=(item(),)),one(value={'views':1}),one(expired=True),one(has_token=False,expires_at=None),one(value={'views':1}),one(expired=True),count(1))
+        self.header();self.queue(Result(rows=(item(),)),self.proof(1),self.lease(),Result(rows=(dict(id='aaaaaaaaaaa'),)),count(1))
         self.assertEqual(self.run_page()['scrubbed'],1)
-        query=self.connection.queries[-1][0]
-        self.assertIn('views=NULL,like_count=NULL,comment_count=NULL',query)
-        for field in ('checked_at','channel_id','published_at','lease_token'):self.assertNotIn(field,query)
-        self.assertEqual(self.connection.commits,1)
+        query,params=self.connection.queries[-1]
+        assignments=query.split(' WHERE ')[0]
+        self.assertIn('views=NULL,like_count=NULL,comment_count=NULL',assignments)
+        for field in ('checked_at','channel_id','published_at','lease_token'):self.assertNotIn(field,assignments)
+        self.assertEqual(params['ids'],['aaaaaaaaaaa']);self.assertEqual(self.connection.commits,1)
+    def test_held_video_row_is_deferred_and_others_scrubbed_in_one_statement(self):
+        rows=(item(),item('bbbbbbbbbbb'),item('ccccccccccc'))
+        self.header();self.queue(Result(rows=rows),self.proof(1,3),
+            Result(rows=(dict(video_id='aaaaaaaaaaa',present=False,has_token=None,expires_at=None),
+                         dict(video_id='ccccccccccc',present=True,has_token=False,expires_at=None))),
+            Result(rows=(dict(id='ccccccccccc'),)),count(1),one(value=OLD))
+        result=self.run_page()
+        self.assertEqual((result['scanned'],result['scrubbed'],result['deferred']),(3,1,1))
+        self.assertEqual(result['priority_references'],[dict(target='video_counters',key=['aaaaaaaaaaa'])])
+        self.assertEqual(sum(query.startswith('UPDATE') for query,params in self.connection.queries),1)
     def test_live_lease_comparison_is_after_skip_locked_fetch(self):
-        self.header();self.queue(Result(rows=(item(invalid_clock=True,source_key='infinity'),)),one(value={'views':1}),one(expired=True),one(has_token=True,expires_at=AT),one(active=True))
+        self.header();self.queue(Result(rows=(item(invalid_clock=True,source_key='infinity'),)),self.proof(1),
+            self.lease(has_token=True,expires_at=AT),Result(rows=(dict(video_id='aaaaaaaaaaa',active=True),)))
         result=self.run_page();self.assertEqual((result['deferred'],result['invalid_clock_remaining']),(1,1))
         locking=[i for i,(query,params) in enumerate(self.connection.queries)
                  if 'AS has_token' in query and 'FOR UPDATE SKIP LOCKED' in query][0]

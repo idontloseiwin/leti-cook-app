@@ -8,7 +8,7 @@ import json
 from types import MappingProxyType
 from psycopg.types.json import Jsonb
 from .channel_estimate_retention import reset_inventory_estimate
-from .queue_retention import QUEUE_LEASE_SQL, QUEUE_EXISTS_SQL
+from .queue_retention import busy_videos
 from ..base.postgres import DatabaseServerError
 
 ERRORS=frozenset({'hot_current_cleanup_invalid_limit','hot_current_cleanup_invalid_target','hot_current_cleanup_invalid_cursor'})
@@ -78,14 +78,18 @@ def _row(tx,spec,identity,locked=False):
     return tx.fetch_one(f'SELECT to_jsonb(t)::text AS value{estimate} FROM public.{spec.table} t WHERE {spec.identity}=%s'+(' FOR UPDATE SKIP LOCKED' if locked else ''),(identity,))
 
 
-def _expired(tx,spec,target,row,cutoff,*,payload):
+def _predicate(spec,target):
     clock=f't.{spec.clock}'
     predicate=f'({clock} IS NULL OR NOT isfinite({clock}) OR {clock}<%(cutoff)s::timestamptz OR {clock}>clock_timestamp()'
     # Marking a refresh as running changes neither the stored profile nor its
     # clock, so the clock alone decides then (as the startup expiry check does);
     # any other status but ok withdraws the profile at once.
     if target=='channel_profile':predicate+=" OR t.channel_metadata_status IS NULL OR t.channel_metadata_status NOT IN ('ok','running')"
-    predicate+=')'
+    return predicate+')'
+
+
+def _expired(tx,spec,target,row,cutoff,*,payload):
+    predicate=_predicate(spec,target)
     if payload:predicate='('+spec.payload+') AND '+predicate
     return tx.fetch_one(f'SELECT {predicate} AS expired FROM jsonb_populate_record(NULL::public.{spec.table},%(row)s::jsonb) t',dict(row=row['value'],cutoff=cutoff))['expired'] is True
 
@@ -139,11 +143,30 @@ def _estimate(tx,original,cutoff):
     return result if keep else None,bool(changed or not keep)
 
 
-def _owner_busy(tx,identity):
-    lease=tx.fetch_one(QUEUE_LEASE_SQL+' FOR UPDATE SKIP LOCKED',dict(video_id=identity))
-    if lease is None:
-        return tx.fetch_one(QUEUE_EXISTS_SQL,dict(video_id=identity))['present']
-    return lease['has_token'] and tx.fetch_one('SELECT %s::timestamptz>clock_timestamp() AS active',(lease['expires_at'],))['active'] is True
+def _video_page(tx,spec,target,rows,cutoff):
+    """Video sources: the row protocol below, one statement per step for the page.
+
+    Expired rows with a payload whose collector does not own the video are
+    locked and scrubbed; the scrub rechecks the locked rows, so a refresh that
+    committed in between wins. Returns (scrubbed, deferred rows in page order).
+    """
+    if not rows:return 0,[]
+    predicate=_predicate(spec,target)
+    proof=tx.fetch_all(f"""SELECT c.ord FROM unnest(%(ids)s::text[]) WITH ORDINALITY c(id,ord)
+        JOIN public.videos t ON t.video_id=c.id WHERE ({spec.payload}) AND {predicate} ORDER BY c.ord""",
+        dict(ids=[row['id'] for row in rows],cutoff=cutoff),max_rows=len(rows))
+    candidates=[rows[check['ord']-1] for check in proof]
+    busy=busy_videos(tx,[row['id'] for row in candidates])
+    free=[row['id'] for row in candidates if row['id'] not in busy]
+    locked=tx.fetch_all("""SELECT c.id FROM unnest(%(ids)s::text[]) c(id)
+        CROSS JOIN LATERAL(SELECT 1 FROM public.videos t WHERE t.video_id=c.id FOR UPDATE SKIP LOCKED) l""",
+        dict(ids=free),max_rows=len(free)) if free else []
+    owned={row['id'] for row in locked}
+    deferred=[row for row in candidates if row['id'] not in owned]
+    if not owned:return 0,deferred
+    fields=','.join(name+'=NULL' for name in spec.fields)
+    return tx.execute(f'UPDATE public.videos t SET {fields} WHERE t.video_id=ANY(%(ids)s::text[]) AND ({spec.payload}) AND {predicate}',
+                      dict(ids=sorted(owned),cutoff=cutoff)),deferred
 
 
 def cleanup_hot_current_source(transaction,*,target,after_id=None,limit=100,references=None):
@@ -173,16 +196,15 @@ def cleanup_hot_current_source(transaction,*,target,after_id=None,limit=100,refe
             complete=True
         scrubbed=0
         deferred=[]
-        for candidate in rows:
+        videos=spec.table=='videos'
+        if videos:scrubbed,deferred=_video_page(tx,spec,target,rows,args['cutoff'])
+        for candidate in () if videos else rows:
             row=_row(tx,spec,candidate['id'])
             if row is None:continue
             if estimate:
                 proposed,changed=_estimate(tx,row['estimate_json'],args['cutoff'])
                 if not changed:continue
             elif not _expired(tx,spec,target,row,args['cutoff'],payload=True):continue
-            if spec.table=='videos' and _owner_busy(tx,candidate['id']):
-                deferred.append(candidate)
-                continue
             row=_row(tx,spec,candidate['id'],locked=True)
             if row is None:deferred.append(candidate);continue
             if estimate:
