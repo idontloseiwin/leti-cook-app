@@ -420,11 +420,17 @@ class FrontendReadTests(unittest.TestCase):
         self.assertEqual(fetched, 2)
         self.assertEqual(db.calls[0][3], ("channel", "long", 1000, 1000))
         self.assertIn("published_at DESC NULLS FIRST, video_id DESC LIMIT %s OFFSET %s", db.calls[0][2])
-        rows, fetched = repository.load_recent_long_inventory_page(
-            published_from=EXPIRED, published_through=CURRENT, offset=2, page_size=2)
+        rows, fetched, last = repository.load_recent_long_inventory_page(
+            published_from=EXPIRED, channel_ids=["UC1", "UC2"], before=(CURRENT, "zz"), page_size=2)
         self.assertEqual(fetched, 2)
         self.assertEqual(len(rows), 1)
-        self.assertEqual(db.calls[1][3], ("long", EXPIRED, CURRENT, 2, 2))
+        # The next page starts after the last row read, current or not.
+        self.assertEqual(last, (raw[-1]["published_at"], "expired"))
+        self.assertEqual(db.calls[1][3], ("long", EXPIRED, ["UC1", "UC2"], CURRENT, "zz", 2))
+        self.assertIn('channel_id = ANY(%s::text[])', db.calls[1][2])
+        self.assertIn('(published_at, video_id COLLATE "C") < (%s::timestamptz, %s COLLATE "C")', db.calls[1][2])
+        self.assertIn('ORDER BY published_at DESC, video_id COLLATE "C" DESC LIMIT %s', db.calls[1][2])
+        self.assertNotIn("OFFSET", db.calls[1][2])
         repository.load_channel_backfill_page("channel", video_type="stream", offset=7, page_size=3)
         self.assertIn("FROM public.video_inventory", db.calls[2][2])
         self.assertEqual(db.calls[2][3], ("channel", "stream", 3, 7))

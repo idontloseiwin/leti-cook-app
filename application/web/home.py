@@ -10,6 +10,7 @@ from source_expiry import captured_source_call, minimum_expiry, source_expiry, s
 from .constants import (
     EXPLORER_RECENT_VIDEO_PAGE_SIZE,
     EXPLORER_RECENT_VIDEO_SCAN_SIZE,
+    EXPLORER_RECENT_VIDEO_MAX_PAGES,
     EXPLORER_RECENT_VIDEO_WINDOWS,
     FRONTEND_VIDEO_COLUMNS,
 )
@@ -143,14 +144,16 @@ def create_home_router(*, cache, library, core, database):
             visible_channel_ids = set(load_visible_channel_ids())
         repository = FrontendRepository(database)
         selected = []
-        offset = 0
+        # Visible channels and the cursor go into SQL; pages continue by key.
+        before = (cursor_key[0].isoformat(), cursor_key[1]) if cursor_key else None
         scanned = pages = candidate_count = 0
+        exhausted = False
 
-        while len(selected) <= EXPLORER_RECENT_VIDEO_PAGE_SIZE:
-            inventory_rows, fetched = repository.load_recent_long_inventory_page(
+        while len(selected) <= EXPLORER_RECENT_VIDEO_PAGE_SIZE and pages < EXPLORER_RECENT_VIDEO_MAX_PAGES:
+            inventory_rows, fetched, last_key = repository.load_recent_long_inventory_page(
                 published_from=published_from.isoformat(),
-                published_through=cursor_key[0].isoformat() if cursor_key else None,
-                offset=offset,
+                channel_ids=sorted(visible_channel_ids),
+                before=before,
                 page_size=EXPLORER_RECENT_VIDEO_SCAN_SIZE,
             )
             pages += 1
@@ -204,11 +207,19 @@ def create_home_router(*, cache, library, core, database):
             if len(selected) > EXPLORER_RECENT_VIDEO_PAGE_SIZE:
                 break
             if fetched < EXPLORER_RECENT_VIDEO_SCAN_SIZE:
+                exhausted = True
                 break
-            offset += EXPLORER_RECENT_VIDEO_SCAN_SIZE
+            before = last_key
 
-        has_more = len(selected) > EXPLORER_RECENT_VIDEO_PAGE_SIZE
         items = selected[:EXPLORER_RECENT_VIDEO_PAGE_SIZE]
+        if len(selected) > EXPLORER_RECENT_VIDEO_PAGE_SIZE:
+            has_more, next_cursor = True, explorer_recent_video_cursor(items[-1])
+        elif not exhausted:
+            # The page budget ran out first: continue after the last row read.
+            has_more = True
+            next_cursor = f"{utc_dt(before[0]).isoformat()}|{before[1]}"
+        else:
+            has_more, next_cursor = False, None
         for operation, count in (
             ("recent_inventory_pages", pages), ("recent_inventory_scan", scanned),
             ("recent_inventory_candidates", candidate_count), ("recent_videos_result", len(items)),
@@ -221,7 +232,7 @@ def create_home_router(*, cache, library, core, database):
             "published_from": published_from.isoformat(),
             "items": items,
             "has_more": has_more,
-            "next_cursor": explorer_recent_video_cursor(items[-1]) if has_more else None,
+            "next_cursor": next_cursor,
             "source": {
                 "kind": "stored_recent_long_form_videos",
                 "format_source": "video_inventory.video_type",

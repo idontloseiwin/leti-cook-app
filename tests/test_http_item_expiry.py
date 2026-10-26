@@ -29,7 +29,7 @@ class PublicItemExpiryTests(unittest.TestCase):
                  source_checked_at=iso_utc(old)),
             dict(video_id='a' * 11, channel_id='channel', published_at=iso_utc(NOW - timedelta(minutes=2)),
                  source_checked_at=iso_utc(fresh)),
-        ], 2)
+        ], 2, None)
         repo.load_videos_by_ids.return_value = [dict(video_id=video_id, title=video_id,
             checked_at=iso_utc(fresh), metadata_checked_at=iso_utc(fresh), availability_checked_at=iso_utc(fresh))
             for video_id in ('b' * 11, 'a' * 11)]

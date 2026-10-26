@@ -215,20 +215,27 @@ class FrontendRepository(DatabaseRepository):
         return self._admitted_inventory(rows), len(rows)
 
     def load_recent_long_inventory_page(
-        self, *, published_from: str, published_through: str | None,
-        offset: int, page_size: int,
-    ) -> tuple[list[dict[str, Any]], int]:
-        """Current rows of one page, and how many rows the page read."""
+        self, *, published_from: str, channel_ids: Sequence[str],
+        before: tuple[str, str] | None, page_size: int,
+    ) -> tuple[list[dict[str, Any]], int, tuple[str, str] | None]:
+        """Current rows of the given channels after `before`, newest first; how
+        many rows the page read, and the key of its last row (the next start).
+
+        Pages follow a key, not an OFFSET: each statement builds the protected
+        view for the whole window, so skipped rows must not be read again.
+        Video IDs compare bytewise, as the caller's Python ordering does.
+        """
         statement = (
             "SELECT video_id,channel_id,video_type,published_at,source_checked_at,source_expires_at "
-            "FROM readable.hot_video_inventory WHERE video_type = %s AND published_at >= %s::timestamptz"
+            "FROM readable.hot_video_inventory WHERE video_type = %s AND published_at >= %s::timestamptz "
+            "AND channel_id = ANY(%s::text[])"
         )
-        params = ["long", published_from]
-        if published_through:
-            statement += " AND published_at <= %s::timestamptz"
-            params.append(published_through)
-        statement += " ORDER BY published_at DESC NULLS FIRST, video_id DESC LIMIT %s OFFSET %s"
-        params.extend((page_size, offset))
+        params = ["long", published_from, list(channel_ids)]
+        if before is not None:
+            statement += ' AND (published_at, video_id COLLATE "C") < (%s::timestamptz, %s COLLATE "C")'
+            params.extend(before)
+        statement += ' ORDER BY published_at DESC, video_id COLLATE "C" DESC LIMIT %s'
+        params.append(page_size)
         rows = execute_recoverable_read(
             self.database,
             lambda database: database.read_rows(
@@ -236,7 +243,8 @@ class FrontendRepository(DatabaseRepository):
             ) or [],
             operation="frontend.load_recent_long_inventory_page",
         )
-        return self._admitted_inventory(rows), len(rows)
+        last = (rows[-1]["published_at"], rows[-1]["video_id"]) if rows else None
+        return self._admitted_inventory(rows), len(rows), last
 
     def load_channel_backfill_page(
         self, channel_id: str, *, video_type: str, offset: int, page_size: int,
