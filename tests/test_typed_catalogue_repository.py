@@ -193,6 +193,9 @@ class TypedGrowthTests(unittest.TestCase):
         self.assertEqual(statement.count("snapshot.recorded_at >= scoped.stream_actual_end_at"), 3)
         self.assertIn("from readable.video_snapshots as snapshot", statement)
         self.assertIn("snapshot.recorded_at = scoped.current_checked_at", statement)
+        # One protected video row per requested ID, not the channel's whole view.
+        self.assertIn("select video.* from readable.videos as video", statement)
+        self.assertNotIn("left join readable.videos as video", statement)
         # The protected inventory view is the proof owner, rather than another
         # raw table join that could admit ambiguous or expired membership.
         schema = (ROOT / "schema/schema.sql").read_text()

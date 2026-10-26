@@ -399,8 +399,12 @@ requested as materialized (
                 and inventory.source_checked_at between (SELECT hot_floor FROM bounds) and (SELECT read_through FROM bounds)
             limit 1
         ) as membership on true
-        left join readable.videos as video
-            on video.video_id = membership.video_id and video.channel_id = %(channel_id)s::text
+        -- One protected video row per requested ID, never the whole channel.
+        left join lateral (
+            select video.* from readable.videos as video
+            where video.video_id = membership.video_id and video.channel_id = %(channel_id)s::text
+            offset 0
+        ) as video on true
     ), observations as materialized (
         select scoped.*, endpoint.recorded_at as endpoint_at, window_start.at as window_start_at,
             coalesce(full_point.recorded_at, first_point.recorded_at) as start_at,
