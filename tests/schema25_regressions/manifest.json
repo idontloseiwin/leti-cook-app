@@ -143,7 +143,7 @@
         "HotRetentionRepository.cleanup_page",
         "current video queue ensure owner"
       ],
-      "assertions": "Fresh review revision4 survives; stale revision5 cleared once; repeat no-op; paused reason availability_unsupported",
+      "assertions": "Fresh review revision4 survives; stale revision5 cleared once; repeat no-op; paused reason availability_unsupported; a running profile refresh keeps the confirmed profile until its clock expires",
       "row_budget": 1000,
       "fixtures": [
         "review_retention_seed.sql"

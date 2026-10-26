@@ -81,7 +81,10 @@ def _row(tx,spec,identity,locked=False):
 def _expired(tx,spec,target,row,cutoff,*,payload):
     clock=f't.{spec.clock}'
     predicate=f'({clock} IS NULL OR NOT isfinite({clock}) OR {clock}<%(cutoff)s::timestamptz OR {clock}>clock_timestamp()'
-    if target=='channel_profile':predicate+=" OR t.channel_metadata_status IS DISTINCT FROM 'ok'"
+    # Marking a refresh as running changes neither the stored profile nor its
+    # clock, so the clock alone decides then (as the startup expiry check does);
+    # any other status but ok withdraws the profile at once.
+    if target=='channel_profile':predicate+=" OR t.channel_metadata_status IS NULL OR t.channel_metadata_status NOT IN ('ok','running')"
     predicate+=')'
     if payload:predicate='('+spec.payload+') AND '+predicate
     return tx.fetch_one(f'SELECT {predicate} AS expired FROM jsonb_populate_record(NULL::public.{spec.table},%(row)s::jsonb) t',dict(row=row['value'],cutoff=cutoff))['expired'] is True

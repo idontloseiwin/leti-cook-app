@@ -55,6 +55,15 @@ def retention_scrub(f):
     f.check(f.cleanup('review_evidence').scrubbed==0,'scrub_idempotent')
     ensure_video_collection_state(f.database,['vid_priv_03'],[{'channel_id':CHANNEL,'control_epoch':f.epoch()}])
     f.check(f.scalar("SELECT paused_reason FROM public.video_collection_state WHERE video_id='vid_priv_03'")=='availability_unsupported','no_status_copy')
+    # A profile refresh marked running keeps the confirmed profile; once its
+    # clock is past the window it is scrubbed like any other.
+    from db.channel.channel_sync import ChannelSyncRepository
+    f.rows("UPDATE public.channels SET title='Confirmed',subscribers=123,channel_metadata_status='ok',channel_metadata_checked_at=now()-interval '1 hour' WHERE channel_id=%s",(CHANNEL,))
+    ChannelSyncRepository(f.database).mark_metadata_running([{'channel_id':CHANNEL,'collection_control_epoch':f.epoch(),'control_epoch':f.epoch()}],f.now.isoformat())
+    f.cleanup('channel_profile')
+    f.check(f.rows('SELECT title,subscribers,channel_metadata_status FROM public.channels WHERE channel_id=%s',(CHANNEL,))==[{'title':'Confirmed','subscribers':123,'channel_metadata_status':'running'}],'running_profile_kept')
+    f.rows("UPDATE public.channels SET channel_metadata_checked_at=now()-interval '700 hours' WHERE channel_id=%s",(CHANNEL,))
+    f.check(f.cleanup('channel_profile').scrubbed==1 and f.scalar('SELECT title FROM public.channels WHERE channel_id=%s',(CHANNEL,)) is None,'old_running_profile_scrubbed')
 
 def detached_reviews(f):
     from db.reviews.video_type_reviews import VideoTypeReviewsRepository
