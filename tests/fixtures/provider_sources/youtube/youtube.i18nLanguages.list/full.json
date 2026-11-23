@@ -1,0 +1,68 @@
+{
+ "case": "every language row with names in the requested hl (German); one request, no pages",
+ "request": {
+  "method": "youtube.i18nLanguages.list",
+  "parameters": {
+   "hl": "de"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-en",
+      "id": "en",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "en",
+       "name": "Englisch"
+      }
+     },
+     {
+      "etag": "etag-de",
+      "id": "de",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "de",
+       "name": "Deutsch"
+      }
+     },
+     {
+      "etag": "etag-zh-Hant",
+      "id": "zh-Hant",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "zh-Hant",
+       "name": "Chinesisch (traditionell)"
+      }
+     },
+     {
+      "etag": "etag-es-419",
+      "id": "es-419",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "es-419",
+       "name": "Spanisch (Lateinamerika)"
+      }
+     }
+    ],
+    "kind": "youtube#i18nLanguageListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/i18nLanguages/list",
+ "synthetic": true
+}

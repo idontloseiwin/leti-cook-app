@@ -1,0 +1,93 @@
+{
+ "case": "an undocumented privacy value and an undescribed snippet field",
+ "request": {
+  "method": "youtube.channels.list",
+  "parameters": {
+   "id": [
+    "UCAAAAAAAAAAAAAAAAAAAAA1"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "status",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "brandingSettings": {
+       "channel": {
+        "country": "NZ",
+        "keywords": "synthetic words",
+        "title": "MARKER-CHANNEL Title 1"
+       }
+      },
+      "contentDetails": {
+       "relatedPlaylists": {
+        "likes": "",
+        "uploads": "UUAAAAAAAAAAAAAAAAAAAAA1"
+       }
+      },
+      "etag": "c1",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1",
+      "kind": "youtube#channel",
+      "snippet": {
+       "brandNewField": "MARKER-UNKNOWN",
+       "country": "NZ",
+       "customUrl": "@synthetic1",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION channel 1",
+       "localized": {
+        "description": "x",
+        "title": "MARKER-CHANNEL Title 1"
+       },
+       "publishedAt": "2016-05-01T12:00:00.123456Z",
+       "thumbnails": {
+        "default": {
+         "height": 88,
+         "url": "https://yt3.ggpht.com/synthetic1=s88",
+         "width": 88
+        }
+       },
+       "title": "MARKER-CHANNEL Title 1"
+      },
+      "statistics": {
+       "hiddenSubscriberCount": false,
+       "subscriberCount": "1230",
+       "videoCount": "17",
+       "viewCount": "1234567"
+      },
+      "status": {
+       "isLinked": true,
+       "madeForKids": false,
+       "privacyStatus": "membersOnly"
+      },
+      "topicDetails": {
+       "topicCategories": [
+        "https://en.wikipedia.org/wiki/Lifestyle_(sociology)"
+       ]
+      }
+     }
+    ],
+    "kind": "youtube#channelListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/channels#resource",
+ "synthetic": true
+}

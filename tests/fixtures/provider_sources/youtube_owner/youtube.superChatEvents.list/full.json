@@ -1,0 +1,67 @@
+{
+ "case": "one event of the last 30 days; money and personal fields named",
+ "request": {
+  "context": "owner",
+  "method": "youtube.superChatEvents.list",
+  "parameters": {
+   "hl": "de",
+   "maxResults": 5
+  },
+  "selection": {
+   "fields": [
+    "snippet.amountMicros",
+    "snippet.currency",
+    "snippet.displayString",
+    "snippet.createdAt",
+    "snippet.messageType",
+    "snippet.isSuperStickerEvent",
+    "snippet.supporterDetails.channelId"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e1",
+      "id": "MARKER-EVENT-ID-1",
+      "kind": "youtube#superChatEvent",
+      "snippet": {
+       "amountMicros": "5000000",
+       "channelId": "UCoooooooooooooooooooooo",
+       "commentText": "MARKER-COMMENT thanks",
+       "createdAt": "2026-10-20T19:00:00.000Z",
+       "currency": "EUR",
+       "displayString": "€5.00",
+       "isSuperStickerEvent": false,
+       "messageType": 2,
+       "supporterDetails": {
+        "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+        "channelUrl": "http://www.youtube.com/channel/UCAAAAAAAAAAAAAAAAAAAAA1",
+        "displayName": "MARKER-PERSON supporter",
+        "profileImageUrl": "https://yt3.ggpht.com/x"
+       }
+      }
+     }
+    ],
+    "kind": "youtube#superChatEventListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/superChatEvents",
+ "synthetic": true
+}

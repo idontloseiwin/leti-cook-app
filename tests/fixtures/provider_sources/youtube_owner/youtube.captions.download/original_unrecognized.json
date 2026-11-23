@@ -1,0 +1,26 @@
+{
+ "case": "no tfmt and a body without a known signature",
+ "request": {
+  "context": "owner",
+  "method": "youtube.captions.download",
+  "parameters": {
+   "id": "AUieDaSyntheticTrack1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body_text": "MARKER-CAPTION plain words\n",
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/captions/download",
+ "synthetic": true
+}

@@ -1,0 +1,43 @@
+{
+ "case": "400: the provider does not support the query (combination_unsupported)",
+ "request": {
+  "context": "owner",
+  "method": "youtubeAnalytics.reports.query",
+  "parameters": {
+   "dimensions": "day",
+   "endDate": "2026-09-03",
+   "ids": "channel==MINE",
+   "maxResults": 2,
+   "metrics": "views,estimatedMinutesWatched,averageViewPercentage",
+   "startDate": "2026-09-01"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 400,
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "badRequest"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 400
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/analytics/reference/reports/query",
+ "synthetic": true
+}

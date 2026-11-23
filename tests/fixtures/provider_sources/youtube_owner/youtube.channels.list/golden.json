@@ -1,0 +1,69 @@
+{
+ "mine_owner_status": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.channels.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "b2b9f1d629067a8fb804ba9b814a52d394b38e706ed5cac0feafd231f5ed732c",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCoooooooooooooooooooooo"
+     },
+     "status.longUploadsStatus": {
+      "state": "known",
+      "value": "allowed"
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     },
+     "status.selfDeclaredMadeForKids": {
+      "state": "known",
+      "value": false
+     }
+    },
+    "identity": {
+     "id": "UCoooooooooooooooooooooo",
+     "kind": "channel"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel",
+  "version": 1
+ }
+}

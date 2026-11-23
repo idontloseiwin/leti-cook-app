@@ -1,0 +1,78 @@
+{
+ "case": "a legacy username lookup: one request; localizations, status (public fields) and topicDetails",
+ "request": {
+  "method": "youtube.channels.list",
+  "parameters": {
+   "forUsername": "SyntheticLegacyName",
+   "hl": "de"
+  },
+  "selection": {
+   "fields": [
+    "id",
+    "localizations.{key}.title",
+    "snippet.localized.title",
+    "snippet.title",
+    "status.isLinked",
+    "status.madeForKids",
+    "status.privacyStatus",
+    "topicDetails.topicCategories[]"
+   ],
+   "parts": [
+    "localizations",
+    "snippet",
+    "status",
+    "topicDetails"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1",
+      "kind": "youtube#channel",
+      "localizations": {
+       "de": {
+        "title": "Synthetisch"
+       },
+       "fr": {
+        "title": "Synthétique"
+       }
+      },
+      "snippet": {
+       "localized": {
+        "title": "MARKER-TITLE Synthetisch"
+       },
+       "title": "MARKER-TITLE Synthetic"
+      },
+      "status": {
+       "isLinked": true,
+       "madeForKids": false,
+       "privacyStatus": "public"
+      },
+      "topicDetails": {
+       "topicCategories": [
+        "https://en.wikipedia.org/wiki/Music"
+       ]
+      }
+     }
+    ],
+    "kind": "youtube#channelListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/channels/list",
+ "synthetic": true
+}

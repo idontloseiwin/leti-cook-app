@@ -1,0 +1,43 @@
+{
+ "case": "every requested ID failed",
+ "request": {
+  "method": "youtube.videos.batchGetStats",
+  "parameters": {
+   "id": [
+    "vidxxxxxxx1",
+    "vidxxxxxxx2"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "statistics"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic",
+    "items": [],
+    "kind": "youtube#batchGetStatsResponse",
+    "summary": {
+     "failedVideoCount": 2,
+     "failedVideoIds": [
+      "vidxxxxxxx1",
+      "vidxxxxxxx2"
+     ],
+     "requestedVideoCount": 2,
+     "succeededVideoCount": 0
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos/batchGetStats",
+ "synthetic": true
+}

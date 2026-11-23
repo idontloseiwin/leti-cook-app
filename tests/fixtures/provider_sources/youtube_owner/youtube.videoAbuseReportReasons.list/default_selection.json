@@ -1,0 +1,58 @@
+{
+ "case": "no fields named: the default selection includes the documented array of objects",
+ "request": {
+  "context": "owner",
+  "method": "youtube.videoAbuseReportReasons.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "id",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e1",
+      "id": "S",
+      "kind": "youtube#videoAbuseReportReason",
+      "snippet": {
+       "label": "Sex or nudity",
+       "secondaryReasons": [
+        {
+         "id": "32",
+         "label": "Graphic sexual activity"
+        },
+        {
+         "id": "33",
+         "label": "Nudity"
+        }
+       ]
+      }
+     },
+     {
+      "etag": "e2",
+      "id": "V",
+      "kind": "youtube#videoAbuseReportReason",
+      "snippet": {
+       "label": "Violent or repulsive content"
+      }
+     }
+    ],
+    "kind": "youtube#videoAbuseReportReasonListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videoAbuseReportReasons/list",
+ "synthetic": true
+}

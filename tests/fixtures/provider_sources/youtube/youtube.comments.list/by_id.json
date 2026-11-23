@@ -1,0 +1,85 @@
+{
+ "case": "an id batch where one comment does not come back: omitted; a top-level comment has no parentId (not applicable)",
+ "request": {
+  "method": "youtube.comments.list",
+  "parameters": {
+   "id": [
+    "UgxSyntheticThread000001",
+    "UgxSyntheticThread000001.ReplySynthetic01",
+    "UgxSyntheticMissing0099"
+   ]
+  },
+  "selection": {
+   "fields": [
+    "snippet.parentId"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-0001",
+      "id": "UgxSyntheticThread000001",
+      "kind": "youtube#comment",
+      "snippet": {
+       "authorChannelId": {
+        "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+       },
+       "authorChannelUrl": "http://www.youtube.com/channel/UCBBBBBBBBBBBBBBBBBBBBB2",
+       "authorDisplayName": "MARKER-AUTHOR",
+       "authorProfileImageUrl": "https://yt3.ggpht.com/synthetic",
+       "canRate": true,
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "likeCount": 0,
+       "publishedAt": "2026-10-20T10:00:00Z",
+       "textDisplay": "<b>MARKER-TEXT</b> top",
+       "updatedAt": "2026-10-20T10:05:00Z",
+       "videoId": "vidxxxxxxx1",
+       "viewerRating": "none"
+      }
+     },
+     {
+      "etag": "etag-ic01",
+      "id": "UgxSyntheticThread000001.ReplySynthetic01",
+      "kind": "youtube#comment",
+      "snippet": {
+       "authorChannelId": {
+        "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+       },
+       "authorChannelUrl": "http://www.youtube.com/channel/UCBBBBBBBBBBBBBBBBBBBBB2",
+       "authorDisplayName": "MARKER-AUTHOR",
+       "authorProfileImageUrl": "https://yt3.ggpht.com/synthetic",
+       "canRate": true,
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "likeCount": 0,
+       "parentId": "UgxSyntheticThread000001",
+       "publishedAt": "2026-10-20T10:00:00Z",
+       "textDisplay": "<b>MARKER-TEXT</b> one",
+       "updatedAt": "2026-10-20T10:05:00Z",
+       "videoId": "vidxxxxxxx1",
+       "viewerRating": "none"
+      }
+     }
+    ],
+    "kind": "youtube#commentListResponse",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 2
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/comments/list",
+ "synthetic": true
+}

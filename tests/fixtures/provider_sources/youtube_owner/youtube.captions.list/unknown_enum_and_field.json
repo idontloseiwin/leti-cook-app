@@ -1,0 +1,53 @@
+{
+ "case": "a new trackKind value and an undocumented snippet key",
+ "request": {
+  "context": "owner",
+  "method": "youtube.captions.list",
+  "parameters": {
+   "videoId": "vidxxxxxxx1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-1",
+      "id": "AUieDaSyntheticTrack1",
+      "kind": "youtube#caption",
+      "snippet": {
+       "audioTrackType": "primary",
+       "isAutoSynced": false,
+       "isCC": false,
+       "isDraft": false,
+       "isEasyReader": false,
+       "isLarge": false,
+       "language": "en",
+       "lastUpdated": "2026-10-01T10:00:00.000Z",
+       "name": "MARKER-TRACK-NAME 1",
+       "newField": "MARKER-UNKNOWN",
+       "status": "serving",
+       "trackKind": "liveSubtitles",
+       "videoId": "vidxxxxxxx1"
+      }
+     }
+    ],
+    "kind": "youtube#captionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/captions",
+ "synthetic": true
+}

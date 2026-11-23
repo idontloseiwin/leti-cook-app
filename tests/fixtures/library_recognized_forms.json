@@ -1,0 +1,124 @@
+{
+ "version": 1,
+ "about": "Exceptions to the Library filter round trip in library_translation_cases.json. The recognized filters must produce the same query. A null result opens the saved view in the workshop.",
+ "cases": [
+  {
+   "name": "search double space inside",
+   "why": "the query literal is collapsed; a search for it is the same search",
+   "recognized": {
+    "version": 1,
+    "filters": {
+     "q": "Straße Guide",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "search ideographic space run",
+   "why": "the query literal is collapsed",
+   "recognized": {
+    "version": 1,
+    "filters": {
+     "q": "Hello World",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "search U+001C inside collapses",
+   "why": "the query literal is collapsed",
+   "recognized": {
+    "version": 1,
+    "filters": {
+     "q": "a b",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "search U+001C then U+FEFF at start",
+   "why": "the literal starts with U+FEFF, which the browser search box trims; no Library search gives it",
+   "recognized": null
+  },
+  {
+   "name": "computed bound min_tag_count",
+   "why": "a lower bound equal to a preset's start opens as the presets from there up; the translator merges them into this bound",
+   "recognized": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "tag_count_buckets": [
+      "1_5",
+      "6_15",
+      "16_plus"
+     ]
+    }
+   }
+  }
+ ]
+}

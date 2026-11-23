@@ -1,0 +1,562 @@
+{
+ "by_id": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UgxSyntheticMissing0099": "omitted",
+   "UgxSyntheticThread000001": "present",
+   "UgxSyntheticThread000001.ReplySynthetic01": "present"
+  },
+  "method": "youtube.comments.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "fc8b0cfadaadc0c7596eddea994f42adb4f42fcc2bfac6ec1afbf45778c8fde9",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.parentId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001",
+     "kind": "comment"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001.ReplySynthetic01"
+     },
+     "snippet.parentId": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001.ReplySynthetic01",
+     "kind": "comment"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment",
+  "version": 1
+ },
+ "comment_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UgxSyntheticMissing0099": "not_found"
+  },
+  "method": "youtube.comments.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "comment",
+  "version": 1
+ },
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.comments.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "comment",
+  "version": 1
+ },
+ "forbidden": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UgxSyntheticThread000003": "access_denied"
+  },
+  "method": "youtube.comments.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 403,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "comment",
+  "version": 1
+ },
+ "google_plus_only": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.comments.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 400,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "operation_not_supported",
+  "unit": "comment",
+  "version": 1
+ },
+ "minimal": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.comments.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001.ReplySynthetic01"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001.ReplySynthetic01",
+     "kind": "comment"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment",
+  "version": 1
+ },
+ "replies_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.comments.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "24f2f50121fbae78ea5d789d9e323d9563ba17a92e20ea6ef2a756c61c37ebab",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "24f2f50121fbae78ea5d789d9e323d9563ba17a92e20ea6ef2a756c61c37ebab",
+    "http_status": 200,
+    "page": 1,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "33eeecc210abb3e52d3bfc577128e75bbe6357739718273d518558af1e99d05c",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001.ReplySynthetic01"
+     },
+     "snippet.authorChannelId.value": {
+      "state": "known",
+      "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+     },
+     "snippet.likeCount": {
+      "state": "known",
+      "value": 1
+     },
+     "snippet.parentId": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-20T10:00:00Z"
+     },
+     "snippet.textDisplay": {
+      "state": "known",
+      "value": "<b>MARKER-TEXT</b> one"
+     },
+     "snippet.updatedAt": {
+      "state": "known",
+      "value": "2026-10-20T10:05:00Z"
+     },
+     "snippet.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "snippet.viewerRating": {
+      "state": "known",
+      "value": "none"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001.ReplySynthetic01",
+     "kind": "comment"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001.ReplySynthetic02"
+     },
+     "snippet.authorChannelId.value": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.likeCount": {
+      "state": "known",
+      "value": 0
+     },
+     "snippet.parentId": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-20T10:00:00Z"
+     },
+     "snippet.textDisplay": {
+      "state": "known",
+      "value": "<b>MARKER-TEXT</b> two"
+     },
+     "snippet.updatedAt": {
+      "state": "known",
+      "value": "2026-10-20T10:05:00Z"
+     },
+     "snippet.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "snippet.viewerRating": {
+      "state": "known",
+      "value": "none"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001.ReplySynthetic02",
+     "kind": "comment"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001.ReplySynthetic03"
+     },
+     "snippet.authorChannelId.value": {
+      "state": "known",
+      "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+     },
+     "snippet.likeCount": {
+      "state": "known",
+      "value": 0
+     },
+     "snippet.parentId": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-20T10:00:00Z"
+     },
+     "snippet.textDisplay": {
+      "state": "known",
+      "value": "<b>MARKER-TEXT</b> three"
+     },
+     "snippet.updatedAt": {
+      "state": "known",
+      "value": "2026-10-20T10:05:00Z"
+     },
+     "snippet.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "snippet.viewerRating": {
+      "state": "known",
+      "value": "none"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001.ReplySynthetic03",
+     "kind": "comment"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment",
+  "version": 1
+ },
+ "unknown_enum_and_field": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.comments.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "d44b413e258d23540b501ddae1e5dc25a736b189130df446f6f41420ca96362d",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "snippet.heart"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001.ReplySynthetic01"
+     },
+     "snippet.viewerRating": {
+      "state": "unknown_enum",
+      "value": "love"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001.ReplySynthetic01",
+     "kind": "comment"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment",
+  "version": 1
+ }
+}

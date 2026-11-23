@@ -1,0 +1,38 @@
+{
+ "case": "400 channelMembershipsNotEnabled: a different state than no levels",
+ "request": {
+  "context": "owner",
+  "method": "youtube.membershipsLevels.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 400,
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "channelMembershipsNotEnabled"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 400
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/membershipsLevels/list#errors",
+ "synthetic": true
+}

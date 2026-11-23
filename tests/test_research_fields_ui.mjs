@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import ts from '../application/frontend/node_modules/typescript/lib/typescript.js';
+const source=readFileSync(new URL('../application/frontend/src/explorer/researchFieldPreferences.ts',import.meta.url),'utf8');
+const {outputText}=ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}});
+const exports={};new Function('exports',outputText)(exports);
+const doc={version:1,defaults_profile:'public-current-v1',lifecycle_profile:'public-696h-v1',workspace:{},sources:{},description_setup:'pending'};
+assert.deepEqual(exports.parseFieldPreferences(doc),doc);
+assert.equal(exports.fieldMode(doc,'short','video.description'),'off');
+const choice=structuredClone(doc);choice.workspace['video.description']='current';choice.sources['public.videos.current.v1']={fields:{},types:{short:{'video.description':'off'}}};
+assert.equal(exports.fieldMode(exports.parseFieldPreferences(choice),'long','video.description'),'current');
+assert.equal(exports.fieldMode(choice,'short','video.description'),'off');
+for(const bad of [{...doc,version:true},{...doc,lifecycle_profile:'unlimited'},{...doc,workspace:{'video.id':'off'}},{...doc,rows:[]},{...doc,sources:{'private':{}}}]) assert.throws(()=>exports.parseFieldPreferences(bad));
+console.log('Field policy hierarchy, defaults and unsupported choices rejected.');

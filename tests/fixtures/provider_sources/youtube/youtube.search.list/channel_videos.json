@@ -1,0 +1,106 @@
+{
+ "case": "videos of one channel by date (channel-scoped video search stops at 500 hits)",
+ "request": {
+  "budget": {
+   "max_requests": 1,
+   "max_units": {
+    "search_queries": 1
+   }
+  },
+  "method": "youtube.search.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+   "eventType": "completed",
+   "order": "date",
+   "publishedAfter": "2026-01-01T00:00:00Z",
+   "type": "video"
+  },
+  "selection": {
+   "fields": [
+    "snippet.publishedAt",
+    "snippet.title"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-h1",
+      "id": {
+       "kind": "youtube#video",
+       "videoId": "vidxxxxxxx1"
+      },
+      "kind": "youtube#searchResult",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "MARKER-DESCRIPTION",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-11T12:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/h1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/h1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE hit 1"
+      }
+     },
+     {
+      "etag": "etag-h2",
+      "id": {
+       "kind": "youtube#video",
+       "videoId": "vidxxxxxxx2"
+      },
+      "kind": "youtube#searchResult",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "MARKER-DESCRIPTION",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-12T12:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/h2/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/h2/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE hit 2"
+      }
+     }
+    ],
+    "kind": "youtube#searchListResponse",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 2
+    },
+    "regionCode": "US"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/search/list",
+ "synthetic": true
+}

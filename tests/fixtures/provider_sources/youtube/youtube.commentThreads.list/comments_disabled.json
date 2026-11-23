@@ -1,0 +1,39 @@
+{
+ "case": "403 commentsDisabled: the video's comments are off (its state, not an access error)",
+ "request": {
+  "method": "youtube.commentThreads.list",
+  "parameters": {
+   "videoId": "vidxxxxxxx2"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "commentsDisabled"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/commentThreads/list#errors",
+ "synthetic": true
+}

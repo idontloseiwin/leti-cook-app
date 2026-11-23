@@ -1,0 +1,317 @@
+{
+  "complete": {
+    "channel_id": "c",
+    "contract_version": 1,
+    "coverage": {
+      "availability_withheld_count": 0,
+      "inventory_complete": true,
+      "missing_video_row_count": 0,
+      "scan_limit": 100,
+      "stale_counter_count": 0,
+      "stale_inventory_count": 0,
+      "transactional_snapshot": false,
+      "unavailable_excluded_count": 0,
+      "unknown_view_count": 0
+    },
+    "formats": {
+      "long": {
+        "known_view_count": 4,
+        "missing_view_count": 0,
+        "scanned_inventory_count": 4,
+        "source_expires_at": "2026-10-09T13:00:00Z",
+        "status": "ready",
+        "views": "9007199254741004"
+      },
+      "short": {
+        "coverage": {
+          "availability_withheld_count": 0,
+          "inventory_complete": true,
+          "inventory_ready": true,
+          "missing_video_row_count": 0,
+          "product_exposure_ready": true,
+          "scan_limit": 100,
+          "stale_counter_count": 0,
+          "stale_inventory_count": 0,
+          "stale_metadata_count": 0,
+          "stream_completion_withheld": 0,
+          "transactional_snapshot": false,
+          "type_resolution_withheld": 0,
+          "unavailable_excluded_count": 0,
+          "unknown_view_count": 0
+        },
+        "known_view_count": 4,
+        "missing_view_count": 0,
+        "scanned_inventory_count": 4,
+        "source_expires_at": "2026-10-09T13:00:00Z",
+        "status": "ready",
+        "views": 30
+      },
+      "stream": {
+        "coverage": {
+          "availability_withheld_count": 0,
+          "inventory_complete": true,
+          "inventory_ready": true,
+          "missing_video_row_count": 0,
+          "product_exposure_ready": true,
+          "scan_limit": 100,
+          "stale_counter_count": 0,
+          "stale_inventory_count": 0,
+          "stale_metadata_count": 0,
+          "stream_completion_withheld": 0,
+          "transactional_snapshot": false,
+          "type_resolution_withheld": 0,
+          "unavailable_excluded_count": 0,
+          "unknown_view_count": 0
+        },
+        "known_view_count": 4,
+        "missing_view_count": 0,
+        "scanned_inventory_count": 4,
+        "source_expires_at": "2026-10-09T13:00:00Z",
+        "status": "ready",
+        "views": 46
+      }
+    },
+    "generated_at": "2026-10-09T12:00:00Z",
+    "inventory": {
+      "complete": false,
+      "formats": {
+        "long": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        },
+        "short": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        },
+        "stream": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        }
+      },
+      "source_expires_at": "2026-11-07T12:00:00Z",
+      "unique_video_count": null,
+      "youtube_video_count": null
+    },
+    "source": {
+      "database_writes": false,
+      "freshness_enforced": true,
+      "kind": "derived_from_stored_typed_video_inventory",
+      "snapshots_used": false,
+      "youtube_requests": false
+    }
+  },
+  "overflow": {
+    "channel_id": "c",
+    "contract_version": 1,
+    "coverage": {
+      "availability_withheld_count": 0,
+      "inventory_complete": false,
+      "missing_video_row_count": 0,
+      "scan_limit": 2,
+      "stale_counter_count": 0,
+      "stale_inventory_count": 0,
+      "transactional_snapshot": false,
+      "unavailable_excluded_count": 0,
+      "unknown_view_count": 0
+    },
+    "formats": {
+      "long": {
+        "known_view_count": 2,
+        "missing_view_count": 0,
+        "reason": "inventory_sources_incomplete",
+        "scanned_inventory_count": 2,
+        "source_expires_at": "2026-10-09T14:00:00Z",
+        "status": "incomplete",
+        "views": null
+      },
+      "short": {
+        "coverage": {
+          "availability_withheld_count": 0,
+          "inventory_complete": false,
+          "inventory_ready": true,
+          "missing_video_row_count": 0,
+          "product_exposure_ready": true,
+          "scan_limit": 2,
+          "stale_counter_count": 0,
+          "stale_inventory_count": 0,
+          "stale_metadata_count": 0,
+          "stream_completion_withheld": 0,
+          "transactional_snapshot": false,
+          "type_resolution_withheld": 0,
+          "unavailable_excluded_count": 0,
+          "unknown_view_count": 0
+        },
+        "known_view_count": 2,
+        "missing_view_count": 0,
+        "reason": "inventory_sources_incomplete",
+        "scanned_inventory_count": 2,
+        "source_expires_at": "2026-10-09T14:00:00Z",
+        "status": "incomplete",
+        "views": null
+      },
+      "stream": {
+        "coverage": {
+          "availability_withheld_count": 0,
+          "inventory_complete": false,
+          "inventory_ready": true,
+          "missing_video_row_count": 0,
+          "product_exposure_ready": true,
+          "scan_limit": 2,
+          "stale_counter_count": 0,
+          "stale_inventory_count": 0,
+          "stale_metadata_count": 0,
+          "stream_completion_withheld": 0,
+          "transactional_snapshot": false,
+          "type_resolution_withheld": 0,
+          "unavailable_excluded_count": 0,
+          "unknown_view_count": 0
+        },
+        "known_view_count": 2,
+        "missing_view_count": 0,
+        "reason": "inventory_sources_incomplete",
+        "scanned_inventory_count": 2,
+        "source_expires_at": "2026-10-09T15:00:00Z",
+        "status": "incomplete",
+        "views": null
+      }
+    },
+    "generated_at": "2026-10-09T12:00:00Z",
+    "inventory": {
+      "complete": false,
+      "formats": {
+        "long": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        },
+        "short": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        },
+        "stream": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        }
+      },
+      "source_expires_at": "2026-11-07T12:00:00Z",
+      "unique_video_count": null,
+      "youtube_video_count": null
+    },
+    "source": {
+      "database_writes": false,
+      "freshness_enforced": true,
+      "kind": "derived_from_stored_typed_video_inventory",
+      "snapshots_used": false,
+      "youtube_requests": false
+    }
+  },
+  "withheld": {
+    "channel_id": "c",
+    "contract_version": 1,
+    "coverage": {
+      "availability_withheld_count": 0,
+      "inventory_complete": true,
+      "missing_video_row_count": 1,
+      "scan_limit": 100,
+      "stale_counter_count": 0,
+      "stale_inventory_count": 0,
+      "transactional_snapshot": false,
+      "unavailable_excluded_count": 1,
+      "unknown_view_count": 0
+    },
+    "formats": {
+      "long": {
+        "known_view_count": 2,
+        "missing_view_count": 1,
+        "scanned_inventory_count": 4,
+        "source_expires_at": "2026-10-09T13:00:00Z",
+        "status": "incomplete",
+        "views": null
+      },
+      "short": {
+        "coverage": {
+          "availability_withheld_count": 1,
+          "inventory_complete": true,
+          "inventory_ready": true,
+          "missing_video_row_count": 0,
+          "product_exposure_ready": true,
+          "scan_limit": 100,
+          "stale_counter_count": 1,
+          "stale_inventory_count": 0,
+          "stale_metadata_count": 0,
+          "stream_completion_withheld": 0,
+          "transactional_snapshot": false,
+          "type_resolution_withheld": 1,
+          "unavailable_excluded_count": 0,
+          "unknown_view_count": 0
+        },
+        "known_view_count": 1,
+        "missing_view_count": 3,
+        "scanned_inventory_count": 4,
+        "source_expires_at": "2026-10-09T13:00:00Z",
+        "status": "incomplete",
+        "views": null
+      },
+      "stream": {
+        "coverage": {
+          "availability_withheld_count": 0,
+          "inventory_complete": true,
+          "inventory_ready": true,
+          "missing_video_row_count": 0,
+          "product_exposure_ready": true,
+          "scan_limit": 100,
+          "stale_counter_count": 0,
+          "stale_inventory_count": 0,
+          "stale_metadata_count": 1,
+          "stream_completion_withheld": 1,
+          "transactional_snapshot": false,
+          "type_resolution_withheld": 0,
+          "unavailable_excluded_count": 0,
+          "unknown_view_count": 1
+        },
+        "known_view_count": 1,
+        "missing_view_count": 3,
+        "scanned_inventory_count": 4,
+        "source_expires_at": "2026-10-09T13:00:00Z",
+        "status": "incomplete",
+        "views": null
+      }
+    },
+    "generated_at": "2026-10-09T12:00:00Z",
+    "inventory": {
+      "complete": false,
+      "formats": {
+        "long": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        },
+        "short": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        },
+        "stream": {
+          "listed_video_count": null,
+          "source_expires_at": null,
+          "status": "not_collected"
+        }
+      },
+      "source_expires_at": "2026-11-07T12:00:00Z",
+      "unique_video_count": null,
+      "youtube_video_count": null
+    },
+    "source": {
+      "database_writes": false,
+      "freshness_enforced": true,
+      "kind": "derived_from_stored_typed_video_inventory",
+      "snapshots_used": false,
+      "youtube_requests": false
+    }
+  }
+}

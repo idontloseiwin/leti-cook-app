@@ -1,0 +1,1824 @@
+{
+ "operations": {
+  "fingerprint": {
+   "request": {
+    "version": 1,
+    "operation": "video.fingerprint.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCMainOverviewChannel000"
+     },
+     "video_types": [
+      "long"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ],
+     "page": {
+      "size": 1
+     }
+    },
+    "parameters": {
+     "period": "28d"
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.fingerprint.v1",
+    "operation_fingerprint": "9f6982a18278316402c23c9396c86ffd88eac704563ed69be4d9a387ff424a75",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:14.276404Z",
+     "valid_before": "2026-10-30T17:44:08.715832Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 21
+     },
+     "status": "partial"
+    },
+    "result": {
+     "period": {
+      "key": "28d",
+      "days": 28,
+      "kind": "rolling",
+      "label": "28D",
+      "end_at": "2026-10-30T11:44:14.276404Z",
+      "start_at": "2026-10-02T11:44:14.276404Z"
+     },
+     "metrics": {
+      "likes": {
+       "q1": "22.75",
+       "q3": "7496",
+       "max": "124772",
+       "min": "0",
+       "mean": "12151.42",
+       "state": "known",
+       "total": "631874",
+       "median": "766.5",
+       "buckets": [
+        {
+         "key": "under_100",
+         "count": 20,
+         "label": "Under 100"
+        },
+        {
+         "key": "100_1k",
+         "count": 6,
+         "label": "100-1K"
+        },
+        {
+         "key": "1k_10k",
+         "count": 15,
+         "label": "1K-10K"
+        },
+        {
+         "key": "10k_100k",
+         "count": 10,
+         "label": "10K-100K"
+        },
+        {
+         "key": "100k_plus",
+         "count": 1,
+         "label": "100K+"
+        }
+       ],
+       "known_count": 52,
+       "missing_count": 4,
+       "excluded_count": 0,
+       "definition_epoch": null
+      },
+      "views": {
+       "q1": "771",
+       "q3": "229368",
+       "max": "3103852",
+       "min": "12",
+       "mean": "393366.04",
+       "state": "known",
+       "total": "21635132",
+       "median": "42198",
+       "buckets": [
+        {
+         "key": "under_1k",
+         "count": 15,
+         "label": "Under 1K"
+        },
+        {
+         "key": "1k_10k",
+         "count": 10,
+         "label": "1K\u201310K"
+        },
+        {
+         "key": "10k_100k",
+         "count": 10,
+         "label": "10K\u2013100K"
+        },
+        {
+         "key": "100k_1m",
+         "count": 12,
+         "label": "100K\u20131M"
+        },
+        {
+         "key": "1m_10m",
+         "count": 8,
+         "label": "1M\u201310M"
+        },
+        {
+         "key": "10m_plus",
+         "count": 0,
+         "label": "10M+"
+        }
+       ],
+       "known_count": 55,
+       "missing_count": 1,
+       "excluded_count": 0,
+       "definition_epoch": "youtube.views.play_start.20260824",
+       "unknown_definition_epoch_count": 0
+      },
+      "comments": {
+       "q1": "4",
+       "q3": "1550",
+       "max": "30385",
+       "min": "0",
+       "mean": "2783.09",
+       "state": "known",
+       "total": "147504",
+       "median": "159",
+       "buckets": [
+        {
+         "key": "under_10",
+         "count": 19,
+         "label": "Under 10"
+        },
+        {
+         "key": "10_100",
+         "count": 6,
+         "label": "10-100"
+        },
+        {
+         "key": "100_1k",
+         "count": 12,
+         "label": "100-1K"
+        },
+        {
+         "key": "1k_10k",
+         "count": 11,
+         "label": "1K-10K"
+        },
+        {
+         "key": "10k_plus",
+         "count": 5,
+         "label": "10K+"
+        }
+       ],
+       "known_count": 53,
+       "missing_count": 3,
+       "excluded_count": 0,
+       "definition_epoch": null
+      },
+      "tag_count": {
+       "q1": "4",
+       "q3": "17.5",
+       "max": "25",
+       "min": "0",
+       "mean": "11.49",
+       "state": "known",
+       "total": "632",
+       "median": "11",
+       "buckets": [
+        {
+         "key": "zero",
+         "count": 7,
+         "label": "0 tags"
+        },
+        {
+         "key": "1_5",
+         "count": 10,
+         "label": "1\u20135 tags"
+        },
+        {
+         "key": "6_15",
+         "count": 18,
+         "label": "6\u201315 tags"
+        },
+        {
+         "key": "16_plus",
+         "count": 20,
+         "label": "16+ tags"
+        }
+       ],
+       "known_count": 55,
+       "missing_count": 1,
+       "excluded_count": 0,
+       "definition_epoch": null
+      },
+      "title_length": {
+       "q1": "8.5",
+       "q3": "18",
+       "max": "76",
+       "min": "4",
+       "mean": "25.67",
+       "state": "known",
+       "total": "1412",
+       "median": "17",
+       "buckets": [
+        {
+         "key": "under_40",
+         "count": 43,
+         "label": "Under 40 characters"
+        },
+        {
+         "key": "40_60",
+         "count": 0,
+         "label": "40\u201360 characters"
+        },
+        {
+         "key": "60_80",
+         "count": 12,
+         "label": "60\u201380 characters"
+        },
+        {
+         "key": "80_plus",
+         "count": 0,
+         "label": "80+ characters"
+        }
+       ],
+       "known_count": 55,
+       "missing_count": 1,
+       "excluded_count": 0,
+       "definition_epoch": null
+      },
+      "duration_seconds": {
+       "q1": "1082.5",
+       "q3": "4058",
+       "max": "5145",
+       "min": "356",
+       "mean": "2569.16",
+       "state": "known",
+       "total": "143873",
+       "median": "2469",
+       "buckets": [
+        {
+         "key": "under_5m",
+         "count": 0,
+         "label": "Under 5 min"
+        },
+        {
+         "key": "5m_10m",
+         "count": 5,
+         "label": "5\u201310 min"
+        },
+        {
+         "key": "10m_20m",
+         "count": 11,
+         "label": "10\u201320 min"
+        },
+        {
+         "key": "20m_40m",
+         "count": 10,
+         "label": "20\u201340 min"
+        },
+        {
+         "key": "40m_60m",
+         "count": 12,
+         "label": "40\u201360 min"
+        },
+        {
+         "key": "60m_plus",
+         "count": 18,
+         "label": "60+ min"
+        }
+       ],
+       "known_count": 56,
+       "missing_count": 0,
+       "excluded_count": 0,
+       "definition_epoch": null
+      }
+     },
+     "uploads": {
+      "known_count": 56,
+      "unknown_count": 0
+     },
+     "population": {
+      "matched": 56,
+      "scanned": 252,
+      "admitted": 231,
+      "rejected": {
+       "identity": 1,
+       "source_missing": 2,
+       "source_mismatch": 0,
+       "source_stale": 4,
+       "source_unavailable": 11,
+       "source_unpublished": 3,
+       "stream_incomplete": 0
+      },
+      "stale_count": 10,
+      "stale_counter_count": 3,
+      "stale_metadata_count": 7,
+      "publication_unknown_excluded": 7
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.fingerprint.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:14.296514Z",
+    "source_expires_at": "2026-10-30T17:44:08.715832Z"
+   }
+  },
+  "rhythm": {
+   "request": {
+    "version": 1,
+    "operation": "video.publication_rhythm.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCMainOverviewChannel000"
+     },
+     "video_types": [
+      "long"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ],
+     "page": {
+      "size": 1
+     },
+     "time": {
+      "mode": "current",
+      "timezone": "Europe/Kyiv"
+     }
+    },
+    "parameters": {
+     "period": "28d"
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.publication_rhythm.v1",
+    "operation_fingerprint": "3a031e79ff5d14826d0c6c18a354144d423b200a50cc9b7c89572eb8a987dda2",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:14.309550Z",
+     "valid_before": "2026-10-30T17:44:08.715832Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 21
+     },
+     "status": "partial"
+    },
+    "result": {
+     "hours": [
+      {
+       "hour": 0,
+       "count": 0
+      },
+      {
+       "hour": 1,
+       "count": 3
+      },
+      {
+       "hour": 2,
+       "count": 5
+      },
+      {
+       "hour": 3,
+       "count": 2
+      },
+      {
+       "hour": 4,
+       "count": 3
+      },
+      {
+       "hour": 5,
+       "count": 3
+      },
+      {
+       "hour": 6,
+       "count": 2
+      },
+      {
+       "hour": 7,
+       "count": 2
+      },
+      {
+       "hour": 8,
+       "count": 1
+      },
+      {
+       "hour": 9,
+       "count": 3
+      },
+      {
+       "hour": 10,
+       "count": 2
+      },
+      {
+       "hour": 11,
+       "count": 3
+      },
+      {
+       "hour": 12,
+       "count": 1
+      },
+      {
+       "hour": 13,
+       "count": 3
+      },
+      {
+       "hour": 14,
+       "count": 2
+      },
+      {
+       "hour": 15,
+       "count": 0
+      },
+      {
+       "hour": 16,
+       "count": 3
+      },
+      {
+       "hour": 17,
+       "count": 3
+      },
+      {
+       "hour": 18,
+       "count": 3
+      },
+      {
+       "hour": 19,
+       "count": 0
+      },
+      {
+       "hour": 20,
+       "count": 4
+      },
+      {
+       "hour": 21,
+       "count": 2
+      },
+      {
+       "hour": 22,
+       "count": 4
+      },
+      {
+       "hour": 23,
+       "count": 2
+      }
+     ],
+     "period": {
+      "key": "28d",
+      "days": 28,
+      "kind": "rolling",
+      "label": "28D",
+      "end_at": "2026-10-30T11:44:14.309550Z",
+      "start_at": "2026-10-02T11:44:14.309550Z"
+     },
+     "weekdays": [
+      {
+       "weekday": 1,
+       "count": 7
+      },
+      {
+       "weekday": 2,
+       "count": 10
+      },
+      {
+       "weekday": 3,
+       "count": 6
+      },
+      {
+       "weekday": 4,
+       "count": 11
+      },
+      {
+       "weekday": 5,
+       "count": 9
+      },
+      {
+       "weekday": 6,
+       "count": 8
+      },
+      {
+       "weekday": 7,
+       "count": 5
+      }
+     ],
+     "time_zone": "Europe/Kyiv",
+     "population": {
+      "matched": 56,
+      "admitted": 231,
+      "publication_unknown_excluded": 7
+     },
+     "known_count": 56,
+     "last_published_at": "2026-10-30T08:30:57.715831Z",
+     "first_published_at": "2026-10-02T17:44:08.715831Z",
+     "grid": [
+      {
+       "weekday": 1,
+       "hours": [
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "weekday": 2,
+       "hours": [
+        0,
+        1,
+        0,
+        1,
+        0,
+        2,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        2,
+        0
+       ]
+      },
+      {
+       "weekday": 3,
+       "hours": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+       ]
+      },
+      {
+       "weekday": 4,
+       "hours": [
+        0,
+        1,
+        3,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        2,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1
+       ]
+      },
+      {
+       "weekday": 5,
+       "hours": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        1,
+        1
+       ]
+      },
+      {
+       "weekday": 6,
+       "hours": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0
+       ]
+      },
+      {
+       "weekday": 7,
+       "hours": [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+       ]
+      }
+     ],
+     "peak_hour": {
+      "hour": 2,
+      "count": 5
+     },
+     "peak_weekday": {
+      "weekday": 4,
+      "count": 11
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.publication_rhythm.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:14.327380Z",
+    "source_expires_at": "2026-10-30T17:44:08.715832Z"
+   }
+  },
+  "years": {
+   "request": {
+    "version": 1,
+    "operation": "video.publication_years.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCMainOverviewChannel000"
+     },
+     "video_types": [
+      "long"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ],
+     "page": {
+      "size": 1
+     },
+     "time": {
+      "mode": "current",
+      "timezone": "Europe/Kyiv"
+     }
+    },
+    "parameters": {}
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.publication_years.v1",
+    "operation_fingerprint": "5987bae0a424b0fc5eeea04530be901e0bc35ec850cddb7c2a187d3641e0695a",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:14.338046Z",
+     "valid_before": "2026-10-31T17:44:08.715831Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 21
+     },
+     "status": "partial"
+    },
+    "result": {
+     "days": [
+      {
+       "date": "2026-01-08",
+       "count": 1
+      },
+      {
+       "date": "2026-01-16",
+       "count": 1
+      },
+      {
+       "date": "2026-02-03",
+       "count": 1
+      },
+      {
+       "date": "2026-02-08",
+       "count": 1
+      },
+      {
+       "date": "2026-02-27",
+       "count": 1
+      },
+      {
+       "date": "2026-03-02",
+       "count": 1
+      },
+      {
+       "date": "2026-03-05",
+       "count": 1
+      },
+      {
+       "date": "2026-03-12",
+       "count": 1
+      },
+      {
+       "date": "2026-03-15",
+       "count": 2
+      },
+      {
+       "date": "2026-03-16",
+       "count": 2
+      },
+      {
+       "date": "2026-03-25",
+       "count": 1
+      },
+      {
+       "date": "2026-04-01",
+       "count": 1
+      },
+      {
+       "date": "2026-04-02",
+       "count": 1
+      },
+      {
+       "date": "2026-04-05",
+       "count": 1
+      },
+      {
+       "date": "2026-04-13",
+       "count": 1
+      },
+      {
+       "date": "2026-04-16",
+       "count": 1
+      },
+      {
+       "date": "2026-05-06",
+       "count": 1
+      },
+      {
+       "date": "2026-05-11",
+       "count": 1
+      },
+      {
+       "date": "2026-05-24",
+       "count": 1
+      },
+      {
+       "date": "2026-06-05",
+       "count": 1
+      },
+      {
+       "date": "2026-06-20",
+       "count": 2
+      },
+      {
+       "date": "2026-06-24",
+       "count": 1
+      },
+      {
+       "date": "2026-07-02",
+       "count": 1
+      },
+      {
+       "date": "2026-07-06",
+       "count": 1
+      },
+      {
+       "date": "2026-07-08",
+       "count": 1
+      },
+      {
+       "date": "2026-07-26",
+       "count": 2
+      },
+      {
+       "date": "2026-07-29",
+       "count": 1
+      },
+      {
+       "date": "2026-08-01",
+       "count": 2
+      },
+      {
+       "date": "2026-08-02",
+       "count": 1
+      },
+      {
+       "date": "2026-08-03",
+       "count": 1
+      },
+      {
+       "date": "2026-08-05",
+       "count": 1
+      },
+      {
+       "date": "2026-08-10",
+       "count": 1
+      },
+      {
+       "date": "2026-08-11",
+       "count": 2
+      },
+      {
+       "date": "2026-08-12",
+       "count": 1
+      },
+      {
+       "date": "2026-08-19",
+       "count": 2
+      },
+      {
+       "date": "2026-08-20",
+       "count": 1
+      },
+      {
+       "date": "2026-08-22",
+       "count": 1
+      },
+      {
+       "date": "2026-08-25",
+       "count": 1
+      },
+      {
+       "date": "2026-08-28",
+       "count": 2
+      },
+      {
+       "date": "2026-08-29",
+       "count": 1
+      },
+      {
+       "date": "2026-08-30",
+       "count": 1
+      },
+      {
+       "date": "2026-08-31",
+       "count": 1
+      },
+      {
+       "date": "2026-09-01",
+       "count": 1
+      },
+      {
+       "date": "2026-09-02",
+       "count": 3
+      },
+      {
+       "date": "2026-09-03",
+       "count": 2
+      },
+      {
+       "date": "2026-09-04",
+       "count": 1
+      },
+      {
+       "date": "2026-09-06",
+       "count": 1
+      },
+      {
+       "date": "2026-09-07",
+       "count": 3
+      },
+      {
+       "date": "2026-09-19",
+       "count": 1
+      },
+      {
+       "date": "2026-09-20",
+       "count": 2
+      },
+      {
+       "date": "2026-09-21",
+       "count": 1
+      },
+      {
+       "date": "2026-09-22",
+       "count": 1
+      },
+      {
+       "date": "2026-09-23",
+       "count": 1
+      },
+      {
+       "date": "2026-09-24",
+       "count": 1
+      },
+      {
+       "date": "2026-09-26",
+       "count": 2
+      },
+      {
+       "date": "2026-09-27",
+       "count": 2
+      },
+      {
+       "date": "2026-09-29",
+       "count": 1
+      },
+      {
+       "date": "2026-09-30",
+       "count": 1
+      },
+      {
+       "date": "2026-10-02",
+       "count": 3
+      },
+      {
+       "date": "2026-10-03",
+       "count": 2
+      },
+      {
+       "date": "2026-10-07",
+       "count": 3
+      },
+      {
+       "date": "2026-10-10",
+       "count": 3
+      },
+      {
+       "date": "2026-10-12",
+       "count": 3
+      },
+      {
+       "date": "2026-10-13",
+       "count": 4
+      },
+      {
+       "date": "2026-10-14",
+       "count": 1
+      },
+      {
+       "date": "2026-10-15",
+       "count": 3
+      },
+      {
+       "date": "2026-10-16",
+       "count": 1
+      },
+      {
+       "date": "2026-10-17",
+       "count": 1
+      },
+      {
+       "date": "2026-10-18",
+       "count": 1
+      },
+      {
+       "date": "2026-10-19",
+       "count": 2
+      },
+      {
+       "date": "2026-10-20",
+       "count": 2
+      },
+      {
+       "date": "2026-10-22",
+       "count": 3
+      },
+      {
+       "date": "2026-10-23",
+       "count": 4
+      },
+      {
+       "date": "2026-10-24",
+       "count": 2
+      },
+      {
+       "date": "2026-10-25",
+       "count": 4
+      },
+      {
+       "date": "2026-10-26",
+       "count": 2
+      },
+      {
+       "date": "2026-10-27",
+       "count": 4
+      },
+      {
+       "date": "2026-10-28",
+       "count": 2
+      },
+      {
+       "date": "2026-10-29",
+       "count": 5
+      },
+      {
+       "date": "2026-10-30",
+       "count": 2
+      }
+     ],
+     "year": 2026,
+     "time_zone": "Europe/Kyiv",
+     "population": 231,
+     "known_count": 224,
+     "default_year": 2026,
+     "available_years": [
+      2026,
+      2025,
+      2024,
+      2023,
+      2022,
+      2021,
+      2020
+     ]
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.publication_years.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:14.355857Z",
+    "source_expires_at": "2026-10-31T17:44:08.715831Z"
+   }
+  },
+  "breakdown": {
+   "request": {
+    "version": 1,
+    "operation": "video.content_breakdown.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCMainOverviewChannel000"
+     },
+     "video_types": [
+      "long"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ],
+     "page": {
+      "size": 1
+     }
+    },
+    "parameters": {
+     "period": "max"
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.content_breakdown.v1",
+    "operation_fingerprint": "5cda25bb5ef258b3802e66122978f41623680cd6954611f5a39829895788fcc0",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:14.366842Z",
+     "valid_before": "2026-10-30T17:44:08.715831Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 21
+     },
+     "status": "partial"
+    },
+    "result": {
+     "period": {
+      "key": "max",
+      "days": null,
+      "kind": "max",
+      "label": "MAX",
+      "end_at": "2026-10-30T11:44:14.366842Z",
+      "start_at": null
+     },
+     "population": {
+      "matched": 231,
+      "admitted": 231,
+      "publication_unknown_excluded": 0
+     },
+     "official_categories": {
+      "kind": "single_label",
+      "source": "youtube.video.snippet.categoryId",
+      "share_basis": "known_rows",
+      "sample_count": 231,
+      "known_count": 207,
+      "missing_count": 24,
+      "groups": [
+       {
+        "key": "24",
+        "label": "Category 24",
+        "count": 40,
+        "share_percent": "19.32"
+       },
+       {
+        "key": "28",
+        "label": "Category 28",
+        "count": 39,
+        "share_percent": "18.84"
+       },
+       {
+        "key": "20",
+        "label": "Category 20",
+        "count": 35,
+        "share_percent": "16.91"
+       },
+       {
+        "key": "27",
+        "label": "Category 27",
+        "count": 34,
+        "share_percent": "16.43"
+       },
+       {
+        "key": "22",
+        "label": "Category 22",
+        "count": 31,
+        "share_percent": "14.98"
+       },
+       {
+        "key": "10",
+        "label": "Category 10",
+        "count": 28,
+        "share_percent": "13.53"
+       }
+      ],
+      "omitted_group_count": 0,
+      "label_expires_at": null
+     },
+     "youtube_topics": {
+      "kind": "multi_label",
+      "source": "youtube.video.topicDetails.topicCategories",
+      "share_basis": "collected_rows",
+      "sample_count": 231,
+      "known_count": 194,
+      "missing_count": 37,
+      "groups": [
+       {
+        "key": "https://en.wikipedia.org/wiki/Hip_hop_music",
+        "label": "Hip hop music",
+        "count": 46,
+        "share_percent": "23.71"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Food",
+        "label": "Food",
+        "count": 45,
+        "share_percent": "23.2"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Sport",
+        "label": "Sport",
+        "count": 42,
+        "share_percent": "21.65"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Knowledge",
+        "label": "Knowledge",
+        "count": 38,
+        "share_percent": "19.59"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Music",
+        "label": "Music",
+        "count": 38,
+        "share_percent": "19.59"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Caf%C3%A9_culture",
+        "label": "Caf\u00e9 culture",
+        "count": 35,
+        "share_percent": "18.04"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Entertainment",
+        "label": "Entertainment",
+        "count": 35,
+        "share_percent": "18.04"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Technology",
+        "label": "Technology",
+        "count": 32,
+        "share_percent": "16.49"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Lifestyle_(sociology)",
+        "label": "Lifestyle (sociology)",
+        "count": 29,
+        "share_percent": "14.95"
+       },
+       {
+        "key": "https://en.wikipedia.org/wiki/Video_game_culture",
+        "label": "Video game culture",
+        "count": 26,
+        "share_percent": "13.4"
+       }
+      ],
+      "omitted_group_count": 0,
+      "assigned_count": 172,
+      "empty_count": 22
+     },
+     "audio_languages": {
+      "kind": "single_label",
+      "source": "youtube.video.snippet.defaultAudioLanguage",
+      "share_basis": "known_rows",
+      "sample_count": 231,
+      "known_count": 164,
+      "missing_count": 67,
+      "groups": [
+       {
+        "key": "en",
+        "label": "en",
+        "count": 34,
+        "share_percent": "20.73"
+       },
+       {
+        "key": "de",
+        "label": "de",
+        "count": 31,
+        "share_percent": "18.9"
+       },
+       {
+        "key": "zxx",
+        "label": "zxx",
+        "count": 29,
+        "share_percent": "17.68"
+       },
+       {
+        "key": "uk",
+        "label": "uk",
+        "count": 28,
+        "share_percent": "17.07"
+       },
+       {
+        "key": "ru",
+        "label": "ru",
+        "count": 22,
+        "share_percent": "13.41"
+       },
+       {
+        "key": "en-US",
+        "label": "en-US",
+        "count": 20,
+        "share_percent": "12.2"
+       }
+      ],
+      "omitted_group_count": 0
+     },
+     "metadata_languages": {
+      "kind": "single_label",
+      "source": "youtube.video.snippet.defaultLanguage",
+      "share_basis": "known_rows",
+      "sample_count": 231,
+      "known_count": 169,
+      "missing_count": 62,
+      "groups": [
+       {
+        "key": "de",
+        "label": "de",
+        "count": 35,
+        "share_percent": "20.71"
+       },
+       {
+        "key": "en",
+        "label": "en",
+        "count": 32,
+        "share_percent": "18.93"
+       },
+       {
+        "key": "en-US",
+        "label": "en-US",
+        "count": 29,
+        "share_percent": "17.16"
+       },
+       {
+        "key": "uk",
+        "label": "uk",
+        "count": 27,
+        "share_percent": "15.98"
+       },
+       {
+        "key": "zxx",
+        "label": "zxx",
+        "count": 24,
+        "share_percent": "14.2"
+       },
+       {
+        "key": "ru",
+        "label": "ru",
+        "count": 22,
+        "share_percent": "13.02"
+       }
+      ],
+      "omitted_group_count": 0
+     },
+     "captions": {
+      "kind": "single_label",
+      "source": "youtube.video.contentDetails.caption",
+      "share_basis": "known_rows",
+      "sample_count": 231,
+      "known_count": 185,
+      "missing_count": 46,
+      "groups": [
+       {
+        "key": "unavailable",
+        "label": "No captions",
+        "count": 102,
+        "share_percent": "55.14"
+       },
+       {
+        "key": "available",
+        "label": "Captions available",
+        "count": 83,
+        "share_percent": "44.86"
+       }
+      ],
+      "omitted_group_count": 0
+     },
+     "catalogue_age": {
+      "kind": "single_label",
+      "source": "leti_cook.video_age_from_published_at",
+      "share_basis": "known_rows",
+      "sample_count": 231,
+      "known_count": 224,
+      "missing_count": 7,
+      "groups": [
+       {
+        "key": "under_1y",
+        "label": "Under 1 year",
+        "count": 138,
+        "share_percent": "61.61"
+       },
+       {
+        "key": "3_5y",
+        "label": "3-5 years",
+        "count": 36,
+        "share_percent": "16.07"
+       },
+       {
+        "key": "1_3y",
+        "label": "1-3 years",
+        "count": 33,
+        "share_percent": "14.73"
+       },
+       {
+        "key": "5y_plus",
+        "label": "5+ years",
+        "count": 17,
+        "share_percent": "7.59"
+       }
+      ],
+      "omitted_group_count": 0
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.content_breakdown.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:14.385591Z",
+    "source_expires_at": "2026-10-30T17:44:08.715831Z"
+   }
+  },
+  "counter_change": {
+   "request": {
+    "version": 1,
+    "operation": "channel.counter_change.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.channels.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCCounterFiveDayIntrvl00"
+     },
+     "select": [
+      "channel.id"
+     ],
+     "order_by": [
+      {
+       "field": "channel.id",
+       "direction": "asc"
+      }
+     ],
+     "page": {
+      "size": 1
+     }
+    },
+    "parameters": {}
+   },
+   "response": {
+    "version": 1,
+    "operation": "channel.counter_change.v1",
+    "operation_fingerprint": "0b4df907c9cdbe65624bc8754dc0d4d634fef6e135d6d32780862c2788024fda",
+    "context": {
+     "source_id": "public.channels.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:14.392423Z",
+     "valid_before": "2026-10-30T12:41:44.715832Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_profiles",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {},
+     "status": "complete"
+    },
+    "result": {
+     "definition_epoch": null,
+     "definition_rule": "reported_channel_counter_without_definition_v1",
+     "current_max_age_seconds": 86400,
+     "windows": {
+      "7d": {
+       "period": "7d",
+       "window_seconds": 604800,
+       "tolerance_seconds": 86400,
+       "metrics": {
+        "subscribers": {
+         "status": "partial",
+         "coverage": "partial",
+         "start_value": "4000",
+         "end_value": "4400",
+         "absolute_change": "400",
+         "percent_change": "10",
+         "observed_start_at": "2026-10-24T11:34:08.715831Z",
+         "observed_end_at": "2026-10-29T12:41:44.715831Z",
+         "actual_interval_seconds": 436056,
+         "expires_at": "2026-11-22T11:34:08.715831Z",
+         "reason_code": "start_after_window_boundary"
+        },
+        "views": {
+         "status": "partial",
+         "coverage": "partial",
+         "start_value": "700000",
+         "end_value": "770000",
+         "absolute_change": "70000",
+         "percent_change": "10",
+         "observed_start_at": "2026-10-24T11:34:08.715831Z",
+         "observed_end_at": "2026-10-29T12:41:44.715831Z",
+         "actual_interval_seconds": 436056,
+         "expires_at": "2026-11-22T11:34:08.715831Z",
+         "reason_code": "start_after_window_boundary"
+        }
+       }
+      },
+      "28d": {
+       "period": "28d",
+       "window_seconds": 2419200,
+       "tolerance_seconds": 86400,
+       "metrics": {
+        "subscribers": {
+         "status": "partial",
+         "coverage": "partial",
+         "start_value": "4000",
+         "end_value": "4400",
+         "absolute_change": "400",
+         "percent_change": "10",
+         "observed_start_at": "2026-10-24T11:34:08.715831Z",
+         "observed_end_at": "2026-10-29T12:41:44.715831Z",
+         "actual_interval_seconds": 436056,
+         "expires_at": "2026-11-22T11:34:08.715831Z",
+         "reason_code": "start_after_window_boundary"
+        },
+        "views": {
+         "status": "partial",
+         "coverage": "partial",
+         "start_value": "700000",
+         "end_value": "770000",
+         "absolute_change": "70000",
+         "percent_change": "10",
+         "observed_start_at": "2026-10-24T11:34:08.715831Z",
+         "observed_end_at": "2026-10-29T12:41:44.715831Z",
+         "actual_interval_seconds": 436056,
+         "expires_at": "2026-11-22T11:34:08.715831Z",
+         "reason_code": "start_after_window_boundary"
+        }
+       }
+      }
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "channel.counter_change.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:14.395104Z",
+    "source_expires_at": "2026-10-30T12:41:44.715832Z"
+   }
+  },
+  "format_totals": {
+   "request": {
+    "version": 1,
+    "operation": "channel.format_totals.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.channels.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCCleanHeaderTotals00000"
+     },
+     "select": [
+      "channel.id"
+     ],
+     "order_by": [
+      {
+       "field": "channel.id",
+       "direction": "asc"
+      }
+     ],
+     "page": {
+      "size": 1
+     }
+    },
+    "parameters": {}
+   },
+   "response": {
+    "version": 1,
+    "operation": "channel.format_totals.v1",
+    "operation_fingerprint": "453ce00564d73377fb7634c61b7e0c1ddaa57c312ed1e8bf2980607383c39e02",
+    "context": {
+     "source_id": "public.channels.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:14.402096Z",
+     "valid_before": "2026-11-28T08:44:08.715831Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_profiles",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {},
+     "status": "complete"
+    },
+    "result": {
+     "list_limit": 1000000,
+     "formats": {
+      "long": {
+       "status": "ready",
+       "views": "6000",
+       "reason_code": null,
+       "scanned_inventory_count": 6,
+       "canonical_inventory_count": 6,
+       "known_view_count": 6,
+       "missing_view_count": 0,
+       "excluded": {
+        "stale_inventory_count": 0,
+        "missing_video_row_count": 0,
+        "availability_withheld_count": 0,
+        "stream_completion_withheld": 0,
+        "stale_counter_count": 0,
+        "stale_metadata_count": 0,
+        "unknown_view_count": 0,
+        "unavailable_excluded_count": 0,
+        "type_resolution_withheld": 0
+       },
+       "expires_at": "2026-11-28T08:44:08.715831Z"
+      },
+      "short": {
+       "status": "ready",
+       "views": "4000",
+       "reason_code": null,
+       "scanned_inventory_count": 4,
+       "canonical_inventory_count": 4,
+       "known_view_count": 4,
+       "missing_view_count": 0,
+       "excluded": {
+        "stale_inventory_count": 0,
+        "missing_video_row_count": 0,
+        "availability_withheld_count": 0,
+        "stream_completion_withheld": 0,
+        "stale_counter_count": 0,
+        "stale_metadata_count": 0,
+        "unknown_view_count": 0,
+        "unavailable_excluded_count": 0,
+        "type_resolution_withheld": 0
+       },
+       "expires_at": "2026-11-28T08:44:08.715831Z"
+      },
+      "stream": {
+       "status": "incomplete",
+       "views": null,
+       "reason_code": null,
+       "scanned_inventory_count": 3,
+       "canonical_inventory_count": 3,
+       "known_view_count": 2,
+       "missing_view_count": 1,
+       "excluded": {
+        "stale_inventory_count": 0,
+        "missing_video_row_count": 0,
+        "availability_withheld_count": 0,
+        "stream_completion_withheld": 1,
+        "stale_counter_count": 0,
+        "stale_metadata_count": 0,
+        "unknown_view_count": 0,
+        "unavailable_excluded_count": 0,
+        "type_resolution_withheld": 0
+       },
+       "expires_at": "2026-11-28T08:44:08.715831Z"
+      }
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "channel.format_totals.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:14.405614Z",
+    "source_expires_at": "2026-11-28T08:44:08.715831Z"
+   }
+  }
+ }
+}

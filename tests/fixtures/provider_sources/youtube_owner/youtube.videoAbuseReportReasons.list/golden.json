@@ -1,0 +1,222 @@
+{
+ "default_selection": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videoAbuseReportReasons.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "d112cad631d13174f28211c70b2d8d95bc00c4a0bf047a328235a19718a1588d",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "S"
+     },
+     "snippet.label": {
+      "state": "known",
+      "value": "Sex or nudity"
+     },
+     "snippet.secondaryReasons[].id": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "32"
+       },
+       {
+        "state": "known",
+        "value": "33"
+       }
+      ]
+     },
+     "snippet.secondaryReasons[].label": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "Graphic sexual activity"
+       },
+       {
+        "state": "known",
+        "value": "Nudity"
+       }
+      ]
+     }
+    },
+    "identity": {
+     "id": "S",
+     "kind": "abuse_report_reason"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "V"
+     },
+     "snippet.label": {
+      "state": "known",
+      "value": "Violent or repulsive content"
+     },
+     "snippet.secondaryReasons[].id": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.secondaryReasons[].label": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     }
+    },
+    "identity": {
+     "id": "V",
+     "kind": "abuse_report_reason"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "abuse_report_reason",
+  "version": 1
+ },
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videoAbuseReportReasons.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "d112cad631d13174f28211c70b2d8d95bc00c4a0bf047a328235a19718a1588d",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "S"
+     },
+     "snippet.label": {
+      "state": "known",
+      "value": "Sex or nudity"
+     },
+     "snippet.secondaryReasons[].id": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "32"
+       },
+       {
+        "state": "known",
+        "value": "33"
+       }
+      ]
+     },
+     "snippet.secondaryReasons[].label": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "Graphic sexual activity"
+       },
+       {
+        "state": "known",
+        "value": "Nudity"
+       }
+      ]
+     }
+    },
+    "identity": {
+     "id": "S",
+     "kind": "abuse_report_reason"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "V"
+     },
+     "snippet.label": {
+      "state": "known",
+      "value": "Violent or repulsive content"
+     },
+     "snippet.secondaryReasons[].id": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.secondaryReasons[].label": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     }
+    },
+    "identity": {
+     "id": "V",
+     "kind": "abuse_report_reason"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "abuse_report_reason",
+  "version": 1
+ }
+}

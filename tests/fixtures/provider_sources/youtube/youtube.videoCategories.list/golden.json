@@ -1,0 +1,564 @@
+{
+ "absent_false": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videoCategories.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ba95547b9edc80a2d875e55bb8593162d7e7c564b6e7ccbe35177be2552e7135",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "2"
+     },
+     "snippet.assignable": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Autos & Vehicles"
+     }
+    },
+    "identity": {
+     "id": "2",
+     "kind": "video_category"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "19"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": false
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Travel & Events"
+     }
+    },
+    "identity": {
+     "id": "19",
+     "kind": "video_category"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_category",
+  "version": 1
+ },
+ "by_id": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "1": "present",
+   "10": "present",
+   "99": "omitted"
+  },
+  "method": "youtube.videoCategories.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ba95547b9edc80a2d875e55bb8593162d7e7c564b6e7ccbe35177be2552e7135",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "1"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Filme & Animationen"
+     }
+    },
+    "identity": {
+     "id": "1",
+     "kind": "video_category"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "10"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Musik"
+     }
+    },
+    "identity": {
+     "id": "10",
+     "kind": "video_category"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_category",
+  "version": 1
+ },
+ "by_id_complete": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "1": "present",
+   "10": "present"
+  },
+  "method": "youtube.videoCategories.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ba95547b9edc80a2d875e55bb8593162d7e7c564b6e7ccbe35177be2552e7135",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "1"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Film & Animation"
+     }
+    },
+    "identity": {
+     "id": "1",
+     "kind": "video_category"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "10"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Music"
+     }
+    },
+    "identity": {
+     "id": "10",
+     "kind": "video_category"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_category",
+  "version": 1
+ },
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videoCategories.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ba95547b9edc80a2d875e55bb8593162d7e7c564b6e7ccbe35177be2552e7135",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "video_category",
+  "version": 1
+ },
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videoCategories.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ba95547b9edc80a2d875e55bb8593162d7e7c564b6e7ccbe35177be2552e7135",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "1"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Film & Animation"
+     }
+    },
+    "identity": {
+     "id": "1",
+     "kind": "video_category"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "10"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Music"
+     }
+    },
+    "identity": {
+     "id": "10",
+     "kind": "video_category"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "18"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": false
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Short Movies"
+     }
+    },
+    "identity": {
+     "id": "18",
+     "kind": "video_category"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_category",
+  "version": 1
+ },
+ "minimal": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videoCategories.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ec5c9da71b723a6238107e3f39c7ce8fdd254e812fb5c885064229dc0e9d7876",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "1"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Filme & Animationen"
+     }
+    },
+    "identity": {
+     "id": "1",
+     "kind": "video_category"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_category",
+  "version": 1
+ },
+ "unknown_field": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videoCategories.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ba95547b9edc80a2d875e55bb8593162d7e7c564b6e7ccbe35177be2552e7135",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "snippet.shelf"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "1"
+     },
+     "snippet.assignable": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCBR8-60-B28hp2BmDPdntcQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "Film & Animation"
+     }
+    },
+    "identity": {
+     "id": "1",
+     "kind": "video_category"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_category",
+  "version": 1
+ }
+}

@@ -1,0 +1,161 @@
+{
+ "case": "chart=mostPopular for a region and category: pages in chart order; player, recording, localizations and brand partner parts",
+ "request": {
+  "budget": {
+   "max_requests": 3,
+   "max_units": {
+    "general": 3
+   }
+  },
+  "method": "youtube.videos.list",
+  "parameters": {
+   "chart": "mostPopular",
+   "hl": "de",
+   "maxResults": 2,
+   "maxWidth": 640,
+   "regionCode": "DE",
+   "videoCategoryId": "10"
+  },
+  "selection": {
+   "fields": [
+    "brandPartner.channelId",
+    "id",
+    "localizations.{key}.title",
+    "player.embedHeight",
+    "player.embedHtml",
+    "player.embedWidth",
+    "recordingDetails.recordingDate",
+    "snippet.categoryId",
+    "snippet.title"
+   ],
+   "parts": [
+    "brandPartner",
+    "localizations",
+    "player",
+    "recordingDetails",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "brandPartner": {
+       "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2"
+      },
+      "etag": "etag-c1",
+      "id": "vidxxxxxxx1",
+      "kind": "youtube#video",
+      "localizations": {
+       "de": {
+        "description": "",
+        "title": "Titel 1"
+       }
+      },
+      "player": {
+       "embedHeight": "360",
+       "embedHtml": "<iframe src=\"//www.youtube.com/embed/vidxxxxxxx1\"></iframe>",
+       "embedWidth": "640"
+      },
+      "recordingDetails": {
+       "recordingDate": "2026-10-01T00:00:00Z"
+      },
+      "snippet": {
+       "categoryId": "10",
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-21T08:00:00Z",
+       "title": "MARKER-TITLE chart 1"
+      }
+     },
+     {
+      "brandPartner": {},
+      "etag": "etag-c2",
+      "id": "vidxxxxxxx2",
+      "kind": "youtube#video",
+      "localizations": {
+       "de": {
+        "description": "",
+        "title": "Titel 2"
+       }
+      },
+      "player": {
+       "embedHeight": "360",
+       "embedHtml": "<iframe src=\"//www.youtube.com/embed/vidxxxxxxx2\"></iframe>",
+       "embedWidth": "640"
+      },
+      "recordingDetails": {
+       "recordingDate": "2026-10-01T00:00:00Z"
+      },
+      "snippet": {
+       "categoryId": "10",
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-22T08:00:00Z",
+       "title": "MARKER-TITLE chart 2"
+      }
+     }
+    ],
+    "kind": "youtube#videoListResponse",
+    "nextPageToken": "MARKER-TOKEN-PAGE-2",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 3
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  },
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "brandPartner": {},
+      "etag": "etag-c3",
+      "id": "vidxxxxxxx3",
+      "kind": "youtube#video",
+      "localizations": {
+       "de": {
+        "description": "",
+        "title": "Titel 3"
+       }
+      },
+      "player": {
+       "embedHeight": "360",
+       "embedHtml": "<iframe src=\"//www.youtube.com/embed/vidxxxxxxx3\"></iframe>",
+       "embedWidth": "640"
+      },
+      "recordingDetails": {
+       "recordingDate": "2026-10-01T00:00:00Z"
+      },
+      "snippet": {
+       "categoryId": "10",
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-23T08:00:00Z",
+       "title": "MARKER-TITLE chart 3"
+      }
+     }
+    ],
+    "kind": "youtube#videoListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 3
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos/list",
+ "synthetic": true
+}

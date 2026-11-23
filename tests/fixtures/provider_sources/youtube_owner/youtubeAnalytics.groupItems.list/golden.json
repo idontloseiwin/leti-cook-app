@@ -1,0 +1,156 @@
+{
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.groupItems.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "groupId": {
+      "state": "known",
+      "value": "group-synthetic-1"
+     },
+     "id": {
+      "state": "known",
+      "value": "group-item-1"
+     },
+     "resource.id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "resource.kind": {
+      "state": "known",
+      "value": "youtube#video"
+     }
+    },
+    "identity": {
+     "id": "group-item-1",
+     "kind": "analytics_group_item"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "groupId": {
+      "state": "known",
+      "value": "group-synthetic-1"
+     },
+     "id": {
+      "state": "known",
+      "value": "group-item-2"
+     },
+     "resource.id": {
+      "state": "known",
+      "value": "vidxxxxxxx2"
+     },
+     "resource.kind": {
+      "state": "known",
+      "value": "youtube#video"
+     }
+    },
+    "identity": {
+     "id": "group-item-2",
+     "kind": "analytics_group_item"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "groupId": {
+      "state": "known",
+      "value": "group-synthetic-1"
+     },
+     "id": {
+      "state": "known",
+      "value": "group-item-3"
+     },
+     "resource.id": {
+      "state": "known",
+      "value": "vidxxxxxxx3"
+     },
+     "resource.kind": {
+      "state": "known",
+      "value": "youtube#video"
+     }
+    },
+    "identity": {
+     "id": "group-item-3",
+     "kind": "analytics_group_item"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "analytics_group_item",
+  "version": 1
+ },
+ "group_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "group-synthetic-9": "not_found"
+  },
+  "method": "youtubeAnalytics.groupItems.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 404,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "analytics_group_item",
+  "version": 1
+ }
+}

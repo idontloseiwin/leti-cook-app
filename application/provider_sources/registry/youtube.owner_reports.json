@@ -1,0 +1,3397 @@
+{
+ "analytics": {
+  "audience": "channel",
+  "currency_metrics": [
+   "cpm",
+   "estimatedAdRevenue",
+   "estimatedRedPartnerRevenue",
+   "estimatedRevenue",
+   "grossRevenue",
+   "playbackBasedCpm"
+  ],
+  "excluded": [
+   {
+    "anchor": "user-activity-by-city-=-250-results",
+    "reason": "conditional rule (province needs country==US) not encoded; refused before sending"
+   },
+   {
+    "anchor": "user-activity-by-dma",
+    "reason": "conditional rule (country==US or a province filter) not encoded; refused before sending"
+   },
+   {
+    "anchor": "traffic-source-detail-=-25-results_1",
+    "reason": "playlist traffic source detail: the supported traffic sources are not listed on the page; refused before sending"
+   },
+   {
+    "anchor": "understanding-report-tables",
+    "reason": "documentation example, not a report"
+   },
+   {
+    "anchor": "content owner reports",
+    "reason": "partner (content owner) context is not supported"
+   }
+  ],
+  "max_filter_ids": 500,
+  "monetary_metrics": [
+   "adImpressions",
+   "cpm",
+   "estimatedAdRevenue",
+   "estimatedRedPartnerRevenue",
+   "estimatedRevenue",
+   "grossRevenue",
+   "monetizedPlaybacks",
+   "playbackBasedCpm"
+  ],
+  "monetary_scope": "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+  "multi_value_filters": [
+   "playlist",
+   "video"
+  ],
+  "page_last_updated": "2026-10-15",
+  "rules": {
+   "exactly_one": "exactly one value",
+   "one_or_more": "at least one value",
+   "required": "every value",
+   "zero_or_more": "any subset",
+   "zero_or_one": "at most one value (also the page's \"Optional\")"
+  },
+  "scope_also_any": [
+   "https://www.googleapis.com/auth/youtube.readonly",
+   "https://www.googleapis.com/auth/youtube"
+  ],
+  "scope_any": [
+   "https://www.googleapis.com/auth/yt-analytics.readonly",
+   "https://www.googleapis.com/auth/yt-analytics-monetary.readonly"
+  ],
+  "scope_note": "reports.query: 'API requests to this method now require access to the youtube.readonly scope' (reference, 2026-10-15); monetary metrics need yt-analytics-monetary.readonly and YPP",
+  "source": "https://developers.google.com/youtube/analytics/channel_reports",
+  "tables": {
+   "channel.ad_performance": {
+    "anchor": "ad-performance-by-ad-type",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "adType"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "day"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "continent",
+       "subContinent"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "grossRevenue",
+       "adImpressions",
+       "cpm"
+      ]
+     }
+    ],
+    "note": "needs the yt-analytics-monetary.readonly scope",
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 47,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Ad performance by ad type"
+   },
+   "channel.membership_cancellations": {
+    "anchor": "membership-cancellation-reports",
+    "dimensions": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "membershipsCancellationSurveyReason"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "required",
+      "values": [
+       "membershipsCancellationSurveyResponses"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 46,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Membership cancellations"
+   },
+   "playlist.basic": {
+    "anchor": "basic-stats-playlist-reports",
+    "dimensions": [],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration",
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistSaves",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 33,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist basic stats"
+   },
+   "playlist.demographics": {
+    "anchor": "demographic-playlist-reports",
+    "dimensions": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "ageGroup",
+       "gender"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "required",
+      "values": [
+       "viewerPercentage"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 44,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist viewer demographics"
+   },
+   "playlist.device_type": {
+    "anchor": "device-type_1",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "deviceType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration",
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 41,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist device type"
+   },
+   "playlist.geo_country": {
+    "anchor": "playlist-activity-by-country",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "country"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "continent",
+       "subContinent"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 35,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist activity by country"
+   },
+   "playlist.geo_province": {
+    "anchor": "playlist-activity-by-province",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "province"
+      ]
+     }
+    ],
+    "filter_values": {
+     "country": [
+      "US"
+     ]
+    },
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "country"
+      ]
+     },
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 36,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist activity by province"
+   },
+   "playlist.operating_system": {
+    "anchor": "operating-system_1",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "operatingSystem"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration",
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 42,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist operating system"
+   },
+   "playlist.os_and_device": {
+    "anchor": "operating-system-and-device-type_1",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "deviceType",
+       "operatingSystem"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration",
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 43,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist operating system and device type"
+   },
+   "playlist.playback_location": {
+    "anchor": "playback-location-playlist-reports",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "insightPlaybackLocationType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration",
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 37,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist playback locations"
+   },
+   "playlist.playback_location_detail": {
+    "anchor": "playback-location-detail-=-25-results_1",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "insightPlaybackLocationDetail"
+      ]
+     }
+    ],
+    "filter_values": {
+     "insightPlaybackLocationType": [
+      "EMBEDDED"
+     ]
+    },
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "insightPlaybackLocationType"
+      ]
+     },
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": 25,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration",
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 38,
+    "sort": {
+     "allowed": [
+      "-playlistViews",
+      "-playlistEstimatedMinutesWatched",
+      "-playlistStarts"
+     ],
+     "required": true
+    },
+    "title": "Playlist playback location detail (<= 25 results)"
+   },
+   "playlist.time": {
+    "anchor": "time-based-playlist-reports",
+    "dimensions": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "day",
+       "month"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration",
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistSaves",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 34,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist time-based"
+   },
+   "playlist.top": {
+    "anchor": "top-playlists-reports",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "playlist"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [],
+    "max_results": 200,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistSaves",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "note": "the page lists the sort options without a sign; the layer accepts the descending form",
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 45,
+    "sort": {
+     "allowed": [
+      "-playlistViews",
+      "-playlistEstimatedMinutesWatched",
+      "-playlistStarts"
+     ],
+     "required": true
+    },
+    "title": "Top playlists (<= 200 results)"
+   },
+   "playlist.traffic_source": {
+    "anchor": "traffic-source-playlist-reports",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "insightTrafficSourceType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "playlist",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched",
+       "averageViewDuration",
+       "averageTimeInPlaylist",
+       "playlistAverageViewDuration",
+       "playlistEstimatedMinutesWatched",
+       "playlistSaves",
+       "playlistStarts",
+       "playlistViews",
+       "viewsPerPlaylistStart"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 39,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playlist traffic sources"
+   },
+   "video.audience_retention": {
+    "anchor": "audience-retention-reports",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "elapsedVideoTimeRatio"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "video"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "audienceType",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "audienceWatchRatio",
+       "relativeRetentionPerformance",
+       "startedWatching",
+       "stoppedWatching",
+       "totalSegmentImpressions"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group",
+     "video"
+    ],
+    "snapshot_row": 26,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Audience retention"
+   },
+   "video.basic": {
+    "anchor": "basic-user-activity-statistics",
+    "dimensions": [],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "comments",
+       "likes",
+       "dislikes",
+       "videosAddedToPlaylists",
+       "videosRemovedFromPlaylists",
+       "shares",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks",
+       "subscribersGained",
+       "subscribersLost",
+       "estimatedRevenue",
+       "estimatedAdRevenue",
+       "grossRevenue",
+       "estimatedRedPartnerRevenue",
+       "monetizedPlaybacks",
+       "playbackBasedCpm",
+       "adImpressions",
+       "cpm"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 1,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Basic user activity statistics"
+   },
+   "video.basic_us_states": {
+    "anchor": "basic-user-activity-statistics-for-u.s.-states",
+    "dimensions": [],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "province"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 2,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Basic user activity statistics for U.S. states"
+   },
+   "video.concurrent_viewers": {
+    "anchor": "concurrent-viewers",
+    "dimensions": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "livestreamPosition"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "video"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "averageConcurrentViewers",
+       "peakConcurrentViewers"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group",
+     "video"
+    ],
+    "snapshot_row": 27,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Concurrent viewers (for livestreams)"
+   },
+   "video.demographics": {
+    "anchor": "demographic-reports",
+    "dimensions": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "ageGroup",
+       "gender"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "liveOrOnDemand",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "viewerPercentage"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 24,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Viewer demographics"
+   },
+   "video.device_type": {
+    "anchor": "device-type",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "deviceType"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "day",
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "operatingSystem",
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 21,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Device type"
+   },
+   "video.geo_country": {
+    "anchor": "user-activity-by-country",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "country"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "comments",
+       "likes",
+       "dislikes",
+       "videosAddedToPlaylists",
+       "videosRemovedFromPlaylists",
+       "shares",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks",
+       "subscribersGained",
+       "subscribersLost",
+       "estimatedRevenue",
+       "estimatedAdRevenue",
+       "grossRevenue",
+       "estimatedRedPartnerRevenue",
+       "monetizedPlaybacks",
+       "playbackBasedCpm",
+       "adImpressions",
+       "cpm"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 5,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "User activity by country"
+   },
+   "video.geo_province": {
+    "anchor": "user-activity-by-province",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "province"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {
+     "country": [
+      "US"
+     ]
+    },
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "country"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 6,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "User activity by province"
+   },
+   "video.operating_system": {
+    "anchor": "operating-system",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "operatingSystem"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "day",
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "deviceType",
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 22,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Operating system"
+   },
+   "video.os_and_device": {
+    "anchor": "operating-system-and-device-type",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "deviceType",
+       "operatingSystem"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "day",
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 23,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Operating system and device type"
+   },
+   "video.playback_country_live": {
+    "anchor": "playback-details-by-country",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "country"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 13,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playback details by country with liveOrOnDemand statistics"
+   },
+   "video.playback_country_percentage": {
+    "anchor": "playback-details-by-country",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "country"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 14,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playback details by country with averageViewPercentage metric"
+   },
+   "video.playback_details_live": {
+    "anchor": "playback-details-with-optional-time-dimension",
+    "dimensions": [
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "day",
+       "month"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 11,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playback details with optional time dimension and liveOrOnDemand statistics"
+   },
+   "video.playback_details_percentage": {
+    "anchor": "playback-details-with-optional-time-dimension",
+    "dimensions": [
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "day",
+       "month"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 12,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playback details with optional time dimension and averageViewPercentage metric"
+   },
+   "video.playback_location": {
+    "anchor": "video-playback-location-report",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "insightPlaybackLocationType"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "day",
+       "liveOrOnDemand",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 17,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Video playback location report"
+   },
+   "video.playback_location_detail": {
+    "anchor": "playback-location-detail-=-25-results",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "insightPlaybackLocationDetail"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {
+     "insightPlaybackLocationType": [
+      "EMBEDDED"
+     ]
+    },
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "insightPlaybackLocationType"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": 25,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 18,
+    "sort": {
+     "allowed": [
+      "-views",
+      "-estimatedMinutesWatched"
+     ],
+     "required": true
+    },
+    "title": "Playback location detail (<= 25 results)"
+   },
+   "video.playback_province_live": {
+    "anchor": "playback-details-by-province",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "province"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "filter_values": {
+     "country": [
+      "US"
+     ]
+    },
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "country"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 15,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playback details by province with liveOrOnDemand statistics"
+   },
+   "video.playback_province_percentage": {
+    "anchor": "playback-details-by-province",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "province"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "filter_values": {
+     "country": [
+      "US"
+     ]
+    },
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "country"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 16,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Playback details by province with averageViewPercentage metric"
+   },
+   "video.sharing": {
+    "anchor": "social-reports",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "sharingService"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "shares"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 25,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Engagement and content sharing"
+   },
+   "video.subscribed_status": {
+    "anchor": "user-activity-by-subscribed-status",
+    "dimensions": [
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "subscribedStatus"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "day",
+       "month"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "likes",
+       "dislikes",
+       "videosAddedToPlaylists",
+       "videosRemovedFromPlaylists",
+       "shares",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 9,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "User activity by subscribed status"
+   },
+   "video.subscribed_status_provinces": {
+    "anchor": "user-activity-by-subscribed-status-for-provinces",
+    "dimensions": [
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "subscribedStatus"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "day",
+       "month"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "province",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 10,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "User activity by subscribed status for provinces"
+   },
+   "video.time_by_country": {
+    "anchor": "user-activity-by-country-for-specific-time-periods",
+    "dimensions": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "day",
+       "month"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "comments",
+       "likes",
+       "dislikes",
+       "videosAddedToPlaylists",
+       "videosRemovedFromPlaylists",
+       "shares",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks",
+       "subscribersGained",
+       "subscribersLost",
+       "uniques",
+       "estimatedRevenue",
+       "estimatedAdRevenue",
+       "grossRevenue",
+       "estimatedRedPartnerRevenue",
+       "monetizedPlaybacks",
+       "playbackBasedCpm",
+       "adImpressions",
+       "cpm"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 3,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "User activity by country for specific time periods"
+   },
+   "video.time_us_states": {
+    "anchor": "user-activity-in-u.s.-states-for-specific-time-periods",
+    "dimensions": [
+     {
+      "rule": "exactly_one",
+      "values": [
+       "day",
+       "month"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "province"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 4,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "User activity in U.S. states for specific time periods"
+   },
+   "video.top_by_product": {
+    "anchor": "top-videos-by-youtube-product-=-200-results",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "video"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": 200,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 31,
+    "sort": {
+     "allowed": [
+      "-views",
+      "-redViews",
+      "-estimatedMinutesWatched",
+      "-estimatedRedMinutesWatched"
+     ],
+     "required": true
+    },
+    "title": "Top videos by YouTube Product (<= 200 results)"
+   },
+   "video.top_by_state": {
+    "anchor": "top-videos-by-state-=-200-results",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "video"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "province"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": 200,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 29,
+    "sort": {
+     "allowed": [
+      "-views",
+      "-redViews",
+      "-estimatedMinutesWatched",
+      "-estimatedRedMinutesWatched"
+     ],
+     "required": true
+    },
+    "title": "Top videos by state (<= 200 results)"
+   },
+   "video.top_playback_filters": {
+    "anchor": "top-videos-with-playback-detail-filters-=-200-results",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "video"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus",
+       "youtubeProduct"
+      ]
+     }
+    ],
+    "max_results": 200,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 32,
+    "sort": {
+     "allowed": [
+      "-views",
+      "-redViews",
+      "-estimatedMinutesWatched",
+      "-estimatedRedMinutesWatched"
+     ],
+     "required": true
+    },
+    "title": "Top videos with playback detail filters (<= 200 results)"
+   },
+   "video.top_regional": {
+    "anchor": "top-videos-with-optional-regional-filters-=-200-results",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "video"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "continent",
+       "subContinent"
+      ]
+     }
+    ],
+    "max_results": 200,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "comments",
+       "likes",
+       "dislikes",
+       "videosAddedToPlaylists",
+       "videosRemovedFromPlaylists",
+       "shares",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks",
+       "subscribersGained",
+       "subscribersLost",
+       "estimatedRevenue",
+       "estimatedAdRevenue",
+       "grossRevenue",
+       "estimatedRedPartnerRevenue",
+       "monetizedPlaybacks",
+       "playbackBasedCpm",
+       "adImpressions",
+       "cpm"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 28,
+    "sort": {
+     "allowed": [
+      "-views",
+      "-redViews",
+      "-estimatedRevenue",
+      "-estimatedRedPartnerRevenue",
+      "-estimatedMinutesWatched",
+      "-estimatedRedMinutesWatched",
+      "-subscribersGained",
+      "-subscribersLost"
+     ],
+     "required": true
+    },
+    "title": "Top videos with optional regional filters (<= 200 results)"
+   },
+   "video.top_subscribed": {
+    "anchor": "top-videos-for-subscribed-or-unsubscribed-viewers=-200-results",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "video"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "subscribedStatus"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "continent",
+       "subContinent"
+      ]
+     }
+    ],
+    "max_results": 200,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "redViews",
+       "likes",
+       "dislikes",
+       "videosAddedToPlaylists",
+       "videosRemovedFromPlaylists",
+       "shares",
+       "estimatedMinutesWatched",
+       "estimatedRedMinutesWatched",
+       "averageViewDuration",
+       "averageViewPercentage",
+       "annotationClickThroughRate",
+       "annotationCloseRate",
+       "annotationImpressions",
+       "annotationClickableImpressions",
+       "annotationClosableImpressions",
+       "annotationClicks",
+       "annotationCloses",
+       "cardClickRate",
+       "cardTeaserClickRate",
+       "cardImpressions",
+       "cardTeaserImpressions",
+       "cardClicks",
+       "cardTeaserClicks"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 30,
+    "sort": {
+     "allowed": [
+      "-views",
+      "-redViews",
+      "-estimatedMinutesWatched",
+      "-estimatedRedMinutesWatched"
+     ],
+     "required": true
+    },
+    "title": "Top videos for subscribed or unsubscribed viewers (<= 200 results)"
+   },
+   "video.traffic_source": {
+    "anchor": "traffic-source",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "insightTrafficSourceType"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "creatorContentType",
+       "day",
+       "liveOrOnDemand",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {},
+    "filters": [
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": null,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched"
+      ]
+     }
+    ],
+    "note": "the provider refuses a query whose number of videos times days exceeds 50,000 (not checked here)",
+    "single_value_filters": [
+     "group"
+    ],
+    "snapshot_row": 19,
+    "sort": {
+     "allowed": [],
+     "required": false
+    },
+    "title": "Traffic source"
+   },
+   "video.traffic_source_detail": {
+    "anchor": "traffic-source-detail-=-25-results",
+    "dimensions": [
+     {
+      "rule": "required",
+      "values": [
+       "insightTrafficSourceDetail"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "creatorContentType"
+      ]
+     }
+    ],
+    "filter_values": {},
+    "filter_values_excluded": {
+     "insightTrafficSourceType": [
+      "VIDEO_REMIXES",
+      "NOTIFICATION",
+      "END_SCREEN",
+      "CAMPAIGN_CARD",
+      "NO_LINK_EMBEDDED"
+     ]
+    },
+    "filters": [
+     {
+      "rule": "required",
+      "values": [
+       "insightTrafficSourceType"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "country",
+       "province",
+       "continent",
+       "subContinent"
+      ]
+     },
+     {
+      "rule": "zero_or_one",
+      "values": [
+       "video",
+       "group"
+      ]
+     },
+     {
+      "rule": "zero_or_more",
+      "values": [
+       "liveOrOnDemand",
+       "subscribedStatus"
+      ]
+     }
+    ],
+    "max_results": 25,
+    "metrics": [
+     {
+      "rule": "one_or_more",
+      "values": [
+       "engagedViews",
+       "views",
+       "estimatedMinutesWatched"
+      ]
+     }
+    ],
+    "single_value_filters": [
+     "group",
+     "insightTrafficSourceType"
+    ],
+    "snapshot_row": 20,
+    "sort": {
+     "allowed": [
+      "-views",
+      "-estimatedMinutesWatched"
+     ],
+     "required": true
+    },
+    "title": "Traffic source detail (<= 25 results)"
+   }
+  }
+ },
+ "content_sha256": "e0f5e246dc87604f331143b50a1105e3bcfc575c9b69161f10e0e35e876ea432",
+ "format": 1,
+ "kind": "lic-provider-owner-reports",
+ "reporting": {
+  "csv_rules": [
+   "header row first; column order comes from the header",
+   "a day without data still yields a file with only the header row",
+   "dimension values may be empty (for example video_id of channel-level rows)",
+   "each report covers 00:00-23:59 PST (UTC-8, fixed)",
+   "a backfill has a new report ID with the same startTime/endTime: use the latest createTime"
+  ],
+  "page_last_updated": "2026-09-14",
+  "report_types": {
+   "channel_annotations_a2": {
+    "anchor": "video-annotations",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "annotation_type",
+     "annotation_id"
+    ],
+    "metrics": [
+     "annotation_click_through_rate",
+     "annotation_close_rate",
+     "annotation_impressions",
+     "annotation_clickable_impressions",
+     "annotation_closable_impressions",
+     "annotation_clicks",
+     "annotation_closes"
+    ],
+    "snapshot_row": 99,
+    "title": "Annotations"
+   },
+   "channel_basic_a3": {
+    "anchor": "video-user-activity",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "comments",
+     "likes",
+     "dislikes",
+     "videos_added_to_playlists",
+     "videos_removed_from_playlists",
+     "shares",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "average_view_duration_percentage",
+     "annotation_click_through_rate",
+     "annotation_close_rate",
+     "annotation_impressions",
+     "annotation_clickable_impressions",
+     "annotation_closable_impressions",
+     "annotation_clicks",
+     "annotation_closes",
+     "card_click_rate",
+     "card_teaser_click_rate",
+     "card_impressions",
+     "card_teaser_impressions",
+     "card_clicks",
+     "card_teaser_clicks",
+     "subscribers_gained",
+     "subscribers_lost",
+     "red_views",
+     "red_watch_time_minutes"
+    ],
+    "snapshot_row": 92,
+    "title": "User activity"
+   },
+   "channel_cards_a1": {
+    "anchor": "video-cards",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "card_type",
+     "card_id"
+    ],
+    "metrics": [
+     "card_click_rate",
+     "card_teaser_click_rate",
+     "card_impressions",
+     "card_teaser_impressions",
+     "card_clicks",
+     "card_teaser_clicks"
+    ],
+    "snapshot_row": 100,
+    "title": "Cards"
+   },
+   "channel_combined_a3": {
+    "anchor": "video-combined",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "playback_location_type",
+     "traffic_source_type",
+     "device_type",
+     "operating_system"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "average_view_duration_percentage",
+     "red_views",
+     "red_watch_time_minutes"
+    ],
+    "snapshot_row": 103,
+    "title": "Combined"
+   },
+   "channel_demographics_a1": {
+    "anchor": "video-viewer-demographics",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "age_group",
+     "gender"
+    ],
+    "metrics": [
+     "views_percentage"
+    ],
+    "snapshot_row": 97,
+    "title": "Viewer demographics"
+   },
+   "channel_device_os_a3": {
+    "anchor": "video-device-type-and-operating-system",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "device_type",
+     "operating_system"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "average_view_duration_percentage",
+     "red_views",
+     "red_watch_time_minutes"
+    ],
+    "snapshot_row": 96,
+    "title": "Device type and operating system"
+   },
+   "channel_end_screens_a2": {
+    "anchor": "video-end-screens",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "end_screen_element_type",
+     "end_screen_element_id"
+    ],
+    "metrics": [
+     "end_screen_element_clicks",
+     "end_screen_element_impressions",
+     "end_screen_element_click_rate"
+    ],
+    "snapshot_row": 101,
+    "title": "End screens"
+   },
+   "channel_playback_location_a3": {
+    "anchor": "video-playback-locations",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "playback_location_type",
+     "playback_location_detail"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "average_view_duration_percentage",
+     "red_views",
+     "red_watch_time_minutes"
+    ],
+    "snapshot_row": 94,
+    "title": "Playback locations"
+   },
+   "channel_province_a3": {
+    "anchor": "video-province",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "province_code"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "average_view_duration_percentage",
+     "annotation_click_through_rate",
+     "annotation_close_rate",
+     "annotation_impressions",
+     "annotation_clickable_impressions",
+     "annotation_closable_impressions",
+     "annotation_clicks",
+     "annotation_closes",
+     "card_click_rate",
+     "card_teaser_click_rate",
+     "card_impressions",
+     "card_teaser_impressions",
+     "card_clicks",
+     "card_teaser_clicks",
+     "red_views",
+     "red_watch_time_minutes"
+    ],
+    "snapshot_row": 93,
+    "title": "User activity by province"
+   },
+   "channel_reach_basic_a1": {
+    "anchor": "reach-basic",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id"
+    ],
+    "metrics": [
+     "video_thumbnail_impressions",
+     "video_thumbnail_impressions_ctr"
+    ],
+    "snapshot_row": 104,
+    "title": "Reach basic"
+   },
+   "channel_reach_combined_a1": {
+    "anchor": "reach-combined",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "traffic_source_type",
+     "traffic_source_detail",
+     "operating_system",
+     "device_type"
+    ],
+    "metrics": [
+     "video_thumbnail_impressions",
+     "video_thumbnail_impressions_ctr"
+    ],
+    "snapshot_row": 105,
+    "title": "Reach combined"
+   },
+   "channel_sharing_service_a2": {
+    "anchor": "video-content-sharing",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "sharing_service"
+    ],
+    "metrics": [
+     "shares"
+    ],
+    "snapshot_row": 98,
+    "title": "Content sharing by platform"
+   },
+   "channel_subtitles_a3": {
+    "anchor": "video-subtitles",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "subtitle_language",
+     "subtitle_language_autotranslated"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "average_view_duration_percentage",
+     "red_views",
+     "red_watch_time_minutes"
+    ],
+    "snapshot_row": 102,
+    "title": "Subtitles"
+   },
+   "channel_traffic_source_a3": {
+    "anchor": "video-traffic-sources",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "traffic_source_type",
+     "traffic_source_detail"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "average_view_duration_percentage",
+     "red_views",
+     "red_watch_time_minutes"
+    ],
+    "snapshot_row": 95,
+    "title": "Traffic sources"
+   },
+   "playlist_basic_a2": {
+    "anchor": "playlist-user-activity",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "playlist_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "playlist_starts",
+     "playlist_saves_added",
+     "playlist_saves_removed"
+    ],
+    "snapshot_row": 106,
+    "title": "User activity"
+   },
+   "playlist_combined_a2": {
+    "anchor": "playlist-combined",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "playlist_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "playback_location_type",
+     "traffic_source_type",
+     "device_type",
+     "operating_system"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "playlist_starts",
+     "playlist_saves_added",
+     "playlist_saves_removed"
+    ],
+    "snapshot_row": 111,
+    "title": "Combined"
+   },
+   "playlist_device_os_a2": {
+    "anchor": "playlist-device-type-and-operating-system",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "playlist_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "device_type",
+     "operating_system"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "playlist_starts",
+     "playlist_saves_added",
+     "playlist_saves_removed"
+    ],
+    "snapshot_row": 110,
+    "title": "Device type and operating system"
+   },
+   "playlist_playback_location_a2": {
+    "anchor": "playlist-playback-locations",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "playlist_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "playback_location_type",
+     "playback_location_detail"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "playlist_starts",
+     "playlist_saves_added",
+     "playlist_saves_removed"
+    ],
+    "snapshot_row": 108,
+    "title": "Playback locations"
+   },
+   "playlist_province_a2": {
+    "anchor": "playlist-province",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "playlist_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "province_code"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "playlist_starts",
+     "playlist_saves_added",
+     "playlist_saves_removed"
+    ],
+    "snapshot_row": 107,
+    "title": "User activity by province"
+   },
+   "playlist_traffic_source_a2": {
+    "anchor": "playlist-traffic-sources",
+    "dimensions": [
+     "date",
+     "channel_id",
+     "playlist_id",
+     "video_id",
+     "live_or_on_demand",
+     "subscribed_status",
+     "country_code",
+     "traffic_source_type",
+     "traffic_source_detail"
+    ],
+    "metrics": [
+     "engaged_views",
+     "views",
+     "watch_time_minutes",
+     "average_view_duration_seconds",
+     "playlist_starts",
+     "playlist_saves_added",
+     "playlist_saves_removed"
+    ],
+    "snapshot_row": 109,
+    "title": "Traffic sources"
+   }
+  },
+  "source": "https://developers.google.com/youtube/reporting/v1/reports/channel_reports"
+ }
+}

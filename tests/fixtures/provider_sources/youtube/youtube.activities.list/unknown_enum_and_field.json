@@ -1,0 +1,68 @@
+{
+ "case": "an undocumented activity type is unknown_enum; an undescribed contentDetails object is counted",
+ "request": {
+  "method": "youtube.activities.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "contentDetails",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "shortsRemix": {
+        "videoId": "MARKER-UNKNOWN"
+       }
+      },
+      "etag": "etag-a5",
+      "id": "ActSyntheticActivity0000000000000005",
+      "kind": "youtube#activity",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "",
+       "groupId": "GroupSynthetic5",
+       "publishedAt": "2026-10-25T08:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/a5/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/a5/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE activity 5",
+       "type": "shortsRemix"
+      }
+     }
+    ],
+    "kind": "youtube#activityListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/activities/list",
+ "synthetic": true
+}

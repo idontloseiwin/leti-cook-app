@@ -1,0 +1,43 @@
+{
+ "case": "an undocumented section type is unknown_enum; an undescribed field is counted",
+ "request": {
+  "method": "youtube.channelSections.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-01",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+      "kind": "youtube#channelSection",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "layout": "MARKER-UNKNOWN",
+       "position": 0,
+       "type": "shortsShelf"
+      }
+     }
+    ],
+    "kind": "youtube#channelSectionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/channelSections/list",
+ "synthetic": true
+}

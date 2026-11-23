@@ -1,0 +1,100 @@
+{
+ "case": "an undocumented privacy value is unknown_enum; Discovery documents liveBroadcastContent=completed",
+ "request": {
+  "method": "youtube.videos.list",
+  "parameters": {
+   "id": [
+    "vidxxxxxxx4"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "status",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "caption": "false",
+       "contentRating": {},
+       "definition": "hd",
+       "dimension": "2d",
+       "duration": "PT4M13S",
+       "licensedContent": false,
+       "projection": "rectangular",
+       "regionRestriction": {
+        "blocked": [
+         "DE"
+        ]
+       }
+      },
+      "etag": "e4",
+      "id": "vidxxxxxxx4",
+      "kind": "youtube#video",
+      "paidProductPlacementDetails": {
+       "hasPaidProductPlacement": false
+      },
+      "snippet": {
+       "categoryId": "22",
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "defaultAudioLanguage": "en-US",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION video 4",
+       "liveBroadcastContent": "completed",
+       "localized": {
+        "description": "MARKER-DESCRIPTION video 4",
+        "title": "MARKER-TITLE Video 4"
+       },
+       "publishedAt": "2026-10-24T14:00:00Z",
+       "tags": [
+        "synthetic",
+        "tag4"
+       ],
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx4/default.jpg",
+         "width": 120
+        }
+       },
+       "title": "MARKER-TITLE Video 4"
+      },
+      "status": {
+       "embeddable": true,
+       "license": "youtube",
+       "madeForKids": false,
+       "privacyStatus": "membersOnly",
+       "publicStatsViewable": true,
+       "uploadStatus": "processed"
+      },
+      "topicDetails": {
+       "topicCategories": [
+        "https://en.wikipedia.org/wiki/Knowledge"
+       ]
+      }
+     }
+    ],
+    "kind": "youtube#videoListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos#resource",
+ "synthetic": true
+}

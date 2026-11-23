@@ -1,0 +1,230 @@
+{
+ "case": "every public part and field a channel list returns; two pages, the second is the last",
+ "request": {
+  "budget": {
+   "max_requests": 3,
+   "max_units": {
+    "general": 3
+   }
+  },
+  "method": "youtube.playlists.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+   "maxResults": 2
+  },
+  "selection": {
+   "fields": [
+    "contentDetails.itemCount",
+    "id",
+    "localizations.{key}.description",
+    "localizations.{key}.title",
+    "player.embedHtml",
+    "snippet.channelId",
+    "snippet.channelTitle",
+    "snippet.defaultLanguage",
+    "snippet.description",
+    "snippet.localized.description",
+    "snippet.localized.title",
+    "snippet.publishedAt",
+    "snippet.thumbnails.default.url",
+    "snippet.thumbnails.high.height",
+    "snippet.title",
+    "status.podcastStatus",
+    "status.privacyStatus"
+   ],
+   "parts": [
+    "contentDetails",
+    "id",
+    "localizations",
+    "player",
+    "snippet",
+    "status"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "itemCount": 3
+      },
+      "etag": "etag-1",
+      "id": "PLsyntheticPlaylist000000000000001",
+      "kind": "youtube#playlist",
+      "localizations": {
+       "de": {
+        "description": "Beschreibung 1",
+        "title": "Reihe 1"
+       },
+       "en": {
+        "description": "MARKER-DESCRIPTION 1",
+        "title": "Series 1"
+       }
+      },
+      "player": {
+       "embedHtml": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000001\"></iframe>"
+      },
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION 1\nsecond line",
+       "localized": {
+        "description": "MARKER-DESCRIPTION 1",
+        "title": "MARKER-TITLE Series 1"
+       },
+       "publishedAt": "2026-02-11T08:30:01Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE Series 1"
+      },
+      "status": {
+       "podcastStatus": "disabled",
+       "privacyStatus": "public"
+      }
+     },
+     {
+      "contentDetails": {
+       "itemCount": 6
+      },
+      "etag": "etag-2",
+      "id": "PLsyntheticPlaylist000000000000002",
+      "kind": "youtube#playlist",
+      "localizations": {
+       "de": {
+        "description": "Beschreibung 2",
+        "title": "Reihe 2"
+       },
+       "en": {
+        "description": "MARKER-DESCRIPTION 2",
+        "title": "Series 2"
+       }
+      },
+      "player": {
+       "embedHtml": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000002\"></iframe>"
+      },
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION 2\nsecond line",
+       "localized": {
+        "description": "MARKER-DESCRIPTION 2",
+        "title": "MARKER-TITLE Series 2"
+       },
+       "publishedAt": "2026-03-12T08:30:02Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE Series 2"
+      },
+      "status": {
+       "podcastStatus": "enabled",
+       "privacyStatus": "public"
+      }
+     }
+    ],
+    "kind": "youtube#playlistListResponse",
+    "nextPageToken": "MARKER-TOKEN-PAGE-2",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 3
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  },
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "itemCount": 9
+      },
+      "etag": "etag-3",
+      "id": "PLsyntheticPlaylist000000000000003",
+      "kind": "youtube#playlist",
+      "localizations": {
+       "de": {
+        "description": "Beschreibung 3",
+        "title": "Reihe 3"
+       },
+       "en": {
+        "description": "MARKER-DESCRIPTION 3",
+        "title": "Series 3"
+       }
+      },
+      "player": {
+       "embedHtml": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000003\"></iframe>"
+      },
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION 3\nsecond line",
+       "localized": {
+        "description": "MARKER-DESCRIPTION 3",
+        "title": "MARKER-TITLE Series 3"
+       },
+       "publishedAt": "2026-04-13T08:30:03Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE Series 3"
+      },
+      "status": {
+       "podcastStatus": "disabled",
+       "privacyStatus": "public"
+      }
+     }
+    ],
+    "kind": "youtube#playlistListResponse",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 3
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlists#resource",
+ "synthetic": true
+}

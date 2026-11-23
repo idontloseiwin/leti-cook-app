@@ -1,0 +1,501 @@
+{
+ "auth_expired": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 401,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "owner_auth_expired",
+  "unit": "report_row",
+  "version": 1
+ },
+ "columns_mismatch": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [
+   "analytics_columns_mismatch"
+  ],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "response_invalid",
+  "unit": "report_row",
+  "version": 1
+ },
+ "daily_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 1,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "averageViewPercentage": {
+      "state": "known",
+      "value": "41.5"
+     },
+     "day": {
+      "state": "known",
+      "value": "2026-09-01"
+     },
+     "estimatedMinutesWatched": {
+      "state": "known",
+      "value": 300
+     },
+     "views": {
+      "state": "known",
+      "value": 120
+     }
+    },
+    "identity": {
+     "id": "day=2026-09-01",
+     "kind": "report_row"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "averageViewPercentage": {
+      "state": "known",
+      "value": "39.25"
+     },
+     "day": {
+      "state": "known",
+      "value": "2026-09-02"
+     },
+     "estimatedMinutesWatched": {
+      "state": "known",
+      "value": 210
+     },
+     "views": {
+      "state": "known",
+      "value": 80
+     }
+    },
+    "identity": {
+     "id": "day=2026-09-02",
+     "kind": "report_row"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "averageViewPercentage": {
+      "state": "known",
+      "value": "0.0"
+     },
+     "day": {
+      "state": "known",
+      "value": "2026-09-03"
+     },
+     "estimatedMinutesWatched": {
+      "state": "known",
+      "value": 0
+     },
+     "views": {
+      "state": "known",
+      "value": 0
+     }
+    },
+    "identity": {
+     "id": "day=2026-09-03",
+     "kind": "report_row"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "report_row",
+  "version": 1
+ },
+ "monetary": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "estimatedRevenue": {
+      "state": "known",
+      "value": "12.345678"
+     },
+     "views": {
+      "state": "known",
+      "value": 1450
+     }
+    },
+    "identity": null,
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "report_row",
+  "version": 1
+ },
+ "no_data": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [
+   "no_data"
+  ],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "report_row",
+  "version": 1
+ },
+ "not_owner": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "youtubeAnalytics.reports.query": "access_denied"
+  },
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 403,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "report_row",
+  "version": 1
+ },
+ "query_not_supported": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 400,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "combination_unsupported",
+  "unit": "report_row",
+  "version": 1
+ },
+ "quota": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 403,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "quota_exhausted:youtube_analytics",
+  "unit": "report_row",
+  "version": 1
+ },
+ "top_videos": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.reports.query",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "subscribersGained": {
+      "state": "known",
+      "value": 12
+     },
+     "video": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "views": {
+      "state": "known",
+      "value": 900
+     }
+    },
+    "identity": {
+     "id": "video=vidxxxxxxx1",
+     "kind": "report_row"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "subscribersGained": {
+      "state": "known",
+      "value": 3
+     },
+     "video": {
+      "state": "known",
+      "value": "vidxxxxxxx2"
+     },
+     "views": {
+      "state": "known",
+      "value": 450
+     }
+    },
+    "identity": {
+     "id": "video=vidxxxxxxx2",
+     "kind": "report_row"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "report_row",
+  "version": 1
+ }
+}

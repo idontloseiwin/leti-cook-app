@@ -1,0 +1,79 @@
+{
+ "case": "requested parts and a documented field missing from the item: absent, never zero or empty",
+ "request": {
+  "method": "youtube.playlists.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet",
+    "status",
+    "contentDetails"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-4",
+      "id": "PLsyntheticPlaylist000000000000004",
+      "kind": "youtube#playlist",
+      "localizations": {
+       "de": {
+        "description": "Beschreibung 4",
+        "title": "Reihe 4"
+       },
+       "en": {
+        "description": "MARKER-DESCRIPTION 4",
+        "title": "Series 4"
+       }
+      },
+      "player": {
+       "embedHtml": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000004\"></iframe>"
+      },
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "MARKER-DESCRIPTION 4\nsecond line",
+       "localized": {
+        "description": "MARKER-DESCRIPTION 4",
+        "title": "MARKER-TITLE Series 4"
+       },
+       "publishedAt": "2026-05-14T08:30:04Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE Series 4"
+      }
+     }
+    ],
+    "kind": "youtube#playlistListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlists#resource",
+ "synthetic": true
+}

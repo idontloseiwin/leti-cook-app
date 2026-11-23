@@ -1,0 +1,5 @@
+{
+  "calendar": "video.publication_calendar.v1",
+  "history": "channel.observed_history.v1",
+  "summary": "video.summary.v1"
+}

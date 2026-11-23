@@ -1,0 +1,3 @@
+# Dependency audit tool for .github/workflows/audit.yml only; never shipped.
+# CI installs tools/requirements-audit.lock (versions and hashes), not this file.
+pip-audit==2.10.1

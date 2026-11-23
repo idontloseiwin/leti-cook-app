@@ -1,0 +1,42 @@
+{
+ "case": "a day without data: only the header row",
+ "request": {
+  "context": "owner",
+  "method": "youtubereporting.media.download",
+  "parameters": {
+   "jobId": "job-synthetic-1",
+   "reportId": "report-2",
+   "reportTypeId": "channel_basic_a3"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "createTime": "2026-10-05T10:00:00Z",
+    "downloadUrl": "https://youtubereporting.googleapis.com/v1/media/CHANNEL/MARKER-CHANNEL-REF/jobs/job-synthetic-1/reports/report-2?alt=media",
+    "endTime": "2026-10-02T08:00:00Z",
+    "id": "report-2",
+    "jobId": "job-synthetic-1",
+    "startTime": "2026-10-01T08:00:00Z"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  },
+  {
+   "body_text": "date,channel_id,video_id,live_or_on_demand,subscribed_status,country_code,views,watch_time_minutes,average_view_duration_percentage,engaged_views,new_column_2027\n",
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/media/download",
+ "synthetic": true
+}

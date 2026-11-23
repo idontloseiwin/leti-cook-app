@@ -1,0 +1,5 @@
+# Reference MCP client for tests only (official Python SDK, MIT); never shipped or
+# installed into the application environment. CI installs it into /deps/mcp.
+mcp==2.3.0
+httpx==0.28.1
+pywin32==312 ; sys_platform == 'win32'

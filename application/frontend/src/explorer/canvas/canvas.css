@@ -1,0 +1,86 @@
+/* The research canvas. It lives inside .research-workshop (buttons, fields, tables of the workshop) and takes the
+   app's dark palette. Categories are also named in text on every node, never colour only. */
+/* One column no wider than the page: wide content (the Collection fields table, result tables) scrolls in
+   its own frame instead of widening every block of the canvas. */
+.research-workshop.canvas-workshop { max-width: none; padding: 12px 16px 24px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; min-width: 0;
+  --canvas-source: #5aa9ff; --canvas-process: #b48cff; --canvas-calculation: #f0b44c; --canvas-view: #63d8b4;
+  --canvas-card: var(--explorer-card, #10212c); --canvas-line: var(--explorer-line, #2e4652); --canvas-text: var(--explorer-text, #e3f2fa);
+  --canvas-muted: var(--explorer-muted, #8eb2c5); --canvas-bg: #081117; }
+.research-workshop.canvas-workshop header { margin: 0; }
+.canvas-topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.canvas-topbar .research-actions { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+.research-workshop .canvas-name { font-size: 1.15rem; font-weight: 600; min-width: 220px; flex: 1 1 260px; max-width: 520px; }
+.research-workshop .canvas-run { border-color: var(--canvas-view); font-weight: 600; }
+.canvas-status { margin: 0; color: var(--canvas-muted); font-size: 13px; }
+.canvas-status-line { min-height: 1.4em; }
+.canvas-body { display: grid; grid-template-columns: 250px minmax(0, 1fr) 330px; gap: 10px; height: min(72vh, 720px); min-height: 440px; }
+.canvas-body.no-palette { grid-template-columns: minmax(0, 1fr) 330px; }
+.canvas-body:not(:has(.canvas-properties)) { grid-template-columns: 250px minmax(0, 1fr); }
+.canvas-body.no-palette:not(:has(.canvas-properties)) { grid-template-columns: minmax(0, 1fr); }
+.canvas-palette, .canvas-properties { overflow: auto; border: 1px solid var(--canvas-line); border-radius: 10px; padding: 10px; background: var(--canvas-card); color: var(--canvas-text); }
+.research-workshop .canvas-palette input[type=search] { width: 100%; box-sizing: border-box; margin-bottom: 6px; }
+.research-workshop .canvas-palette .canvas-template { width: 100%; box-sizing: border-box; margin-bottom: 6px; }
+.canvas-palette h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; margin: 12px 0 6px; color: var(--canvas-muted); }
+.research-workshop .canvas-palette-item { display: grid; gap: 2px; width: 100%; text-align: left; margin: 0 0 6px; padding: 7px 9px;
+  border-left: 4px solid var(--accent); background: transparent; }
+.research-workshop .canvas-palette-item strong { font-size: 13px; }
+.research-workshop .canvas-palette-item small { color: var(--canvas-muted); font-size: 11px; line-height: 1.3; display: block; }
+.research-workshop .canvas-palette-item:hover { background: rgba(99, 216, 180, .07); }
+.canvas-source { --accent: var(--canvas-source); } .canvas-process { --accent: var(--canvas-process); }
+.canvas-calculation { --accent: var(--canvas-calculation); } .canvas-view { --accent: var(--canvas-view); }
+.canvas-flow { position: relative; border: 1px solid var(--canvas-line); border-radius: 10px; overflow: hidden; min-width: 0; }
+.canvas-flow .react-flow { --xy-background-color: var(--canvas-bg); --xy-background-pattern-color: #28404d; --xy-minimap-background-color: #0b151d;
+  --xy-minimap-mask-background-color: rgba(8, 17, 23, .7); --xy-controls-button-background-color: #162934; --xy-controls-button-background-color-hover: #1d3644;
+  --xy-controls-button-color: #e3f2fa; --xy-controls-button-border-color: #2e4652; --xy-edge-stroke: #6b8a9b; --xy-edge-stroke-selected: #63d8b4;
+  --xy-connectionline-stroke: #63d8b4; --xy-attribution-background-color: transparent; }
+.canvas-node { width: 230px; border-radius: 10px; border: 1px solid #355061; border-top: 4px solid var(--accent); background: #10212c; color: var(--canvas-text);
+  padding: 8px 10px 9px; font-size: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, .35); }
+.canvas-node.selected { box-shadow: 0 0 0 2px var(--accent); }
+.canvas-node-kind { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--accent); font-weight: 700; }
+.canvas-node-title { font-weight: 700; font-size: 14px; margin: 1px 0 3px; }
+.canvas-node-summary { color: #b9d3e0; line-height: 1.35; overflow-wrap: anywhere; }
+.canvas-node-state { margin-top: 7px; font-size: 11px; display: inline-block; padding: 1px 8px; border-radius: 999px; border: 1px solid currentColor; }
+.state-draft { color: #f0b44c; } .state-error { color: #ff7b7b; } .state-stale { color: #f0b44c; } .state-done { color: #63d8b4; } .state-running { color: #5aa9ff; } .state-ready { color: #8eb2c5; }
+.canvas-node .react-flow__handle { width: 12px; height: 12px; border: 2px solid #081117; background: var(--accent); }
+.canvas-edge-stale path { stroke-dasharray: 6 4; }
+.canvas-menu { position: fixed; z-index: 20; display: grid; gap: 4px; min-width: 200px; padding: 8px; border-radius: 10px; border: 1px solid var(--canvas-line);
+  background: #10212c; box-shadow: 0 10px 28px rgba(0, 0, 0, .5); }
+.research-workshop .canvas-menu button { text-align: left; }
+/* "Connect to…" opens in the node's settings, under its buttons. */
+.research-workshop .canvas-menu.canvas-menu-inline { position: static; z-index: auto; min-width: 0; margin-top: 10px; box-shadow: none; }
+.canvas-properties h2 { margin: 0 0 4px; font-size: 16px; }
+.canvas-form { display: grid; gap: 10px; margin-bottom: 12px; }
+.canvas-form fieldset { border: 0; padding: 0; margin: 0; display: flex; gap: 14px; }
+.research-workshop .canvas-form label { display: grid; gap: 4px; }
+.research-workshop .canvas-form fieldset label { display: flex; align-items: center; gap: 6px; }
+.research-workshop .canvas-form label.canvas-check { display: flex; align-items: center; gap: 6px; }
+.research-workshop .canvas-properties .research-columns { grid-template-columns: 1fr; gap: 6px; margin: 8px 0; }
+.research-workshop .canvas-properties .research-columns label { display: flex; flex-direction: row; align-items: center; gap: 8px; }
+.research-workshop .canvas-workshop input[type=checkbox], .research-workshop.canvas-workshop input[type=checkbox], .research-workshop.canvas-workshop input[type=radio] {
+  width: 15px; height: 15px; padding: 0; margin: 0; flex: none; accent-color: var(--canvas-view); }
+.research-workshop .canvas-flow .react-flow__controls-button { width: 28px; height: 28px; padding: 6px; border-radius: 0; border: 0;
+  border-bottom: 1px solid var(--xy-controls-button-border-color); background: var(--xy-controls-button-background-color); }
+.research-workshop .canvas-flow .react-flow__controls-button:hover { background: var(--xy-controls-button-background-color-hover); }
+.canvas-flow .react-flow__controls-button svg { fill: #e3f2fa; }
+.canvas-flow .canvas-hint { margin: 8px; padding: 2px 8px; border-radius: 6px; font-size: 11px; color: var(--canvas-muted); background: rgba(8, 17, 23, .8); pointer-events: none; }
+.research-workshop .canvas-properties details { border: 1px solid var(--canvas-line); border-radius: 8px; padding: 8px 10px; margin: 0; }
+.research-workshop .canvas-properties .research-condition { flex-wrap: wrap; }
+.research-workshop .canvas-notes textarea { width: 100%; box-sizing: border-box; }
+.research-workshop .canvas-settings { border: 1px solid var(--canvas-line); border-radius: 10px; padding: 8px 12px; margin: 0; }
+.canvas-results { border-top: 1px solid var(--canvas-line); padding-top: 10px; }
+.canvas-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.research-workshop .canvas-tabs [aria-selected=true] { border-color: var(--canvas-view); font-weight: 700; }
+.canvas-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.canvas-card-grid article { border: 1px solid var(--canvas-line); border-radius: 10px; padding: 8px; display: grid; gap: 6px; align-content: start; background: #10212c; }
+.canvas-card-grid article.picked { box-shadow: 0 0 0 2px var(--canvas-view); }
+.canvas-card-image img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; display: block; }
+.canvas-card-grid h4 { margin: 0; font-size: 13px; line-height: 1.35; }
+.canvas-card-grid dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; margin: 0; font-size: 11px; }
+.canvas-card-grid dl div { display: contents; } .canvas-card-grid dt { color: var(--canvas-muted); } .canvas-card-grid dd { margin: 0; text-align: right; }
+.research-workshop .canvas-card-pick { font-size: 11px; display: flex; gap: 6px; align-items: center; }
+.canvas-picked { color: var(--canvas-muted); font-size: 12px; align-self: center; }
+@media (max-width: 1100px) { .canvas-body, .canvas-body.no-palette { grid-template-columns: minmax(0, 1fr); height: auto; } .canvas-flow { height: 60vh; } .canvas-palette, .canvas-properties { max-height: 360px; } }
+.research-workshop .canvas-notes-size { margin: 4px 0 0; color: #8eb2c5; font-size: .85em; }
+.research-workshop .canvas-notes-size.over { color: #f0b44c; }
+.research-workshop .canvas-conflict { margin: 8px 0; padding: 10px 14px; border: 1px solid #f0b44c; border-radius: 8px; }
+.research-workshop .canvas-conflict p { margin: 0 0 8px; }

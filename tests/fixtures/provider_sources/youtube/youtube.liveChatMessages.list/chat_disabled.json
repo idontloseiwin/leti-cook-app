@@ -1,0 +1,39 @@
+{
+ "case": "403 liveChatDisabled: live chat is not enabled for the broadcast",
+ "request": {
+  "method": "youtube.liveChatMessages.list",
+  "parameters": {
+   "liveChatId": "LiveChatSynthetic000001"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "liveChatDisabled"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/liveChatMessages/list#errors",
+ "synthetic": true
+}

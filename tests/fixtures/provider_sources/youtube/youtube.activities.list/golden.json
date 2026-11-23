@@ -1,0 +1,629 @@
+{
+ "absent_part": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.activities.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "19e4eb4f84b576dd33a80561435a52dc4780585f7a2428a59aaa3e18df9ee0ad",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.upload.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "id": {
+      "state": "known",
+      "value": "ActSyntheticActivity0000000000000004"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "upload"
+     }
+    },
+    "identity": {
+     "id": "ActSyntheticActivity0000000000000004",
+     "kind": "activity"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "activity",
+  "version": 1
+ },
+ "channel_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCCCCCCCCCCCCCCCCCCCCCC3": "not_found"
+  },
+  "method": "youtube.activities.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ba5a36fafea0286669ef8eca442ad1b450e03da6db0e40edb6201d0137b9a6e9",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "activity",
+  "version": 1
+ },
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.activities.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "ba5a36fafea0286669ef8eca442ad1b450e03da6db0e40edb6201d0137b9a6e9",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "activity",
+  "version": 1
+ },
+ "full_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.activities.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "770132797d6bae131f9f99992b1cb1fbd4fe6728b9c425e8ae7ed8d2f4392bd7",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "770132797d6bae131f9f99992b1cb1fbd4fe6728b9c425e8ae7ed8d2f4392bd7",
+    "http_status": 200,
+    "page": 1,
+    "parts": [
+     "contentDetails",
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "33eeecc210abb3e52d3bfc577128e75bbe6357739718273d518558af1e99d05c",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.playlistItem.playlistId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlistItem.playlistItemId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlistItem.resourceId.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.upload.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "id": {
+      "state": "known",
+      "value": "ActSyntheticActivity0000000000000001"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.description": {
+      "state": "known_empty",
+      "value": ""
+     },
+     "snippet.groupId": {
+      "state": "known",
+      "value": "GroupSynthetic1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-21T08:00:00Z"
+     },
+     "snippet.thumbnails.default.url": {
+      "state": "known",
+      "value": "https://i.ytimg.com/synthetic/a1/default.jpg"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE activity 1"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "upload"
+     }
+    },
+    "identity": {
+     "id": "ActSyntheticActivity0000000000000001",
+     "kind": "activity"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.playlistItem.playlistId": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000001"
+     },
+     "contentDetails.playlistItem.playlistItemId": {
+      "state": "known",
+      "value": "UExzeW50aGV0aWMx"
+     },
+     "contentDetails.playlistItem.resourceId.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx2"
+     },
+     "contentDetails.upload.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "id": {
+      "state": "known",
+      "value": "ActSyntheticActivity0000000000000002"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.description": {
+      "state": "known_empty",
+      "value": ""
+     },
+     "snippet.groupId": {
+      "state": "known",
+      "value": "GroupSynthetic2"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-22T08:00:00Z"
+     },
+     "snippet.thumbnails.default.url": {
+      "state": "known",
+      "value": "https://i.ytimg.com/synthetic/a2/default.jpg"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE activity 2"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "playlistItem"
+     }
+    },
+    "identity": {
+     "id": "ActSyntheticActivity0000000000000002",
+     "kind": "activity"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.playlistItem.playlistId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlistItem.playlistItemId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlistItem.resourceId.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.upload.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx3"
+     },
+     "id": {
+      "state": "known",
+      "value": "ActSyntheticActivity0000000000000003"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.description": {
+      "state": "known_empty",
+      "value": ""
+     },
+     "snippet.groupId": {
+      "state": "known",
+      "value": "GroupSynthetic3"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-23T08:00:00Z"
+     },
+     "snippet.thumbnails.default.url": {
+      "state": "known",
+      "value": "https://i.ytimg.com/synthetic/a3/default.jpg"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE activity 3"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "upload"
+     }
+    },
+    "identity": {
+     "id": "ActSyntheticActivity0000000000000003",
+     "kind": "activity"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "activity",
+  "version": 1
+ },
+ "minimal": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.activities.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "ActSyntheticActivity0000000000000001"
+     }
+    },
+    "identity": {
+     "id": "ActSyntheticActivity0000000000000001",
+     "kind": "activity"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "activity",
+  "version": 1
+ },
+ "unknown_enum_and_field": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.activities.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "478cd1aa4da74a93fe9aacbd5dbd883ee0930a1962b993f2caefe1fecbf2be1f",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "contentDetails.shortsRemix"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.comment.resourceId.channelId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.comment.resourceId.kind": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.comment.resourceId.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlistItem.playlistId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlistItem.playlistItemId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlistItem.resourceId.kind": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlistItem.resourceId.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.recommendation.reason": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.recommendation.resourceId.channelId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.recommendation.resourceId.kind": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.recommendation.resourceId.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.recommendation.seedResourceId.channelId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.recommendation.seedResourceId.kind": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.recommendation.seedResourceId.playlistId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.recommendation.seedResourceId.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.social.author": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.social.imageUrl": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.social.referenceUrl": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.social.resourceId.channelId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.social.resourceId.kind": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.social.resourceId.playlistId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.social.resourceId.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.social.type": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.subscription.resourceId.channelId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.subscription.resourceId.kind": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.upload.videoId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "id": {
+      "state": "known",
+      "value": "ActSyntheticActivity0000000000000005"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.description": {
+      "state": "known_empty",
+      "value": ""
+     },
+     "snippet.groupId": {
+      "state": "known",
+      "value": "GroupSynthetic5"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-25T08:00:00Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE activity 5"
+     },
+     "snippet.type": {
+      "state": "unknown_enum",
+      "value": "shortsRemix"
+     }
+    },
+    "identity": {
+     "id": "ActSyntheticActivity0000000000000005",
+     "kind": "activity"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "activity",
+  "version": 1
+ }
+}

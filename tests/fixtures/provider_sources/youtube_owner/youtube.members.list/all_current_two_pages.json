@@ -1,0 +1,143 @@
+{
+ "case": "mode=all_current: two pages of members, 2 units each",
+ "request": {
+  "budget": {
+   "max_requests": 2,
+   "max_units": {
+    "general": 4
+   }
+  },
+  "context": "owner",
+  "method": "youtube.members.list",
+  "parameters": {
+   "maxResults": 1,
+   "mode": "all_current"
+  },
+  "selection": {
+   "fields": [
+    "snippet.memberDetails.channelId",
+    "snippet.memberDetails.displayName",
+    "snippet.membershipsDetails.highestAccessibleLevel",
+    "snippet.membershipsDetails.accessibleLevels[]",
+    "snippet.membershipsDetails.membershipsDuration.memberTotalDurationMonths",
+    "snippet.membershipsDetails.membershipsDurationAtLevels[].level",
+    "snippet.membershipsDetails.membershipsDurationAtLevels[].memberTotalDurationMonths"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-1",
+      "kind": "youtube#member",
+      "snippet": {
+       "creatorChannelId": "UCoooooooooooooooooooooo",
+       "memberDetails": {
+        "channelId": "UCmember0000000000000001",
+        "channelUrl": "https://www.youtube.com/channel/x",
+        "displayName": "MARKER-MEMBER 1",
+        "profileImageUrl": "https://yt3.ggpht.com/x"
+       },
+       "membershipsDetails": {
+        "accessibleLevels": [
+         "level-silver",
+         "level-gold"
+        ],
+        "highestAccessibleLevel": "level-gold",
+        "highestAccessibleLevelDisplayName": "Gold",
+        "membershipsDuration": {
+         "memberSince": "2025-01-01T00:00:00Z",
+         "memberTotalDurationMonths": 21
+        },
+        "membershipsDurationAtLevels": [
+         {
+          "level": "level-silver",
+          "memberSince": "2025-01-01T00:00:00Z",
+          "memberTotalDurationMonths": 21
+         },
+         {
+          "level": "level-gold",
+          "memberSince": "2026-01-01T00:00:00Z",
+          "memberTotalDurationMonths": 9
+         }
+        ]
+       }
+      }
+     }
+    ],
+    "kind": "youtube#memberListResponse",
+    "nextPageToken": "MARKER-TOKEN-PAGE-2",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 2
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  },
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-2",
+      "kind": "youtube#member",
+      "snippet": {
+       "creatorChannelId": "UCoooooooooooooooooooooo",
+       "memberDetails": {
+        "channelId": "UCmember0000000000000002",
+        "channelUrl": "https://www.youtube.com/channel/x",
+        "displayName": "MARKER-MEMBER 2",
+        "profileImageUrl": "https://yt3.ggpht.com/x"
+       },
+       "membershipsDetails": {
+        "accessibleLevels": [
+         "level-silver",
+         "level-gold"
+        ],
+        "highestAccessibleLevel": "level-gold",
+        "highestAccessibleLevelDisplayName": "Gold",
+        "membershipsDuration": {
+         "memberSince": "2025-01-01T00:00:00Z",
+         "memberTotalDurationMonths": 21
+        },
+        "membershipsDurationAtLevels": [
+         {
+          "level": "level-silver",
+          "memberSince": "2025-01-01T00:00:00Z",
+          "memberTotalDurationMonths": 21
+         },
+         {
+          "level": "level-gold",
+          "memberSince": "2026-01-01T00:00:00Z",
+          "memberTotalDurationMonths": 9
+         }
+        ]
+       }
+      }
+     }
+    ],
+    "kind": "youtube#memberListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 2
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/members",
+ "synthetic": true
+}

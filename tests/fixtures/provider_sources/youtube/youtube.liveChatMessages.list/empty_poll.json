@@ -1,0 +1,37 @@
+{
+ "case": "an open chat with nothing new: no rows, a token and the polling interval (normal for a chat)",
+ "request": {
+  "method": "youtube.liveChatMessages.list",
+  "parameters": {
+   "liveChatId": "LiveChatSynthetic000001"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#liveChatMessageListResponse",
+    "nextPageToken": "MARKER-TOKEN-POLL-3",
+    "pageInfo": {
+     "resultsPerPage": 0,
+     "totalResults": 0
+    },
+    "pollingIntervalMillis": 10000
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/liveChatMessages/list",
+ "synthetic": true
+}

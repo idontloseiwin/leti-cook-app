@@ -1,0 +1,9 @@
+{
+  "source_files": {
+    "application/collection_policy.py": "8045168e03b5381a67e6032428225cc1663b332d953251bddf3bf8ed378b3856",
+    "schema/schema.sql": "0106b0238c6be9e89dfadfe1e1dbe931e5b37200c8f6eb3e88e2985b750dcb98",
+    "application/collection_schedule_model.py": "bea7adc489167cae9d286dd1eb2afb2ef7be61602fc98cc11493aabc63cde153"
+  },
+  "default_sql_fixture_sha256": "ad2fe7a808f8a6d36e701cf259f3c8d5c2c35e32610448e9acf874c6546f5d84",
+  "scope": "Schema cadence seeds and the Python schedule model used by the fixture."
+}

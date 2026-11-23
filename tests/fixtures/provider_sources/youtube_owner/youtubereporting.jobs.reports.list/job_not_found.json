@@ -1,0 +1,32 @@
+{
+ "case": "404 for an unknown job",
+ "request": {
+  "context": "owner",
+  "method": "youtubereporting.jobs.reports.list",
+  "parameters": {
+   "jobId": "job-synthetic-9"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 404,
+     "message": "MARKER-ERROR-TEXT",
+     "status": "NOT_FOUND"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 404
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs.reports/list",
+ "synthetic": true
+}

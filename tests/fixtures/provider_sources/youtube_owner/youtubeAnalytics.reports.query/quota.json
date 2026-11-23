@@ -1,0 +1,43 @@
+{
+ "case": "403 quotaExceeded counts in the youtube_analytics bucket, never general",
+ "request": {
+  "context": "owner",
+  "method": "youtubeAnalytics.reports.query",
+  "parameters": {
+   "dimensions": "day",
+   "endDate": "2026-09-03",
+   "ids": "channel==MINE",
+   "maxResults": 2,
+   "metrics": "views,estimatedMinutesWatched,averageViewPercentage",
+   "startDate": "2026-09-01"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "quotaExceeded"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/analytics/reference/reports/query",
+ "synthetic": true
+}

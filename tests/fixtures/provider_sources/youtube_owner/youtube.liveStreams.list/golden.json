@@ -1,0 +1,146 @@
+{
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.liveStreams.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "ded30c33e60f038ba8bf8169e00dc6efa40816dfe859a195a8d4415ce0ac328d",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "live_stream",
+  "version": 1
+ },
+ "mine_cdn_secrets_dropped": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.liveStreams.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "f38e9c0a84578f68bf4e9223cea408ac300eecf9a00cd3b4c11cc29dac888a19",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "cdn",
+     "id",
+     "snippet",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "cdn.frameRate": {
+      "state": "known",
+      "value": "60fps"
+     },
+     "cdn.ingestionType": {
+      "state": "known",
+      "value": "rtmp"
+     },
+     "cdn.resolution": {
+      "state": "known",
+      "value": "1080p"
+     },
+     "id": {
+      "state": "known",
+      "value": "stream-synthetic-1"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE stream"
+     },
+     "status.healthStatus.configurationIssues[].severity": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "warning"
+       }
+      ]
+     },
+     "status.healthStatus.configurationIssues[].type": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "gopSizeLong"
+       }
+      ]
+     },
+     "status.healthStatus.lastUpdateTimeSeconds": {
+      "state": "known",
+      "value": 1793268000
+     },
+     "status.healthStatus.status": {
+      "state": "known",
+      "value": "ok"
+     },
+     "status.streamStatus": {
+      "state": "known",
+      "value": "active"
+     }
+    },
+    "identity": {
+     "id": "stream-synthetic-1",
+     "kind": "live_stream"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "live_stream",
+  "version": 1
+ }
+}

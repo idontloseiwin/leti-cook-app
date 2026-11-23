@@ -1,0 +1,563 @@
+{
+ "by_id": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCAAAAAAAAAAAAAAAAAAAAA1.SectionMissing": "omitted",
+   "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01": "present",
+   "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02": "present"
+  },
+  "method": "youtube.channelSections.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "07b8769eeb6633650ff3cd85651530628c70f199179985d8d5eed196f53282c4",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.position": {
+      "state": "known",
+      "value": 0
+     },
+     "snippet.title": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "recentUploads"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+     "kind": "channel_section"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.position": {
+      "state": "known",
+      "value": 1
+     },
+     "snippet.title": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "singlePlaylist"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02",
+     "kind": "channel_section"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel_section",
+  "version": 1
+ },
+ "channel_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCCCCCCCCCCCCCCCCCCCCCC3": "not_found"
+  },
+  "method": "youtube.channelSections.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "07b8769eeb6633650ff3cd85651530628c70f199179985d8d5eed196f53282c4",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "channel_section",
+  "version": 1
+ },
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.channelSections.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "07b8769eeb6633650ff3cd85651530628c70f199179985d8d5eed196f53282c4",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "channel_section",
+  "version": 1
+ },
+ "forbidden": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCBBBBBBBBBBBBBBBBBBBBB2": "access_denied"
+  },
+  "method": "youtube.channelSections.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "07b8769eeb6633650ff3cd85651530628c70f199179985d8d5eed196f53282c4",
+    "http_status": 403,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "channel_section",
+  "version": 1
+ },
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.channelSections.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "07f494c6449718fd3c27e787677fe71c6b875805f7631dc280438634d8439a1e",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.channels[]": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlists[]": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.position": {
+      "state": "known",
+      "value": 0
+     },
+     "snippet.title": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "recentUploads"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+     "kind": "channel_section"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.channels[]": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.playlists[]": {
+      "state": "known",
+      "value": [
+       "PLsyntheticPlaylist000000000000001"
+      ]
+     },
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.position": {
+      "state": "known",
+      "value": 1
+     },
+     "snippet.title": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "singlePlaylist"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02",
+     "kind": "channel_section"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.channels[]": {
+      "state": "known",
+      "value": [
+       "UCBBBBBBBBBBBBBBBBBBBBB2",
+       "UCCCCCCCCCCCCCCCCCCCCCC3"
+      ]
+     },
+     "contentDetails.playlists[]": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth03"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.position": {
+      "state": "known",
+      "value": 2
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Friends"
+     },
+     "snippet.type": {
+      "state": "known",
+      "value": "multipleChannels"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth03",
+     "kind": "channel_section"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel_section",
+  "version": 1
+ },
+ "minimal": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.channelSections.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "6d0959412e25b7f0ecf3674a491f1547ea07aba244f29cd24f5aea8d6133f766",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+     "kind": "channel_section"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel_section",
+  "version": 1
+ },
+ "section_not_found_batch": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01": "omitted",
+   "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02": "omitted"
+  },
+  "method": "youtube.channelSections.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "07b8769eeb6633650ff3cd85651530628c70f199179985d8d5eed196f53282c4",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "channel_section",
+  "version": 1
+ },
+ "unknown_enum_and_field": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.channelSections.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "07b8769eeb6633650ff3cd85651530628c70f199179985d8d5eed196f53282c4",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "snippet.layout"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.position": {
+      "state": "known",
+      "value": 0
+     },
+     "snippet.title": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.type": {
+      "state": "unknown_enum",
+      "value": "shortsShelf"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+     "kind": "channel_section"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel_section",
+  "version": 1
+ }
+}

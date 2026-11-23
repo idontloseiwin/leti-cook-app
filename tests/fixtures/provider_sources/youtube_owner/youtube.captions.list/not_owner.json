@@ -1,0 +1,40 @@
+{
+ "case": "403 forbidden: the video is not the authorized owner's",
+ "request": {
+  "context": "owner",
+  "method": "youtube.captions.list",
+  "parameters": {
+   "videoId": "vidxxxxxxx2"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "forbidden"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/captions/list#errors",
+ "synthetic": true
+}

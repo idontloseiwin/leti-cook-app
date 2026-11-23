@@ -1,0 +1,35 @@
+{
+ "case": "downloadUrl on another host: refused before any second request",
+ "request": {
+  "context": "owner",
+  "method": "youtubereporting.media.download",
+  "parameters": {
+   "jobId": "job-synthetic-1",
+   "reportId": "report-2",
+   "reportTypeId": "channel_basic_a3"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "createTime": "2026-10-05T10:00:00Z",
+    "downloadUrl": "https://evil.example/v1/media/x?alt=media",
+    "endTime": "2026-10-02T08:00:00Z",
+    "id": "report-2",
+    "jobId": "job-synthetic-1",
+    "startTime": "2026-10-01T08:00:00Z"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/media/download",
+ "synthetic": true
+}

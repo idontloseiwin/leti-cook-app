@@ -1,0 +1,484 @@
+{
+ "binary_body": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.captions.download",
+  "notes": [
+   "media_binary"
+  ],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "response_invalid",
+  "unit": "caption_file",
+  "version": 1
+ },
+ "could_not_convert": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.captions.download",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 400,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "caption_not_convertible",
+  "unit": "caption_file",
+  "version": 1
+ },
+ "format_mismatch": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.captions.download",
+  "notes": [
+   "media_format_mismatch"
+  ],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "response_invalid",
+  "unit": "caption_file",
+  "version": 1
+ },
+ "not_editable": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "AUieDaSyntheticTrack2": "access_denied"
+  },
+  "method": "youtube.captions.download",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 403,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "caption_file",
+  "version": 1
+ },
+ "not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "AUieDaSyntheticTrack9": "not_found"
+  },
+  "method": "youtube.captions.download",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 404,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "caption_file",
+  "version": 1
+ },
+ "original_sbv": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "AUieDaSyntheticTrack1": "present"
+  },
+  "method": "youtube.captions.download",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "byte_length": {
+      "state": "known",
+      "value": 82
+     },
+     "cue_count": {
+      "state": "known",
+      "value": 2
+     },
+     "format": {
+      "state": "known",
+      "value": "sbv"
+     },
+     "line_count": {
+      "state": "known",
+      "value": 5
+     },
+     "sha256": {
+      "state": "known",
+      "value": "7823537d2b225eca524a35e94692bdf54275c10e61881c31c23138bcafbf5484"
+     },
+     "text": {
+      "state": "known",
+      "value": "0:00:00.000,0:00:02.000\nMARKER-CAPTION line one\n\n0:00:02.500,0:00:04.000\nline two\n"
+     }
+    },
+    "identity": {
+     "id": "AUieDaSyntheticTrack1",
+     "kind": "caption"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "caption_file",
+  "version": 1
+ },
+ "original_unrecognized": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "AUieDaSyntheticTrack1": "present"
+  },
+  "method": "youtube.captions.download",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "byte_length": {
+      "state": "known",
+      "value": 27
+     },
+     "cue_count": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "format": {
+      "state": "unknown_enum",
+      "value": "unrecognized"
+     },
+     "line_count": {
+      "state": "known",
+      "value": 1
+     },
+     "sha256": {
+      "state": "known",
+      "value": "c314aae135b3143e87189a82e7ca6fdd2917a882a819f4cd88fd086504e3b082"
+     },
+     "text": {
+      "state": "known",
+      "value": "MARKER-CAPTION plain words\n"
+     }
+    },
+    "identity": {
+     "id": "AUieDaSyntheticTrack1",
+     "kind": "caption"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "caption_file",
+  "version": 1
+ },
+ "srt_translated": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "AUieDaSyntheticTrack1": "present"
+  },
+  "method": "youtube.captions.download",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "byte_length": {
+      "state": "known",
+      "value": 101
+     },
+     "cue_count": {
+      "state": "known",
+      "value": 2
+     },
+     "format": {
+      "state": "known",
+      "value": "srt"
+     }
+    },
+    "identity": {
+     "id": "AUieDaSyntheticTrack1",
+     "kind": "caption"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "caption_file",
+  "version": 1
+ },
+ "vtt": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 200
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "AUieDaSyntheticTrack1": "present"
+  },
+  "method": "youtube.captions.download",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 200,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "byte_length": {
+      "state": "known",
+      "value": 144
+     },
+     "cue_count": {
+      "state": "known",
+      "value": 3
+     },
+     "format": {
+      "state": "known",
+      "value": "vtt"
+     },
+     "line_count": {
+      "state": "known",
+      "value": 10
+     },
+     "sha256": {
+      "state": "known",
+      "value": "e6aad00128ee198a65f2db8b7153870c5de8b897499a00f6668e612421ecdca7"
+     },
+     "text": {
+      "state": "known",
+      "value": "WEBVTT\n\n00:00:00.000 --> 00:00:02.000\nMARKER-CAPTION line one\n\n00:00:02.500 --> 00:00:04.000\nline two\n\n00:01:00.000 --> 00:01:02.000\nline three\n"
+     }
+    },
+    "identity": {
+     "id": "AUieDaSyntheticTrack1",
+     "kind": "caption"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "caption_file",
+  "version": 1
+ }
+}

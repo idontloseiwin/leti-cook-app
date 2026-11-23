@@ -1,0 +1,68 @@
+{
+ "case": "two moderators; personal fields named explicitly",
+ "request": {
+  "context": "owner",
+  "method": "youtube.liveChatModerators.list",
+  "parameters": {
+   "liveChatId": "Cg0KC2xpdmVjaGF0aWQ"
+  },
+  "selection": {
+   "fields": [
+    "snippet.moderatorDetails.displayName",
+    "snippet.moderatorDetails.channelId"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-1",
+      "id": "MARKER-MODERATOR-ID-1",
+      "kind": "youtube#liveChatModerator",
+      "snippet": {
+       "liveChatId": "Cg0KC2xpdmVjaGF0aWQ",
+       "moderatorDetails": {
+        "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+        "channelUrl": "http://www.youtube.com/channel/UCAAAAAAAAAAAAAAAAAAAAA1",
+        "displayName": "MARKER-PERSON 1",
+        "profileImageUrl": "https://yt3.ggpht.com/x"
+       }
+      }
+     },
+     {
+      "etag": "etag-2",
+      "id": "MARKER-MODERATOR-ID-2",
+      "kind": "youtube#liveChatModerator",
+      "snippet": {
+       "liveChatId": "Cg0KC2xpdmVjaGF0aWQ",
+       "moderatorDetails": {
+        "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+        "channelUrl": "http://www.youtube.com/channel/UCAAAAAAAAAAAAAAAAAAAAA1",
+        "displayName": "MARKER-PERSON 2",
+        "profileImageUrl": "https://yt3.ggpht.com/x"
+       }
+      }
+     }
+    ],
+    "kind": "youtube#liveChatModeratorListResponse",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 2
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/liveChatModerators",
+ "synthetic": true
+}

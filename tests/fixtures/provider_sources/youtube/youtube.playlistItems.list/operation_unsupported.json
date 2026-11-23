@@ -1,0 +1,39 @@
+{
+ "case": "400 playlistOperationUnsupported: listing this playlist is not supported",
+ "request": {
+  "method": "youtube.playlistItems.list",
+  "parameters": {
+   "playlistId": "WL"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 400,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "playlistOperationUnsupported"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 400
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlistItems/list#errors",
+ "synthetic": true
+}

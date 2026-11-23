@@ -1,0 +1,100 @@
+{
+ "my_rating_owner_parts": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "7be01ce5ae96854e4c9f39bcc20dd5eb3baa04c8133e6a73dee5f832c34492a8",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "fileDetails",
+     "id",
+     "processingDetails"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "fileDetails.container": {
+      "state": "known",
+      "value": "mov"
+     },
+     "fileDetails.fileSize": {
+      "state": "known",
+      "value": 104857600
+     },
+     "fileDetails.videoStreams[].codec": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "h264"
+       },
+       {
+        "state": "known",
+        "value": "vp9"
+       }
+      ]
+     },
+     "fileDetails.videoStreams[].widthPixels": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": 1920
+       },
+       {
+        "state": "known",
+        "value": 1280
+       }
+      ]
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "processingDetails.processingProgress.partsTotal": {
+      "state": "known",
+      "value": 1000
+     },
+     "processingDetails.processingStatus": {
+      "state": "known",
+      "value": "succeeded"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ }
+}

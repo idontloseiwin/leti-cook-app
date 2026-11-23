@@ -1,0 +1,436 @@
+{
+ "all_failed": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "video_batch_get_stats": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "failed",
+   "vidxxxxxxx2": "failed"
+  },
+  "method": "youtube.videos.batchGetStats",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "846ee8e7daa09ea47742d431dc36e16a687c16b450f67735f8b6f94138400f32",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "statistics"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "video_batch_get_stats",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "video_stat",
+  "version": 1
+ },
+ "counters_only": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "video_batch_get_stats": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "present"
+  },
+  "method": "youtube.videos.batchGetStats",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "846ee8e7daa09ea47742d431dc36e16a687c16b450f67735f8b6f94138400f32",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "statistics"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "video_batch_get_stats",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "statistics.commentCount": {
+      "state": "known",
+      "value": 0
+     },
+     "statistics.likeCount": {
+      "state": "known",
+      "value": 42
+     },
+     "statistics.viewCount": {
+      "state": "known",
+      "value": "9007199254740993"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_stat",
+  "version": 1
+ },
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "video_batch_get_stats": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "present",
+   "vidxxxxxxx2": "present",
+   "vidxxxxxxx3": "failed"
+  },
+  "method": "youtube.videos.batchGetStats",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "75bf12afc2f3c95cba566b15d41eb2c74a2407d83f2bc1fa0678b91e0fbb04ec",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "snippet",
+     "statistics"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "video_batch_get_stats",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.duration": {
+      "state": "known",
+      "value": "253"
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "snippet.publishTime": {
+      "state": "known",
+      "value": "2026-10-21T11:00:00Z"
+     },
+     "statistics.commentCount": {
+      "state": "known",
+      "value": 0
+     },
+     "statistics.likeCount": {
+      "state": "known",
+      "value": 42
+     },
+     "statistics.viewCount": {
+      "state": "invalid"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.duration": {
+      "state": "known",
+      "value": "253"
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx2"
+     },
+     "snippet.publishTime": {
+      "state": "known",
+      "value": "2026-10-22T12:00:00Z"
+     },
+     "statistics.commentCount": {
+      "state": "known",
+      "value": 0
+     },
+     "statistics.likeCount": {
+      "state": "known",
+      "value": 42
+     },
+     "statistics.viewCount": {
+      "state": "known",
+      "value": 0
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx2",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_stat",
+  "version": 1
+ },
+ "invalid_counters": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "video_batch_get_stats": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "present"
+  },
+  "method": "youtube.videos.batchGetStats",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "846ee8e7daa09ea47742d431dc36e16a687c16b450f67735f8b6f94138400f32",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "statistics"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "video_batch_get_stats",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "statistics.commentCount": {
+      "state": "invalid"
+     },
+     "statistics.likeCount": {
+      "state": "invalid"
+     },
+     "statistics.viewCount": {
+      "state": "known",
+      "value": 12
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_stat",
+  "version": 1
+ },
+ "no_summary": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "video_batch_get_stats": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "present",
+   "vidxxxxxxx2": "omitted"
+  },
+  "method": "youtube.videos.batchGetStats",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "846ee8e7daa09ea47742d431dc36e16a687c16b450f67735f8b6f94138400f32",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "statistics"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "video_batch_get_stats",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "statistics.commentCount": {
+      "state": "known",
+      "value": 0
+     },
+     "statistics.likeCount": {
+      "state": "known",
+      "value": 42
+     },
+     "statistics.viewCount": {
+      "state": "known",
+      "value": 5
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_stat",
+  "version": 1
+ },
+ "unknown_field": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "video_batch_get_stats": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "present"
+  },
+  "method": "youtube.videos.batchGetStats",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "846ee8e7daa09ea47742d431dc36e16a687c16b450f67735f8b6f94138400f32",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "statistics"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "video_batch_get_stats",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "statistics.brandNewCounter"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "statistics.commentCount": {
+      "state": "known",
+      "value": 0
+     },
+     "statistics.likeCount": {
+      "state": "known",
+      "value": 42
+     },
+     "statistics.viewCount": {
+      "state": "known",
+      "value": 3
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video_stat",
+  "version": 1
+ }
+}

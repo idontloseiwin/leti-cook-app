@@ -1,0 +1,102 @@
+# Local database transport only; this does not install or authorize the app.
+# PostgreSQL is private to the installation; only the backend publishes a port.
+# Supply a NEW, unique project name and an explicitly generated empty schema.
+# Do not point this stack at a private volume, dump, or migration-history folder.
+# All secrets are mandatory. install.py writes them to installation.env; never
+# commit it or print `docker compose config` with real credentials loaded.
+name: ${SELF_HOSTED_DB_PROJECT:?Choose a new isolated database project name}
+
+services:
+  db:
+    # Compose gives the locally built image this installation's project tag.
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    # Concurrent PostgreSQL parallel queries share this tmpfs. Docker's 64 MiB
+    # default can fail with SQLSTATE 53100 even when the data disk has space.
+    # This is a ceiling, not a reservation of host memory.
+    shm_size: 256m
+    # The official entrypoint runs as root only to hand the data folder to the
+    # postgres user (find/chown, chmod) and then switches to it with setpriv
+    # (database/Dockerfile); PostgreSQL itself runs with no capabilities.
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    security_opt: [no-new-privileges:true]
+    # About 100 connections plus background and parallel workers stay far below
+    # this ceiling. No memory limit on purpose: stopping PostgreSQL mid-write
+    # is worse than memory pressure on the host.
+    pids_limit: 512
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: leti-cook
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Provide a new database password}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+      AUTHENTICATOR_PASSWORD: ${AUTHENTICATOR_PASSWORD:?Provide a new URL-safe authenticator password}
+      SELF_HOSTED_SCHEMA_SHA256: ${SELF_HOSTED_SCHEMA_SHA256:?Provide the schema SHA256 from the verified generated manifest}
+    command:
+      - postgres
+      # Connection rules from the image (database/Dockerfile), not the volume:
+      # only the application's login may connect over the network.
+      - -c
+      - hba_file=/usr/local/share/leti-cook/pg_hba.conf
+      - -c
+      - logging_collector=off
+      - -c
+      - log_destination=stderr
+      - -c
+      - log_statement=none
+      - -c
+      - log_duration=off
+      - -c
+      - log_min_duration_statement=-1
+      - -c
+      - log_min_error_statement=panic
+      - -c
+      - log_error_verbosity=terse
+      - -c
+      - log_parameter_max_length=0
+      - -c
+      - log_parameter_max_length_on_error=0
+      # Ends a transaction abandoned mid-work so it cannot hold locks forever.
+      # Application transactions set a shorter local limit and schema steps set
+      # their own, so this reaches only sessions that set nothing.
+      - -c
+      - idle_in_transaction_session_timeout=10min
+    volumes:
+      - database-data:/var/lib/postgresql/data
+      - type: bind
+        source: ./bootstrap.sh
+        target: /docker-entrypoint-initdb.d/10-self-hosted.sh
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${SELF_HOSTED_SCHEMA_PATH:?Provide the absolute path to the generated fresh schema SQL}
+        target: /opt/leti-cook/schema.sql
+        read_only: true
+        bind:
+          create_host_path: false
+    healthcheck:
+      # TCP excludes the temporary init server. The marker excludes a failed
+      # first initialization on later restarts; never repair it by importing data.
+      test: [CMD-SHELL, 'test -f "$$PGDATA/.self-hosted-schema-ready" && pg_isready -h 127.0.0.1 -U postgres -d leti-cook']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 120s
+    # PostgreSQL errors can still contain source data. Disabling the persistent
+    # Docker sink is essential; terse/error settings alone do not sanitize them.
+    logging:
+      driver: none
+    networks: [database]
+
+volumes:
+  # Compose scopes this volume to SELF_HOSTED_DB_PROJECT; no external volume.
+  database-data:
+
+networks:
+  database:
+    internal: true
+  application-access:
+    driver: bridge

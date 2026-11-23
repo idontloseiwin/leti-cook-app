@@ -1,0 +1,61 @@
+{
+ "case": "three videos in a group",
+ "request": {
+  "context": "owner",
+  "method": "youtubeAnalytics.groupItems.list",
+  "parameters": {
+   "groupId": "group-synthetic-1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e1",
+      "groupId": "group-synthetic-1",
+      "id": "group-item-1",
+      "kind": "youtube#groupItem",
+      "resource": {
+       "id": "vidxxxxxxx1",
+       "kind": "youtube#video"
+      }
+     },
+     {
+      "etag": "e2",
+      "groupId": "group-synthetic-1",
+      "id": "group-item-2",
+      "kind": "youtube#groupItem",
+      "resource": {
+       "id": "vidxxxxxxx2",
+       "kind": "youtube#video"
+      }
+     },
+     {
+      "etag": "e3",
+      "groupId": "group-synthetic-1",
+      "id": "group-item-3",
+      "kind": "youtube#groupItem",
+      "resource": {
+       "id": "vidxxxxxxx3",
+       "kind": "youtube#video"
+      }
+     }
+    ],
+    "kind": "youtube#groupItemListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/analytics/reference/groupItems",
+ "synthetic": true
+}

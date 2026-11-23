@@ -1,0 +1,39 @@
+{
+ "case": "403 forbidden: the comments cannot be retrieved",
+ "request": {
+  "method": "youtube.comments.list",
+  "parameters": {
+   "parentId": "UgxSyntheticThread000003"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "forbidden"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/comments/list#errors",
+ "synthetic": true
+}

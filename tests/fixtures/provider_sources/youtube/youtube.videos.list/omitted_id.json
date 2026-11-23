@@ -1,0 +1,162 @@
+{
+ "case": "three requested IDs, one omitted",
+ "request": {
+  "method": "youtube.videos.list",
+  "parameters": {
+   "id": [
+    "vidxxxxxxx1",
+    "vidxxxxxxx2",
+    "vidxxxxxxx3"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "caption": "true",
+       "contentRating": {},
+       "definition": "hd",
+       "dimension": "2d",
+       "duration": "PT4M13S",
+       "licensedContent": false,
+       "projection": "rectangular",
+       "regionRestriction": {
+        "blocked": [
+         "DE"
+        ]
+       }
+      },
+      "etag": "e1",
+      "id": "vidxxxxxxx1",
+      "kind": "youtube#video",
+      "paidProductPlacementDetails": {
+       "hasPaidProductPlacement": false
+      },
+      "snippet": {
+       "categoryId": "22",
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "defaultAudioLanguage": "en-US",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION video 1",
+       "liveBroadcastContent": "none",
+       "localized": {
+        "description": "MARKER-DESCRIPTION video 1",
+        "title": "MARKER-TITLE Video 1"
+       },
+       "publishedAt": "2026-10-21T11:00:00Z",
+       "tags": [
+        "synthetic",
+        "tag1"
+       ],
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg",
+         "width": 120
+        }
+       },
+       "title": "MARKER-TITLE Video 1"
+      },
+      "status": {
+       "embeddable": true,
+       "license": "youtube",
+       "madeForKids": false,
+       "privacyStatus": "public",
+       "publicStatsViewable": true,
+       "uploadStatus": "processed"
+      },
+      "topicDetails": {
+       "topicCategories": [
+        "https://en.wikipedia.org/wiki/Knowledge"
+       ]
+      }
+     },
+     {
+      "contentDetails": {
+       "caption": "true",
+       "contentRating": {},
+       "definition": "hd",
+       "dimension": "2d",
+       "duration": "PT4M13S",
+       "licensedContent": false,
+       "projection": "rectangular",
+       "regionRestriction": {
+        "blocked": [
+         "DE"
+        ]
+       }
+      },
+      "etag": "e3",
+      "id": "vidxxxxxxx3",
+      "kind": "youtube#video",
+      "paidProductPlacementDetails": {
+       "hasPaidProductPlacement": false
+      },
+      "snippet": {
+       "categoryId": "22",
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "defaultAudioLanguage": "en-US",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION video 3",
+       "liveBroadcastContent": "none",
+       "localized": {
+        "description": "MARKER-DESCRIPTION video 3",
+        "title": "MARKER-TITLE Video 3"
+       },
+       "publishedAt": "2026-10-23T13:00:00Z",
+       "tags": [
+        "synthetic",
+        "tag3"
+       ],
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx3/default.jpg",
+         "width": 120
+        }
+       },
+       "title": "MARKER-TITLE Video 3"
+      },
+      "status": {
+       "embeddable": true,
+       "license": "youtube",
+       "madeForKids": false,
+       "privacyStatus": "public",
+       "publicStatsViewable": true,
+       "uploadStatus": "processed"
+      },
+      "topicDetails": {
+       "topicCategories": [
+        "https://en.wikipedia.org/wiki/Knowledge"
+       ]
+      }
+     }
+    ],
+    "kind": "youtube#videoListResponse",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 2
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos#resource",
+ "synthetic": true
+}

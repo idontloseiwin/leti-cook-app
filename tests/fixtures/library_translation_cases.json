@@ -1,0 +1,4066 @@
+{
+ "version": 1,
+ "about": "Python translates each case's Library filters into the expected query. The browser reopens the query as equivalent filters. A null expectation identifies an unsupported input.",
+ "channel_id": "UCAAAAAAAAAAAAAAAAAAAAAA",
+ "query_shell": {
+  "query_version": 1,
+  "source": {
+   "id": "public.videos.current.v1"
+  },
+  "scope_kind": "channel",
+  "select": [
+   "video.id",
+   "video.title",
+   "video.thumbnail_url",
+   "video.published_at",
+   "video.duration_seconds",
+   "video.views",
+   "video.likes",
+   "video.comments",
+   "video.category_id"
+  ],
+  "page_size": 50
+ },
+ "cases": [
+  {
+   "name": "search double space inside",
+   "covers": [
+    "filters.q"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "Stra\u00dfe  Guide",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.title",
+     "op": "contains_casefold_v1",
+     "value": "Stra\u00dfe Guide"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "search casefold sharp s",
+   "covers": [
+    "filters.q"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "STRASSE",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.title",
+     "op": "contains_casefold_v1",
+     "value": "STRASSE"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "search Turkish dotted capital I",
+   "covers": [
+    "filters.q"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "\u0130stanbul",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.title",
+     "op": "contains_casefold_v1",
+     "value": "\u0130stanbul"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "search ideographic space run",
+   "covers": [
+    "filters.q"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "Hello\u3000 World",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.title",
+     "op": "contains_casefold_v1",
+     "value": "Hello World"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "search U+001C inside collapses",
+   "covers": [
+    "filters.q"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "a\u001cb",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.title",
+     "op": "contains_casefold_v1",
+     "value": "a b"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "search U+001C then U+FEFF at start",
+   "covers": [
+    "filters.q"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "\u001c\ufeffa",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.title",
+     "op": "contains_casefold_v1",
+     "value": "\ufeffa"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "category exact",
+   "covers": [
+    "filters.category_id"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "22",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.category_id",
+     "op": "eq",
+     "value": "22"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "published from on Berlin DST day",
+   "covers": [
+    "filters.published_from"
+   ],
+   "video_type": "long",
+   "time_zone": "Europe/Berlin",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2026-03-29",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_date",
+     "op": "gte",
+     "value": "2026-03-29"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "published before after Berlin DST day",
+   "covers": [
+    "filters.published_before"
+   ],
+   "video_type": "long",
+   "time_zone": "Europe/Berlin",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "2026-03-30",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_date",
+     "op": "lt",
+     "value": "2026-03-30"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "published from on Santiago DST start (no local midnight)",
+   "covers": [
+    "filters.published_from"
+   ],
+   "video_type": "long",
+   "time_zone": "America/Santiago",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2026-09-06",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_date",
+     "op": "gte",
+     "value": "2026-09-06"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "published range around Santiago DST end",
+   "covers": [
+    "filters.published_from",
+    "filters.published_before"
+   ],
+   "video_type": "long",
+   "time_zone": "America/Santiago",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2026-04-04",
+     "published_before": "2026-04-06",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.published_date",
+       "op": "gte",
+       "value": "2026-04-04"
+      },
+      {
+       "field": "video.published_date",
+       "op": "lt",
+       "value": "2026-04-06"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "published range UTC",
+   "covers": [
+    "filters.published_from",
+    "filters.published_before"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2024-01-01",
+     "published_before": "2024-02-01",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.published_date",
+       "op": "gte",
+       "value": "2024-01-01"
+      },
+      {
+       "field": "video.published_date",
+       "op": "lt",
+       "value": "2024-02-01"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "views bounds",
+   "covers": [
+    "filters.min_views",
+    "filters.max_views"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "10",
+     "max_views": "1000000000000000",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.views",
+       "op": "gte",
+       "value": "10"
+      },
+      {
+       "field": "video.views",
+       "op": "lte",
+       "value": "1000000000000000"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "duration bounds",
+   "covers": [
+    "filters.min_duration_seconds",
+    "filters.max_duration_seconds"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "60",
+     "max_duration_seconds": "3600",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.duration_seconds",
+       "op": "gte",
+       "value": "60"
+      },
+      {
+       "field": "video.duration_seconds",
+       "op": "lte",
+       "value": "3600"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "duration zero upper bound",
+   "covers": [
+    "filters.max_duration_seconds"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "0",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.duration_seconds",
+     "op": "lte",
+     "value": "0"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "likes bounds",
+   "covers": [
+    "filters.min_likes",
+    "filters.max_likes"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "min_likes": "5",
+     "max_likes": "7"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.likes",
+       "op": "gte",
+       "value": "5"
+      },
+      {
+       "field": "video.likes",
+       "op": "lte",
+       "value": "7"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "comments bounds",
+   "covers": [
+    "filters.min_comments",
+    "filters.max_comments"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "min_comments": "0",
+     "max_comments": "99"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.comments",
+       "op": "gte",
+       "value": "0"
+      },
+      {
+       "field": "video.comments",
+       "op": "lte",
+       "value": "99"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "computed bound min_title_length",
+   "covers": [
+    "filters.min_title_length"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "min_title_length": "3"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.title_length",
+     "op": "gte",
+     "value": "3"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "computed bound max_title_length",
+   "covers": [
+    "filters.max_title_length"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "max_title_length": "80"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.title_length",
+     "op": "lte",
+     "value": "80"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "computed bound min_tag_count",
+   "covers": [
+    "filters.min_tag_count"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "min_tag_count": "1"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.tag_count",
+     "op": "gte",
+     "value": "1"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "computed bound max_tag_count",
+   "covers": [
+    "filters.max_tag_count"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "max_tag_count": "15"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.tag_count",
+     "op": "lte",
+     "value": "15"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "computed bound min_like_rate",
+   "covers": [
+    "filters.min_like_rate"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "min_like_rate": "1.5"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.like_rate",
+     "op": "gte",
+     "value": "1.5"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "computed bound max_like_rate",
+   "covers": [
+    "filters.max_like_rate"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "max_like_rate": "20"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.like_rate",
+     "op": "lte",
+     "value": "20"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "computed bound min_comment_rate",
+   "covers": [
+    "filters.min_comment_rate"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "min_comment_rate": "0.25"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.comment_rate",
+     "op": "gte",
+     "value": "0.25"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "computed bound max_comment_rate",
+   "covers": [
+    "filters.max_comment_rate"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "max_comment_rate": "5"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.comment_rate",
+     "op": "lte",
+     "value": "5"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "views under 1K (999 in, 1000 out)",
+   "covers": [
+    "facets.view_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [
+      "under_1k"
+     ],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.views",
+     "op": "lt",
+     "value": "1000"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "views one closed preset",
+   "covers": [
+    "facets.view_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [
+      "10k_100k"
+     ],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.views",
+       "op": "gte",
+       "value": "10000"
+      },
+      {
+       "field": "video.views",
+       "op": "lt",
+       "value": "100000"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "views presets merge and split",
+   "covers": [
+    "facets.view_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [
+      "under_1k",
+      "1k_10k",
+      "10m_plus"
+     ],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "any": [
+      {
+       "field": "video.views",
+       "op": "lt",
+       "value": "10000"
+      },
+      {
+       "field": "video.views",
+       "op": "gte",
+       "value": "10000000"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "views all presets",
+   "covers": [
+    "facets.view_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [
+      "under_1k",
+      "1k_10k",
+      "10k_100k",
+      "100k_1m",
+      "1m_10m",
+      "10m_plus"
+     ],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.views",
+     "op": "is_known"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "duration under 5 min (299 in, 300 out)",
+   "covers": [
+    "facets.duration_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [
+      "under_5m"
+     ],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.duration_seconds",
+     "op": "lt",
+     "value": "300"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "duration two presets",
+   "covers": [
+    "facets.duration_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [
+      "under_5m",
+      "20m_40m"
+     ],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "any": [
+      {
+       "field": "video.duration_seconds",
+       "op": "lt",
+       "value": "300"
+      },
+      {
+       "all": [
+        {
+         "field": "video.duration_seconds",
+         "op": "gte",
+         "value": "1200"
+        },
+        {
+         "field": "video.duration_seconds",
+         "op": "lt",
+         "value": "2400"
+        }
+       ]
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "likes touching presets",
+   "covers": [
+    "facets.like_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "like_buckets": [
+      "100_1k",
+      "1k_10k"
+     ]
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.likes",
+       "op": "gte",
+       "value": "100"
+      },
+      {
+       "field": "video.likes",
+       "op": "lt",
+       "value": "10000"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "comments open preset",
+   "covers": [
+    "facets.comment_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "comment_buckets": [
+      "10k_plus"
+     ]
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.comments",
+     "op": "gte",
+     "value": "10000"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "title length preset",
+   "covers": [
+    "facets.title_length_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "title_length_buckets": [
+      "40_60"
+     ]
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.title_length",
+       "op": "gte",
+       "value": "40"
+      },
+      {
+       "field": "video.title_length",
+       "op": "lt",
+       "value": "60"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "tag count preset",
+   "covers": [
+    "facets.tag_count_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "tag_count_buckets": [
+      "zero"
+     ]
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.tag_count",
+       "op": "gte",
+       "value": "0"
+      },
+      {
+       "field": "video.tag_count",
+       "op": "lt",
+       "value": "1"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "year UTC",
+   "covers": [
+    "facets.published_years"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2024
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_year",
+     "op": "in",
+     "value": [
+      "2024"
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "year in UTC+14",
+   "covers": [
+    "facets.published_years"
+   ],
+   "video_type": "long",
+   "time_zone": "Pacific/Kiritimati",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2026
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_year",
+     "op": "in",
+     "value": [
+      "2026"
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "year in UTC-11",
+   "covers": [
+    "facets.published_years"
+   ],
+   "video_type": "long",
+   "time_zone": "Pacific/Pago_Pago",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2026
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_year",
+     "op": "in",
+     "value": [
+      "2026"
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "two years Tokyo",
+   "covers": [
+    "facets.published_years"
+   ],
+   "video_type": "long",
+   "time_zone": "Asia/Tokyo",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2024,
+      2022
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_year",
+     "op": "in",
+     "value": [
+      "2022",
+      "2024"
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "older than",
+   "covers": [
+    "facets.published_older_than"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": 2023,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_year",
+     "op": "lt",
+     "value": "2023"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "years and older merge",
+   "covers": [
+    "facets.published_years",
+    "facets.published_older_than"
+   ],
+   "video_type": "long",
+   "time_zone": "America/New_York",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2025,
+      2024,
+      2023
+     ],
+     "published_older_than": 2023,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "any": [
+      {
+       "field": "video.published_year",
+       "op": "in",
+       "value": [
+        "2023",
+        "2024",
+        "2025"
+       ]
+      },
+      {
+       "field": "video.published_year",
+       "op": "lt",
+       "value": "2023"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "one hundred separate years are one condition",
+   "covers": [
+    "facets.published_years"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2000,
+      1998,
+      1996,
+      1994,
+      1992,
+      1990,
+      1988,
+      1986,
+      1984,
+      1982,
+      1980,
+      1978,
+      1976,
+      1974,
+      1972,
+      1970,
+      1968,
+      1966,
+      1964,
+      1962,
+      1960,
+      1958,
+      1956,
+      1954,
+      1952,
+      1950,
+      1948,
+      1946,
+      1944,
+      1942,
+      1940,
+      1938,
+      1936,
+      1934,
+      1932,
+      1930,
+      1928,
+      1926,
+      1924,
+      1922,
+      1920,
+      1918,
+      1916,
+      1914,
+      1912,
+      1910,
+      1908,
+      1906,
+      1904,
+      1902,
+      1900,
+      1898,
+      1896,
+      1894,
+      1892,
+      1890,
+      1888,
+      1886,
+      1884,
+      1882,
+      1880,
+      1878,
+      1876,
+      1874,
+      1872,
+      1870,
+      1868,
+      1866,
+      1864,
+      1862,
+      1860,
+      1858,
+      1856,
+      1854,
+      1852,
+      1850,
+      1848,
+      1846,
+      1844,
+      1842,
+      1840,
+      1838,
+      1836,
+      1834,
+      1832,
+      1830,
+      1828,
+      1826,
+      1824,
+      1822,
+      1820,
+      1818,
+      1816,
+      1814,
+      1812,
+      1810,
+      1808,
+      1806,
+      1804,
+      1802
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "field": "video.published_year",
+     "op": "in",
+     "value": [
+      "1802",
+      "1804",
+      "1806",
+      "1808",
+      "1810",
+      "1812",
+      "1814",
+      "1816",
+      "1818",
+      "1820",
+      "1822",
+      "1824",
+      "1826",
+      "1828",
+      "1830",
+      "1832",
+      "1834",
+      "1836",
+      "1838",
+      "1840",
+      "1842",
+      "1844",
+      "1846",
+      "1848",
+      "1850",
+      "1852",
+      "1854",
+      "1856",
+      "1858",
+      "1860",
+      "1862",
+      "1864",
+      "1866",
+      "1868",
+      "1870",
+      "1872",
+      "1874",
+      "1876",
+      "1878",
+      "1880",
+      "1882",
+      "1884",
+      "1886",
+      "1888",
+      "1890",
+      "1892",
+      "1894",
+      "1896",
+      "1898",
+      "1900",
+      "1902",
+      "1904",
+      "1906",
+      "1908",
+      "1910",
+      "1912",
+      "1914",
+      "1916",
+      "1918",
+      "1920",
+      "1922",
+      "1924",
+      "1926",
+      "1928",
+      "1930",
+      "1932",
+      "1934",
+      "1936",
+      "1938",
+      "1940",
+      "1942",
+      "1944",
+      "1946",
+      "1948",
+      "1950",
+      "1952",
+      "1954",
+      "1956",
+      "1958",
+      "1960",
+      "1962",
+      "1964",
+      "1966",
+      "1968",
+      "1970",
+      "1972",
+      "1974",
+      "1976",
+      "1978",
+      "1980",
+      "1982",
+      "1984",
+      "1986",
+      "1988",
+      "1990",
+      "1992",
+      "1994",
+      "1996",
+      "1998",
+      "2000"
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "cohort with start",
+   "covers": [
+    "facets.cohort"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": {
+      "kind": "overview",
+      "published_from": "2026-09-01T00:00:00.000000Z",
+      "published_through": "2026-10-01T12:30:00.500000Z"
+     }
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.published_at",
+       "op": "gte",
+       "value": "2026-09-01T00:00:00Z"
+      },
+      {
+       "field": "video.published_at",
+       "op": "lte",
+       "value": "2026-10-01T12:30:00.500000Z"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "cohort without start",
+   "covers": [
+    "facets.cohort"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": {
+      "kind": "overview",
+      "published_from": null,
+      "published_through": "2026-09-30T22:00:00.000000Z"
+     }
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "any": [
+      {
+       "field": "video.published_at",
+       "op": "is_unknown"
+      },
+      {
+       "field": "video.published_at",
+       "op": "lte",
+       "value": "2026-09-30T22:00:00Z"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "growth min_views_gained",
+   "covers": [
+    "facets.growth.min_views_gained"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "growth": {
+      "min_views_gained": "-5"
+     }
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "observation.views_gained_28d",
+       "op": "is_known"
+      },
+      {
+       "field": "observation.views_gained_28d",
+       "op": "gte",
+       "value": "-5"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "growth max_views_gained",
+   "covers": [
+    "facets.growth.max_views_gained"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "growth": {
+      "max_views_gained": "9"
+     }
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "observation.views_gained_28d",
+       "op": "is_known"
+      },
+      {
+       "field": "observation.views_gained_28d",
+       "op": "lte",
+       "value": "9"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "growth min_tracked_days",
+   "covers": [
+    "facets.growth.min_tracked_days"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "growth": {
+      "min_tracked_days": "7"
+     }
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "observation.views_gained_28d",
+       "op": "is_known"
+      },
+      {
+       "field": "observation.growth_28d_interval_seconds",
+       "op": "gte",
+       "value": "604800"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "growth full_history",
+   "covers": [
+    "facets.growth.full_history"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "growth": {
+      "full_history": true
+     }
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "observation.views_gained_28d",
+       "op": "is_known"
+      },
+      {
+       "field": "observation.growth_28d_status",
+       "op": "eq",
+       "value": "ready"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort published_at asc",
+   "covers": [
+    "filters.sort_by=published_at",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "asc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "asc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort published_at desc",
+   "covers": [
+    "filters.sort_by=published_at",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort views asc",
+   "covers": [
+    "filters.sort_by=views",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "views",
+     "sort_order": "asc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "asc",
+      "field": "video.views",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort views desc",
+   "covers": [
+    "filters.sort_by=views",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "views",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.views",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort like_count asc",
+   "covers": [
+    "filters.sort_by=like_count",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "like_count",
+     "sort_order": "asc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "asc",
+      "field": "video.likes",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort like_count desc",
+   "covers": [
+    "filters.sort_by=like_count",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "like_count",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.likes",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort comment_count asc",
+   "covers": [
+    "filters.sort_by=comment_count",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "comment_count",
+     "sort_order": "asc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "asc",
+      "field": "video.comments",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort comment_count desc",
+   "covers": [
+    "filters.sort_by=comment_count",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "comment_count",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.comments",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort duration asc",
+   "covers": [
+    "filters.sort_by=duration",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "duration",
+     "sort_order": "asc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "asc",
+      "field": "video.duration_seconds",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort duration desc",
+   "covers": [
+    "filters.sort_by=duration",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "duration",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.duration_seconds",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort title asc",
+   "covers": [
+    "filters.sort_by=title",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "title",
+     "sort_order": "asc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "asc",
+      "field": "video.title",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort title desc",
+   "covers": [
+    "filters.sort_by=title",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "title",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.title",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort views gained",
+   "covers": [
+    "filters.sort_by=views_gained"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "views_gained",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "observation.views_gained_28d",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "sort views gained ascending",
+   "covers": [
+    "filters.sort_by=views_gained",
+    "filters.sort_order"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "views_gained",
+     "sort_order": "asc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": null,
+    "order_by": [
+     {
+      "direction": "asc",
+      "field": "observation.views_gained_28d",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "growth every condition",
+   "covers": [
+    "facets.growth.min_views_gained",
+    "facets.growth.max_views_gained",
+    "facets.growth.min_tracked_days",
+    "facets.growth.full_history"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "growth": {
+      "min_views_gained": "0",
+      "max_views_gained": "1000000000000000",
+      "min_tracked_days": "28",
+      "full_history": true
+     }
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "observation.views_gained_28d",
+       "op": "is_known"
+      },
+      {
+       "field": "observation.views_gained_28d",
+       "op": "gte",
+       "value": "0"
+      },
+      {
+       "field": "observation.views_gained_28d",
+       "op": "lte",
+       "value": "1000000000000000"
+      },
+      {
+       "field": "observation.growth_28d_interval_seconds",
+       "op": "gte",
+       "value": "2419200"
+      },
+      {
+       "field": "observation.growth_28d_status",
+       "op": "eq",
+       "value": "ready"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "growth with other conditions and its sort",
+   "covers": [
+    "filters.q",
+    "filters.min_like_rate",
+    "facets.cohort",
+    "facets.growth.min_views_gained",
+    "filters.sort_by=views_gained"
+   ],
+   "video_type": "long",
+   "time_zone": "Asia/Tokyo",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "soup",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "views_gained",
+     "sort_order": "asc",
+     "min_like_rate": "2.5"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": {
+      "kind": "overview",
+      "published_from": null,
+      "published_through": "2026-09-30T22:00:00.000000Z"
+     },
+     "growth": {
+      "min_views_gained": "-100"
+     }
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.title",
+       "op": "contains_casefold_v1",
+       "value": "soup"
+      },
+      {
+       "field": "video.like_rate",
+       "op": "gte",
+       "value": "2.5"
+      },
+      {
+       "any": [
+        {
+         "field": "video.published_at",
+         "op": "is_unknown"
+        },
+        {
+         "field": "video.published_at",
+         "op": "lte",
+         "value": "2026-09-30T22:00:00Z"
+        }
+       ]
+      },
+      {
+       "all": [
+        {
+         "field": "observation.views_gained_28d",
+         "op": "is_known"
+        },
+        {
+         "field": "observation.views_gained_28d",
+         "op": "gte",
+         "value": "-100"
+        }
+       ]
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "asc",
+      "field": "observation.views_gained_28d",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "several conditions in table order",
+   "covers": [
+    "filters.q",
+    "filters.min_views",
+    "filters.min_likes",
+    "facets.duration_buckets"
+   ],
+   "video_type": "long",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "a",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "1",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc",
+     "min_likes": "2"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [
+      "60m_plus"
+     ],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "long"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.title",
+       "op": "contains_casefold_v1",
+       "value": "a"
+      },
+      {
+       "field": "video.views",
+       "op": "gte",
+       "value": "1"
+      },
+      {
+       "field": "video.likes",
+       "op": "gte",
+       "value": "2"
+      },
+      {
+       "field": "video.duration_seconds",
+       "op": "gte",
+       "value": "3600"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Shorts views preset",
+   "covers": [
+    "video_type"
+   ],
+   "video_type": "short",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [
+      "1k_10k"
+     ],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "short"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.views",
+       "op": "gte",
+       "value": "1000"
+      },
+      {
+       "field": "video.views",
+       "op": "lt",
+       "value": "10000"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Streams date and title length",
+   "covers": [
+    "video_type",
+    "filters.published_from",
+    "facets.title_length_buckets"
+   ],
+   "video_type": "stream",
+   "time_zone": "Europe/Berlin",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2026-03-29",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null,
+     "title_length_buckets": [
+      "80_plus"
+     ]
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "stream"
+    ],
+    "where": {
+     "all": [
+      {
+       "field": "video.published_date",
+       "op": "gte",
+       "value": "2026-03-29"
+      },
+      {
+       "field": "video.title_length",
+       "op": "gte",
+       "value": "80"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Streams duration preset",
+   "covers": [
+    "video_type",
+    "facets.duration_buckets"
+   ],
+   "video_type": "stream",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [
+      "4h_plus"
+     ],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "stream"
+    ],
+    "where": {
+     "field": "video.duration_seconds",
+     "op": "gte",
+     "value": "14400"
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Streams two duration presets",
+   "covers": [
+    "video_type",
+    "facets.duration_buckets"
+   ],
+   "video_type": "stream",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [
+      "under_30m",
+      "1h_2h"
+     ],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "stream"
+    ],
+    "where": {
+     "any": [
+      {
+       "field": "video.duration_seconds",
+       "op": "lt",
+       "value": "1800"
+      },
+      {
+       "all": [
+        {
+         "field": "video.duration_seconds",
+         "op": "gte",
+         "value": "3600"
+        },
+        {
+         "field": "video.duration_seconds",
+         "op": "lt",
+         "value": "7200"
+        }
+       ]
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  },
+  {
+   "name": "Shorts duration presets and views",
+   "covers": [
+    "video_type",
+    "facets.duration_buckets",
+    "facets.view_buckets"
+   ],
+   "video_type": "short",
+   "time_zone": "UTC",
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [
+      "1k_10k"
+     ],
+     "duration_buckets": [
+      "under_15s",
+      "15s_30s"
+     ],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   },
+   "expected": {
+    "status": "translated",
+    "video_types": [
+     "short"
+    ],
+    "where": {
+     "all": [
+      {
+       "all": [
+        {
+         "field": "video.views",
+         "op": "gte",
+         "value": "1000"
+        },
+        {
+         "field": "video.views",
+         "op": "lt",
+         "value": "10000"
+        }
+       ]
+      },
+      {
+       "field": "video.duration_seconds",
+       "op": "lt",
+       "value": "30"
+      }
+     ]
+    },
+    "order_by": [
+     {
+      "direction": "desc",
+      "field": "video.published_at",
+      "nulls": "last"
+     }
+    ]
+   }
+  }
+ ]
+}

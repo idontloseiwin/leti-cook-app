@@ -1,0 +1,39 @@
+{
+ "case": "403 subscriptionForbidden: the channel keeps its subscriptions private (a documented state)",
+ "request": {
+  "method": "youtube.subscriptions.list",
+  "parameters": {
+   "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "subscriptionForbidden"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/subscriptions/list#errors",
+ "synthetic": true
+}

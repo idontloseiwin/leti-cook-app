@@ -1,0 +1,36 @@
+{
+ "case": "no Super Chat events",
+ "request": {
+  "context": "owner",
+  "method": "youtube.superChatEvents.list",
+  "parameters": {},
+  "selection": {
+   "fields": [
+    "snippet.amountMicros"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#superChatEventListResponse",
+    "pageInfo": {
+     "resultsPerPage": 0,
+     "totalResults": 0
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/superChatEvents/list",
+ "synthetic": true
+}

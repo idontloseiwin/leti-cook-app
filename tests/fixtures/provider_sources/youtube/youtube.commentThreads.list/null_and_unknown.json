@@ -1,0 +1,73 @@
+{
+ "case": "a null like count, an undocumented viewerRating and an undescribed field",
+ "request": {
+  "method": "youtube.commentThreads.list",
+  "parameters": {
+   "videoId": "vidxxxxxxx1"
+  },
+  "selection": {
+   "fields": [
+    "snippet.topLevelComment.snippet.likeCount",
+    "snippet.topLevelComment.snippet.viewerRating"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-01",
+      "id": "UgxSyntheticThread000001",
+      "kind": "youtube#commentThread",
+      "snippet": {
+       "canReply": true,
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "isPublic": true,
+       "pinned": "MARKER-UNKNOWN",
+       "topLevelComment": {
+        "etag": "etag-0001",
+        "id": "UgxSyntheticThread000001",
+        "kind": "youtube#comment",
+        "snippet": {
+         "authorChannelId": {
+          "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+         },
+         "authorChannelUrl": "http://www.youtube.com/channel/UCBBBBBBBBBBBBBBBBBBBBB2",
+         "authorDisplayName": "MARKER-AUTHOR",
+         "authorProfileImageUrl": "https://yt3.ggpht.com/synthetic",
+         "canRate": true,
+         "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+         "likeCount": null,
+         "publishedAt": "2026-10-20T10:00:00Z",
+         "textDisplay": "<b>MARKER-TEXT</b> top",
+         "updatedAt": "2026-10-20T10:05:00Z",
+         "videoId": "vidxxxxxxx1",
+         "viewerRating": "love"
+        }
+       },
+       "totalReplyCount": 0,
+       "videoId": "vidxxxxxxx1"
+      }
+     }
+    ],
+    "kind": "youtube#commentThreadListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/commentThreads/list",
+ "synthetic": true
+}

@@ -1,0 +1,56 @@
+{
+ "case": "a name that is absent, one that is an empty string and one that is null: three different states",
+ "request": {
+  "method": "youtube.i18nLanguages.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e1",
+      "id": "fr",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "fr"
+      }
+     },
+     {
+      "etag": "e2",
+      "id": "it",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "it",
+       "name": ""
+      }
+     },
+     {
+      "etag": "e3",
+      "id": "nl",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "nl",
+       "name": null
+      }
+     }
+    ],
+    "kind": "youtube#i18nLanguageListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/i18nLanguages/list",
+ "synthetic": true
+}

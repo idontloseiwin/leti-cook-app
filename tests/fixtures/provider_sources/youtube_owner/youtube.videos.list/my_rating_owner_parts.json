@@ -1,0 +1,79 @@
+{
+ "case": "myRating=like with owner parts (fileDetails streams, processingDetails)",
+ "request": {
+  "budget": {
+   "max_requests": 1,
+   "max_units": {
+    "general": 1
+   }
+  },
+  "context": "owner",
+  "method": "youtube.videos.list",
+  "parameters": {
+   "maxResults": 1,
+   "myRating": "like"
+  },
+  "selection": {
+   "fields": [
+    "fileDetails.fileSize",
+    "fileDetails.container",
+    "fileDetails.videoStreams[].widthPixels",
+    "fileDetails.videoStreams[].codec",
+    "processingDetails.processingStatus",
+    "processingDetails.processingProgress.partsTotal"
+   ],
+   "parts": [
+    "fileDetails",
+    "processingDetails",
+    "id"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e",
+      "fileDetails": {
+       "container": "mov",
+       "fileSize": "104857600",
+       "videoStreams": [
+        {
+         "codec": "h264",
+         "heightPixels": 1080,
+         "widthPixels": 1920
+        },
+        {
+         "codec": "vp9",
+         "widthPixels": 1280
+        }
+       ]
+      },
+      "id": "vidxxxxxxx1",
+      "kind": "youtube#video",
+      "processingDetails": {
+       "processingProgress": {
+        "partsTotal": "1000"
+       },
+       "processingStatus": "succeeded"
+      }
+     }
+    ],
+    "kind": "youtube#videoListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos",
+ "synthetic": true
+}

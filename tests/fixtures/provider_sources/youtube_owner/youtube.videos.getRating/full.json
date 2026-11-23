@@ -1,0 +1,42 @@
+{
+ "case": "the viewer's own rating of two videos",
+ "request": {
+  "context": "owner",
+  "method": "youtube.videos.getRating",
+  "parameters": {
+   "id": [
+    "vidxxxxxxx1",
+    "vidxxxxxxx2"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "rating": "like",
+      "videoId": "vidxxxxxxx1"
+     },
+     {
+      "rating": "none",
+      "videoId": "vidxxxxxxx2"
+     }
+    ],
+    "kind": "youtube#videoGetRatingResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos/getRating",
+ "synthetic": true
+}

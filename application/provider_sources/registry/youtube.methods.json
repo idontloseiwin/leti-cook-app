@@ -1,0 +1,6663 @@
+{
+ "auth_convention": {
+  "*": "every parameter not listed under another context",
+  "contexts": [
+   "public_key",
+   "owner_oauth",
+   "partner",
+   "developer",
+   "special_scope",
+   "conditional",
+   "unconfirmed"
+  ],
+  "not_contexts": [
+   "deprecated",
+   "discovery_only",
+   "note"
+  ]
+ },
+ "buckets": {
+  "general": {
+   "default_daily": 10000,
+   "label_exists_in_app": true,
+   "note": "all Data API methods without their own bucket share it",
+   "source": "https://developers.google.com/youtube/v3/determine_quota_cost",
+   "unit": "data_api_units"
+  },
+  "search_queries": {
+   "default_daily": 100,
+   "label_exists_in_app": false,
+   "note": "'Search Queries quota bucket': 100 calls per day, 1 unit per call (since 2026-06-01)",
+   "source": "https://developers.google.com/youtube/v3/docs/search/list",
+   "unit": "data_api_units"
+  },
+  "video_batch_get_stats": {
+   "default_daily": 10000,
+   "label_exists_in_app": true,
+   "note": "own granular bucket of videos.batchGetStats; 1 unit per call",
+   "source": "https://developers.google.com/youtube/v3/revision_history (2026-06-03)",
+   "unit": "data_api_units"
+  },
+  "youtube_analytics": {
+   "default_daily": null,
+   "label_exists_in_app": false,
+   "note": "no Data API units; reference pages state no quota; Cloud Console limits unverified",
+   "source": "https://developers.google.com/youtube/analytics/reference/reports/query",
+   "unit": "requests"
+  },
+  "youtube_reporting": {
+   "default_daily": null,
+   "label_exists_in_app": false,
+   "note": "no Data API units; reference pages state no quota; Cloud Console limits unverified",
+   "source": "https://developers.google.com/youtube/reporting/v1/reports",
+   "unit": "requests"
+  }
+ },
+ "content_sha256": "dd695f5d8f0add686d5adc2888092084226a77aaf123e89d8c3b10b2259c9633",
+ "control_methods": {
+  "youtube.abuseReports.insert": {
+   "api": "data",
+   "family": "abuseReports",
+   "http_method": "POST",
+   "path": "youtube/v3/abuseReports",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.captions.delete": {
+   "api": "data",
+   "family": "captions",
+   "http_method": "DELETE",
+   "path": "youtube/v3/captions",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.captions.insert": {
+   "api": "data",
+   "family": "captions",
+   "http_method": "POST",
+   "path": "youtube/v3/captions",
+   "quota_table_units": 400,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.captions.update": {
+   "api": "data",
+   "family": "captions",
+   "http_method": "PUT",
+   "path": "youtube/v3/captions",
+   "quota_table_units": 450,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.channelBanners.insert": {
+   "api": "data",
+   "family": "channelBanners",
+   "http_method": "POST",
+   "path": "youtube/v3/channelBanners/insert",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.channelSections.delete": {
+   "api": "data",
+   "family": "channelSections",
+   "http_method": "DELETE",
+   "path": "youtube/v3/channelSections",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.channelSections.insert": {
+   "api": "data",
+   "family": "channelSections",
+   "http_method": "POST",
+   "path": "youtube/v3/channelSections",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.channelSections.update": {
+   "api": "data",
+   "family": "channelSections",
+   "http_method": "PUT",
+   "path": "youtube/v3/channelSections",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.channels.update": {
+   "api": "data",
+   "family": "channels",
+   "http_method": "PUT",
+   "path": "youtube/v3/channels",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.commentThreads.insert": {
+   "api": "data",
+   "family": "commentThreads",
+   "http_method": "POST",
+   "path": "youtube/v3/commentThreads",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.comments.delete": {
+   "api": "data",
+   "family": "comments",
+   "http_method": "DELETE",
+   "path": "youtube/v3/comments",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.comments.insert": {
+   "api": "data",
+   "family": "comments",
+   "http_method": "POST",
+   "path": "youtube/v3/comments",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.comments.markAsSpam": {
+   "api": "data",
+   "family": "comments",
+   "http_method": "POST",
+   "path": "youtube/v3/comments/markAsSpam",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.comments.setModerationStatus": {
+   "api": "data",
+   "family": "comments",
+   "http_method": "POST",
+   "path": "youtube/v3/comments/setModerationStatus",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.comments.update": {
+   "api": "data",
+   "family": "comments",
+   "http_method": "PUT",
+   "path": "youtube/v3/comments",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveBroadcasts.bind": {
+   "api": "data",
+   "family": "liveBroadcasts",
+   "http_method": "POST",
+   "path": "youtube/v3/liveBroadcasts/bind",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveBroadcasts.delete": {
+   "api": "data",
+   "family": "liveBroadcasts",
+   "http_method": "DELETE",
+   "path": "youtube/v3/liveBroadcasts",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveBroadcasts.insert": {
+   "api": "data",
+   "family": "liveBroadcasts",
+   "http_method": "POST",
+   "path": "youtube/v3/liveBroadcasts",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveBroadcasts.insertCuepoint": {
+   "api": "data",
+   "family": "liveBroadcasts",
+   "http_method": "POST",
+   "path": "youtube/v3/liveBroadcasts/cuepoint",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveBroadcasts.transition": {
+   "api": "data",
+   "family": "liveBroadcasts",
+   "http_method": "POST",
+   "path": "youtube/v3/liveBroadcasts/transition",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveBroadcasts.update": {
+   "api": "data",
+   "family": "liveBroadcasts",
+   "http_method": "PUT",
+   "path": "youtube/v3/liveBroadcasts",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveChatBans.delete": {
+   "api": "data",
+   "family": "liveChatBans",
+   "http_method": "DELETE",
+   "path": "youtube/v3/liveChat/bans",
+   "quota_table_units": 200,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveChatBans.insert": {
+   "api": "data",
+   "family": "liveChatBans",
+   "http_method": "POST",
+   "path": "youtube/v3/liveChat/bans",
+   "quota_table_units": 200,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveChatMessages.delete": {
+   "api": "data",
+   "family": "liveChatMessages",
+   "http_method": "DELETE",
+   "path": "youtube/v3/liveChat/messages",
+   "quota_table_units": 20,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveChatMessages.insert": {
+   "api": "data",
+   "family": "liveChatMessages",
+   "http_method": "POST",
+   "path": "youtube/v3/liveChat/messages",
+   "quota_table_units": 20,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveChatMessages.transition": {
+   "api": "data",
+   "family": "liveChatMessages",
+   "http_method": "POST",
+   "path": "youtube/v3/liveChat/messages/transition",
+   "quota_table_units": 20,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveChatModerators.delete": {
+   "api": "data",
+   "family": "liveChatModerators",
+   "http_method": "DELETE",
+   "path": "youtube/v3/liveChat/moderators",
+   "quota_table_units": 200,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveChatModerators.insert": {
+   "api": "data",
+   "family": "liveChatModerators",
+   "http_method": "POST",
+   "path": "youtube/v3/liveChat/moderators",
+   "quota_table_units": 200,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveStreams.delete": {
+   "api": "data",
+   "family": "liveStreams",
+   "http_method": "DELETE",
+   "path": "youtube/v3/liveStreams",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveStreams.insert": {
+   "api": "data",
+   "family": "liveStreams",
+   "http_method": "POST",
+   "path": "youtube/v3/liveStreams",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.liveStreams.update": {
+   "api": "data",
+   "family": "liveStreams",
+   "http_method": "PUT",
+   "path": "youtube/v3/liveStreams",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlistImages.delete": {
+   "api": "data",
+   "family": "playlistImages",
+   "http_method": "DELETE",
+   "path": "youtube/v3/playlistImages",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlistImages.insert": {
+   "api": "data",
+   "family": "playlistImages",
+   "http_method": "POST",
+   "path": "youtube/v3/playlistImages",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlistImages.update": {
+   "api": "data",
+   "family": "playlistImages",
+   "http_method": "PUT",
+   "path": "youtube/v3/playlistImages",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlistItems.delete": {
+   "api": "data",
+   "family": "playlistItems",
+   "http_method": "DELETE",
+   "path": "youtube/v3/playlistItems",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlistItems.insert": {
+   "api": "data",
+   "family": "playlistItems",
+   "http_method": "POST",
+   "path": "youtube/v3/playlistItems",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlistItems.update": {
+   "api": "data",
+   "family": "playlistItems",
+   "http_method": "PUT",
+   "path": "youtube/v3/playlistItems",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlists.delete": {
+   "api": "data",
+   "family": "playlists",
+   "http_method": "DELETE",
+   "path": "youtube/v3/playlists",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlists.insert": {
+   "api": "data",
+   "family": "playlists",
+   "http_method": "POST",
+   "path": "youtube/v3/playlists",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.playlists.update": {
+   "api": "data",
+   "family": "playlists",
+   "http_method": "PUT",
+   "path": "youtube/v3/playlists",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.subscriptions.delete": {
+   "api": "data",
+   "family": "subscriptions",
+   "http_method": "DELETE",
+   "path": "youtube/v3/subscriptions",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.subscriptions.insert": {
+   "api": "data",
+   "family": "subscriptions",
+   "http_method": "POST",
+   "path": "youtube/v3/subscriptions",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.tests.insert": {
+   "api": "data",
+   "family": "tests",
+   "http_method": "POST",
+   "path": "youtube/v3/tests",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.thirdPartyLinks.delete": {
+   "api": "data",
+   "family": "thirdPartyLinks",
+   "http_method": "DELETE",
+   "path": "youtube/v3/thirdPartyLinks",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.thirdPartyLinks.insert": {
+   "api": "data",
+   "family": "thirdPartyLinks",
+   "http_method": "POST",
+   "path": "youtube/v3/thirdPartyLinks",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.thirdPartyLinks.update": {
+   "api": "data",
+   "family": "thirdPartyLinks",
+   "http_method": "PUT",
+   "path": "youtube/v3/thirdPartyLinks",
+   "quota_note": "not listed in the quota table",
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.thumbnails.set": {
+   "api": "data",
+   "family": "thumbnails",
+   "http_method": "POST",
+   "path": "youtube/v3/thumbnails/set",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.videos.delete": {
+   "api": "data",
+   "family": "videos",
+   "http_method": "DELETE",
+   "path": "youtube/v3/videos",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.videos.insert": {
+   "api": "data",
+   "family": "videos",
+   "http_method": "POST",
+   "path": "youtube/v3/videos",
+   "quota_note": "own bucket, 100 calls/day",
+   "quota_table_units": 1,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.videos.rate": {
+   "api": "data",
+   "family": "videos",
+   "http_method": "POST",
+   "path": "youtube/v3/videos/rate",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.videos.reportAbuse": {
+   "api": "data",
+   "family": "videos",
+   "http_method": "POST",
+   "path": "youtube/v3/videos/reportAbuse",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.videos.update": {
+   "api": "data",
+   "family": "videos",
+   "http_method": "PUT",
+   "path": "youtube/v3/videos",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.watermarks.set": {
+   "api": "data",
+   "family": "watermarks",
+   "http_method": "POST",
+   "path": "youtube/v3/watermarks/set",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtube.watermarks.unset": {
+   "api": "data",
+   "family": "watermarks",
+   "http_method": "POST",
+   "path": "youtube/v3/watermarks/unset",
+   "quota_table_units": 50,
+   "read_layer": "never called by the read layer"
+  },
+  "youtubeAnalytics.groupItems.delete": {
+   "api": "analytics",
+   "family": "groupItems",
+   "http_method": "DELETE",
+   "path": "v2/groupItems",
+   "quota_note": "no Data API units",
+   "read_layer": "never called by the read layer"
+  },
+  "youtubeAnalytics.groupItems.insert": {
+   "api": "analytics",
+   "family": "groupItems",
+   "http_method": "POST",
+   "path": "v2/groupItems",
+   "quota_note": "no Data API units",
+   "read_layer": "never called by the read layer"
+  },
+  "youtubeAnalytics.groups.delete": {
+   "api": "analytics",
+   "family": "groups",
+   "http_method": "DELETE",
+   "path": "v2/groups",
+   "quota_note": "no Data API units",
+   "read_layer": "never called by the read layer"
+  },
+  "youtubeAnalytics.groups.insert": {
+   "api": "analytics",
+   "family": "groups",
+   "http_method": "POST",
+   "path": "v2/groups",
+   "quota_note": "no Data API units",
+   "read_layer": "never called by the read layer"
+  },
+  "youtubeAnalytics.groups.update": {
+   "api": "analytics",
+   "family": "groups",
+   "http_method": "PUT",
+   "path": "v2/groups",
+   "quota_note": "no Data API units",
+   "read_layer": "never called by the read layer"
+  },
+  "youtubereporting.jobs.create": {
+   "api": "reporting",
+   "family": "jobs",
+   "http_method": "POST",
+   "path": "v1/jobs",
+   "quota_note": "no Data API units",
+   "read_layer": "explicit control operation needed before Reporting reads; never a side effect of a read"
+  },
+  "youtubereporting.jobs.delete": {
+   "api": "reporting",
+   "family": "jobs",
+   "http_method": "DELETE",
+   "path": "v1/jobs/{jobId}",
+   "quota_note": "no Data API units",
+   "read_layer": "never called by the read layer"
+  }
+ },
+ "counts": {
+  "control_by_api": {
+   "analytics": 5,
+   "data": 54,
+   "reporting": 2
+  },
+  "control_methods": 61,
+  "read_by_api": {
+   "analytics": 3,
+   "data": 29,
+   "reporting": 6
+  },
+  "read_methods": 38
+ },
+ "kind": "lic-provider-methods",
+ "quota_table": {
+  "last_updated": "2026-10-15",
+  "url": "https://developers.google.com/youtube/v3/determine_quota_cost"
+ },
+ "read_methods": {
+  "youtube.activities.list": {
+   "api": "data",
+   "auth": {
+    "deprecated": [
+     "home"
+    ],
+    "owner_oauth": [
+     "mine"
+    ],
+    "public_key": [
+     "channelId"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#activityListResponse",
+   "family": "activities",
+   "filters": {
+    "exactly_one_of": [
+     "channelId",
+     "home",
+     "mine"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "activities",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "channelId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "home": {
+     "auth": "owner_oauth",
+     "default": null,
+     "deprecated": true,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "mine": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "contentDetails",
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "publishedAfter": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "publishedBefore": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "regionCode": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "contentDetails",
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/activities",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/activities/list",
+   "response_schema": "ActivityListResponse",
+   "row_path": "items[]",
+   "row_unit": "activity",
+   "scope": "read",
+   "semantic_traps": [
+    "404_channelNotFound",
+    "activity_payload_depends_on_snippet.type",
+    "channel_bulletins_deprecated_not_returned",
+    "contentDetails.like_favorite_not_returned_2026-08-06",
+    "publishedAfter_publishedBefore_date_only_whole_day",
+    "publishedBefore_day_only_excludes_that_day"
+   ],
+   "status": "documented"
+  },
+  "youtube.captions.download": {
+   "api": "data",
+   "auth": {
+    "discovery_only": [
+     "onBehalfOf"
+    ],
+    "note": "requires permission to edit the video",
+    "owner_oauth": [
+     "id"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "family": "captions",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "200"
+   },
+   "ledger_endpoint_label": "captions.download",
+   "media": {
+    "content_type": "application/octet-stream",
+    "formats": [
+     "sbv",
+     "scc",
+     "srt",
+     "ttml",
+     "vtt"
+    ]
+   },
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "media"
+   },
+   "parameters": {
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "caption",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    },
+    "onBehalfOf": {
+     "default": null,
+     "discovery_only": true,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "tfmt": {
+     "allowed": [
+      "sbv",
+      "scc",
+      "srt",
+      "ttml",
+      "vtt"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "tlang": {
+     "default": null,
+     "discovery_values": [],
+     "format": "ISO 639-1",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "language"
+    }
+   },
+   "parts": [],
+   "path": "youtube/v3/captions/{id}",
+   "quota": {
+    "bucket": "general",
+    "note": "not listed in the quota table; method page: 200 units",
+    "sources": [
+     "method_page"
+    ],
+    "status": "verified",
+    "units": 200
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/captions/download",
+   "response_schema": "media_or_empty",
+   "row_unit": "caption_file",
+   "scope": "read",
+   "semantic_traps": [
+    "400_couldNotConvert",
+    "403_forbidden_without_edit_permission",
+    "binary_body_not_json",
+    "free_text_personal_data",
+    "tlang_machine_translation"
+   ],
+   "status": "documented"
+  },
+  "youtube.captions.list": {
+   "api": "data",
+   "auth": {
+    "discovery_only": [
+     "onBehalfOf"
+    ],
+    "owner_oauth": [
+     "videoId",
+     "id"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "envelope_kind": "youtube#captionListResponse",
+   "family": "captions",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "50"
+   },
+   "ledger_endpoint_label": "captions",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "caption",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOf": {
+     "default": null,
+     "discovery_only": true,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "videoId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "video",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/captions",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 50
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/captions/list",
+   "response_schema": "CaptionListResponse",
+   "row_path": "items[]",
+   "row_unit": "caption_track",
+   "scope": "read",
+   "semantic_traps": [
+    "50_units_per_call",
+    "response_has_no_caption_text"
+   ],
+   "status": "documented"
+  },
+  "youtube.channelSections.list": {
+   "api": "data",
+   "auth": {
+    "deprecated": [
+     "hl"
+    ],
+    "owner_oauth": [
+     "mine"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ],
+    "public_key": [
+     "channelId",
+     "id"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#channelSectionListResponse",
+   "family": "channelSections",
+   "filters": {
+    "exactly_one_of": [
+     "channelId",
+     "id",
+     "mine"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": 50,
+    "note": "reference page does not state the id count; the layer sends at most 50",
+    "param": "id",
+    "status": "app_bound"
+   },
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "channelSections",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "channelId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": null,
+     "deprecated": true,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel_section",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "mine": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "contentDetails",
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "contentDetails",
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/channelSections",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/channelSections/list",
+   "response_schema": "ChannelSectionListResponse",
+   "row_path": "items[]",
+   "row_unit": "channel_section",
+   "scope": "read",
+   "semantic_traps": [
+    "403_channelSectionForbidden",
+    "404_channelNotFound_channelSectionNotFound",
+    "contentDetails_lists_ids_only_follow_up_reads_needed",
+    "hl_deprecated_refused",
+    "section_localization_deprecated",
+    "targeting_schema_only"
+   ],
+   "status": "documented"
+  },
+  "youtube.channels.list": {
+   "api": "data",
+   "auth": {
+    "deprecated": [
+     "categoryId"
+    ],
+    "discovery_only": [
+     "mySubscribers"
+    ],
+    "owner_oauth": [
+     "mine"
+    ],
+    "partner": [
+     "managedByMe",
+     "onBehalfOfContentOwner"
+    ],
+    "public_key": [
+     "id",
+     "forHandle",
+     "forUsername"
+    ],
+    "special_scope": [
+     "part=auditDetails:youtubepartner-channel-audit"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner",
+    "public_key",
+    "special_scope"
+   ],
+   "envelope_kind": "youtube#channelListResponse",
+   "family": "channels",
+   "filters": {
+    "exactly_one_of": [
+     "categoryId",
+     "forHandle",
+     "forUsername",
+     "id",
+     "managedByMe",
+     "mine"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": 50,
+    "note": "reference page does not state the id count; app uses 50 (youtube_channels.py)",
+    "param": "id",
+    "status": "app_bound"
+   },
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "application/youtube_channels.py:10",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "channels",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner",
+    "https://www.googleapis.com/auth/youtubepartner-channel-audit"
+   ],
+   "owner_only": [
+    "auditDetails",
+    "contentOwnerDetails",
+    "status.longUploadsStatus",
+    "status.selfDeclaredMadeForKids"
+   ],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "note": "pages only for mine/managedByMe; id list in one call",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "categoryId": {
+     "default": null,
+     "deprecated": true,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "forHandle": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "handle",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "forUsername": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "hl": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "managedByMe": {
+     "auth": "partner",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "mine": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "mySubscribers": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_only": true,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "auditDetails",
+      "brandingSettings",
+      "contentDetails",
+      "contentOwnerDetails",
+      "id",
+      "localizations",
+      "snippet",
+      "statistics",
+      "status",
+      "topicDetails"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "auditDetails",
+    "brandingSettings",
+    "contentDetails",
+    "contentOwnerDetails",
+    "id",
+    "localizations",
+    "snippet",
+    "statistics",
+    "status",
+    "topicDetails"
+   ],
+   "path": "youtube/v3/channels",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/channels/list",
+   "response_schema": "ChannelListResponse",
+   "row_path": "items[]",
+   "row_unit": "channel",
+   "scope": "read",
+   "semantic_traps": [
+    "brandingSettings_watch_image_hints_deprecated",
+    "empty_items_is_not_found_only_in_expected_envelope",
+    "forHandle_at_prefix_optional",
+    "hiddenSubscriberCount_true_means_unknown",
+    "relatedPlaylists.favorites_deprecated",
+    "statistics.commentCount_deprecated",
+    "subscriberCount_rounded_down_3_significant_figures",
+    "thumbnails_may_be_empty_for_new_channels_up_to_1_day",
+    "videoCount_public_videos_only",
+    "viewCount_definition_change_2026-08-24_all_formats",
+    "viewCount_shorts_definition_change_2025-03-31"
+   ],
+   "status": "documented"
+  },
+  "youtube.commentThreads.list": {
+   "api": "data",
+   "auth": {
+    "discovery_only": [
+     "channelId"
+    ],
+    "owner_oauth": [
+     "moderationStatus!=published"
+    ],
+    "public_key": [
+     "videoId",
+     "allThreadsRelatedToChannelId",
+     "id"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#commentThreadListResponse",
+   "family": "commentThreads",
+   "filters": {
+    "exactly_one_of": [
+     "allThreadsRelatedToChannelId",
+     "id",
+     "videoId"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": 50,
+    "note": "reference page does not state the id count; the layer sends at most 50",
+    "param": "id",
+    "status": "app_bound"
+   },
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "commentThreads",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube.force-ssl"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 20,
+    "max": 100,
+    "min": 1,
+    "next_field": "nextPageToken",
+    "note": "maxResults, pageToken, order, searchTerms, moderationStatus not with id",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "allThreadsRelatedToChannelId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "channelId": {
+     "default": null,
+     "discovery_only": true,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "comment_thread",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "20",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 100,
+     "min": 1,
+     "not_with": [
+      "id"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "moderationStatus": {
+     "auth": "owner_oauth",
+     "default": "published",
+     "discovery_values": [
+      "published",
+      "heldForReview",
+      "likelySpam",
+      "rejected"
+     ],
+     "documented_values": [
+      "heldForReview",
+      "likelySpam",
+      "published"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "not_with": [
+      "id"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "order": {
+     "default": "time",
+     "discovery_values": [
+      "orderUnspecified",
+      "time",
+      "relevance"
+     ],
+     "documented_values": [
+      "relevance",
+      "time"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "not_with": [
+      "id"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "not_with": [
+      "id"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "id",
+      "replies",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "searchTerms": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "not_with": [
+      "id"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "textFormat": {
+     "default": "html",
+     "discovery_values": [
+      "textFormatUnspecified",
+      "html",
+      "plainText"
+     ],
+     "documented_values": [
+      "html",
+      "plainText"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "video",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "id",
+    "replies",
+    "snippet"
+   ],
+   "path": "youtube/v3/commentThreads",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/commentThreads/list",
+   "response_schema": "CommentThreadListResponse",
+   "row_path": "items[]",
+   "row_unit": "comment_thread",
+   "scope": "read",
+   "semantic_traps": [
+    "403_commentsDisabled",
+    "404_videoNotFound_channelNotFound_commentThreadNotFound",
+    "comment_text_30_day_policy",
+    "id_filter_only_google_plus_comments_400_operationNotSupported",
+    "imageUrl_signed_6h_ttl_from_2026-11",
+    "moderationStatus_field_owner_only",
+    "moderationStatus_rejected_discovery_only",
+    "personal_data_author_fields",
+    "replies_part_partial_full_list_is_comments.list_parentId",
+    "replies_subset_unless_count_equals_totalReplyCount",
+    "textFormat_default_html",
+    "textOriginal_author_only"
+   ],
+   "status": "documented"
+  },
+  "youtube.comments.list": {
+   "api": "data",
+   "auth": {
+    "public_key": [
+     "id",
+     "parentId"
+    ]
+   },
+   "auth_contexts": [
+    "public_key"
+   ],
+   "envelope_kind": "youtube#commentListResponse",
+   "family": "comments",
+   "filters": {
+    "exactly_one_of": [
+     "id",
+     "parentId"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": 50,
+    "note": "reference page does not state the id count; the layer sends at most 50",
+    "param": "id",
+    "status": "app_bound"
+   },
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "comments",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube.force-ssl"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 20,
+    "max": 100,
+    "min": 1,
+    "next_field": "nextPageToken",
+    "note": "maxResults and pageToken not with id",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "comment",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "20",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 100,
+     "min": 1,
+     "not_with": [
+      "id"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "not_with": [
+      "id"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "parentId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "comment",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "textFormat": {
+     "default": "html",
+     "discovery_values": [
+      "textFormatUnspecified",
+      "html",
+      "plainText"
+     ],
+     "documented_values": [
+      "html",
+      "plainText"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/comments",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/comments/list",
+   "response_schema": "CommentListResponse",
+   "row_path": "items[]",
+   "row_unit": "comment",
+   "scope": "read",
+   "semantic_traps": [
+    "404_commentNotFound",
+    "comment_text_30_day_policy",
+    "id_filter_only_google_plus_comments_400_operationNotSupported",
+    "imageUrl_signed_6h_ttl_from_2026-11",
+    "personal_data_author_fields",
+    "replies_only_for_top_level_comments",
+    "textFormat_default_html",
+    "textOriginal_author_only"
+   ],
+   "status": "documented"
+  },
+  "youtube.i18nLanguages.list": {
+   "api": "data",
+   "auth": {
+    "public_key": [
+     "hl"
+    ]
+   },
+   "auth_contexts": [
+    "public_key"
+   ],
+   "envelope_kind": "youtube#i18nLanguageListResponse",
+   "family": "i18nLanguages",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "application/scripts/export_youtube_category_reference.py:116;application/self_hosted_onboarding.py:55",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "i18nLanguages",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": "en_US",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "snippet"
+   ],
+   "path": "youtube/v3/i18nLanguages",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/i18nLanguages/list",
+   "response_schema": "I18nLanguageListResponse",
+   "row_path": "items[]",
+   "row_unit": "language",
+   "scope": "read",
+   "semantic_traps": [
+    "etag_conditional_request_supported_in_app",
+    "names_localized_by_hl_default_en_US"
+   ],
+   "status": "documented"
+  },
+  "youtube.i18nRegions.list": {
+   "api": "data",
+   "auth": {
+    "public_key": [
+     "hl"
+    ]
+   },
+   "auth_contexts": [
+    "public_key"
+   ],
+   "envelope_kind": "youtube#i18nRegionListResponse",
+   "family": "i18nRegions",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "i18nRegions",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": "en_US",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "snippet"
+   ],
+   "path": "youtube/v3/i18nRegions",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/i18nRegions/list",
+   "response_schema": "I18nRegionListResponse",
+   "row_path": "items[]",
+   "row_unit": "region",
+   "scope": "read",
+   "semantic_traps": [
+    "names_localized_by_hl_default_en_US"
+   ],
+   "status": "documented"
+  },
+  "youtube.liveBroadcasts.list": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "broadcastStatus",
+     "id",
+     "mine"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner",
+     "onBehalfOfContentOwnerChannel"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "envelope_kind": "youtube#liveBroadcastListResponse",
+   "family": "liveBroadcasts",
+   "filters": {
+    "exactly_one_of": [
+     "broadcastStatus",
+     "id",
+     "mine"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "unconfirmed_in_method_page"
+   },
+   "ledger_endpoint_label": "liveBroadcasts",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "broadcastStatus": {
+     "default": null,
+     "discovery_values": [
+      "broadcastStatusFilterUnspecified",
+      "all",
+      "active",
+      "upcoming",
+      "completed"
+     ],
+     "documented_values": [
+      "active",
+      "all",
+      "completed",
+      "upcoming"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "broadcastType": {
+     "default": "event",
+     "discovery_values": [
+      "broadcastTypeFilterUnspecified",
+      "all",
+      "event",
+      "persistent"
+     ],
+     "documented_values": [
+      "all",
+      "event",
+      "persistent"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "only_with": [
+      "broadcastStatus",
+      "mine"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "live_broadcast",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "mine": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOfContentOwnerChannel": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "contentDetails",
+      "id",
+      "monetizationDetails",
+      "snippet",
+      "status"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "contentDetails",
+    "id",
+    "monetizationDetails",
+    "snippet",
+    "status"
+   ],
+   "path": "youtube/v3/liveBroadcasts",
+   "quota": {
+    "bucket": "general",
+    "note": "method page has no quota sentence",
+    "sources": [
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/live/docs/liveBroadcasts/list",
+   "response_schema": "LiveBroadcastListResponse",
+   "row_path": "items[]",
+   "row_unit": "live_broadcast",
+   "scope": "read",
+   "semantic_traps": [
+    "broadcastType_default_event_excludes_persistent",
+    "own_broadcasts_only"
+   ],
+   "status": "documented"
+  },
+  "youtube.liveChatMessages.list": {
+   "api": "data",
+   "auth": {
+    "conditional": [
+     "liveChatId"
+    ],
+    "note": "reference does not state API key vs OAuth; the key context is admitted and a 403 forbidden is the chat's access_denied state",
+    "public_key": [
+     "liveChatId"
+    ]
+   },
+   "auth_contexts": [
+    "conditional",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#liveChatMessageListResponse",
+   "family": "liveChatMessages",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "conditional; confirm_live_guide_auth_and_chat_access_before_implementation",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "5"
+   },
+   "ledger_endpoint_label": "liveChatMessages",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 500,
+    "max": 2000,
+    "min": 200,
+    "next_field": "nextPageToken",
+    "note": "profileImageSize 16..720 default 88; first page may be short",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "liveChatId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "live_chat",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "500",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 2000,
+     "min": 200,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "authorDetails",
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "profileImageSize": {
+     "default": "88",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 720,
+     "min": 16,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    }
+   },
+   "parts": [
+    "authorDetails",
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/liveChat/messages",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 5
+   },
+   "reference": "https://developers.google.com/youtube/v3/live/docs/liveChatMessages/list",
+   "response_schema": "LiveChatMessageListResponse",
+   "row_path": "items[]",
+   "row_unit": "live_chat_message",
+   "scope": "read",
+   "semantic_traps": [
+    "403_liveChatEnded_liveChatDisabled_404_liveChatNotFound",
+    "5_units_per_poll",
+    "deleted_retracted_events_removed_from_docs_2026-06-23",
+    "key_access_unconfirmed_needs_public_live_chat",
+    "offlineAt_only_when_offline",
+    "payload_depends_on_snippet.type",
+    "personal_data_author_fields",
+    "polled_not_paged_one_request_per_acquisition",
+    "rateLimitExceeded_when_polled_before_pollingIntervalMillis",
+    "respect_pollingIntervalMillis"
+   ],
+   "status": "documented"
+  },
+  "youtube.liveChatModerators.list": {
+   "api": "data",
+   "auth": {
+    "note": "must be authorized by the owner of the chat's channel",
+    "owner_oauth": [
+     "liveChatId"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth"
+   ],
+   "envelope_kind": "youtube#liveChatModeratorListResponse",
+   "family": "liveChatModerators",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "unconfirmed_in_method_page"
+   },
+   "ledger_endpoint_label": "liveChatModerators",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "liveChatId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "live_chat",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/liveChat/moderators",
+   "quota": {
+    "bucket": "general",
+    "note": "method page has no quota sentence",
+    "sources": [
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 50
+   },
+   "reference": "https://developers.google.com/youtube/v3/live/docs/liveChatModerators/list",
+   "response_schema": "LiveChatModeratorListResponse",
+   "row_path": "items[]",
+   "row_unit": "live_chat_moderator",
+   "scope": "read",
+   "semantic_traps": [
+    "50_units_per_call",
+    "personal_data"
+   ],
+   "status": "documented"
+  },
+  "youtube.liveStreams.list": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "id",
+     "mine"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner",
+     "onBehalfOfContentOwnerChannel"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "envelope_kind": "youtube#liveStreamListResponse",
+   "family": "liveStreams",
+   "filters": {
+    "exactly_one_of": [
+     "id",
+     "mine"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "unconfirmed_in_method_page"
+   },
+   "ledger_endpoint_label": "liveStreams",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "live_stream",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "mine": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOfContentOwnerChannel": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "cdn",
+      "id",
+      "snippet",
+      "status"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "cdn",
+    "id",
+    "snippet",
+    "status"
+   ],
+   "path": "youtube/v3/liveStreams",
+   "quota": {
+    "bucket": "general",
+    "note": "method page has no quota sentence",
+    "sources": [
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/live/docs/liveStreams/list",
+   "response_schema": "LiveStreamListResponse",
+   "row_path": "items[]",
+   "row_unit": "live_stream",
+   "scope": "read",
+   "semantic_traps": [
+    "cdn_ingestion_contains_stream_secrets_never_log_store_display"
+   ],
+   "status": "documented"
+  },
+  "youtube.members.list": {
+   "api": "data",
+   "auth": {
+    "note": "scope youtube.channel-memberships.creator; own memberships-enabled channel; access restricted by Google",
+    "owner_oauth": [
+     "mode",
+     "hasAccessToLevel",
+     "filterByMemberChannelId"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth"
+   ],
+   "envelope_kind": "youtube#memberListResponse",
+   "family": "members",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "2"
+   },
+   "ledger_endpoint_label": "members",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube.channel-memberships.creator"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 1000,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "note": "token valid only for the mode that produced it; mode=updates always returns nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "filterByMemberChannelId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "max_items": 100,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "hasAccessToLevel": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "membership_level",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 1000,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "mode": {
+     "default": "all_current",
+     "discovery_values": [
+      "listMembersModeUnknown",
+      "updates",
+      "all_current"
+     ],
+     "documented_values": [
+      "all_current",
+      "updates"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "snippet"
+   ],
+   "path": "youtube/v3/members",
+   "quota": {
+    "bucket": "general",
+    "note": "method page: 2 units; quota table: members list 1; budget with 2",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "conflict",
+    "units": 2
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/members/list",
+   "response_schema": "MemberListResponse",
+   "row_path": "items[]",
+   "row_unit": "channel_member",
+   "scope": "read",
+   "semantic_traps": [
+    "access_restricted_by_google",
+    "page_token_bound_to_mode",
+    "personal_data",
+    "updates_mode_first_call_returns_no_members"
+   ],
+   "status": "documented"
+  },
+  "youtube.membershipsLevels.list": {
+   "api": "data",
+   "auth": {
+    "note": "scope youtube.channel-memberships.creator",
+    "owner_oauth": [
+     "part"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth"
+   ],
+   "envelope_kind": "youtube#membershipsLevelListResponse",
+   "family": "membershipsLevels",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "membershipsLevels",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube.channel-memberships.creator"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/membershipsLevels",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/membershipsLevels/list",
+   "response_schema": "MembershipsLevelListResponse",
+   "row_path": "items[]",
+   "row_unit": "membership_level",
+   "scope": "read",
+   "semantic_traps": [
+    "400_channelMembershipsNotEnabled_vs_empty_list_without_levels"
+   ],
+   "status": "documented"
+  },
+  "youtube.playlistImages.list": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "id",
+     "playlistId"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner",
+     "onBehalfOfContentOwnerChannel"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "envelope_kind": "youtube#playlistImageListResponse",
+   "family": "playlistImages",
+   "filters": {
+    "exactly_one_of": [
+     "id",
+     "playlistId"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "playlistImages",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "doc_only": true,
+     "filter": true,
+     "identity": "playlist_image",
+     "inventory_access_condition": "doc_only",
+     "max": null,
+     "min": null,
+     "note": "reference: comma-separated playlist image IDs",
+     "repeated": true,
+     "required": false,
+     "source": "https://developers.google.com/youtube/v3/docs/playlistImages/list",
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOfContentOwnerChannel": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "parent": {
+     "conflict": "reference page names the filters id and playlistId",
+     "default": null,
+     "discovery_only": true,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "note": "the method page lists no part values; id and snippet are the playlistImage resource properties",
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "playlistId": {
+     "default": null,
+     "discovery_values": [],
+     "doc_only": true,
+     "filter": true,
+     "identity": "playlist",
+     "inventory_access_condition": "doc_only",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "source": "https://developers.google.com/youtube/v3/docs/playlistImages/list",
+     "type": "string"
+    }
+   },
+   "parts": [
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/playlistImages",
+   "quota": {
+    "bucket": "general",
+    "note": "not listed in the quota table",
+    "sources": [
+     "method_page"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/playlistImages/list",
+   "response_schema": "PlaylistImageListResponse",
+   "row_path": "items[]",
+   "row_unit": "playlist_image",
+   "scope": "read",
+   "semantic_traps": [
+    "filter_name_conflict_reference_playlistId_vs_discovery_parent",
+    "upload_limit_50MB_since_2026-09-14"
+   ],
+   "status": "documented"
+  },
+  "youtube.playlistItems.list": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "private playlists"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ],
+    "public_key": [
+     "playlistId",
+     "id",
+     "videoId"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#playlistItemListResponse",
+   "family": "playlistItems",
+   "filters": {
+    "exactly_one_of": [
+     "id",
+     "playlistId"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "application/youtube_playlist.py:11",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "playlistItems",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "playlist_item",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "contentDetails",
+      "id",
+      "snippet",
+      "status"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "playlistId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "playlist",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "video",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "contentDetails",
+    "id",
+    "snippet",
+    "status"
+   ],
+   "path": "youtube/v3/playlistItems",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/playlistItems/list",
+   "response_schema": "PlaylistItemListResponse",
+   "row_path": "items[]",
+   "row_unit": "playlist_item",
+   "scope": "read",
+   "semantic_traps": [
+    "403_watchHistoryNotAccessible_watchLaterNotAccessible",
+    "404_playlistNotFound",
+    "contentDetails_only_for_video_items",
+    "private_deleted_items_undocumented",
+    "row_is_membership_occurrence_not_unique_video",
+    "snippet.publishedAt_is_time_added_to_playlist",
+    "startAt_endAt_deprecated",
+    "typed_playlists_UULF_UUSH_UULV_undocumented_convention"
+   ],
+   "status": "documented"
+  },
+  "youtube.playlists.list": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "mine"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner",
+     "onBehalfOfContentOwnerChannel"
+    ],
+    "public_key": [
+     "channelId",
+     "id"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#playlistListResponse",
+   "family": "playlists",
+   "filters": {
+    "exactly_one_of": [
+     "channelId",
+     "id",
+     "mine"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "playlists",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "channelId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "playlist",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "mine": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOfContentOwnerChannel": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "contentDetails",
+      "id",
+      "localizations",
+      "player",
+      "snippet",
+      "status"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "contentDetails",
+    "id",
+    "localizations",
+    "player",
+    "snippet",
+    "status"
+   ],
+   "path": "youtube/v3/playlists",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/playlists/list",
+   "response_schema": "PlaylistListResponse",
+   "row_path": "items[]",
+   "row_unit": "playlist",
+   "scope": "read",
+   "semantic_traps": [
+    "itemCount_private_deleted_counting_undocumented",
+    "player.embedHtml_is_html_never_render_raw",
+    "private_playlists_need_owner_oauth",
+    "snippet.localized_depends_on_hl",
+    "snippet.tags_deprecated"
+   ],
+   "status": "documented"
+  },
+  "youtube.search.list": {
+   "api": "data",
+   "auth": {
+    "developer": [
+     "forDeveloper"
+    ],
+    "owner_oauth": [
+     "forMine"
+    ],
+    "partner": [
+     "forContentOwner",
+     "onBehalfOfContentOwner"
+    ],
+    "public_key": [
+     "*"
+    ]
+   },
+   "auth_contexts": [
+    "developer",
+    "owner_oauth",
+    "partner",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#searchListResponse",
+   "family": "search",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "search_calls",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "search",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "note": "fewer items than maxResults possible; follow nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "channelId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "channelType": {
+     "default": null,
+     "discovery_values": [
+      "channelTypeUnspecified",
+      "any",
+      "show"
+     ],
+     "documented_values": [
+      "any",
+      "show"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "eventType": {
+     "default": null,
+     "discovery_values": [
+      "none",
+      "upcoming",
+      "live",
+      "completed"
+     ],
+     "documented_values": [
+      "completed",
+      "live",
+      "upcoming"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "forContentOwner": {
+     "auth": "partner",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "forDeveloper": {
+     "auth": "developer",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "forMine": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "location": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "locationRadius": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": "1000 km",
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "order": {
+     "default": "relevance",
+     "discovery_values": [
+      "searchSortUnspecified",
+      "date",
+      "rating",
+      "viewCount",
+      "relevance",
+      "title",
+      "videoCount"
+     ],
+     "documented_values": [
+      "date",
+      "rating",
+      "relevance",
+      "title",
+      "videoCount",
+      "viewCount"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "publishedAfter": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "publishedBefore": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "q": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "regionCode": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "relevanceLanguage": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "safeSearch": {
+     "default": "moderate",
+     "discovery_values": [
+      "safeSearchSettingUnspecified",
+      "none",
+      "moderate",
+      "strict"
+     ],
+     "documented_values": [
+      "moderate",
+      "none",
+      "strict"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "topicId": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "note": "only a curated set of topic IDs works",
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "type": {
+     "default": null,
+     "discovery_values": [],
+     "documented_values": [
+      "channel",
+      "playlist",
+      "video"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "videoCaption": {
+     "default": null,
+     "discovery_values": [
+      "videoCaptionUnspecified",
+      "any",
+      "closedCaption",
+      "none"
+     ],
+     "documented_values": [
+      "any",
+      "closedCaption",
+      "none"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoCategoryId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "video_category",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoDefinition": {
+     "default": null,
+     "discovery_values": [
+      "any",
+      "standard",
+      "high"
+     ],
+     "documented_values": [
+      "any",
+      "high",
+      "standard"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoDimension": {
+     "default": null,
+     "discovery_values": [
+      "any",
+      "2d",
+      "3d"
+     ],
+     "documented_values": [
+      "2d",
+      "3d",
+      "any"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoDuration": {
+     "default": null,
+     "discovery_values": [
+      "videoDurationUnspecified",
+      "any",
+      "short",
+      "medium",
+      "long"
+     ],
+     "documented_values": [
+      "any",
+      "long",
+      "medium",
+      "short"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoEmbeddable": {
+     "default": null,
+     "discovery_values": [
+      "videoEmbeddableUnspecified",
+      "any",
+      "true"
+     ],
+     "documented_values": [
+      "any",
+      "true"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoLicense": {
+     "default": null,
+     "discovery_values": [
+      "any",
+      "youtube",
+      "creativeCommon"
+     ],
+     "documented_values": [
+      "any",
+      "creativeCommon",
+      "youtube"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoPaidProductPlacement": {
+     "default": null,
+     "discovery_values": [
+      "videoPaidProductPlacementUnspecified",
+      "any",
+      "true"
+     ],
+     "documented_values": [
+      "any",
+      "true"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoSyndicated": {
+     "default": null,
+     "discovery_values": [
+      "videoSyndicatedUnspecified",
+      "any",
+      "true"
+     ],
+     "documented_values": [
+      "any",
+      "true"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoType": {
+     "default": null,
+     "discovery_values": [
+      "videoTypeUnspecified",
+      "any",
+      "movie",
+      "episode"
+     ],
+     "documented_values": [
+      "any",
+      "episode",
+      "movie"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "snippet"
+   ],
+   "path": "youtube/v3/search",
+   "quota": {
+    "bucket": "search_queries",
+    "note": "1 unit per call in the Search Queries bucket; default 100 calls per day",
+    "sources": [
+     "method_page",
+     "quota_table",
+     "revision_history_2026-06-01"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/search/list",
+   "response_schema": "SearchListResponse",
+   "row_path": "items[]",
+   "row_unit": "search_hit",
+   "scope": "read",
+   "semantic_traps": [
+    "hit_is_not_full_resource_use_videos.list",
+    "location_and_locationRadius_together",
+    "many_filters_require_type=video",
+    "mixed_row_kinds_by_id.kind",
+    "not_exhaustive_channel_scoped_video_search_capped_500",
+    "order_other_than_relevance_may_be_incomplete",
+    "own_bucket_daily_cap_100_per_acquisition_5",
+    "regionCode_default_US",
+    "safeSearch_default_moderate",
+    "topicId_curated_set_only",
+    "totalResults_approximate_max_1000000",
+    "unsupported_regionCode_may_be_replaced_effective_region_reported",
+    "video_filters_require_type=video_refused_before_sending"
+   ],
+   "status": "documented"
+  },
+  "youtube.subscriptions.list": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "mine",
+     "myRecentSubscribers",
+     "mySubscribers"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner",
+     "onBehalfOfContentOwnerChannel"
+    ],
+    "public_key": [
+     "channelId",
+     "id",
+     "forChannelId"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#subscriptionListResponse",
+   "family": "subscriptions",
+   "filters": {
+    "exactly_one_of": [
+     "channelId",
+     "id",
+     "mine",
+     "myRecentSubscribers",
+     "mySubscribers"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": 50,
+    "note": "reference page does not state the id count; the layer sends at most 50",
+    "param": "id",
+    "status": "app_bound"
+   },
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "subscriptions",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 0,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "channelId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "forChannelId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "channel",
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "note": "comma-separated channel IDs; count not documented, the layer accepts at most 50",
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "subscription",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 0,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "mine": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "myRecentSubscribers": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "mySubscribers": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOfContentOwnerChannel": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "order": {
+     "default": "relevance",
+     "discovery_values": [
+      "subscriptionOrderUnspecified",
+      "relevance",
+      "unread",
+      "alphabetical"
+     ],
+     "documented_values": [
+      "alphabetical",
+      "relevance",
+      "unread"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "contentDetails",
+      "id",
+      "snippet",
+      "subscriberSnippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "contentDetails",
+    "id",
+    "snippet",
+    "subscriberSnippet"
+   ],
+   "path": "youtube/v3/subscriptions",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/subscriptions/list",
+   "response_schema": "SubscriptionListResponse",
+   "row_path": "items[]",
+   "row_unit": "subscription",
+   "scope": "read",
+   "semantic_traps": [
+    "403_accountClosed_accountSuspended",
+    "403_subscriptionForbidden_private_subscriptions",
+    "404_subscriberNotFound",
+    "forChannelId_count_undocumented_app_bound_50",
+    "relationship_rows_personal_data",
+    "subscriber_lists_maximum_may_be_limited"
+   ],
+   "status": "documented"
+  },
+  "youtube.superChatEvents.list": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "part",
+     "hl"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth"
+   ],
+   "envelope_kind": "youtube#superChatEventListResponse",
+   "family": "superChatEvents",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "unconfirmed_in_method_page"
+   },
+   "ledger_endpoint_label": "superChatEvents",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 1,
+    "next_field": "nextPageToken",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "language"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 1,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/superChatEvents",
+   "quota": {
+    "bucket": "general",
+    "note": "method page has no quota sentence",
+    "sources": [
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/live/docs/superChatEvents/list",
+   "response_schema": "SuperChatEventListResponse",
+   "row_path": "items[]",
+   "row_unit": "super_chat_event",
+   "scope": "read",
+   "semantic_traps": [
+    "monetary_amounts",
+    "personal_data",
+    "previous_30_days_only"
+   ],
+   "status": "documented"
+  },
+  "youtube.thirdPartyLinks.list": {
+   "api": "data",
+   "auth": {
+    "unconfirmed": [
+     "part",
+     "linkingToken",
+     "type",
+     "externalChannelId"
+    ]
+   },
+   "auth_contexts": [
+    "unconfirmed"
+   ],
+   "envelope_kind": "youtube#thirdPartyLinkListResponse",
+   "family": "thirdPartyLinks",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "unconfirmed_discovery_only; not_admitted",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "unconfirmed_in_method_page"
+   },
+   "ledger_endpoint_label": "thirdPartyLinks",
+   "oauth_scopes_declared": [],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "externalChannelId": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "linkingToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "type": {
+     "default": null,
+     "discovery_values": [
+      "linkUnspecified",
+      "channelToStoreLink",
+      "channelToAffiliateProgramLink"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "linkingToken",
+    "snippet",
+    "status"
+   ],
+   "path": "youtube/v3/thirdPartyLinks",
+   "quota": {
+    "bucket": "general",
+    "note": "no reference page (404 on 29.10.2026); not in the quota table",
+    "sources": [],
+    "status": "unverified",
+    "units": null
+   },
+   "response_schema": "ThirdPartyLinkListResponse",
+   "row_path": "items[]",
+   "row_unit": "third_party_link",
+   "scope": "read",
+   "semantic_traps": [
+    "discovery_only_no_reference",
+    "do_not_implement_without_official_reference"
+   ],
+   "status": "discovery_only"
+  },
+  "youtube.videoAbuseReportReasons.list": {
+   "api": "data",
+   "auth": {
+    "note": "reference requires one of youtube, youtube.force-ssl, youtube.readonly",
+    "owner_oauth": [
+     "part",
+     "hl"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth"
+   ],
+   "envelope_kind": "youtube#videoAbuseReportReasonListResponse",
+   "family": "videoAbuseReportReasons",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "videoAbuseReportReasons",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": "en-US",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "language"
+    },
+    "part": {
+     "allowed": [
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/videoAbuseReportReasons",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/videoAbuseReportReasons/list",
+   "response_schema": "VideoAbuseReportReasonListResponse",
+   "row_path": "items[]",
+   "row_unit": "abuse_report_reason",
+   "scope": "read",
+   "semantic_traps": [
+    "reference_list_but_oauth_required"
+   ],
+   "status": "documented"
+  },
+  "youtube.videoCategories.list": {
+   "api": "data",
+   "auth": {
+    "public_key": [
+     "id",
+     "regionCode",
+     "hl"
+    ]
+   },
+   "auth_contexts": [
+    "public_key"
+   ],
+   "envelope_kind": "youtube#videoCategoryListResponse",
+   "family": "videoCategories",
+   "filters": {
+    "exactly_one_of": [
+     "id",
+     "regionCode"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": 50,
+    "note": "reference page does not state the id count; the layer sends at most 50",
+    "param": "id",
+    "status": "app_bound"
+   },
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "application/scripts/export_youtube_category_reference.py:141",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "videoCategories",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": "en-US",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "video_category",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "regionCode": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "snippet"
+   ],
+   "path": "youtube/v3/videoCategories",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/videoCategories/list",
+   "response_schema": "VideoCategoryListResponse",
+   "row_path": "items[]",
+   "row_unit": "video_category",
+   "scope": "read",
+   "semantic_traps": [
+    "assignable_flag",
+    "etag_conditional_request_supported_in_app",
+    "label_never_decides_video_type",
+    "regionCode_and_hl_formats_checked_before_sending",
+    "region_dependent_lists"
+   ],
+   "status": "documented"
+  },
+  "youtube.videoTrainability.get": {
+   "api": "data",
+   "auth": {
+    "unconfirmed": [
+     "id"
+    ]
+   },
+   "auth_contexts": [
+    "unconfirmed"
+   ],
+   "family": "videoTrainability",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "unconfirmed_discovery_only; not_admitted",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "unconfirmed_in_method_page"
+   },
+   "ledger_endpoint_label": "videoTrainability",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "youtube/v3/videoTrainability",
+   "quota": {
+    "bucket": "general",
+    "note": "no reference page (404 on 29.10.2026); not in the quota table",
+    "sources": [],
+    "status": "unverified",
+    "units": null
+   },
+   "response_schema": "VideoTrainability",
+   "row_path": "",
+   "row_unit": "video_trainability",
+   "scope": "read",
+   "semantic_traps": [
+    "discovery_only_no_reference",
+    "do_not_implement_without_official_reference"
+   ],
+   "status": "discovery_only"
+  },
+  "youtube.videos.batchGetStats": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "id (non-public videos)"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ],
+    "public_key": [
+     "id (public videos)"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#batchGetStatsResponse",
+   "family": "videos",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": 50,
+    "note": "Discovery 20261028: 'up to 50'; reference page states no maximum",
+    "param": "id",
+    "status": "discovery_description"
+   },
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "application/youtube_batch_stats.py:335",
+    "discovery_revision": "20261022",
+    "quota_bucket": "dedicated_bucket_in_app; provider_allocation_verify_in_Console",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "videos:batchGetStats",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "video",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "max_items": 50,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "contentDetails",
+      "id",
+      "snippet",
+      "statistics"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "contentDetails",
+    "id",
+    "snippet",
+    "statistics"
+   ],
+   "path": "youtube/v3/videos:batchGetStats",
+   "quota": {
+    "bucket": "video_batch_get_stats",
+    "note": "1 unit per call in its own granular bucket; default 10,000 units per day",
+    "sources": [
+     "method_page",
+     "revision_history_2026-06-03"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/videos/batchGetStats",
+   "response_schema": "BatchGetStatsResponse",
+   "row_path": "items[]",
+   "row_unit": "video_stat",
+   "scope": "read",
+   "semantic_traps": [
+    "contentDetails.duration_google-duration_format_in_discovery_unverified",
+    "durationMillis_documented_not_in_discovery",
+    "failed_id_is_not_deletion_proof",
+    "not_atomic_failed_ids_reported_in_summary",
+    "snippet.publishTime_name_differs_from_publishedAt",
+    "statistics_int64_strings_in_discovery",
+    "summary_documented_but_absent_from_discovery_schema"
+   ],
+   "status": "documented"
+  },
+  "youtube.videos.getRating": {
+   "api": "data",
+   "auth": {
+    "owner_oauth": [
+     "id"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "envelope_kind": "youtube#videoGetRatingResponse",
+   "family": "videos",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": null,
+    "param": "id",
+    "status": "undocumented"
+   },
+   "inventory_snapshot": {
+    "access": "oauth_required; owner_or_eligible_account_as_documented",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "videos.getRating",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [],
+     "identity": "video",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "youtube/v3/videos/getRating",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/videos/getRating",
+   "response_schema": "VideoGetRatingResponse",
+   "row_path": "items[]",
+   "row_unit": "video_rating",
+   "scope": "read",
+   "semantic_traps": [
+    "rating_values_like_dislike_none_unspecified",
+    "viewer_specific_never_mix_into_public_rows"
+   ],
+   "status": "documented"
+  },
+  "youtube.videos.list": {
+   "api": "data",
+   "auth": {
+    "discovery_only": [
+     "locale"
+    ],
+    "owner_oauth": [
+     "myRating",
+     "part=fileDetails",
+     "part=processingDetails",
+     "part=suggestions"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ],
+    "public_key": [
+     "id",
+     "chart"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner",
+    "public_key"
+   ],
+   "envelope_kind": "youtube#videoListResponse",
+   "family": "videos",
+   "filters": {
+    "exactly_one_of": [
+     "chart",
+     "id",
+     "myRating"
+    ]
+   },
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "id_batch": {
+    "max_ids": 50,
+    "note": "reference page does not state the id count; app uses 50",
+    "param": "id",
+    "status": "app_bound"
+   },
+   "inventory_snapshot": {
+    "access": "public_key_for_public_subset; oauth_for_restricted_parameters_fields",
+    "current_application": "application/youtube_video_profiles.py:74",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "1"
+   },
+   "ledger_endpoint_label": "videos",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner"
+   ],
+   "owner_only": [
+    "contentDetails.hasCustomThumbnail",
+    "fileDetails",
+    "processingDetails",
+    "statistics.dislikeCount",
+    "status.selfDeclaredMadeForKids",
+    "suggestions"
+   ],
+   "pagination": {
+    "default": 5,
+    "max": 50,
+    "min": 1,
+    "next_field": "nextPageToken",
+    "note": "only with chart or myRating; not with id; myRating max 1000 results",
+    "page_size_param": "maxResults",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "chart": {
+     "default": null,
+     "discovery_values": [
+      "chartUnspecified",
+      "mostPopular"
+     ],
+     "documented_values": [
+      "mostPopular"
+     ],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "video",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "locale": {
+     "default": null,
+     "discovery_only": true,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "maxHeight": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 8192,
+     "min": 72,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "maxResults": {
+     "default": "5",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 1,
+     "only_with": [
+      "chart",
+      "myRating"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "maxWidth": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 8192,
+     "min": 72,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "myRating": {
+     "auth": "owner_oauth",
+     "default": null,
+     "discovery_values": [
+      "none",
+      "like",
+      "dislike"
+     ],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "only_with": [
+      "chart",
+      "myRating"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "brandPartner",
+      "contentDetails",
+      "fileDetails",
+      "id",
+      "liveStreamingDetails",
+      "localizations",
+      "paidProductPlacementDetails",
+      "player",
+      "processingDetails",
+      "recordingDetails",
+      "snippet",
+      "statistics",
+      "status",
+      "suggestions",
+      "topicDetails"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "regionCode": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "only_with": [
+      "chart"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "videoCategoryId": {
+     "default": "0",
+     "discovery_values": [],
+     "identity": "video_category",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "only_with": [
+      "chart"
+     ],
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [
+    "brandPartner",
+    "contentDetails",
+    "fileDetails",
+    "id",
+    "liveStreamingDetails",
+    "localizations",
+    "paidProductPlacementDetails",
+    "player",
+    "processingDetails",
+    "recordingDetails",
+    "snippet",
+    "statistics",
+    "status",
+    "suggestions",
+    "topicDetails"
+   ],
+   "path": "youtube/v3/videos",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/v3/docs/videos/list",
+   "response_schema": "VideoListResponse",
+   "row_path": "items[]",
+   "row_unit": "video",
+   "scope": "read",
+   "semantic_traps": [
+    "activeLiveChatId_removed_after_completion",
+    "app_boundary_statistics_only_in_complete_profiles",
+    "brandPartner_only_channelId_returned",
+    "caption_is_string_true_false",
+    "chart_pages_order_is_the_chart_not_a_sort",
+    "concurrentViewers_only_while_live_and_not_hidden",
+    "dislikeCount_owner_only_since_2021-12-13",
+    "duration_may_differ_by_about_1s",
+    "favoriteCount_deprecated_always_0",
+    "hasPaidProductPlacement_absent_stays_unknown",
+    "liveBroadcastContent_completed_in_discovery_rejected_by_app",
+    "liveStreamingDetails_only_for_broadcasts",
+    "mostPopular_chart_source_changed_2025-07-21",
+    "omitted_requested_id_is_not_deletion_proof",
+    "recordingDetails_location_deprecated",
+    "regionRestriction_allowed_empty_blocked_everywhere",
+    "topicIds_relevantTopicIds_deprecated",
+    "viewCount_definition_change_2026-08-24_all_formats",
+    "viewCount_shorts_definition_change_2025-03-31"
+   ],
+   "status": "documented"
+  },
+  "youtube.youtube.v3.liveChat.messages.stream": {
+   "api": "data",
+   "auth": {
+    "conditional": [
+     "liveChatId"
+    ],
+    "note": "reference does not state API key vs OAuth; 403 forbidden without chat permission"
+   },
+   "auth_contexts": [
+    "conditional"
+   ],
+   "documented_name": "liveChatMessages.streamList",
+   "envelope_kind": "youtube#liveChatMessageListResponse",
+   "family": "liveChatMessages",
+   "host": "https://www.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "conditional; confirm_live_guide_auth_and_chat_access_before_implementation",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261022",
+    "quota_bucket": "general",
+    "quota_cost_per_request": "5"
+   },
+   "ledger_endpoint_label": "liveChat.messages.stream",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.force-ssl",
+    "https://www.googleapis.com/auth/youtube.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "default": 500,
+    "max": 2000,
+    "min": 200,
+    "next_field": "nextPageToken",
+    "note": "long-lived server-streaming connection; the reference shows the gRPC sample and the message shape, not the REST framing; the shared transport reads one bounded body (8 MiB) and has no stream reader",
+    "page_size_param": "maxResults",
+    "resume_param": "pageToken",
+    "style": "server_stream"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "hl": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "liveChatId": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    },
+    "maxResults": {
+     "default": "500",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 2000,
+     "min": 200,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "part": {
+     "allowed": [
+      "authorDetails",
+      "id",
+      "snippet"
+     ],
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": true,
+     "type": "string"
+    },
+    "profileImageSize": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 720,
+     "min": 16,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    }
+   },
+   "parts": [
+    "authorDetails",
+    "id",
+    "snippet"
+   ],
+   "path": "youtube/v3/liveChat/messages/stream",
+   "quota": {
+    "bucket": "general",
+    "sources": [
+     "method_page",
+     "quota_table"
+    ],
+    "status": "verified",
+    "units": 5
+   },
+   "reference": "https://developers.google.com/youtube/v3/live/docs/liveChatMessages/streamList",
+   "response_schema": "LiveChatMessageListResponse",
+   "row_path": "items[]",
+   "row_unit": "live_chat_message",
+   "scope": "read",
+   "semantic_traps": [
+    "first_messages_are_recent_history",
+    "liveChatMessages.list_polls_the_same_chat",
+    "long_lived_connection_needs_streaming_reader",
+    "personal_data_author_fields",
+    "rest_stream_framing_undocumented",
+    "resume_with_last_nextPageToken"
+   ],
+   "status": "documented"
+  },
+  "youtubeAnalytics.groupItems.list": {
+   "api": "analytics",
+   "auth": {
+    "owner_oauth": [
+     "groupId"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "envelope_kind": "youtube#groupItemListResponse",
+   "family": "analytics.groupItems",
+   "host": "https://youtubeanalytics.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "analytics.groupItems",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner",
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "groupId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "analytics_group",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "v2/groupItems",
+   "quota": {
+    "bucket": "youtube_analytics",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/analytics/reference/groupItems/list",
+   "response_schema": "ListGroupItemsResponse",
+   "row_path": "items[]",
+   "row_unit": "analytics_group_item",
+   "scope": "read",
+   "semantic_traps": [
+    "owner_data_never_mixed_with_public_sources"
+   ],
+   "status": "documented"
+  },
+  "youtubeAnalytics.groups.list": {
+   "api": "analytics",
+   "auth": {
+    "owner_oauth": [
+     "id",
+     "mine"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "envelope_kind": "youtube#groupListResponse",
+   "family": "analytics.groups",
+   "filters": {
+    "exactly_one_of": [
+     "id",
+     "mine"
+    ]
+   },
+   "host": "https://youtubeanalytics.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "analytics.groups",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner",
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "next_field": "nextPageToken",
+    "note": "server-defined page size",
+    "page_size_param": null,
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "id": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "analytics_group",
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": true,
+     "required": false,
+     "type": "string"
+    },
+    "mine": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "v2/groups",
+   "quota": {
+    "bucket": "youtube_analytics",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/analytics/reference/groups/list",
+   "response_schema": "ListGroupsResponse",
+   "row_path": "items[]",
+   "row_unit": "analytics_group",
+   "scope": "read",
+   "semantic_traps": [
+    "owner_data_never_mixed_with_public_sources"
+   ],
+   "status": "documented"
+  },
+  "youtubeAnalytics.reports.query": {
+   "api": "analytics",
+   "auth": {
+    "note": "requires youtube.readonly access; monetary metrics need yt-analytics-monetary.readonly and YPP",
+    "owner_oauth": [
+     "ids=channel==MINE|channel==UC..."
+    ],
+    "partner": [
+     "ids=contentOwner=="
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "envelope_kind": "youtubeAnalytics#resultTable",
+   "family": "analytics.reports",
+   "host": "https://youtubeanalytics.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "analytics.reports",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/youtube",
+    "https://www.googleapis.com/auth/youtube.readonly",
+    "https://www.googleapis.com/auth/youtubepartner",
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "base": 1,
+    "index_param": "startIndex",
+    "note": "no general maximum; some report tables require maxResults <= 200/250 and a sort",
+    "page_size_param": "maxResults",
+    "style": "startIndex"
+   },
+   "parameters": {
+    "currency": {
+     "default": "USD",
+     "discovery_values": [],
+     "format": "ISO 4217",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "currency"
+    },
+    "dimensions": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "analytics_names"
+    },
+    "endDate": {
+     "default": null,
+     "discovery_values": [],
+     "format": "YYYY-MM-DD",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string",
+     "value_format": "date"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "filters": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "max_items": 500,
+     "min": null,
+     "note": "semicolon-joined; Audience Retention: one video",
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "analytics_filters"
+    },
+    "ids": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string",
+     "value_format": "analytics_ids"
+    },
+    "includeHistoricalChannelData": {
+     "auth": "partner",
+     "default": "false",
+     "discovery_values": [],
+     "inventory_access_condition": "oauth_or_specific_filters",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "maxResults": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": 1,
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "metrics": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string",
+     "value_format": "analytics_names"
+    },
+    "sort": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "analytics_sort"
+    },
+    "startDate": {
+     "default": null,
+     "discovery_values": [],
+     "format": "YYYY-MM-DD",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string",
+     "value_format": "date"
+    },
+    "startIndex": {
+     "default": "1",
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": "1",
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    }
+   },
+   "parts": [],
+   "path": "v2/reports",
+   "quota": {
+    "bucket": "youtube_analytics",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/analytics/reference/reports/query",
+   "response_schema": "QueryResponse",
+   "row_path": "rows[]",
+   "row_unit": "report_row",
+   "scope": "read",
+   "semantic_traps": [
+    "400_query_not_supported",
+    "48_72_hour_processing_delay",
+    "engagedViews_keeps_previous_counting",
+    "filters_up_to_500_ids",
+    "monetary_metrics_403_without_ypp",
+    "only_documented_report_tables_no_cartesian_products",
+    "owner_data_never_mixed_with_public_sources",
+    "positional_rows_typed_by_columnHeaders",
+    "rows_omitted_when_no_data",
+    "views_definition_depends_on_report_and_changed_2026-08-27"
+   ],
+   "status": "documented"
+  },
+  "youtubereporting.jobs.get": {
+   "api": "reporting",
+   "auth": {
+    "owner_oauth": [
+     "jobId"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "family": "reporting.jobs",
+   "host": "https://youtubereporting.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "reporting.jobs",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "jobId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "reporting_job",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "v1/jobs/{jobId}",
+   "quota": {
+    "bucket": "youtube_reporting",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs/get",
+   "response_schema": "Job",
+   "row_path": "",
+   "row_unit": "reporting_job",
+   "scope": "read",
+   "semantic_traps": [
+    "expireTime_job_lifetime"
+   ],
+   "status": "documented"
+  },
+  "youtubereporting.jobs.list": {
+   "api": "reporting",
+   "auth": {
+    "owner_oauth": [
+     "includeSystemManaged"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "family": "reporting.jobs",
+   "host": "https://youtubereporting.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "reporting.jobs",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "next_field": "nextPageToken",
+    "note": "limits not documented in the inventory",
+    "page_size_param": "pageSize",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "includeSystemManaged": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageSize": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 1,
+     "note": "the reference gives no maximum (\"server may return fewer\"); 50 is the layer bound",
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "v1/jobs",
+   "quota": {
+    "bucket": "youtube_reporting",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs/list",
+   "response_schema": "ListJobsResponse",
+   "row_path": "jobs[]",
+   "row_unit": "reporting_job",
+   "scope": "read",
+   "semantic_traps": [
+    "jobs_exist_only_after_explicit_jobs.create_control_operation"
+   ],
+   "status": "documented"
+  },
+  "youtubereporting.jobs.reports.get": {
+   "api": "reporting",
+   "auth": {
+    "owner_oauth": [
+     "jobId",
+     "reportId"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "family": "reporting.reports",
+   "host": "https://youtubereporting.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "reporting.reports",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "none"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "jobId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "reporting_job",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "reportId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "reporting_report",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "v1/jobs/{jobId}/reports/{reportId}",
+   "quota": {
+    "bucket": "youtube_reporting",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs/reports/get",
+   "response_schema": "Report",
+   "row_path": "",
+   "row_unit": "report_file",
+   "scope": "read",
+   "semantic_traps": [
+    "downloadUrl_is_a_capability_never_log"
+   ],
+   "status": "documented"
+  },
+  "youtubereporting.jobs.reports.list": {
+   "api": "reporting",
+   "auth": {
+    "owner_oauth": [
+     "jobId",
+     "createdAfter",
+     "startTimeAtOrAfter",
+     "startTimeBefore"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "family": "reporting.reports",
+   "host": "https://youtubereporting.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "reporting.reports",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "next_field": "nextPageToken",
+    "note": "limits not documented in the inventory",
+    "page_size_param": "pageSize",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "createdAfter": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "rfc3339_utc"
+    },
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "jobId": {
+     "default": null,
+     "discovery_values": [],
+     "identity": "reporting_job",
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageSize": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 1,
+     "note": "the reference gives no maximum (\"server may return fewer\"); 50 is the layer bound",
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "startTimeAtOrAfter": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "rfc3339_utc"
+    },
+    "startTimeBefore": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string",
+     "value_format": "rfc3339_utc"
+    }
+   },
+   "parts": [],
+   "path": "v1/jobs/{jobId}/reports",
+   "quota": {
+    "bucket": "youtube_reporting",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs/reports/list",
+   "response_schema": "ListReportsResponse",
+   "row_path": "reports[]",
+   "row_unit": "report_file",
+   "scope": "read",
+   "semantic_traps": [
+    "backfill_new_report_id_same_start_end_newest_createTime_wins",
+    "first_reports_within_48h_of_job_creation",
+    "historical_30_days_on_new_job",
+    "one_report_per_24h_period_pst_utc-8",
+    "retention_60_days_historical_30_days"
+   ],
+   "status": "documented"
+  },
+  "youtubereporting.media.download": {
+   "api": "reporting",
+   "auth": {
+    "owner_oauth": [
+     "resourceName"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth"
+   ],
+   "family": "reporting.media",
+   "host": "https://youtubereporting.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "reporting.media",
+   "media": {
+    "content_type": "text/csv (versioned columns per report type; optional gzip)",
+    "formats": [
+     "csv"
+    ]
+   },
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "style": "media"
+   },
+   "parameters": {
+    "resourceName": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": true,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "v1/media/{+resourceName}",
+   "quota": {
+    "bucket": "youtube_reporting",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/media/download",
+   "response_schema": "GdataMedia",
+   "row_unit": "report_csv_row",
+   "scope": "read",
+   "semantic_traps": [
+    "csv_columns_defined_by_report_type_version",
+    "day_boundaries_pst_utc-8_fixed",
+    "discovery_GdataMedia_fields_are_not_report_rows",
+    "empty_dimension_values_in_bulk_reports_2026-09-09"
+   ],
+   "status": "documented"
+  },
+  "youtubereporting.reportTypes.list": {
+   "api": "reporting",
+   "auth": {
+    "owner_oauth": [
+     "includeSystemManaged"
+    ],
+    "partner": [
+     "onBehalfOfContentOwner"
+    ]
+   },
+   "auth_contexts": [
+    "owner_oauth",
+    "partner"
+   ],
+   "family": "reporting.reportTypes",
+   "host": "https://youtubereporting.googleapis.com",
+   "http_method": "GET",
+   "inventory_snapshot": {
+    "access": "owner_oauth_or_partner_cms; scope_and_resource_binding_required",
+    "current_application": "not_implemented_in_audited_public_application",
+    "discovery_revision": "20261021",
+    "quota_bucket": "service_specific_limits; not_Data_API_units",
+    "quota_cost_per_request": "not_general_units"
+   },
+   "ledger_endpoint_label": "reporting.reportTypes",
+   "oauth_scopes_declared": [
+    "https://www.googleapis.com/auth/yt-analytics-monetary.readonly",
+    "https://www.googleapis.com/auth/yt-analytics.readonly"
+   ],
+   "owner_only": [],
+   "pagination": {
+    "next_field": "nextPageToken",
+    "note": "limits not documented in the inventory",
+    "page_size_param": "pageSize",
+    "style": "pageToken",
+    "token_param": "pageToken"
+   },
+   "parameters": {
+    "fields": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "standard_parameter",
+     "max": null,
+     "min": null,
+     "note": "partial-response selector; adapters build it from the field selection",
+     "repeated": false,
+     "required": false,
+     "standard": true,
+     "type": "string"
+    },
+    "includeSystemManaged": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "boolean"
+    },
+    "onBehalfOfContentOwner": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "partner_cms",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    },
+    "pageSize": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": 50,
+     "min": 1,
+     "note": "the reference gives no maximum (\"server may return fewer\"); 50 is the layer bound",
+     "repeated": false,
+     "required": false,
+     "type": "integer"
+    },
+    "pageToken": {
+     "default": null,
+     "discovery_values": [],
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "repeated": false,
+     "required": false,
+     "type": "string"
+    }
+   },
+   "parts": [],
+   "path": "v1/reportTypes",
+   "quota": {
+    "bucket": "youtube_reporting",
+    "note": "one request; no documented unit cost; service limits unverified",
+    "sources": [],
+    "status": "no_data_api_units",
+    "units": 1
+   },
+   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/reportTypes/list",
+   "response_schema": "ListReportTypesResponse",
+   "row_path": "reportTypes[]",
+   "row_unit": "report_type",
+   "scope": "read",
+   "semantic_traps": [
+    "available_types_depend_on_account",
+    "versioned_report_ids_a1_a2_a3"
+   ],
+   "status": "documented"
+  }
+ },
+ "registry_format": 1,
+ "registry_revision": 5
+}

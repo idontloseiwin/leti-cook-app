@@ -1,0 +1,29 @@
+{
+ "case": "no groups: the list is omitted",
+ "request": {
+  "context": "owner",
+  "method": "youtubeAnalytics.groups.list",
+  "parameters": {
+   "mine": true
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "kind": "youtube#groupListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/analytics/reference/groups/list",
+ "synthetic": true
+}

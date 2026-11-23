@@ -1,0 +1,61 @@
+{
+ "case": "an id list where one requested category does not come back: omitted",
+ "request": {
+  "method": "youtube.videoCategories.list",
+  "parameters": {
+   "hl": "de",
+   "id": [
+    "1",
+    "10",
+    "99"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-1",
+      "id": "1",
+      "kind": "youtube#videoCategory",
+      "snippet": {
+       "assignable": true,
+       "channelId": "UCBR8-60-B28hp2BmDPdntcQ",
+       "title": "Filme & Animationen"
+      }
+     },
+     {
+      "etag": "etag-10",
+      "id": "10",
+      "kind": "youtube#videoCategory",
+      "snippet": {
+       "assignable": true,
+       "channelId": "UCBR8-60-B28hp2BmDPdntcQ",
+       "title": "Musik"
+      }
+     }
+    ],
+    "kind": "youtube#videoCategoryListResponse",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 2
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videoCategories/list",
+ "synthetic": true
+}

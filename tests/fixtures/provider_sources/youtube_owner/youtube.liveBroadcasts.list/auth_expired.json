@@ -1,0 +1,40 @@
+{
+ "case": "401 for the owner token: owner_auth_expired, the installation key untouched",
+ "request": {
+  "context": "owner",
+  "method": "youtube.liveBroadcasts.list",
+  "parameters": {
+   "mine": true
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 401,
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "authError"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 401
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/liveBroadcasts/list",
+ "synthetic": true
+}

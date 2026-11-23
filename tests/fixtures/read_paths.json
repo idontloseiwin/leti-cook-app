@@ -1,0 +1,532 @@
+{
+  "format": 1,
+  "about": "Retention verdict of every HTTP path. protected: every YouTube field is checked against its own clock (29 days) before it leaves the server; partial: some fields are not, see gaps; unprotected: none checked; no_youtube_data: only IDs, user work or operational state. A new route needs a review and an entry here.",
+  "gaps": {
+    "inventory_freshness": "The inventory view and count estimate each have a freshness window and require independent checks.",
+    "saved_collection_window": "Saved collection pages validate source_expires_at against checked_at and the allowed source window."
+  },
+  "gaps_outside_routes": [
+    "inventory_freshness",
+    "saved_collection_window"
+  ],
+  "summary": {
+    "routes": {
+      "protected": 23,
+      "no_youtube_data": 84,
+      "partial": 0,
+      "unprotected": 0
+    }
+  },
+  "routes": {
+    "POST /research/queries/execute": {
+      "verdict": "protected",
+      "reads": "registered SQL source clocks including unreturned predicate/sort dependencies; final scope, owner and HOT recheck; response lifetime"
+    },
+    "POST /research/queries/frozen-ids": {
+      "verdict": "protected",
+      "reads": "Row IDs of one process-local frozen result only; every source it admitted outlives the result; owner context and scope revision rechecked on each access; response lifetime is the result's valid_before"
+    },
+    "POST /research/queries/validate": {
+      "verdict": "no_youtube_data",
+      "reads": "bounded query validation; no source read"
+    },
+    "GET /research/capabilities": {
+      "verdict": "no_youtube_data",
+      "reads": "effective owner query capabilities; no source read"
+    },
+    "GET /sidebar-user-data": {
+      "verdict": "no_youtube_data",
+      "reads": "readable.channel_user_work local identities/folder membership; local folders and labels only; no API payload or source clock"
+    },
+    "GET /saved/collections/{collection_id}/member-identities": {
+      "verdict": "no_youtube_data",
+      "reads": "local saved collection metadata, revision and member video IDs with user save times; never loads API sources"
+    },
+    "GET /system/video-type-reviews/hidden": {
+      "verdict": "no_youtube_data",
+      "reads": "R04B: retained video/channel IDs and their count only; no API title, type, thumbnail or clock. No review task is created."
+    },
+    "GET /": {
+      "verdict": "no_youtube_data",
+      "reads": "redirect to the workspace"
+    },
+    "HEAD /": {
+      "verdict": "no_youtube_data",
+      "reads": "redirect to the workspace"
+    },
+    "GET /app": {
+      "verdict": "no_youtube_data",
+      "reads": "retired interface, 410"
+    },
+    "GET /app/": {
+      "verdict": "no_youtube_data",
+      "reads": "retired interface, 410"
+    },
+    "GET /app-explorer": {
+      "verdict": "no_youtube_data",
+      "reads": "retired interface, 410"
+    },
+    "GET /app-explorer/{path:path}": {
+      "verdict": "no_youtube_data",
+      "reads": "retired interface, 410"
+    },
+    "GET /app-explorer-v2": {
+      "verdict": "no_youtube_data",
+      "reads": "retired interface, 410"
+    },
+    "GET /app-explorer-v2/{path:path}": {
+      "verdict": "no_youtube_data",
+      "reads": "retired interface, 410"
+    },
+    "GET /app-next": {
+      "verdict": "no_youtube_data",
+      "reads": "retired interface, 410"
+    },
+    "GET /app-next/{path:path}": {
+      "verdict": "no_youtube_data",
+      "reads": "retired interface, 410"
+    },
+    "GET /app-explorer-v3": {
+      "verdict": "no_youtube_data",
+      "reads": "static page explorer-v3.html"
+    },
+    "GET /app-explorer-v3/{path:path}": {
+      "verdict": "no_youtube_data",
+      "reads": "static page explorer-v3.html"
+    },
+    "GET /app-explorer-v3/assets/{asset_path:path}": {
+      "verdict": "no_youtube_data",
+      "reads": "static build assets"
+    },
+    "GET /internal/hot-runtime": {
+      "verdict": "no_youtube_data",
+      "reads": "signed maintenance status for the collector"
+    },
+    "GET /internal/update-status": {
+      "verdict": "no_youtube_data",
+      "reads": "signed source-free update hold, handoff and readiness status"
+    },
+    "GET /system/hot-runtime": {
+      "verdict": "no_youtube_data",
+      "reads": "maintenance status"
+    },
+    "GET /explorer/channel-library/video-channel": {
+      "verdict": "protected",
+      "reads": "video -> channel ID mapping from hot_video_inventory, source_is_current(source_checked_at); IDs only"
+    },
+    "GET /explorer/home-summary": {
+      "verdict": "protected",
+      "reads": "typed inventory counts from hot_video_inventory with min(source_checked_at) admission; sync run times; read cache 20 s"
+    },
+    "GET /sidebar-data": {
+      "verdict": "protected",
+      "reads": "readable channels via channel_source_fields (profile, country and per-type estimate clocks); folders/labels; view witness admitted before read cache"
+    },
+    "GET /channels/{channel_id}/explorer/profile": {
+      "verdict": "protected",
+      "reads": "readable channel profile by channel_metadata_checked_at/status; country by country_collected_at; Python masks and response deadline retained"
+    },
+    "GET /channels/{channel_id}/explorer/list-inventory": {
+      "verdict": "protected",
+      "reads": "visible channel guard; one bounded count read of readable list state, scan sources and memberships (counts only); YouTube video count only from a fresh channel profile; earliest witness registered and carried as the proof's expiry"
+    },
+    "GET /channels/{channel_id}/backfill-current-stats": {
+      "verdict": "protected",
+      "reads": "operator job snapshot; summary and error hidden after requested_at + 29 days"
+    },
+    "GET /channels/{channel_id}/videos/long/backfill-current-stats": {
+      "verdict": "protected",
+      "reads": "operator job snapshot; summary and error hidden after requested_at + 29 days"
+    },
+    "POST /channels/{channel_id}/backfill-current-stats": {
+      "verdict": "protected",
+      "reads": "queues a job; operator job snapshot"
+    },
+    "POST /channels/{channel_id}/videos/long/backfill-current-stats": {
+      "verdict": "protected",
+      "reads": "queues a job; operator job snapshot"
+    },
+    "GET /channels/{channel_id}/hydration": {
+      "verdict": "protected",
+      "reads": "estimate by per-type clock, admitted job snapshot; per-format counts from readable inventory/memberships/video fields and admitted scan evidence; earliest witness registered"
+    },
+    "POST /channels/{channel_id}/explorer/list-check/{video_type}": {
+      "verdict": "no_youtube_data",
+      "reads": "owner work only; queues or joins one full check"
+    },
+    "POST /channels/{channel_id}/hydration": {
+      "verdict": "protected",
+      "reads": "estimate by per-type clock, admitted job snapshot; per-format counts from readable inventory/memberships/video fields and admitted scan evidence; earliest witness registered"
+    },
+    "POST /add-channel": {
+      "verdict": "protected",
+      "reads": "Mutation acknowledgement is re-read through FrontendRepository/readable channels in the worker thread; both profile and top-level title use admitted fields."
+    },
+    "POST /starter-channels/add": {
+      "verdict": "protected",
+      "reads": "Mutation acknowledgement is re-read through FrontendRepository/readable channels in the worker thread; both profile and top-level title use admitted fields."
+    },
+    "POST /starter-channels/finish": {
+      "verdict": "no_youtube_data",
+      "reads": "setup workspace state"
+    },
+    "POST /refresh-all": {
+      "verdict": "no_youtube_data",
+      "reads": "retired command, 410"
+    },
+    "POST /recalculate-viral": {
+      "verdict": "no_youtube_data",
+      "reads": "retired command, 410"
+    },
+    "POST /run-deep-stats-channel": {
+      "verdict": "no_youtube_data",
+      "reads": "retired command, 410"
+    },
+    "GET /system-summary": {
+      "verdict": "no_youtube_data",
+      "reads": "sync run aggregates, queue counts, quota ledger of the current day, open review flag"
+    },
+    "GET /system/run-history": {
+      "verdict": "no_youtube_data",
+      "reads": "ten compact stored sync runs only; no queue, quota or type diagnostics"
+    },
+    "GET /system/websub": {
+      "verdict": "no_youtube_data",
+      "reads": "WebSub subscription, delivery and event counts and the public callback host; no video or channel values"
+    },
+    "GET /system/pipeline-health": {
+      "verdict": "no_youtube_data",
+      "reads": "operational aggregates and quota ledger of the current day"
+    },
+    "GET /system/video-type-reviews": {
+      "verdict": "protected",
+      "reads": "Readable case observations and inventory type; manual decisions/history are retained user work; case deadlines constrain the response."
+    },
+    "GET /system/video-type-reviews/{case_id}": {
+      "verdict": "protected",
+      "reads": "Readable case observations and inventory type; manual decisions/history are retained user work; case deadlines constrain the response."
+    },
+    "POST /system/video-type-reviews/{case_id}/decision": {
+      "verdict": "protected",
+      "reads": "Readable case observations and inventory type; manual decisions/history are retained user work; case deadlines constrain the response."
+    },
+    "GET /telemetry/recent": {
+      "verdict": "no_youtube_data",
+      "reads": "telemetry events: operation names, counts, error classes"
+    },
+    "GET /telemetry/stream": {
+      "verdict": "no_youtube_data",
+      "reads": "telemetry events: operation names, counts, error classes"
+    },
+    "GET /diagnostics/discovery-journal": {
+      "verdict": "no_youtube_data",
+      "reads": "Owner-only bounded local journal: installation-keyed video/channel/work references, operation/status codes, timestamps and loss counters. No raw identities, source fields, payloads or exception text; pre/post owner rechecks and no-store response. Diagnostics never establish source freshness or exposure."
+    },
+    "POST /diagnostics/discovery-journal/browser": {
+      "verdict": "no_youtube_data",
+      "reads": "Owner-only same-origin report with at most 50 indices into an issued, delivered, unexpired in-memory read receipt. Duplicate received/rendered client reports are ignored; accepts no source fields, performs no source read and returns an empty 204. Reports never change domain visibility or exposure."
+    },
+    "GET /saved/views": {
+      "verdict": "no_youtube_data",
+      "reads": "saved views (user work, channel IDs)"
+    },
+    "POST /saved/views": {
+      "verdict": "no_youtube_data",
+      "reads": "saved views (user work, channel IDs)"
+    },
+    "POST /saved/views/translate": {
+      "verdict": "no_youtube_data",
+      "reads": "Library v1 conditions in the request body translated into one shared query; no database or source read"
+    },
+    "GET /saved/views/{view_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "saved views (user work, channel IDs)"
+    },
+    "PATCH /saved/views/{view_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "saved views (user work, channel IDs)"
+    },
+    "DELETE /saved/views/{view_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "saved views (user work, channel IDs)"
+    },
+    "GET /saved/collections": {
+      "verdict": "no_youtube_data",
+      "reads": "collection names and member counts (user work)"
+    },
+    "POST /saved/collections": {
+      "verdict": "no_youtube_data",
+      "reads": "collection names and member counts (user work)"
+    },
+    "GET /saved/collections/{collection_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "collection names and member counts (user work)"
+    },
+    "PATCH /saved/collections/{collection_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "collection names and member counts (user work)"
+    },
+    "DELETE /saved/collections/{collection_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "collection names and member counts (user work)"
+    },
+    "GET /saved/collections/{collection_id}/members": {
+      "verdict": "protected",
+      "reads": "Readable source projections; type evidence and metadata/status freshness precede dependent reason codes; earliest witness deadline is registered."
+    },
+    "POST /saved/collections/{collection_id}/members": {
+      "verdict": "no_youtube_data",
+      "reads": "membership change acknowledgement"
+    },
+    "POST /saved/collections/{collection_id}/members/remove": {
+      "verdict": "no_youtube_data",
+      "reads": "membership change acknowledgement"
+    },
+    "GET /user-work/status": {
+      "verdict": "no_youtube_data",
+      "reads": "restore state: IDs and typed locators"
+    },
+    "POST /user-work/backup": {
+      "verdict": "no_youtube_data",
+      "reads": "backup export: IDs and user work only"
+    },
+    "POST /user-work/restore/preview": {
+      "verdict": "no_youtube_data",
+      "reads": "the uploaded backup document"
+    },
+    "POST /user-work/restore": {
+      "verdict": "no_youtube_data",
+      "reads": "restore acknowledgement"
+    },
+    "PATCH /user-work/pending/{item_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "pending restore item"
+    },
+    "POST /user-work/pending/reconnect": {
+      "verdict": "no_youtube_data",
+      "reads": "durable reconnect intent receipt; no provider work"
+    },
+    "POST /user-work/pending/{item_id}/resolve": {
+      "verdict": "no_youtube_data",
+      "reads": "durable single reconnect intent receipt; no provider work"
+    },
+    "GET /user-work/deleted-channels": {
+      "verdict": "no_youtube_data",
+      "reads": "trash: typed locator, removal time"
+    },
+    "GET /user-work/deleted-channels/titles": {
+      "verdict": "protected",
+      "reads": "Optional bounded titles from readable.channels for hidden user-work IDs only; profile admission and source_expires_at retained independently of the source-free trash list."
+    },
+    "POST /user-work/deleted-channels/remove/{identity}": {
+      "verdict": "no_youtube_data",
+      "reads": "status only"
+    },
+    "POST /user-work/deleted-channels/{identity}/restore": {
+      "verdict": "no_youtube_data",
+      "reads": "status only"
+    },
+    "POST /folders": {
+      "verdict": "no_youtube_data",
+      "reads": "folders (user work)"
+    },
+    "PATCH /folders/{folder_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "folders (user work)"
+    },
+    "DELETE /folders/{folder_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "folders (user work)"
+    },
+    "POST /channels/{channel_id}/folder": {
+      "verdict": "no_youtube_data",
+      "reads": "folder assignment (user work)"
+    },
+    "POST /labels": {
+      "verdict": "no_youtube_data",
+      "reads": "labels (user work)"
+    },
+    "PATCH /labels/{label_key}": {
+      "verdict": "no_youtube_data",
+      "reads": "labels (user work)"
+    },
+    "DELETE /labels/{label_key}": {
+      "verdict": "no_youtube_data",
+      "reads": "labels (user work)"
+    },
+    "POST /channels/{channel_id}/labels/{label_key}": {
+      "verdict": "no_youtube_data",
+      "reads": "label assignment (user work)"
+    },
+    "GET /research/fields": {
+      "verdict": "no_youtube_data",
+      "reads": "User-owned field preferences, Saved definition dependencies and storage byte/count estimates only; no API field payload."
+    },
+    "POST /research/fields/preview": {
+      "verdict": "no_youtube_data",
+      "reads": "User-owned field preferences, Saved definition dependencies and storage byte/count estimates only; no API field payload."
+    },
+    "POST /research/fields/apply": {
+      "verdict": "no_youtube_data",
+      "reads": "User-owned field preferences, Saved definition dependencies and storage byte/count estimates only; no API field payload."
+    },
+    "POST /research/operations/execute": {
+      "verdict": "protected",
+      "reads": "Registered whole-population SQL over the same readable sources and dependency clocks; definition-epoch fence, operation gate, final scope/owner/HOT checks and source lifetime."
+    },
+    "POST /research/graphs/execute": {
+      "verdict": "protected",
+      "reads": "Bounded sequential query/operation execution through QueryService; per-block lifetimes, final scope/access fence, earliest result expiry; no results persisted."
+    },
+    "POST /research/graphs/validate": {
+      "verdict": "no_youtube_data",
+      "reads": "Bounded graph and registry validation; user definition only, no source data read."
+    },
+    "POST /mcp": {
+      "verdict": "no_youtube_data",
+      "reads": "MCP protocol envelope only; every tool call re-enters the protected research routes with the same agent key."
+    },
+    "GET /mcp": {
+      "verdict": "no_youtube_data",
+      "reads": "Answers 405: no server stream; reads nothing."
+    },
+    "DELETE /mcp": {
+      "verdict": "no_youtube_data",
+      "reads": "Answers 405: no session; reads nothing."
+    },
+    "GET /agent-keys": {
+      "verdict": "no_youtube_data",
+      "reads": "Agent key names and lifetimes from the private key store; no source data."
+    },
+    "POST /agent-keys": {
+      "verdict": "no_youtube_data",
+      "reads": "Creates one agent key in the private key store; no source data."
+    },
+    "DELETE /agent-keys/{key_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "Removes one agent key from the private key store; no source data."
+    },
+    "GET /agent-connections": {
+      "verdict": "no_youtube_data",
+      "reads": "Owner-approved agent connection names and lifetimes from the private store; no source data."
+    },
+    "DELETE /agent-connections/{connection_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "Removes one owner-approved agent connection and its tokens; no source data."
+    },
+    "GET /oauth/authorize": {
+      "verdict": "no_youtube_data",
+      "reads": "Agent sign-in request and the Allow page; registration data only, no source data."
+    },
+    "POST /oauth/authorize": {
+      "verdict": "no_youtube_data",
+      "reads": "The owner's Allow or Deny; issues a one-time code, no source data."
+    },
+    "GET /sources/registry": {
+      "verdict": "no_youtube_data",
+      "reads": "Provider registry projection (methods, fields, support states); documentation metadata only, no YouTube data, no code paths."
+    },
+    "GET /sources/acquisitions/status": {
+      "verdict": "no_youtube_data",
+      "reads": "Daily one-off acquisition cap: quota ledger units of the current Pacific day and per-acquisition limits; operational counts only."
+    },
+    "POST /sources/acquisitions/preview": {
+      "verdict": "no_youtube_data",
+      "reads": "Pure request plan and worst-case cost from the registry plus the daily cap reading; no provider request, no source read."
+    },
+    "POST /sources/acquisitions/execute": {
+      "verdict": "protected",
+      "reads": "Fresh provider pages held in request memory only; every value is observed by this request (response Date clock), nothing is stored, cached or read from storage; the only write is the quota ledger attempt."
+    },
+    "GET /research/contracts": {
+      "verdict": "no_youtube_data",
+      "reads": "Schema, policy-filtered registry help and synthetic examples; no YouTube values"
+    },
+    "GET /research/sources": {
+      "verdict": "no_youtube_data",
+      "reads": "Bounded folder/label/collection IDs and user names only; agent or owner authorization rechecked after read"
+    }
+  },
+  "middleware_paths": {
+    "/auth": {
+      "verdict": "no_youtube_data",
+      "reads": "sign-in page"
+    },
+    "/auth/assets/auth.js": {
+      "verdict": "no_youtube_data",
+      "reads": "sign-in page asset"
+    },
+    "/auth/assets/auth.css": {
+      "verdict": "no_youtube_data",
+      "reads": "sign-in page asset"
+    },
+    "/auth/session": {
+      "verdict": "no_youtube_data",
+      "reads": "owner access state"
+    },
+    "/auth/login": {
+      "verdict": "no_youtube_data",
+      "reads": "owner access"
+    },
+    "/auth/logout": {
+      "verdict": "no_youtube_data",
+      "reads": "owner access"
+    },
+    "/auth/claim": {
+      "verdict": "no_youtube_data",
+      "reads": "owner access"
+    },
+    "/auth/complete": {
+      "verdict": "no_youtube_data",
+      "reads": "owner access"
+    },
+    "/setup": {
+      "verdict": "no_youtube_data",
+      "reads": "setup page"
+    },
+    "/setup/": {
+      "verdict": "no_youtube_data",
+      "reads": "any other /setup/ path answers 404"
+    },
+    "/setup/assets/setup.js": {
+      "verdict": "no_youtube_data",
+      "reads": "setup page asset"
+    },
+    "/setup/assets/setup.css": {
+      "verdict": "no_youtube_data",
+      "reads": "setup page asset"
+    },
+    "/setup/status": {
+      "verdict": "no_youtube_data",
+      "reads": "setup state; category reference status (language count, expiry)"
+    },
+    "/setup/prepare": {
+      "verdict": "no_youtube_data",
+      "reads": "setup state"
+    },
+    "/setup/workspace/start": {
+      "verdict": "no_youtube_data",
+      "reads": "setup state: starter channel IDs"
+    },
+    "/.well-known/oauth-authorization-server": {
+      "verdict": "no_youtube_data",
+      "reads": "agent sign-in: metadata; no library data"
+    },
+    "/.well-known/oauth-protected-resource": {
+      "verdict": "no_youtube_data",
+      "reads": "agent sign-in: metadata; no library data"
+    },
+    "/.well-known/oauth-protected-resource/mcp": {
+      "verdict": "no_youtube_data",
+      "reads": "agent sign-in: metadata; no library data"
+    },
+    "/oauth/register": {
+      "verdict": "no_youtube_data",
+      "reads": "agent sign-in: client registration; no library data"
+    },
+    "/oauth/token": {
+      "verdict": "no_youtube_data",
+      "reads": "agent sign-in: code and refresh token exchange; no library data"
+    }
+  }
+}

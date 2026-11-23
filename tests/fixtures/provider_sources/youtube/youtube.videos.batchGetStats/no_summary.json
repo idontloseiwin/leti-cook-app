@@ -1,0 +1,51 @@
+{
+ "case": "Discovery has no summary: a missing ID is omitted, not failed",
+ "request": {
+  "method": "youtube.videos.batchGetStats",
+  "parameters": {
+   "id": [
+    "vidxxxxxxx1",
+    "vidxxxxxxx2"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "statistics"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic",
+    "items": [
+     {
+      "contentDetails": {
+       "duration": "253s"
+      },
+      "etag": "s1",
+      "id": "vidxxxxxxx1",
+      "kind": "youtube#videoStat",
+      "snippet": {
+       "publishTime": "2026-10-21T11:00:00Z"
+      },
+      "statistics": {
+       "commentCount": "0",
+       "likeCount": "42",
+       "viewCount": "5"
+      }
+     }
+    ],
+    "kind": "youtube#batchGetStatsResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos/batchGetStats",
+ "synthetic": true
+}

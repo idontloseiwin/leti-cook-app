@@ -1,0 +1,71 @@
+{
+ "case": "an undocumented activityType is unknown_enum; an undescribed field is counted",
+ "request": {
+  "method": "youtube.subscriptions.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [
+    "contentDetails.activityType"
+   ],
+   "parts": [
+    "contentDetails"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "activityType": "shortsOnly",
+       "muted": "MARKER-UNKNOWN",
+       "newItemCount": 0,
+       "totalItemCount": 1
+      },
+      "etag": "etag-s1",
+      "id": "SubSyntheticRelation000000000000000000001",
+      "kind": "youtube#subscription",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "description": "MARKER-DESCRIPTION",
+       "publishedAt": "2025-01-01T00:00:00Z",
+       "resourceId": {
+        "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+        "kind": "youtube#channel"
+       },
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/s1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/s1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE subscribed 1"
+      }
+     }
+    ],
+    "kind": "youtube#subscriptionListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/subscriptions/list",
+ "synthetic": true
+}

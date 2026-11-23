@@ -1,0 +1,50 @@
+{
+ "case": "an upload activity without its contentDetails object: the upload reference is absent (not invalid)",
+ "request": {
+  "method": "youtube.activities.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [
+    "contentDetails.upload.videoId",
+    "snippet.type"
+   ],
+   "parts": [
+    "contentDetails",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e",
+      "id": "ActSyntheticActivity0000000000000004",
+      "kind": "youtube#activity",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "publishedAt": "2026-10-20T08:00:00Z",
+       "type": "upload"
+      }
+     }
+    ],
+    "kind": "youtube#activityListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/activities/list",
+ "synthetic": true
+}

@@ -1,0 +1,203 @@
+{
+ "case": "hits of three kinds, the same video again on page 2 (dropped as a duplicate), an unsupported region replaced by US",
+ "request": {
+  "budget": {
+   "max_requests": 2,
+   "max_units": {
+    "search_queries": 2
+   }
+  },
+  "method": "youtube.search.list",
+  "parameters": {
+   "maxResults": 3,
+   "q": "synthetic query",
+   "regionCode": "XK"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-h1",
+      "id": {
+       "kind": "youtube#video",
+       "videoId": "vidxxxxxxx1"
+      },
+      "kind": "youtube#searchResult",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "MARKER-DESCRIPTION",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-11T12:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/h1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/h1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE hit 1"
+      }
+     },
+     {
+      "etag": "etag-h2",
+      "id": {
+       "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+       "kind": "youtube#channel"
+      },
+      "kind": "youtube#searchResult",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "MARKER-DESCRIPTION",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-12T12:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/h2/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/h2/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE hit 2"
+      }
+     },
+     {
+      "etag": "etag-h3",
+      "id": {
+       "kind": "youtube#playlist",
+       "playlistId": "PLsyntheticPlaylist000000000000001"
+      },
+      "kind": "youtube#searchResult",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "MARKER-DESCRIPTION",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-13T12:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/h3/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/h3/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE hit 3"
+      }
+     }
+    ],
+    "kind": "youtube#searchListResponse",
+    "nextPageToken": "MARKER-TOKEN-PAGE-2",
+    "pageInfo": {
+     "resultsPerPage": 3,
+     "totalResults": 1000000
+    },
+    "regionCode": "US"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  },
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-h1",
+      "id": {
+       "kind": "youtube#video",
+       "videoId": "vidxxxxxxx1"
+      },
+      "kind": "youtube#searchResult",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "MARKER-DESCRIPTION",
+       "liveBroadcastContent": "none",
+       "publishedAt": "2026-10-11T12:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/h1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/h1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE hit 1"
+      }
+     },
+     {
+      "etag": "etag-h4",
+      "id": {
+       "kind": "youtube#video",
+       "videoId": "vidxxxxxxx2"
+      },
+      "kind": "youtube#searchResult",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "MARKER-DESCRIPTION",
+       "liveBroadcastContent": "live",
+       "publishedAt": "2026-10-14T12:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/h4/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/h4/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE hit 4"
+      }
+     }
+    ],
+    "kind": "youtube#searchListResponse",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 1000000
+    },
+    "regionCode": "US"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/search/list",
+ "synthetic": true
+}

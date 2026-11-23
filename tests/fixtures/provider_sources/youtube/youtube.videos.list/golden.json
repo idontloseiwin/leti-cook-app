@@ -1,0 +1,2089 @@
+{
+ "absent_parts": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx3": "present"
+  },
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "dde8f9f83f88e6a5dbcc9f60c476a359323d54522723603aafae695cdbf8166f",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "liveStreamingDetails",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx3"
+     },
+     "liveStreamingDetails.activeLiveChatId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.actualEndTime": {
+      "absence": "absent_means_not_yet",
+      "state": "absent"
+     },
+     "liveStreamingDetails.actualStartTime": {
+      "absence": "absent_means_not_yet",
+      "state": "absent"
+     },
+     "liveStreamingDetails.concurrentViewers": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.scheduledEndTime": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.scheduledStartTime": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "22"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultAudioLanguage": {
+      "state": "known",
+      "value": "en-US"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 3"
+     },
+     "snippet.liveBroadcastContent": {
+      "state": "known",
+      "value": "none"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 3"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 3"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-23T13:00:00Z"
+     },
+     "snippet.tags[]": {
+      "state": "known",
+      "value": [
+       "synthetic",
+       "tag3"
+      ]
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 3"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx3",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ },
+ "chart_not_available": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "3b68df34292280f9935a24c65dc677bf3614e6771506c233923c5b07f389a18f",
+    "http_status": 400,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "chart_not_available",
+  "unit": "video",
+  "version": 1
+ },
+ "chart_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "f78002e3275c0d6148873e400db4d515f14ff8f5b2156923ce6022e42a655242",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "brandPartner",
+     "id",
+     "localizations",
+     "player",
+     "recordingDetails",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "f78002e3275c0d6148873e400db4d515f14ff8f5b2156923ce6022e42a655242",
+    "http_status": 200,
+    "page": 1,
+    "parts": [
+     "brandPartner",
+     "id",
+     "localizations",
+     "player",
+     "recordingDetails",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "33eeecc210abb3e52d3bfc577128e75bbe6357739718273d518558af1e99d05c",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "brandPartner.channelId": {
+      "state": "known",
+      "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "localizations.{key}.title": {
+      "state": "known",
+      "value": {
+       "de": "Titel 1"
+      }
+     },
+     "player.embedHeight": {
+      "state": "known",
+      "value": 360
+     },
+     "player.embedHtml": {
+      "state": "known",
+      "value": "<iframe src=\"//www.youtube.com/embed/vidxxxxxxx1\"></iframe>"
+     },
+     "player.embedWidth": {
+      "state": "known",
+      "value": 640
+     },
+     "recordingDetails.recordingDate": {
+      "state": "known",
+      "value": "2026-10-01T00:00:00Z"
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "10"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE chart 1"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "brandPartner.channelId": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx2"
+     },
+     "localizations.{key}.title": {
+      "state": "known",
+      "value": {
+       "de": "Titel 2"
+      }
+     },
+     "player.embedHeight": {
+      "state": "known",
+      "value": 360
+     },
+     "player.embedHtml": {
+      "state": "known",
+      "value": "<iframe src=\"//www.youtube.com/embed/vidxxxxxxx2\"></iframe>"
+     },
+     "player.embedWidth": {
+      "state": "known",
+      "value": 640
+     },
+     "recordingDetails.recordingDate": {
+      "state": "known",
+      "value": "2026-10-01T00:00:00Z"
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "10"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE chart 2"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx2",
+     "kind": "video"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "brandPartner.channelId": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx3"
+     },
+     "localizations.{key}.title": {
+      "state": "known",
+      "value": {
+       "de": "Titel 3"
+      }
+     },
+     "player.embedHeight": {
+      "state": "known",
+      "value": 360
+     },
+     "player.embedHtml": {
+      "state": "known",
+      "value": "<iframe src=\"//www.youtube.com/embed/vidxxxxxxx3\"></iframe>"
+     },
+     "player.embedWidth": {
+      "state": "known",
+      "value": 640
+     },
+     "recordingDetails.recordingDate": {
+      "state": "known",
+      "value": "2026-10-01T00:00:00Z"
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "10"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE chart 3"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx3",
+     "kind": "video"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ },
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "omitted",
+   "vidxxxxxxx2": "omitted"
+  },
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "3b68df34292280f9935a24c65dc677bf3614e6771506c233923c5b07f389a18f",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ },
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "present",
+   "vidxxxxxxx2": "present"
+  },
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "6bfd90bf6350f09e4a0712bbd14d587bcfe60e736f45311e00a39ac86a6fd6ab",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "liveStreamingDetails",
+     "paidProductPlacementDetails",
+     "snippet",
+     "status",
+     "topicDetails"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.caption": {
+      "state": "known",
+      "value": true
+     },
+     "contentDetails.contentRating.acbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.agcomRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.anatelRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bbfcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bfvcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bmukkRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.catvRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.catvfrRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cbfcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cccRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cceRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.chfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.chvrsRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cicfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cnaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cncRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.csaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cscfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.czfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.djctqRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.djctqRatingReasons[]": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ecbmctRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.eefilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.egfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.eirinRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fcbmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fcoRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fpbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fpbRatingReasons[]": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fskRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.grfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.icaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ifcoRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ilfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.incaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kfcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kijkwijzerRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kmrbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.lsfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mccaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mccypRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mcstRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mdaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.medietilsynetRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mekuRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mibacRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mocRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.moctwRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mpaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mpaatRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mtrcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nbcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nfrcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nfvcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nkclvRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.oflcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.pefilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.resorteviolenciaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.rtcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.rteRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.russiaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.skfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.smaisRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.smsaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.tvpgRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ytRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.definition": {
+      "state": "known",
+      "value": "hd"
+     },
+     "contentDetails.dimension": {
+      "state": "known",
+      "value": "2d"
+     },
+     "contentDetails.duration": {
+      "state": "known",
+      "value": 253
+     },
+     "contentDetails.licensedContent": {
+      "state": "known",
+      "value": false
+     },
+     "contentDetails.projection": {
+      "state": "known",
+      "value": "rectangular"
+     },
+     "contentDetails.regionRestriction.allowed[]": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.regionRestriction.blocked[]": {
+      "state": "known",
+      "value": [
+       "DE"
+      ]
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "liveStreamingDetails.activeLiveChatId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.actualEndTime": {
+      "absence": "absent_means_not_yet",
+      "state": "absent"
+     },
+     "liveStreamingDetails.actualStartTime": {
+      "absence": "absent_means_not_yet",
+      "state": "absent"
+     },
+     "liveStreamingDetails.concurrentViewers": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.scheduledEndTime": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.scheduledStartTime": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "paidProductPlacementDetails.hasPaidProductPlacement": {
+      "state": "known",
+      "value": false
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "22"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultAudioLanguage": {
+      "state": "known",
+      "value": "en-US"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 1"
+     },
+     "snippet.liveBroadcastContent": {
+      "state": "known",
+      "value": "none"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 1"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-21T11:00:00Z"
+     },
+     "snippet.tags[]": {
+      "state": "known",
+      "value": [
+       "synthetic",
+       "tag1"
+      ]
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 1"
+     },
+     "status.containsSyntheticMedia": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "status.embeddable": {
+      "state": "known",
+      "value": true
+     },
+     "status.failureReason": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.license": {
+      "state": "known",
+      "value": "youtube"
+     },
+     "status.madeForKids": {
+      "state": "known",
+      "value": false
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     },
+     "status.publicStatsViewable": {
+      "state": "known",
+      "value": true
+     },
+     "status.publishAt": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.rejectionReason": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.uploadStatus": {
+      "state": "known",
+      "value": "processed"
+     },
+     "topicDetails.topicCategories[]": {
+      "state": "known",
+      "value": [
+       "https://en.wikipedia.org/wiki/Knowledge"
+      ]
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.caption": {
+      "state": "known",
+      "value": false
+     },
+     "contentDetails.contentRating.acbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.agcomRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.anatelRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bbfcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bfvcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bmukkRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.catvRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.catvfrRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cbfcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cccRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cceRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.chfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.chvrsRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cicfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cnaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cncRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.csaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cscfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.czfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.djctqRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.djctqRatingReasons[]": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ecbmctRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.eefilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.egfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.eirinRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fcbmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fcoRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fpbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fpbRatingReasons[]": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fskRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.grfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.icaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ifcoRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ilfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.incaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kfcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kijkwijzerRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kmrbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.lsfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mccaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mccypRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mcstRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mdaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.medietilsynetRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mekuRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mibacRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mocRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.moctwRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mpaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mpaatRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mtrcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nbcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nfrcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nfvcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nkclvRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.oflcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.pefilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.resorteviolenciaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.rtcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.rteRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.russiaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.skfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.smaisRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.smsaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.tvpgRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ytRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.definition": {
+      "state": "known",
+      "value": "hd"
+     },
+     "contentDetails.dimension": {
+      "state": "known",
+      "value": "2d"
+     },
+     "contentDetails.duration": {
+      "state": "known",
+      "value": 3723
+     },
+     "contentDetails.licensedContent": {
+      "state": "known",
+      "value": false
+     },
+     "contentDetails.projection": {
+      "state": "known",
+      "value": "rectangular"
+     },
+     "contentDetails.regionRestriction.allowed[]": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.regionRestriction.blocked[]": {
+      "state": "known",
+      "value": [
+       "DE"
+      ]
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx2"
+     },
+     "liveStreamingDetails.activeLiveChatId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.actualEndTime": {
+      "state": "known",
+      "value": "2026-10-20T19:02:03Z"
+     },
+     "liveStreamingDetails.actualStartTime": {
+      "state": "known",
+      "value": "2026-10-20T18:00:00Z"
+     },
+     "liveStreamingDetails.concurrentViewers": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.scheduledEndTime": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "liveStreamingDetails.scheduledStartTime": {
+      "state": "known",
+      "value": "2026-10-20T17:55:00Z"
+     },
+     "paidProductPlacementDetails.hasPaidProductPlacement": {
+      "state": "known",
+      "value": false
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "22"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultAudioLanguage": {
+      "state": "known",
+      "value": "en-US"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 2"
+     },
+     "snippet.liveBroadcastContent": {
+      "state": "known",
+      "value": "none"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 2"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 2"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-22T12:00:00Z"
+     },
+     "snippet.tags[]": {
+      "state": "known",
+      "value": [
+       "synthetic",
+       "tag2"
+      ]
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 2"
+     },
+     "status.containsSyntheticMedia": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "status.embeddable": {
+      "state": "known",
+      "value": true
+     },
+     "status.failureReason": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.license": {
+      "state": "known",
+      "value": "youtube"
+     },
+     "status.madeForKids": {
+      "state": "known",
+      "value": false
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     },
+     "status.publicStatsViewable": {
+      "state": "known",
+      "value": true
+     },
+     "status.publishAt": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.rejectionReason": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.uploadStatus": {
+      "state": "known",
+      "value": "processed"
+     },
+     "topicDetails.topicCategories[]": {
+      "state": "known",
+      "value": [
+       "https://en.wikipedia.org/wiki/Knowledge"
+      ]
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx2",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ },
+ "minimal": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "present"
+  },
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ },
+ "omitted_id": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx1": "present",
+   "vidxxxxxxx2": "omitted",
+   "vidxxxxxxx3": "present"
+  },
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "3b68df34292280f9935a24c65dc677bf3614e6771506c233923c5b07f389a18f",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "22"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultAudioLanguage": {
+      "state": "known",
+      "value": "en-US"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 1"
+     },
+     "snippet.liveBroadcastContent": {
+      "state": "known",
+      "value": "none"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 1"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-21T11:00:00Z"
+     },
+     "snippet.tags[]": {
+      "state": "known",
+      "value": [
+       "synthetic",
+       "tag1"
+      ]
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 1"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx1",
+     "kind": "video"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx3"
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "22"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultAudioLanguage": {
+      "state": "known",
+      "value": "en-US"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 3"
+     },
+     "snippet.liveBroadcastContent": {
+      "state": "known",
+      "value": "none"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 3"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 3"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-23T13:00:00Z"
+     },
+     "snippet.tags[]": {
+      "state": "known",
+      "value": [
+       "synthetic",
+       "tag3"
+      ]
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 3"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx3",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ },
+ "unknown_enum": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx4": "present"
+  },
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "24d848d9418bafe9df9f8894668b44667c2dd40842c9da966dd84946902e1c94",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx4"
+     },
+     "snippet.categoryId": {
+      "state": "known",
+      "value": "22"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultAudioLanguage": {
+      "state": "known",
+      "value": "en-US"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 4"
+     },
+     "snippet.liveBroadcastContent": {
+      "state": "known",
+      "value": "completed"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION video 4"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 4"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-10-24T14:00:00Z"
+     },
+     "snippet.tags[]": {
+      "state": "known",
+      "value": [
+       "synthetic",
+       "tag4"
+      ]
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Video 4"
+     },
+     "status.containsSyntheticMedia": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "status.embeddable": {
+      "state": "known",
+      "value": true
+     },
+     "status.failureReason": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.license": {
+      "state": "known",
+      "value": "youtube"
+     },
+     "status.madeForKids": {
+      "state": "known",
+      "value": false
+     },
+     "status.privacyStatus": {
+      "state": "unknown_enum",
+      "value": "membersOnly"
+     },
+     "status.publicStatsViewable": {
+      "state": "known",
+      "value": true
+     },
+     "status.publishAt": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.rejectionReason": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "status.uploadStatus": {
+      "state": "known",
+      "value": "processed"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx4",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ },
+ "unknown_field": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx4": "present"
+  },
+  "method": "youtube.videos.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "adabe1f6f1f9c98e033e216be7d78b5f992ebc307d65252088b6bdbb89e0406b",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "contentDetails.brandNewField"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.caption": {
+      "state": "known",
+      "value": false
+     },
+     "contentDetails.contentRating.acbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.agcomRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.anatelRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bbfcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bfvcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.bmukkRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.catvRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.catvfrRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cbfcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cccRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cceRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.chfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.chvrsRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cicfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cnaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cncRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.csaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.cscfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.czfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.djctqRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.djctqRatingReasons[]": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ecbmctRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.eefilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.egfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.eirinRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fcbmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fcoRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fpbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fpbRatingReasons[]": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.fskRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.grfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.icaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ifcoRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ilfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.incaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kfcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kijkwijzerRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.kmrbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.lsfRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mccaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mccypRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mcstRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mdaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.medietilsynetRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mekuRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mibacRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mocRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.moctwRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mpaaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mpaatRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.mtrcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nbcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nfrcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nfvcbRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.nkclvRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.oflcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.pefilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.resorteviolenciaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.rtcRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.rteRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.russiaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.skfilmRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.smaisRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.smsaRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.tvpgRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.contentRating.ytRating": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "contentDetails.definition": {
+      "state": "known",
+      "value": "hd"
+     },
+     "contentDetails.dimension": {
+      "state": "known",
+      "value": "2d"
+     },
+     "contentDetails.duration": {
+      "state": "known",
+      "value": 253
+     },
+     "contentDetails.licensedContent": {
+      "state": "known",
+      "value": false
+     },
+     "contentDetails.projection": {
+      "state": "known",
+      "value": "rectangular"
+     },
+     "contentDetails.regionRestriction.allowed[]": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "contentDetails.regionRestriction.blocked[]": {
+      "state": "known",
+      "value": [
+       "DE"
+      ]
+     },
+     "id": {
+      "state": "known",
+      "value": "vidxxxxxxx4"
+     }
+    },
+    "identity": {
+     "id": "vidxxxxxxx4",
+     "kind": "video"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "video",
+  "version": 1
+ }
+}

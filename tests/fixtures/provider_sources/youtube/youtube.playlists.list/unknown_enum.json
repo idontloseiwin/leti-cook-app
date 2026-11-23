@@ -1,0 +1,85 @@
+{
+ "case": "a privacy status outside the documented values: unknown_enum, the row is kept",
+ "request": {
+  "method": "youtube.playlists.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "status"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "itemCount": 18
+      },
+      "etag": "etag-6",
+      "id": "PLsyntheticPlaylist000000000000006",
+      "kind": "youtube#playlist",
+      "localizations": {
+       "de": {
+        "description": "Beschreibung 6",
+        "title": "Reihe 6"
+       },
+       "en": {
+        "description": "MARKER-DESCRIPTION 6",
+        "title": "Series 6"
+       }
+      },
+      "player": {
+       "embedHtml": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000006\"></iframe>"
+      },
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION 6\nsecond line",
+       "localized": {
+        "description": "MARKER-DESCRIPTION 6",
+        "title": "MARKER-TITLE Series 6"
+       },
+       "publishedAt": "2026-07-16T08:30:06Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE Series 6"
+      },
+      "status": {
+       "podcastStatus": "enabled",
+       "privacyStatus": "membersOnly"
+      }
+     }
+    ],
+    "kind": "youtube#playlistListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlists#resource",
+ "synthetic": true
+}

@@ -1,0 +1,5 @@
+.channel-trash-controls { display: grid; gap: 8px; margin-top: 8px; }
+.explorer-app.is-updated .channel-trash-dialog { width: min(640px, calc(100vw - 32px)); }
+.channel-trash-list { list-style: none; padding: 0; }
+.channel-trash-list li { padding: 14px 0; border-bottom: 1px solid #2c414e; overflow-wrap: anywhere; }
+.channel-trash-pages { display: flex; gap: 8px; }

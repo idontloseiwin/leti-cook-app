@@ -1,0 +1,90 @@
+{
+ "case": "fields the registry does not describe: values dropped, only path names counted",
+ "request": {
+  "method": "youtube.playlists.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "itemCount": 15
+      },
+      "etag": "etag-5",
+      "id": "PLsyntheticPlaylist000000000000005",
+      "kind": "youtube#playlist",
+      "localizations": {
+       "de": {
+        "description": "Beschreibung 5",
+        "title": "Reihe 5"
+       },
+       "en": {
+        "description": "MARKER-DESCRIPTION 5",
+        "title": "Series 5"
+       }
+      },
+      "newPart": {
+       "x": 1
+      },
+      "player": {
+       "embedHtml": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000005\"></iframe>"
+      },
+      "snippet": {
+       "brandNewField": "MARKER-UNKNOWN value",
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "defaultLanguage": "en",
+       "description": "MARKER-DESCRIPTION 5\nsecond line",
+       "localized": {
+        "description": "MARKER-DESCRIPTION 5",
+        "title": "MARKER-TITLE Series 5"
+       },
+       "publishedAt": "2026-06-15T08:30:05Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/vi/vidxxxxxxx1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE Series 5"
+      },
+      "status": {
+       "podcastStatus": "disabled",
+       "privacyStatus": "public"
+      }
+     }
+    ],
+    "kind": "youtube#playlistListResponse",
+    "newEnvelopeKey": "MARKER-UNKNOWN",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlists#resource",
+ "synthetic": true
+}

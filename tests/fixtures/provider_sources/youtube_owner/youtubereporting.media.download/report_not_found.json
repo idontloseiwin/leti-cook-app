@@ -1,0 +1,34 @@
+{
+ "case": "404 for the report metadata: not_found, no media request",
+ "request": {
+  "context": "owner",
+  "method": "youtubereporting.media.download",
+  "parameters": {
+   "jobId": "job-synthetic-1",
+   "reportId": "report-2",
+   "reportTypeId": "channel_basic_a3"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 404,
+     "message": "MARKER-ERROR-TEXT",
+     "status": "NOT_FOUND"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 404
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/media/download",
+ "synthetic": true
+}

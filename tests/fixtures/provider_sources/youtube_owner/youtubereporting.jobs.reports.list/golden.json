@@ -1,0 +1,182 @@
+{
+ "backfill": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_reporting": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubereporting.jobs.reports.list",
+  "notes": [
+   "superseded_reports:1"
+  ],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_reporting",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "createTime": {
+      "state": "known",
+      "value": "2026-10-02T10:00:00Z"
+     },
+     "endTime": {
+      "state": "known",
+      "value": "2026-10-02T08:00:00Z"
+     },
+     "id": {
+      "state": "known",
+      "value": "report-1"
+     },
+     "jobExpireTime": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "jobId": {
+      "state": "known",
+      "value": "job-synthetic-1"
+     },
+     "startTime": {
+      "state": "known",
+      "value": "2026-10-01T08:00:00Z"
+     }
+    },
+    "identity": {
+     "id": "report-1",
+     "kind": "reporting_report"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "createTime": {
+      "state": "known",
+      "value": "2026-10-05T10:00:00Z"
+     },
+     "endTime": {
+      "state": "known",
+      "value": "2026-10-02T08:00:00Z"
+     },
+     "id": {
+      "state": "known",
+      "value": "report-2"
+     },
+     "jobExpireTime": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "jobId": {
+      "state": "known",
+      "value": "job-synthetic-1"
+     },
+     "startTime": {
+      "state": "known",
+      "value": "2026-10-01T08:00:00Z"
+     }
+    },
+    "identity": {
+     "id": "report-2",
+     "kind": "reporting_report"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "createTime": {
+      "state": "known",
+      "value": "2026-10-03T10:00:00Z"
+     },
+     "endTime": {
+      "state": "known",
+      "value": "2026-10-03T08:00:00Z"
+     },
+     "id": {
+      "state": "known",
+      "value": "report-3"
+     },
+     "jobExpireTime": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "jobId": {
+      "state": "known",
+      "value": "job-synthetic-1"
+     },
+     "startTime": {
+      "state": "known",
+      "value": "2026-10-02T08:00:00Z"
+     }
+    },
+    "identity": {
+     "id": "report-3",
+     "kind": "reporting_report"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "report_file",
+  "version": 1
+ },
+ "job_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_reporting": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "job-synthetic-9": "not_found"
+  },
+  "method": "youtubereporting.jobs.reports.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 404,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_reporting",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "report_file",
+  "version": 1
+ }
+}

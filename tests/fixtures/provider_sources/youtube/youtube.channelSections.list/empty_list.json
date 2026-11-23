@@ -1,0 +1,31 @@
+{
+ "case": "a channel without sections: complete, no rows",
+ "request": {
+  "method": "youtube.channelSections.list",
+  "parameters": {
+   "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#channelSectionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/channelSections/list",
+ "synthetic": true
+}

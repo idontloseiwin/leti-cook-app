@@ -1,0 +1,41 @@
+{
+ "case": "only snippet.name named: rows still carry the identity",
+ "request": {
+  "method": "youtube.i18nLanguages.list",
+  "parameters": {},
+  "selection": {
+   "fields": [
+    "snippet.name"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-en",
+      "id": "en",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "en",
+       "name": "English"
+      }
+     }
+    ],
+    "kind": "youtube#i18nLanguageListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/i18nLanguages/list",
+ "synthetic": true
+}

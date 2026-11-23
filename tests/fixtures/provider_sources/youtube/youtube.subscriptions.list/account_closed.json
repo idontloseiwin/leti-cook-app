@@ -1,0 +1,39 @@
+{
+ "case": "403 accountClosed: the subscriber account is closed",
+ "request": {
+  "method": "youtube.subscriptions.list",
+  "parameters": {
+   "channelId": "UCCCCCCCCCCCCCCCCCCCCCC3"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "accountClosed"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/subscriptions/list#errors",
+ "synthetic": true
+}

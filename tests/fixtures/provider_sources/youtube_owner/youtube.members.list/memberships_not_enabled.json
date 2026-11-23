@@ -1,0 +1,46 @@
+{
+ "case": "400 channelMembershipsNotEnabled: the feature is off (not an empty list)",
+ "request": {
+  "context": "owner",
+  "method": "youtube.members.list",
+  "parameters": {},
+  "selection": {
+   "fields": [
+    "snippet.memberDetails.channelId",
+    "snippet.memberDetails.displayName",
+    "snippet.membershipsDetails.highestAccessibleLevel",
+    "snippet.membershipsDetails.accessibleLevels[]",
+    "snippet.membershipsDetails.membershipsDuration.memberTotalDurationMonths",
+    "snippet.membershipsDetails.membershipsDurationAtLevels[].level",
+    "snippet.membershipsDetails.membershipsDurationAtLevels[].memberTotalDurationMonths"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 400,
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "channelMembershipsNotEnabled"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 400
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/members/list#errors",
+ "synthetic": true
+}

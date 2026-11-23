@@ -1,0 +1,40 @@
+{
+ "case": "403 quotaExceeded in the general bucket (50 units per call)",
+ "request": {
+  "context": "owner",
+  "method": "youtube.captions.list",
+  "parameters": {
+   "videoId": "vidxxxxxxx1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "quotaExceeded"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/captions/list",
+ "synthetic": true
+}

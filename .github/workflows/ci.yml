@@ -1,0 +1,68 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  scope:
+    name: Change scope and documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      profile: ${{ steps.scope.outputs.profile }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Select checks from the complete Git diff
+        id: scope
+        run: python -B tools/ci_policy.py classify
+      - name: Check local documentation links and anchors
+        run: python -B tools/check_docs.py
+      - name: Verify documentation remains in a valid source package
+        if: steps.scope.outputs.profile == 'docs'
+        run: python -B tools/package_release.py --output "$RUNNER_TEMP/leti-cook-docs-package"
+  application:
+    name: Application
+    needs: scope
+    if: needs.scope.outputs.profile == 'full'
+    uses: ./.github/workflows/package.yml
+  dependencies:
+    name: Dependencies
+    needs: scope
+    if: needs.scope.outputs.profile == 'full'
+    uses: ./.github/workflows/audit.yml
+  images:
+    name: Images
+    needs: scope
+    if: needs.scope.outputs.profile == 'full'
+    uses: ./.github/workflows/images.yml
+  delivery:
+    name: Delivery
+    needs: scope
+    if: needs.scope.outputs.profile == 'full'
+    uses: ./.github/workflows/release-check.yml
+  result:
+    name: CI result
+    if: always()
+    needs: [scope, application, dependencies, images, delivery]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Require every selected check to succeed
+        env:
+          CI_NEEDS: ${{ toJSON(needs) }}
+        run: python3 -B tools/ci_policy.py result

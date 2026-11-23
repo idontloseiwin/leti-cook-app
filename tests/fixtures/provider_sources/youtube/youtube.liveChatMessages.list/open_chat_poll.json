@@ -1,0 +1,106 @@
+{
+ "case": "one poll of an open chat: a text message and a Super Chat; the chat stays open (partial) with a continuation not usable before pollingIntervalMillis",
+ "request": {
+  "method": "youtube.liveChatMessages.list",
+  "parameters": {
+   "liveChatId": "LiveChatSynthetic000001",
+   "maxResults": 200
+  },
+  "selection": {
+   "fields": [
+    "authorDetails.isChatSponsor",
+    "id",
+    "snippet.displayMessage",
+    "snippet.publishedAt",
+    "snippet.superChatDetails.amountMicros",
+    "snippet.superChatDetails.currency",
+    "snippet.superChatDetails.tier",
+    "snippet.textMessageDetails.messageText",
+    "snippet.type"
+   ],
+   "parts": [
+    "authorDetails",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "authorDetails": {
+       "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+       "channelUrl": "http://www.youtube.com/channel/UCBBBBBBBBBBBBBBBBBBBBB2",
+       "displayName": "MARKER-AUTHOR",
+       "isChatModerator": false,
+       "isChatOwner": false,
+       "isChatSponsor": true,
+       "isVerified": false,
+       "profileImageUrl": "https://yt3.ggpht.com/synthetic"
+      },
+      "etag": "etag-m1",
+      "id": "LCC.MsgSynthetic0001",
+      "kind": "youtube#liveChatMessage",
+      "snippet": {
+       "authorChannelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+       "displayMessage": "MARKER-TEXT message 1",
+       "hasDisplayContent": true,
+       "liveChatId": "LiveChatSynthetic000001",
+       "publishedAt": "2026-10-29T09:51:00Z",
+       "textMessageDetails": {
+        "messageText": "MARKER-TEXT hello"
+       },
+       "type": "textMessageEvent"
+      }
+     },
+     {
+      "authorDetails": {
+       "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+       "channelUrl": "http://www.youtube.com/channel/UCBBBBBBBBBBBBBBBBBBBBB2",
+       "displayName": "MARKER-AUTHOR",
+       "isChatModerator": false,
+       "isChatOwner": false,
+       "isChatSponsor": true,
+       "isVerified": false,
+       "profileImageUrl": "https://yt3.ggpht.com/synthetic"
+      },
+      "etag": "etag-m2",
+      "id": "LCC.MsgSynthetic0002",
+      "kind": "youtube#liveChatMessage",
+      "snippet": {
+       "authorChannelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+       "displayMessage": "MARKER-TEXT message 2",
+       "hasDisplayContent": true,
+       "liveChatId": "LiveChatSynthetic000001",
+       "publishedAt": "2026-10-29T09:52:00Z",
+       "superChatDetails": {
+        "amountDisplayString": "$5.00",
+        "amountMicros": "5000000",
+        "currency": "USD",
+        "tier": 2,
+        "userComment": "MARKER-TEXT thanks"
+       },
+       "type": "superChatEvent"
+      }
+     }
+    ],
+    "kind": "youtube#liveChatMessageListResponse",
+    "nextPageToken": "MARKER-TOKEN-POLL-2",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 2
+    },
+    "pollingIntervalMillis": 5100
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/liveChatMessages/list",
+ "synthetic": true
+}

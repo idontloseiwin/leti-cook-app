@@ -1,0 +1,123 @@
+{
+ "case": "an id list of memberships where one does not come back: omitted; thumbnails named on request",
+ "request": {
+  "method": "youtube.playlistItems.list",
+  "parameters": {
+   "id": [
+    "UExzeW50aGV0aWNJdGVtMDAwMDAx",
+    "UExzeW50aGV0aWNJdGVtMDAwMDAy",
+    "UExzeW50aGV0aWNNaXNzaW5n"
+   ]
+  },
+  "selection": {
+   "fields": [
+    "snippet.position",
+    "snippet.resourceId.videoId",
+    "snippet.thumbnails.default.url",
+    "snippet.thumbnails.high.width"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "videoId": "vidxxxxxxx1",
+       "videoPublishedAt": "2026-09-01T00:00:00Z"
+      },
+      "etag": "etag-Ax",
+      "id": "UExzeW50aGV0aWNJdGVtMDAwMDAx",
+      "kind": "youtube#playlistItem",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "",
+       "playlistId": "PLsyntheticPlaylist000000000000001",
+       "position": 0,
+       "publishedAt": "2026-10-01T00:00:00Z",
+       "resourceId": {
+        "kind": "youtube#video",
+        "videoId": "vidxxxxxxx1"
+       },
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/MDAx/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/MDAx/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE item",
+       "videoOwnerChannelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+       "videoOwnerChannelTitle": "MARKER-CHANNEL Owner"
+      },
+      "status": {
+       "privacyStatus": "public"
+      }
+     },
+     {
+      "contentDetails": {
+       "videoId": "vidxxxxxxx1",
+       "videoPublishedAt": "2026-09-01T00:00:00Z"
+      },
+      "etag": "etag-Ay",
+      "id": "UExzeW50aGV0aWNJdGVtMDAwMDAy",
+      "kind": "youtube#playlistItem",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "",
+       "playlistId": "PLsyntheticPlaylist000000000000001",
+       "position": 1,
+       "publishedAt": "2026-10-01T00:00:00Z",
+       "resourceId": {
+        "kind": "youtube#video",
+        "videoId": "vidxxxxxxx1"
+       },
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/MDAy/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/MDAy/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE item",
+       "videoOwnerChannelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+       "videoOwnerChannelTitle": "MARKER-CHANNEL Owner"
+      },
+      "status": {
+       "privacyStatus": "public"
+      }
+     }
+    ],
+    "kind": "youtube#playlistItemListResponse",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 2
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlistItems/list",
+ "synthetic": true
+}

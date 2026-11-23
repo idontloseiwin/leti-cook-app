@@ -1,0 +1,46 @@
+{
+ "case": "403 insufficientPermissions (ACCESS_TOKEN_SCOPE_INSUFFICIENT)",
+ "request": {
+  "context": "owner",
+  "method": "youtube.liveBroadcasts.list",
+  "parameters": {
+   "mine": true
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 403,
+     "details": [
+      {
+       "@type": "type.googleapis.com/google.rpc.ErrorInfo",
+       "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT"
+      }
+     ],
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "insufficientPermissions"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 403
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/liveBroadcasts/list#errors",
+ "synthetic": true
+}

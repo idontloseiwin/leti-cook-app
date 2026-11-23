@@ -1,0 +1,64 @@
+{
+ "case": "top videos: dimension video, sort -views, maxResults<=200 (one request)",
+ "request": {
+  "context": "owner",
+  "method": "youtubeAnalytics.reports.query",
+  "parameters": {
+   "dimensions": "video",
+   "endDate": "2026-09-30",
+   "filters": "country==DE",
+   "ids": "channel==UCoooooooooooooooooooooo",
+   "maxResults": 10,
+   "metrics": "views,subscribersGained",
+   "sort": "-views",
+   "startDate": "2026-09-01"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "columnHeaders": [
+     {
+      "columnType": "DIMENSION",
+      "dataType": "STRING",
+      "name": "video"
+     },
+     {
+      "columnType": "METRIC",
+      "dataType": "INTEGER",
+      "name": "views"
+     },
+     {
+      "columnType": "METRIC",
+      "dataType": "INTEGER",
+      "name": "subscribersGained"
+     }
+    ],
+    "kind": "youtubeAnalytics#resultTable",
+    "rows": [
+     [
+      "vidxxxxxxx1",
+      900,
+      12
+     ],
+     [
+      "vidxxxxxxx2",
+      450,
+      3
+     ]
+    ]
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/analytics/channel_reports#top-videos-with-optional-regional-filters-=-200-results",
+ "synthetic": true
+}

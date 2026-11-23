@@ -1,0 +1,38 @@
+{
+ "case": "404 notFound: the group does not exist",
+ "request": {
+  "context": "owner",
+  "method": "youtubeAnalytics.groupItems.list",
+  "parameters": {
+   "groupId": "group-synthetic-9"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 404,
+     "errors": [
+      {
+       "domain": "youtube.api",
+       "message": "MARKER-ERROR-TEXT",
+       "reason": "notFound"
+      }
+     ],
+     "message": "MARKER-ERROR-TEXT"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 404
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/analytics/reference/groupItems/list",
+ "synthetic": true
+}

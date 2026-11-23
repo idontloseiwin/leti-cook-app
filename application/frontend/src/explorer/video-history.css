@@ -1,0 +1,34 @@
+.explorer-app.is-updated .explorer-v2-video-history { min-width: 0; }
+/* History extends the scrollable Inspector; never squeeze/clamp existing details. */
+.explorer-app.is-updated .explorer-v2-video-drawer:has(.explorer-v2-video-history) > * { flex-shrink: 0; }
+.explorer-app.is-updated .explorer-v2-history-modes { display: flex; gap: 4px; margin: 10px 0 6px; }
+.explorer-app.is-updated .explorer-v2-history-modes button {
+  padding: 5px 9px; border: 1px solid var(--explorer-line-soft); border-radius: 6px;
+  background: transparent; color: var(--explorer-muted); font-size: 11px; cursor: pointer;
+}
+.explorer-app.is-updated .explorer-v2-history-modes button[aria-pressed="true"] { background: #17362f; color: var(--explorer-accent, #4be7bd); }
+.explorer-app.is-updated .explorer-v2-history-modes button:disabled { opacity: .5; cursor: default; }
+.explorer-app.is-updated .explorer-v2-history-caption { margin: 4px 0; color: var(--explorer-muted); font-size: 10px; line-height: 1.5; }
+.explorer-app.is-updated .explorer-v2-history-chart { display: block; width: 100%; height: auto; overflow: visible; margin: 8px 0; }
+.explorer-app.is-updated .explorer-v2-history-chart text { fill: var(--explorer-muted); font-size: 9px; font-variant-numeric: tabular-nums; }
+.explorer-app.is-updated .explorer-v2-history-guide { stroke: var(--explorer-line-soft); stroke-dasharray: 3 4; }
+.explorer-app.is-updated .explorer-v2-history-zero { stroke: var(--explorer-muted); opacity: .45; }
+.explorer-app.is-updated .explorer-v2-history-point { fill: #4be7bd; }
+.explorer-app.is-updated .explorer-v2-history-interval { stroke: #4be7bd; stroke-width: 3; }
+.explorer-app.is-updated .explorer-v2-history-missing { stroke: var(--explorer-muted); fill: none; stroke-width: 2; }
+.explorer-app.is-updated .explorer-v2-history-hit { fill: transparent; cursor: pointer; }
+.explorer-app.is-updated .explorer-v2-history-chart .is-selected .explorer-v2-history-point { stroke: #e8fff9; stroke-width: 1.5; }
+.explorer-app.is-updated .explorer-v2-history-chart .is-selected .explorer-v2-history-missing { stroke: #e8fff9; }
+.explorer-app.is-updated .explorer-v2-history-chart .is-correction .explorer-v2-history-point { fill: #f7b28b; }
+.explorer-app.is-updated .explorer-v2-history-chart .is-correction .explorer-v2-history-interval { stroke: #f7b28b; }
+.explorer-app.is-updated .explorer-v2-history-chart:focus-visible,
+.explorer-app.is-updated .explorer-v2-history-modes button:focus-visible { outline: 2px solid #4be7bd; outline-offset: 3px; }
+.explorer-app.is-updated .explorer-v2-history-point-details { display: grid; gap: 3px; min-height: 51px; font-size: 11px; overflow-wrap: anywhere; }
+.explorer-app.is-updated .explorer-v2-history-point-details strong { font-size: 13px; font-variant-numeric: tabular-nums; }
+.explorer-app.is-updated .explorer-v2-history-point-details time,
+.explorer-app.is-updated .explorer-v2-history-point-details span { color: var(--explorer-muted); }
+.explorer-app.is-updated .explorer-v2-history-navigation { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 6px 0 10px; color: var(--explorer-muted); font-size: 10px; }
+.explorer-app.is-updated .explorer-v2-history-navigation button { min-width: 32px; padding: 3px 8px; }
+.explorer-app.is-updated .explorer-v2-history-navigation button[aria-disabled="true"] { opacity: .5; cursor: default; }
+.explorer-app.is-updated .explorer-v2-history-latest { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; margin: 10px 0; font-size: 11px; }
+.explorer-app.is-updated .explorer-v2-history-latest small { grid-column: 1 / -1; color: var(--explorer-muted); }

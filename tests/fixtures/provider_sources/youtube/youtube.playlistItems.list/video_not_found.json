@@ -1,0 +1,40 @@
+{
+ "case": "404 videoNotFound: the video named by videoId (the playlist itself is not \"not found\")",
+ "request": {
+  "method": "youtube.playlistItems.list",
+  "parameters": {
+   "playlistId": "PLsyntheticPlaylist000000000000001",
+   "videoId": "vidxxxxxxx4"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 404,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "videoNotFound"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 404
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlistItems/list#errors",
+ "synthetic": true
+}

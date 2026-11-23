@@ -1,0 +1,1505 @@
+{
+ "consistency": "current",
+ "consistency_modes": [
+  "current",
+  "frozen"
+ ],
+ "fields": [
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "observation.views_delta",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "signed_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "observation.views_per_hour",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "signed_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "observation.views_at_age",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "observation.growth_28d_status",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "text_code",
+   "values": [
+    "ready",
+    "partial",
+    "started_today",
+    "waiting_next_snapshot",
+    "unavailable"
+   ]
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "observation.views_gained_28d",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "signed_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "observation.views_per_day_28d",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "signed_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "observation.growth_28d_interval_seconds",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "observation.growth_28d_tracked_days",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.id",
+   "nullable": false,
+   "operators": [
+    "eq",
+    "in"
+   ],
+   "sortable": true,
+   "value_type": "video_id"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.channel_id",
+   "nullable": false,
+   "operators": [
+    "eq",
+    "in"
+   ],
+   "sortable": true,
+   "value_type": "channel_id"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.type",
+   "nullable": false,
+   "operators": [
+    "eq",
+    "in"
+   ],
+   "sortable": true,
+   "value_type": "video_type"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.description",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "contains_casefold_v1",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "text"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.paid_promotion",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "boolean"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.title",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "contains_casefold_v1",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "text"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.published_at",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is",
+    "within_last_hours_v1"
+   ],
+   "sortable": true,
+   "value_type": "utc_instant"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.duration_seconds",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.views",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.likes",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.comments",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.tags",
+   "nullable": true,
+   "operators": [
+    "has_any",
+    "has_all",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "text_array"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.topic_urls",
+   "nullable": true,
+   "operators": [
+    "has_any",
+    "has_all",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "text_array"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.category_id",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "text_code"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.audio_language",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "text_code"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.metadata_language",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "text_code"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.caption_available",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "boolean"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.scheduled_start_at",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "utc_instant"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.actual_end_at",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "utc_instant"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.thumbnail_url",
+   "nullable": true,
+   "operators": [
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "text_code"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.title_length",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.tag_count",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.like_rate",
+   "nullable": true,
+   "operators": [
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "signed_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.comment_rate",
+   "nullable": true,
+   "operators": [
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "signed_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.published_date",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "local_date"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.published_year",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "video.lifetime_views_per_day",
+   "nullable": true,
+   "operators": [
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "signed_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "channel.title",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "contains_casefold_v1",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "text"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "channel.avatar_url",
+   "nullable": true,
+   "operators": [
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": false,
+   "value_type": "text_code"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "channel.subscribers",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "channel.views",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "channel.video_count",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "uint_decimal"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "channel.country_code",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "text_code"
+  },
+  {
+   "enabled_video_types": [
+    "long",
+    "short",
+    "stream"
+   ],
+   "id": "channel.created_at",
+   "nullable": true,
+   "operators": [
+    "eq",
+    "in",
+    "gt",
+    "gte",
+    "lt",
+    "lte",
+    "is_known",
+    "is_unknown",
+    "state_is"
+   ],
+   "sortable": true,
+   "value_type": "utc_instant"
+  }
+ ],
+ "frozen": {
+  "max_page_size": 200,
+  "max_rows": 50000,
+  "ttl_seconds": 600
+ },
+ "grain": "video",
+ "max_video_types": 1,
+ "observation_age_limits": {
+  "long": {
+   "3600": 0,
+   "86400": 31536000
+  },
+  "short": {
+   "3600": 604800,
+   "86400": 31536000
+  },
+  "stream": {
+   "3600": null,
+   "86400": null
+  }
+ },
+ "operations": [
+  "video.content_breakdown.v1",
+  "video.facets.v1",
+  "video.fingerprint.v1",
+  "video.launch_comparison.v1",
+  "video.lifetime_baseline.v1",
+  "video.observed_age.v1",
+  "video.observed_change.v1",
+  "video.observed_growth_28d.v1",
+  "video.observed_growth_28d_summary.v1",
+  "video.observed_history.v1",
+  "video.publication_calendar.v1",
+  "video.publication_rhythm.v1",
+  "video.publication_years.v1",
+  "video.static_details.v1",
+  "video.static_metrics.v1",
+  "video.summary.v1",
+  "video.view_pace_median.v1"
+ ],
+ "presets": {
+  "groups": {
+   "comments": {
+    "buckets": {
+     "long": [
+      {
+       "key": "under_10",
+       "label": "Under 10",
+       "max": 10,
+       "min": null
+      },
+      {
+       "key": "10_100",
+       "label": "10-100",
+       "max": 100,
+       "min": 10
+      },
+      {
+       "key": "100_1k",
+       "label": "100-1K",
+       "max": 1000,
+       "min": 100
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K-10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_plus",
+       "label": "10K+",
+       "max": null,
+       "min": 10000
+      }
+     ],
+     "short": [
+      {
+       "key": "under_10",
+       "label": "Under 10",
+       "max": 10,
+       "min": null
+      },
+      {
+       "key": "10_100",
+       "label": "10-100",
+       "max": 100,
+       "min": 10
+      },
+      {
+       "key": "100_1k",
+       "label": "100-1K",
+       "max": 1000,
+       "min": 100
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K-10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_plus",
+       "label": "10K+",
+       "max": null,
+       "min": 10000
+      }
+     ],
+     "stream": [
+      {
+       "key": "under_10",
+       "label": "Under 10",
+       "max": 10,
+       "min": null
+      },
+      {
+       "key": "10_100",
+       "label": "10-100",
+       "max": 100,
+       "min": 10
+      },
+      {
+       "key": "100_1k",
+       "label": "100-1K",
+       "max": 1000,
+       "min": 100
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K-10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_plus",
+       "label": "10K+",
+       "max": null,
+       "min": 10000
+      }
+     ]
+    },
+    "field": "video.comments"
+   },
+   "duration": {
+    "buckets": {
+     "long": [
+      {
+       "key": "under_5m",
+       "label": "Under 5 min",
+       "max": 300,
+       "min": null
+      },
+      {
+       "key": "5m_10m",
+       "label": "5–10 min",
+       "max": 600,
+       "min": 300
+      },
+      {
+       "key": "10m_20m",
+       "label": "10–20 min",
+       "max": 1200,
+       "min": 600
+      },
+      {
+       "key": "20m_40m",
+       "label": "20–40 min",
+       "max": 2400,
+       "min": 1200
+      },
+      {
+       "key": "40m_60m",
+       "label": "40–60 min",
+       "max": 3600,
+       "min": 2400
+      },
+      {
+       "key": "60m_plus",
+       "label": "60+ min",
+       "max": null,
+       "min": 3600
+      }
+     ],
+     "short": [
+      {
+       "key": "under_15s",
+       "label": "Under 15 sec",
+       "max": 15,
+       "min": null
+      },
+      {
+       "key": "15s_30s",
+       "label": "15–30 sec",
+       "max": 30,
+       "min": 15
+      },
+      {
+       "key": "30s_60s",
+       "label": "30–60 sec",
+       "max": 60,
+       "min": 30
+      },
+      {
+       "key": "1m_3m",
+       "label": "1–3 min",
+       "max": 181,
+       "min": 60
+      },
+      {
+       "key": "over_3m",
+       "label": "Over 3 min",
+       "max": null,
+       "min": 181
+      }
+     ],
+     "stream": [
+      {
+       "key": "under_30m",
+       "label": "Under 30 min",
+       "max": 1800,
+       "min": null
+      },
+      {
+       "key": "30m_60m",
+       "label": "30–60 min",
+       "max": 3600,
+       "min": 1800
+      },
+      {
+       "key": "1h_2h",
+       "label": "1–2 hours",
+       "max": 7200,
+       "min": 3600
+      },
+      {
+       "key": "2h_4h",
+       "label": "2–4 hours",
+       "max": 14400,
+       "min": 7200
+      },
+      {
+       "key": "4h_plus",
+       "label": "4+ hours",
+       "max": null,
+       "min": 14400
+      }
+     ]
+    },
+    "field": "video.duration_seconds"
+   },
+   "likes": {
+    "buckets": {
+     "long": [
+      {
+       "key": "under_100",
+       "label": "Under 100",
+       "max": 100,
+       "min": null
+      },
+      {
+       "key": "100_1k",
+       "label": "100-1K",
+       "max": 1000,
+       "min": 100
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K-10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_100k",
+       "label": "10K-100K",
+       "max": 100000,
+       "min": 10000
+      },
+      {
+       "key": "100k_plus",
+       "label": "100K+",
+       "max": null,
+       "min": 100000
+      }
+     ],
+     "short": [
+      {
+       "key": "under_100",
+       "label": "Under 100",
+       "max": 100,
+       "min": null
+      },
+      {
+       "key": "100_1k",
+       "label": "100-1K",
+       "max": 1000,
+       "min": 100
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K-10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_100k",
+       "label": "10K-100K",
+       "max": 100000,
+       "min": 10000
+      },
+      {
+       "key": "100k_plus",
+       "label": "100K+",
+       "max": null,
+       "min": 100000
+      }
+     ],
+     "stream": [
+      {
+       "key": "under_100",
+       "label": "Under 100",
+       "max": 100,
+       "min": null
+      },
+      {
+       "key": "100_1k",
+       "label": "100-1K",
+       "max": 1000,
+       "min": 100
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K-10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_100k",
+       "label": "10K-100K",
+       "max": 100000,
+       "min": 10000
+      },
+      {
+       "key": "100k_plus",
+       "label": "100K+",
+       "max": null,
+       "min": 100000
+      }
+     ]
+    },
+    "field": "video.likes"
+   },
+   "tag_count": {
+    "buckets": {
+     "long": [
+      {
+       "key": "zero",
+       "label": "0 tags",
+       "max": 1,
+       "min": 0
+      },
+      {
+       "key": "1_5",
+       "label": "1–5 tags",
+       "max": 6,
+       "min": 1
+      },
+      {
+       "key": "6_15",
+       "label": "6–15 tags",
+       "max": 16,
+       "min": 6
+      },
+      {
+       "key": "16_plus",
+       "label": "16+ tags",
+       "max": null,
+       "min": 16
+      }
+     ],
+     "short": [
+      {
+       "key": "zero",
+       "label": "0 tags",
+       "max": 1,
+       "min": 0
+      },
+      {
+       "key": "1_5",
+       "label": "1–5 tags",
+       "max": 6,
+       "min": 1
+      },
+      {
+       "key": "6_15",
+       "label": "6–15 tags",
+       "max": 16,
+       "min": 6
+      },
+      {
+       "key": "16_plus",
+       "label": "16+ tags",
+       "max": null,
+       "min": 16
+      }
+     ],
+     "stream": [
+      {
+       "key": "zero",
+       "label": "0 tags",
+       "max": 1,
+       "min": 0
+      },
+      {
+       "key": "1_5",
+       "label": "1–5 tags",
+       "max": 6,
+       "min": 1
+      },
+      {
+       "key": "6_15",
+       "label": "6–15 tags",
+       "max": 16,
+       "min": 6
+      },
+      {
+       "key": "16_plus",
+       "label": "16+ tags",
+       "max": null,
+       "min": 16
+      }
+     ]
+    },
+    "field": "video.tag_count"
+   },
+   "title_length": {
+    "buckets": {
+     "long": [
+      {
+       "key": "under_40",
+       "label": "Under 40 characters",
+       "max": 40,
+       "min": null
+      },
+      {
+       "key": "40_60",
+       "label": "40–60 characters",
+       "max": 60,
+       "min": 40
+      },
+      {
+       "key": "60_80",
+       "label": "60–80 characters",
+       "max": 80,
+       "min": 60
+      },
+      {
+       "key": "80_plus",
+       "label": "80+ characters",
+       "max": null,
+       "min": 80
+      }
+     ],
+     "short": [
+      {
+       "key": "under_40",
+       "label": "Under 40 characters",
+       "max": 40,
+       "min": null
+      },
+      {
+       "key": "40_60",
+       "label": "40–60 characters",
+       "max": 60,
+       "min": 40
+      },
+      {
+       "key": "60_80",
+       "label": "60–80 characters",
+       "max": 80,
+       "min": 60
+      },
+      {
+       "key": "80_plus",
+       "label": "80+ characters",
+       "max": null,
+       "min": 80
+      }
+     ],
+     "stream": [
+      {
+       "key": "under_40",
+       "label": "Under 40 characters",
+       "max": 40,
+       "min": null
+      },
+      {
+       "key": "40_60",
+       "label": "40–60 characters",
+       "max": 60,
+       "min": 40
+      },
+      {
+       "key": "60_80",
+       "label": "60–80 characters",
+       "max": 80,
+       "min": 60
+      },
+      {
+       "key": "80_plus",
+       "label": "80+ characters",
+       "max": null,
+       "min": 80
+      }
+     ]
+    },
+    "field": "video.title_length"
+   },
+   "views": {
+    "buckets": {
+     "long": [
+      {
+       "key": "under_1k",
+       "label": "Under 1K",
+       "max": 1000,
+       "min": null
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K–10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_100k",
+       "label": "10K–100K",
+       "max": 100000,
+       "min": 10000
+      },
+      {
+       "key": "100k_1m",
+       "label": "100K–1M",
+       "max": 1000000,
+       "min": 100000
+      },
+      {
+       "key": "1m_10m",
+       "label": "1M–10M",
+       "max": 10000000,
+       "min": 1000000
+      },
+      {
+       "key": "10m_plus",
+       "label": "10M+",
+       "max": null,
+       "min": 10000000
+      }
+     ],
+     "short": [
+      {
+       "key": "under_1k",
+       "label": "Under 1K",
+       "max": 1000,
+       "min": null
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K–10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_100k",
+       "label": "10K–100K",
+       "max": 100000,
+       "min": 10000
+      },
+      {
+       "key": "100k_1m",
+       "label": "100K–1M",
+       "max": 1000000,
+       "min": 100000
+      },
+      {
+       "key": "1m_10m",
+       "label": "1M–10M",
+       "max": 10000000,
+       "min": 1000000
+      },
+      {
+       "key": "10m_plus",
+       "label": "10M+",
+       "max": null,
+       "min": 10000000
+      }
+     ],
+     "stream": [
+      {
+       "key": "under_1k",
+       "label": "Under 1K",
+       "max": 1000,
+       "min": null
+      },
+      {
+       "key": "1k_10k",
+       "label": "1K–10K",
+       "max": 10000,
+       "min": 1000
+      },
+      {
+       "key": "10k_100k",
+       "label": "10K–100K",
+       "max": 100000,
+       "min": 10000
+      },
+      {
+       "key": "100k_1m",
+       "label": "100K–1M",
+       "max": 1000000,
+       "min": 100000
+      },
+      {
+       "key": "1m_10m",
+       "label": "1M–10M",
+       "max": 10000000,
+       "min": 1000000
+      },
+      {
+       "key": "10m_plus",
+       "label": "10M+",
+       "max": null,
+       "min": 10000000
+      }
+     ]
+    },
+    "field": "video.views"
+   }
+  },
+  "version": 1
+ },
+ "query_version": 1,
+ "registry_version": 11,
+ "scopes": [
+  "channel",
+  "folder",
+  "label",
+  "collection",
+  "library"
+ ],
+ "source_id": "public.videos.current.v1",
+ "video_types": [
+  "long",
+  "short",
+  "stream"
+ ]
+}

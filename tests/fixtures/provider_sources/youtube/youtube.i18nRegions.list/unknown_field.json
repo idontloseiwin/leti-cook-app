@@ -1,0 +1,40 @@
+{
+ "case": "an undescribed snippet field: name counted, value dropped",
+ "request": {
+  "method": "youtube.i18nRegions.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-US",
+      "id": "US",
+      "kind": "youtube#i18nRegion",
+      "snippet": {
+       "flag": "MARKER-UNKNOWN",
+       "gl": "US",
+       "name": "United States"
+      }
+     }
+    ],
+    "kind": "youtube#i18nRegionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/i18nRegions/list",
+ "synthetic": true
+}

@@ -1,0 +1,168 @@
+{
+ "case": "public subscriptions of a channel: rows are relations; personal fields are named explicitly",
+ "request": {
+  "budget": {
+   "max_requests": 3,
+   "max_units": {
+    "general": 3
+   }
+  },
+  "method": "youtube.subscriptions.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+   "maxResults": 2,
+   "order": "alphabetical"
+  },
+  "selection": {
+   "fields": [
+    "contentDetails.activityType",
+    "contentDetails.newItemCount",
+    "contentDetails.totalItemCount",
+    "id",
+    "snippet.channelId",
+    "snippet.publishedAt",
+    "snippet.resourceId.channelId",
+    "snippet.resourceId.kind",
+    "snippet.title"
+   ],
+   "parts": [
+    "contentDetails",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "activityType": "all",
+       "newItemCount": 0,
+       "totalItemCount": 12
+      },
+      "etag": "etag-s1",
+      "id": "SubSyntheticRelation000000000000000000001",
+      "kind": "youtube#subscription",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "description": "MARKER-DESCRIPTION",
+       "publishedAt": "2025-01-01T00:00:00Z",
+       "resourceId": {
+        "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2",
+        "kind": "youtube#channel"
+       },
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/s1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/s1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE subscribed 1"
+      }
+     },
+     {
+      "contentDetails": {
+       "activityType": "all",
+       "newItemCount": 0,
+       "totalItemCount": 0
+      },
+      "etag": "etag-s2",
+      "id": "SubSyntheticRelation000000000000000000002",
+      "kind": "youtube#subscription",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "description": "MARKER-DESCRIPTION",
+       "publishedAt": "2025-02-01T00:00:00Z",
+       "resourceId": {
+        "channelId": "UCCCCCCCCCCCCCCCCCCCCCC3",
+        "kind": "youtube#channel"
+       },
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/s2/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/s2/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE subscribed 2"
+      }
+     }
+    ],
+    "kind": "youtube#subscriptionListResponse",
+    "nextPageToken": "MARKER-TOKEN-PAGE-2",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 3
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  },
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "activityType": "uploads",
+       "newItemCount": 2,
+       "totalItemCount": 12
+      },
+      "etag": "etag-s3",
+      "id": "SubSyntheticRelation000000000000000000003",
+      "kind": "youtube#subscription",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "description": "MARKER-DESCRIPTION",
+       "publishedAt": "2025-03-01T00:00:00Z",
+       "resourceId": {
+        "channelId": "UCDDDDDDDDDDDDDDDDDDDDD4",
+        "kind": "youtube#channel"
+       },
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/s3/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/s3/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE subscribed 3"
+      }
+     }
+    ],
+    "kind": "youtube#subscriptionListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 3
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/subscriptions/list",
+ "synthetic": true
+}

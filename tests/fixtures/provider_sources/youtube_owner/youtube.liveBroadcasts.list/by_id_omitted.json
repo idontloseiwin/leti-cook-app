@@ -1,0 +1,103 @@
+{
+ "case": "id filter: one of two requested broadcasts is not returned (omitted)",
+ "request": {
+  "context": "owner",
+  "method": "youtube.liveBroadcasts.list",
+  "parameters": {
+   "id": [
+    "brdxxxxxxx1",
+    "brdxxxxxxx9"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "status"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "availabilityConfig": {
+        "regionsConfig": {
+         "regionIntervals": [
+          {
+           "interval": {
+            "startTime": "2026-10-02T18:00:00Z"
+           },
+           "regionCode": "DE"
+          },
+          {
+           "interval": {
+            "endTime": "2026-10-03T18:00:00Z",
+            "startTime": "2026-10-02T18:00:00Z"
+           },
+           "regionCode": "FR"
+          }
+         ]
+        }
+       },
+       "boundStreamId": "stream-synthetic-1",
+       "closedCaptionsType": "closedCaptionsDisabled",
+       "enableAutoStart": false,
+       "enableAutoStop": true,
+       "enableDvr": true,
+       "enableEmbed": true,
+       "latencyPreference": "normal",
+       "monitorStream": {
+        "broadcastStreamDelayMs": 0,
+        "embedHtml": "<iframe src=\"https://www.youtube.com/embed/x\"></iframe>",
+        "enableMonitorStream": true
+       },
+       "projection": "rectangular",
+       "recordFromStart": true
+      },
+      "etag": "etag-1",
+      "id": "brdxxxxxxx1",
+      "kind": "youtube#liveBroadcast",
+      "monetizationDetails": {
+       "cuepointSchedule": {
+        "enabled": false
+       }
+      },
+      "snippet": {
+       "actualEndTime": "2026-10-02T19:30:00Z",
+       "actualStartTime": "2026-10-02T18:01:00Z",
+       "channelId": "UCoooooooooooooooooooooo",
+       "description": "MARKER-DESCRIPTION live",
+       "isDefaultBroadcast": false,
+       "liveChatId": "Cg0KC2xpdmVjaGF0aWQ",
+       "publishedAt": "2026-10-01T10:00:00Z",
+       "scheduledStartTime": "2026-10-02T18:00:00Z",
+       "title": "MARKER-TITLE Live 1"
+      },
+      "status": {
+       "lifeCycleStatus": "complete",
+       "madeForKids": false,
+       "privacyStatus": "public",
+       "recordingStatus": "recorded",
+       "selfDeclaredMadeForKids": false
+      }
+     }
+    ],
+    "kind": "youtube#liveBroadcastListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/live/docs/liveBroadcasts/list",
+ "synthetic": true
+}

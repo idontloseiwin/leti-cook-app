@@ -1,0 +1,172 @@
+{
+ "chat_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 50
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "Cg0KC2xpdmVjaGF0aWQ": "not_found"
+  },
+  "method": "youtube.liveChatModerators.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 50,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "live_chat_moderator",
+  "version": 1
+ },
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 50
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.liveChatModerators.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "6ef0ed6ba45fe14133c53605d50b3e1e9d6e95fd6c3a027a8b88cdbf7250c901",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 50,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "MARKER-MODERATOR-ID-1"
+     },
+     "snippet.moderatorDetails.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.moderatorDetails.displayName": {
+      "state": "known",
+      "value": "MARKER-PERSON 1"
+     }
+    },
+    "identity": {
+     "id": "MARKER-MODERATOR-ID-1",
+     "kind": "live_chat_moderator"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "MARKER-MODERATOR-ID-2"
+     },
+     "snippet.moderatorDetails.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.moderatorDetails.displayName": {
+      "state": "known",
+      "value": "MARKER-PERSON 2"
+     }
+    },
+    "identity": {
+     "id": "MARKER-MODERATOR-ID-2",
+     "kind": "live_chat_moderator"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "live_chat_moderator",
+  "version": 1
+ },
+ "not_chat_owner": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 50
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "Cg0KC2xpdmVjaGF0aWQ": "access_denied"
+  },
+  "method": "youtube.liveChatModerators.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 403,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 50,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "live_chat_moderator",
+  "version": 1
+ }
+}

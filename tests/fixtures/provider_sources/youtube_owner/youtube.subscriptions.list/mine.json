@@ -1,0 +1,52 @@
+{
+ "case": "mine=true: the owner's own subscriptions",
+ "request": {
+  "context": "owner",
+  "method": "youtube.subscriptions.list",
+  "parameters": {
+   "mine": true
+  },
+  "selection": {
+   "fields": [
+    "snippet.title",
+    "snippet.resourceId.channelId"
+   ],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e1",
+      "id": "MARKER-SUBSCRIPTION-2",
+      "kind": "youtube#subscription",
+      "snippet": {
+       "resourceId": {
+        "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+        "kind": "youtube#channel"
+       },
+       "title": "MARKER-TITLE channel"
+      }
+     }
+    ],
+    "kind": "youtube#subscriptionListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/subscriptions/list",
+ "synthetic": true
+}

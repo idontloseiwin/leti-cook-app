@@ -1,0 +1,3177 @@
+{
+ "frozen_ref": "frozen_REF-from-a-page_0123456789",
+ "operations": {
+  "video.static_details.v1:long:frozen": {
+   "request": {
+    "version": 1,
+    "operation": "video.static_details.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCWPDMAINAAAAAAAAAAAAAAA"
+     },
+     "video_types": [
+      "long"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ]
+    },
+    "parameters": {
+     "video_id": "L0000000020",
+     "population": {
+      "kind": "frozen",
+      "frozen_ref": "frozen_REF-from-a-page_0123456789"
+     }
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.static_details.v1",
+    "operation_fingerprint": "0ff3da852da62277c9c7fb765aa75e63ec73b6634558520d82b007fa07e0f02b",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:07.973938Z",
+     "valid_before": "2026-10-30T11:46:07.973938Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 2
+     },
+     "status": "partial"
+    },
+    "result": {
+     "video_id": "L0000000020",
+     "video_type": "long",
+     "membership": "member",
+     "inspection": {
+      "mode": "frozen",
+      "evaluated_at": "2026-10-30T11:44:07.936365Z",
+      "valid_before": "2026-10-30T11:54:07.936365Z",
+      "position": 17,
+      "total_count": 138,
+      "frozen_fields": [
+       "video.category_id",
+       "video.comment_rate",
+       "video.comments",
+       "video.duration_seconds",
+       "video.id",
+       "video.like_rate",
+       "video.likes",
+       "video.published_at",
+       "video.tag_count",
+       "video.tags",
+       "video.thumbnail_url",
+       "video.title",
+       "video.title_length",
+       "video.views"
+      ]
+     },
+     "cells": {
+      "video.id": {
+       "value": "L0000000020",
+       "state": "known",
+       "observed_at": "2026-10-30T10:44:06.687750Z",
+       "expires_at": "2026-11-28T10:44:06.687750Z"
+      },
+      "video.title": {
+       "value": "\u00dcn\u00efcode \u2014 title",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/L0000000020/mqdefault.jpg",
+       "state": "known",
+       "observed_at": "2026-10-30T10:44:06.687750Z",
+       "expires_at": "2026-11-28T10:44:06.687750Z"
+      },
+      "video.duration_seconds": {
+       "value": "1026",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.views": {
+       "value": "72520",
+       "state": "known",
+       "observed_at": "2026-10-30T01:58:51.687750Z",
+       "expires_at": "2026-11-28T01:58:51.687750Z"
+      },
+      "video.likes": {
+       "value": "3118",
+       "state": "known",
+       "observed_at": "2026-10-30T01:58:51.687750Z",
+       "expires_at": "2026-11-28T01:58:51.687750Z"
+      },
+      "video.comments": {
+       "value": null,
+       "state": "unknown",
+       "observed_at": "2026-10-30T01:58:51.687750Z",
+       "expires_at": "2026-11-28T01:58:51.687750Z"
+      },
+      "video.published_at": {
+       "value": "2026-10-21T01:59:06.687750Z",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.category_id": {
+       "value": "10",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.tags": {
+       "value": [
+        "a"
+       ],
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      }
+     },
+     "derived": {
+      "video.like_rate": {
+       "value": "4.299504",
+       "state": "known",
+       "observed_at": "2026-10-30T01:58:51.687750Z",
+       "expires_at": "2026-11-28T01:58:51.687750Z"
+      },
+      "video.comment_rate": {
+       "value": null,
+       "state": "unknown",
+       "observed_at": "2026-10-30T01:58:51.687750Z",
+       "expires_at": "2026-11-28T01:58:51.687750Z"
+      },
+      "video.title_length": {
+       "value": "15",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.tag_count": {
+       "value": "1",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      }
+     },
+     "category": {
+      "id": "10",
+      "label": "Category 10"
+     },
+     "clocks": {
+      "counters_checked_at": "2026-10-30T01:58:51.687750Z",
+      "metadata_checked_at": "2026-10-30T09:44:06.687750Z"
+     },
+     "methods": {
+      "rates": "counter_times_100_divided_by_views_6dp_half_even",
+      "zero_views": "unavailable",
+      "title_length": "unicode_code_points",
+      "tag_count": "stored_array_length",
+      "duration": "youtube_duration_seconds_v1_integer",
+      "stale_values": "unknown_or_expired_row_kept"
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.static_details.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:07.982046Z",
+    "source_expires_at": "2026-10-30T11:46:07.973938Z"
+   }
+  },
+  "video.observed_history.v1:long:frozen": {
+   "request": {
+    "version": 1,
+    "operation": "video.observed_history.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCWPDMAINAAAAAAAAAAAAAAA"
+     },
+     "video_types": [
+      "long"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ]
+    },
+    "parameters": {
+     "video_id": "L0000000020",
+     "population": {
+      "kind": "frozen",
+      "frozen_ref": "frozen_REF-from-a-page_0123456789"
+     }
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.observed_history.v1",
+    "operation_fingerprint": "26fcced54caf3de6f77b7a5c744a27a50f34962d77eae7708fd7ffe7596b053e",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:07.996800Z",
+     "valid_before": "2026-10-30T11:46:07.996800Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 2
+     },
+     "status": "partial"
+    },
+    "result": {
+     "video_id": "L0000000020",
+     "video_type": "long",
+     "membership": "member",
+     "inspection": {
+      "mode": "frozen",
+      "evaluated_at": "2026-10-30T11:44:07.936365Z",
+      "valid_before": "2026-10-30T11:54:07.936365Z",
+      "position": 17,
+      "total_count": 138,
+      "frozen_fields": [
+       "video.category_id",
+       "video.comment_rate",
+       "video.comments",
+       "video.duration_seconds",
+       "video.id",
+       "video.like_rate",
+       "video.likes",
+       "video.published_at",
+       "video.tag_count",
+       "video.tags",
+       "video.thumbnail_url",
+       "video.title",
+       "video.title_length",
+       "video.views"
+      ]
+     },
+     "status": "ready",
+     "reason": null,
+     "window": {
+      "days": 28,
+      "hours": 672,
+      "from_at": "2026-10-02T11:44:07.996800Z",
+      "to_at": "2026-10-30T01:58:51.687750Z",
+      "rule": "evaluated_at_minus_28_days_through_counter_observation",
+      "endpoint": "frozen_counter_observation",
+      "start": "window"
+     },
+     "row_limit": 500,
+     "scanned_count": 69,
+     "points": [
+      {
+       "recorded_at": "2026-10-21T02:01:17.687750Z",
+       "views": "82",
+       "likes": "3",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T02:59:50.687750Z",
+       "views": "2260",
+       "likes": "97",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T04:00:22.687750Z",
+       "views": "4438",
+       "likes": "190",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T04:58:24.687750Z",
+       "views": "6460",
+       "likes": "277",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T06:00:03.687750Z",
+       "views": "8539",
+       "likes": "367",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T06:58:58.687750Z",
+       "views": "10460",
+       "likes": "449",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T08:00:32.687750Z",
+       "views": "12403",
+       "likes": "533",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T08:58:34.687750Z",
+       "views": "14175",
+       "likes": "609",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T10:01:29.687750Z",
+       "views": "16034",
+       "likes": "689",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T10:59:19.687750Z",
+       "views": "17687",
+       "likes": "760",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T11:59:55.687750Z",
+       "views": "19364",
+       "likes": "832",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T12:58:05.687750Z",
+       "views": "20922",
+       "likes": "899",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T14:00:40.687750Z",
+       "views": "22544",
+       "likes": "969",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T14:58:02.687750Z",
+       "views": "23982",
+       "likes": "1031",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T16:01:29.687750Z",
+       "views": "25522",
+       "likes": "1097",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T16:56:43.687750Z",
+       "views": "26819",
+       "likes": "1153",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T17:57:00.687750Z",
+       "views": "28191",
+       "likes": "1212",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T18:57:05.687750Z",
+       "views": "29515",
+       "likes": "1269",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T19:58:39.687750Z",
+       "views": "30826",
+       "likes": "1325",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T21:00:00.687750Z",
+       "views": "32090",
+       "likes": "1379",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T22:01:29.687750Z",
+       "views": "33316",
+       "likes": "1432",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T23:00:07.687750Z",
+       "views": "34446",
+       "likes": "1481",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-21T23:57:37.687750Z",
+       "views": "35521",
+       "likes": "1527",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T01:01:20.687750Z",
+       "views": "36673",
+       "likes": "1576",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T01:59:49.687750Z",
+       "views": "37696",
+       "likes": "1620",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T04:01:23.687750Z",
+       "views": "39721",
+       "likes": "1708",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T05:58:48.687750Z",
+       "views": "41555",
+       "likes": "1786",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T07:57:38.687750Z",
+       "views": "43295",
+       "likes": "1861",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T09:58:02.687750Z",
+       "views": "44949",
+       "likes": "1932",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T11:57:30.687750Z",
+       "views": "46487",
+       "likes": "1998",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T14:01:19.687750Z",
+       "views": "47980",
+       "likes": "2063",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T15:59:08.687750Z",
+       "views": "49311",
+       "likes": "2120",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T17:59:06.687750Z",
+       "views": "50583",
+       "likes": "2175",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T19:59:15.687750Z",
+       "views": "51779",
+       "likes": "2226",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-22T21:59:34.687750Z",
+       "views": "52901",
+       "likes": "2274",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T00:00:25.687750Z",
+       "views": "53959",
+       "likes": "2320",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T01:57:55.687750Z",
+       "views": "54924",
+       "likes": "2361",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T03:58:10.687750Z",
+       "views": "55852",
+       "likes": "2401",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T05:56:54.687750Z",
+       "views": "56712",
+       "likes": "2438",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T07:57:56.687750Z",
+       "views": "57536",
+       "likes": "2474",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T09:57:58.687750Z",
+       "views": "58303",
+       "likes": "2507",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T12:01:25.687750Z",
+       "views": "59043",
+       "likes": "2538",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T13:59:54.687750Z",
+       "views": "59711",
+       "likes": "2567",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T16:00:50.687750Z",
+       "views": "60352",
+       "likes": "2595",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T17:58:34.687750Z",
+       "views": "60938",
+       "likes": "2620",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T19:59:53.687750Z",
+       "views": "61507",
+       "likes": "2644",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-23T21:57:14.687750Z",
+       "views": "62025",
+       "likes": "2667",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-24T00:00:10.687750Z",
+       "views": "62536",
+       "likes": "2689",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-24T01:59:01.687750Z",
+       "views": "63001",
+       "likes": "2709",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-24T07:59:25.687750Z",
+       "views": "64254",
+       "likes": "2762",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-24T13:57:54.687750Z",
+       "views": "65301",
+       "likes": "2807",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-24T19:59:57.687750Z",
+       "views": "66193",
+       "likes": "2846",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-25T02:01:21.687750Z",
+       "views": "66948",
+       "likes": "2878",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-25T08:00:07.687750Z",
+       "views": "67587",
+       "likes": "2906",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-25T13:56:56.687750Z",
+       "views": "68134",
+       "likes": "2929",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-25T19:58:37.687750Z",
+       "views": "68614",
+       "likes": "2950",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-26T02:00:45.687750Z",
+       "views": "69034",
+       "likes": "2968",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-26T07:59:27.687750Z",
+       "views": "69400",
+       "likes": "2984",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-26T13:58:57.687750Z",
+       "views": "69727",
+       "likes": "2998",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-26T19:59:02.687750Z",
+       "views": "70021",
+       "likes": "3010",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-27T01:58:06.687750Z",
+       "views": "70287",
+       "likes": "3022",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-27T07:59:44.687750Z",
+       "views": "70533",
+       "likes": "3032",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-27T13:57:21.687750Z",
+       "views": "70758",
+       "likes": "3042",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-27T19:58:51.687750Z",
+       "views": "70970",
+       "likes": "3051",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-28T02:00:16.687750Z",
+       "views": "71170",
+       "likes": "3060",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-28T13:57:18.687750Z",
+       "views": "71539",
+       "likes": "3076",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-29T01:59:58.687750Z",
+       "views": "71883",
+       "likes": "3090",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-29T14:00:25.687750Z",
+       "views": "72208",
+       "likes": "3104",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      },
+      {
+       "recorded_at": "2026-10-30T01:58:51.687750Z",
+       "views": "72520",
+       "likes": "3118",
+       "comments": null,
+       "views_definition_epoch": "youtube.views.play_start.20260824"
+      }
+     ],
+     "series": {
+      "views": {
+       "status": "ready",
+       "reason": null,
+       "intervals": [
+        {
+         "from_at": "2026-10-21T02:01:17.687750Z",
+         "to_at": "2026-10-21T02:59:50.687750Z",
+         "actual_interval_seconds": "3513",
+         "delta": "2178",
+         "per_day": "53566.52",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T02:59:50.687750Z",
+         "to_at": "2026-10-21T04:00:22.687750Z",
+         "actual_interval_seconds": "3632",
+         "delta": "2178",
+         "per_day": "51811.45",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T04:00:22.687750Z",
+         "to_at": "2026-10-21T04:58:24.687750Z",
+         "actual_interval_seconds": "3482",
+         "delta": "2022",
+         "per_day": "50172.54",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T04:58:24.687750Z",
+         "to_at": "2026-10-21T06:00:03.687750Z",
+         "actual_interval_seconds": "3699",
+         "delta": "2079",
+         "per_day": "48560.58",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T06:00:03.687750Z",
+         "to_at": "2026-10-21T06:58:58.687750Z",
+         "actual_interval_seconds": "3535",
+         "delta": "1921",
+         "per_day": "46951.74",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T06:58:58.687750Z",
+         "to_at": "2026-10-21T08:00:32.687750Z",
+         "actual_interval_seconds": "3694",
+         "delta": "1943",
+         "per_day": "45445.37",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T08:00:32.687750Z",
+         "to_at": "2026-10-21T08:58:34.687750Z",
+         "actual_interval_seconds": "3482",
+         "delta": "1772",
+         "per_day": "43969.21",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T08:58:34.687750Z",
+         "to_at": "2026-10-21T10:01:29.687750Z",
+         "actual_interval_seconds": "3775",
+         "delta": "1859",
+         "per_day": "42547.71",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T10:01:29.687750Z",
+         "to_at": "2026-10-21T10:59:19.687750Z",
+         "actual_interval_seconds": "3470",
+         "delta": "1653",
+         "per_day": "41158.27",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T10:59:19.687750Z",
+         "to_at": "2026-10-21T11:59:55.687750Z",
+         "actual_interval_seconds": "3636",
+         "delta": "1677",
+         "per_day": "39849.5",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T11:59:55.687750Z",
+         "to_at": "2026-10-21T12:58:05.687750Z",
+         "actual_interval_seconds": "3490",
+         "delta": "1558",
+         "per_day": "38570.54",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T12:58:05.687750Z",
+         "to_at": "2026-10-21T14:00:40.687750Z",
+         "actual_interval_seconds": "3755",
+         "delta": "1622",
+         "per_day": "37321.12",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T14:00:40.687750Z",
+         "to_at": "2026-10-21T14:58:02.687750Z",
+         "actual_interval_seconds": "3442",
+         "delta": "1438",
+         "per_day": "36096.22",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T14:58:02.687750Z",
+         "to_at": "2026-10-21T16:01:29.687750Z",
+         "actual_interval_seconds": "3807",
+         "delta": "1540",
+         "per_day": "34950.35",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T16:01:29.687750Z",
+         "to_at": "2026-10-21T16:56:43.687750Z",
+         "actual_interval_seconds": "3314",
+         "delta": "1297",
+         "per_day": "33814.36",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T16:56:43.687750Z",
+         "to_at": "2026-10-21T17:57:00.687750Z",
+         "actual_interval_seconds": "3617",
+         "delta": "1372",
+         "per_day": "32773.24",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T17:57:00.687750Z",
+         "to_at": "2026-10-21T18:57:05.687750Z",
+         "actual_interval_seconds": "3605",
+         "delta": "1324",
+         "per_day": "31731.93",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T18:57:05.687750Z",
+         "to_at": "2026-10-21T19:58:39.687750Z",
+         "actual_interval_seconds": "3694",
+         "delta": "1311",
+         "per_day": "30663.35",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T19:58:39.687750Z",
+         "to_at": "2026-10-21T21:00:00.687750Z",
+         "actual_interval_seconds": "3681",
+         "delta": "1264",
+         "per_day": "29668.46",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T21:00:00.687750Z",
+         "to_at": "2026-10-21T22:01:29.687750Z",
+         "actual_interval_seconds": "3689",
+         "delta": "1226",
+         "per_day": "28714.12",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T22:01:29.687750Z",
+         "to_at": "2026-10-21T23:00:07.687750Z",
+         "actual_interval_seconds": "3518",
+         "delta": "1130",
+         "per_day": "27752.13",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T23:00:07.687750Z",
+         "to_at": "2026-10-21T23:57:37.687750Z",
+         "actual_interval_seconds": "3450",
+         "delta": "1075",
+         "per_day": "26921.74",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-21T23:57:37.687750Z",
+         "to_at": "2026-10-22T01:01:20.687750Z",
+         "actual_interval_seconds": "3823",
+         "delta": "1152",
+         "per_day": "26035.26",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T01:01:20.687750Z",
+         "to_at": "2026-10-22T01:59:49.687750Z",
+         "actual_interval_seconds": "3509",
+         "delta": "1023",
+         "per_day": "25188.71",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T01:59:49.687750Z",
+         "to_at": "2026-10-22T04:01:23.687750Z",
+         "actual_interval_seconds": "7294",
+         "delta": "2025",
+         "per_day": "23986.84",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T04:01:23.687750Z",
+         "to_at": "2026-10-22T05:58:48.687750Z",
+         "actual_interval_seconds": "7045",
+         "delta": "1834",
+         "per_day": "22492.21",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T05:58:48.687750Z",
+         "to_at": "2026-10-22T07:57:38.687750Z",
+         "actual_interval_seconds": "7130",
+         "delta": "1740",
+         "per_day": "21084.99",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T07:57:38.687750Z",
+         "to_at": "2026-10-22T09:58:02.687750Z",
+         "actual_interval_seconds": "7224",
+         "delta": "1654",
+         "per_day": "19782.06",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T09:58:02.687750Z",
+         "to_at": "2026-10-22T11:57:30.687750Z",
+         "actual_interval_seconds": "7168",
+         "delta": "1538",
+         "per_day": "18538.39",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T11:57:30.687750Z",
+         "to_at": "2026-10-22T14:01:19.687750Z",
+         "actual_interval_seconds": "7429",
+         "delta": "1493",
+         "per_day": "17363.74",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T14:01:19.687750Z",
+         "to_at": "2026-10-22T15:59:08.687750Z",
+         "actual_interval_seconds": "7069",
+         "delta": "1331",
+         "per_day": "16267.99",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T15:59:08.687750Z",
+         "to_at": "2026-10-22T17:59:06.687750Z",
+         "actual_interval_seconds": "7198",
+         "delta": "1272",
+         "per_day": "15268.24",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T17:59:06.687750Z",
+         "to_at": "2026-10-22T19:59:15.687750Z",
+         "actual_interval_seconds": "7209",
+         "delta": "1196",
+         "per_day": "14334.08",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T19:59:15.687750Z",
+         "to_at": "2026-10-22T21:59:34.687750Z",
+         "actual_interval_seconds": "7219",
+         "delta": "1122",
+         "per_day": "13428.56",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-22T21:59:34.687750Z",
+         "to_at": "2026-10-23T00:00:25.687750Z",
+         "actual_interval_seconds": "7251",
+         "delta": "1058",
+         "per_day": "12606.7",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T00:00:25.687750Z",
+         "to_at": "2026-10-23T01:57:55.687750Z",
+         "actual_interval_seconds": "7050",
+         "delta": "965",
+         "per_day": "11826.38",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T01:57:55.687750Z",
+         "to_at": "2026-10-23T03:58:10.687750Z",
+         "actual_interval_seconds": "7215",
+         "delta": "928",
+         "per_day": "11112.85",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T03:58:10.687750Z",
+         "to_at": "2026-10-23T05:56:54.687750Z",
+         "actual_interval_seconds": "7124",
+         "delta": "860",
+         "per_day": "10430.1",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T05:56:54.687750Z",
+         "to_at": "2026-10-23T07:57:56.687750Z",
+         "actual_interval_seconds": "7262",
+         "delta": "824",
+         "per_day": "9803.58",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T07:57:56.687750Z",
+         "to_at": "2026-10-23T09:57:58.687750Z",
+         "actual_interval_seconds": "7202",
+         "delta": "767",
+         "per_day": "9201.44",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T09:57:58.687750Z",
+         "to_at": "2026-10-23T12:01:25.687750Z",
+         "actual_interval_seconds": "7407",
+         "delta": "740",
+         "per_day": "8631.83",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T12:01:25.687750Z",
+         "to_at": "2026-10-23T13:59:54.687750Z",
+         "actual_interval_seconds": "7109",
+         "delta": "668",
+         "per_day": "8118.61",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T13:59:54.687750Z",
+         "to_at": "2026-10-23T16:00:50.687750Z",
+         "actual_interval_seconds": "7256",
+         "delta": "641",
+         "per_day": "7632.64",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T16:00:50.687750Z",
+         "to_at": "2026-10-23T17:58:34.687750Z",
+         "actual_interval_seconds": "7064",
+         "delta": "586",
+         "per_day": "7167.38",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T17:58:34.687750Z",
+         "to_at": "2026-10-23T19:59:53.687750Z",
+         "actual_interval_seconds": "7279",
+         "delta": "569",
+         "per_day": "6753.89",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T19:59:53.687750Z",
+         "to_at": "2026-10-23T21:57:14.687750Z",
+         "actual_interval_seconds": "7041",
+         "delta": "518",
+         "per_day": "6356.37",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-23T21:57:14.687750Z",
+         "to_at": "2026-10-24T00:00:10.687750Z",
+         "actual_interval_seconds": "7376",
+         "delta": "511",
+         "per_day": "5985.68",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-24T00:00:10.687750Z",
+         "to_at": "2026-10-24T01:59:01.687750Z",
+         "actual_interval_seconds": "7131",
+         "delta": "465",
+         "per_day": "5633.99",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-24T01:59:01.687750Z",
+         "to_at": "2026-10-24T07:59:25.687750Z",
+         "actual_interval_seconds": "21624",
+         "delta": "1253",
+         "per_day": "5006.44",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-24T07:59:25.687750Z",
+         "to_at": "2026-10-24T13:57:54.687750Z",
+         "actual_interval_seconds": "21509",
+         "delta": "1047",
+         "per_day": "4205.72",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-24T13:57:54.687750Z",
+         "to_at": "2026-10-24T19:59:57.687750Z",
+         "actual_interval_seconds": "21723",
+         "delta": "892",
+         "per_day": "3547.8",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-24T19:59:57.687750Z",
+         "to_at": "2026-10-25T02:01:21.687750Z",
+         "actual_interval_seconds": "21684",
+         "delta": "755",
+         "per_day": "3008.3",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-25T02:01:21.687750Z",
+         "to_at": "2026-10-25T08:00:07.687750Z",
+         "actual_interval_seconds": "21526",
+         "delta": "639",
+         "per_day": "2564.79",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-25T08:00:07.687750Z",
+         "to_at": "2026-10-25T13:56:56.687750Z",
+         "actual_interval_seconds": "21409",
+         "delta": "547",
+         "per_day": "2207.52",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-25T13:56:56.687750Z",
+         "to_at": "2026-10-25T19:58:37.687750Z",
+         "actual_interval_seconds": "21701",
+         "delta": "480",
+         "per_day": "1911.06",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-25T19:58:37.687750Z",
+         "to_at": "2026-10-26T02:00:45.687750Z",
+         "actual_interval_seconds": "21728",
+         "delta": "420",
+         "per_day": "1670.1",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-26T02:00:45.687750Z",
+         "to_at": "2026-10-26T07:59:27.687750Z",
+         "actual_interval_seconds": "21522",
+         "delta": "366",
+         "per_day": "1469.31",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-26T07:59:27.687750Z",
+         "to_at": "2026-10-26T13:58:57.687750Z",
+         "actual_interval_seconds": "21570",
+         "delta": "327",
+         "per_day": "1309.82",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-26T13:58:57.687750Z",
+         "to_at": "2026-10-26T19:59:02.687750Z",
+         "actual_interval_seconds": "21605",
+         "delta": "294",
+         "per_day": "1175.73",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-26T19:59:02.687750Z",
+         "to_at": "2026-10-27T01:58:06.687750Z",
+         "actual_interval_seconds": "21544",
+         "delta": "266",
+         "per_day": "1066.77",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-27T01:58:06.687750Z",
+         "to_at": "2026-10-27T07:59:44.687750Z",
+         "actual_interval_seconds": "21698",
+         "delta": "246",
+         "per_day": "979.56",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-27T07:59:44.687750Z",
+         "to_at": "2026-10-27T13:57:21.687750Z",
+         "actual_interval_seconds": "21457",
+         "delta": "225",
+         "per_day": "906",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-27T13:57:21.687750Z",
+         "to_at": "2026-10-27T19:58:51.687750Z",
+         "actual_interval_seconds": "21690",
+         "delta": "212",
+         "per_day": "844.48",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-27T19:58:51.687750Z",
+         "to_at": "2026-10-28T02:00:16.687750Z",
+         "actual_interval_seconds": "21685",
+         "delta": "200",
+         "per_day": "796.86",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-28T02:00:16.687750Z",
+         "to_at": "2026-10-28T13:57:18.687750Z",
+         "actual_interval_seconds": "43022",
+         "delta": "369",
+         "per_day": "741.05",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-28T13:57:18.687750Z",
+         "to_at": "2026-10-29T01:59:58.687750Z",
+         "actual_interval_seconds": "43360",
+         "delta": "344",
+         "per_day": "685.46",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-29T01:59:58.687750Z",
+         "to_at": "2026-10-29T14:00:25.687750Z",
+         "actual_interval_seconds": "43227",
+         "delta": "325",
+         "per_day": "649.59",
+         "definition": "known"
+        },
+        {
+         "from_at": "2026-10-29T14:00:25.687750Z",
+         "to_at": "2026-10-30T01:58:51.687750Z",
+         "actual_interval_seconds": "43106",
+         "delta": "312",
+         "per_day": "625.36",
+         "definition": "known"
+        }
+       ],
+       "latest_interval": {
+        "from_at": "2026-10-29T14:00:25.687750Z",
+        "to_at": "2026-10-30T01:58:51.687750Z",
+        "actual_interval_seconds": "43106",
+        "delta": "312",
+        "per_day": "625.36",
+        "definition": "known"
+       },
+       "coverage": {
+        "point_count": 69,
+        "valid_count": 69,
+        "missing_count": 0,
+        "duplicate_timestamp_count": 0
+       }
+      },
+      "likes": {
+       "status": "ready",
+       "reason": null,
+       "intervals": [
+        {
+         "from_at": "2026-10-21T02:01:17.687750Z",
+         "to_at": "2026-10-21T02:59:50.687750Z",
+         "actual_interval_seconds": "3513",
+         "delta": "94",
+         "per_day": "2311.87"
+        },
+        {
+         "from_at": "2026-10-21T02:59:50.687750Z",
+         "to_at": "2026-10-21T04:00:22.687750Z",
+         "actual_interval_seconds": "3632",
+         "delta": "93",
+         "per_day": "2212.33"
+        },
+        {
+         "from_at": "2026-10-21T04:00:22.687750Z",
+         "to_at": "2026-10-21T04:58:24.687750Z",
+         "actual_interval_seconds": "3482",
+         "delta": "87",
+         "per_day": "2158.76"
+        },
+        {
+         "from_at": "2026-10-21T04:58:24.687750Z",
+         "to_at": "2026-10-21T06:00:03.687750Z",
+         "actual_interval_seconds": "3699",
+         "delta": "90",
+         "per_day": "2102.19"
+        },
+        {
+         "from_at": "2026-10-21T06:00:03.687750Z",
+         "to_at": "2026-10-21T06:58:58.687750Z",
+         "actual_interval_seconds": "3535",
+         "delta": "82",
+         "per_day": "2004.19"
+        },
+        {
+         "from_at": "2026-10-21T06:58:58.687750Z",
+         "to_at": "2026-10-21T08:00:32.687750Z",
+         "actual_interval_seconds": "3694",
+         "delta": "84",
+         "per_day": "1964.7"
+        },
+        {
+         "from_at": "2026-10-21T08:00:32.687750Z",
+         "to_at": "2026-10-21T08:58:34.687750Z",
+         "actual_interval_seconds": "3482",
+         "delta": "76",
+         "per_day": "1885.81"
+        },
+        {
+         "from_at": "2026-10-21T08:58:34.687750Z",
+         "to_at": "2026-10-21T10:01:29.687750Z",
+         "actual_interval_seconds": "3775",
+         "delta": "80",
+         "per_day": "1830.99"
+        },
+        {
+         "from_at": "2026-10-21T10:01:29.687750Z",
+         "to_at": "2026-10-21T10:59:19.687750Z",
+         "actual_interval_seconds": "3470",
+         "delta": "71",
+         "per_day": "1767.84"
+        },
+        {
+         "from_at": "2026-10-21T10:59:19.687750Z",
+         "to_at": "2026-10-21T11:59:55.687750Z",
+         "actual_interval_seconds": "3636",
+         "delta": "72",
+         "per_day": "1710.89"
+        },
+        {
+         "from_at": "2026-10-21T11:59:55.687750Z",
+         "to_at": "2026-10-21T12:58:05.687750Z",
+         "actual_interval_seconds": "3490",
+         "delta": "67",
+         "per_day": "1658.68"
+        },
+        {
+         "from_at": "2026-10-21T12:58:05.687750Z",
+         "to_at": "2026-10-21T14:00:40.687750Z",
+         "actual_interval_seconds": "3755",
+         "delta": "70",
+         "per_day": "1610.65"
+        },
+        {
+         "from_at": "2026-10-21T14:00:40.687750Z",
+         "to_at": "2026-10-21T14:58:02.687750Z",
+         "actual_interval_seconds": "3442",
+         "delta": "62",
+         "per_day": "1556.3"
+        },
+        {
+         "from_at": "2026-10-21T14:58:02.687750Z",
+         "to_at": "2026-10-21T16:01:29.687750Z",
+         "actual_interval_seconds": "3807",
+         "delta": "66",
+         "per_day": "1497.87"
+        },
+        {
+         "from_at": "2026-10-21T16:01:29.687750Z",
+         "to_at": "2026-10-21T16:56:43.687750Z",
+         "actual_interval_seconds": "3314",
+         "delta": "56",
+         "per_day": "1459.99"
+        },
+        {
+         "from_at": "2026-10-21T16:56:43.687750Z",
+         "to_at": "2026-10-21T17:57:00.687750Z",
+         "actual_interval_seconds": "3617",
+         "delta": "59",
+         "per_day": "1409.34"
+        },
+        {
+         "from_at": "2026-10-21T17:57:00.687750Z",
+         "to_at": "2026-10-21T18:57:05.687750Z",
+         "actual_interval_seconds": "3605",
+         "delta": "57",
+         "per_day": "1366.1"
+        },
+        {
+         "from_at": "2026-10-21T18:57:05.687750Z",
+         "to_at": "2026-10-21T19:58:39.687750Z",
+         "actual_interval_seconds": "3694",
+         "delta": "56",
+         "per_day": "1309.8"
+        },
+        {
+         "from_at": "2026-10-21T19:58:39.687750Z",
+         "to_at": "2026-10-21T21:00:00.687750Z",
+         "actual_interval_seconds": "3681",
+         "delta": "54",
+         "per_day": "1267.48"
+        },
+        {
+         "from_at": "2026-10-21T21:00:00.687750Z",
+         "to_at": "2026-10-21T22:01:29.687750Z",
+         "actual_interval_seconds": "3689",
+         "delta": "53",
+         "per_day": "1241.31"
+        },
+        {
+         "from_at": "2026-10-21T22:01:29.687750Z",
+         "to_at": "2026-10-21T23:00:07.687750Z",
+         "actual_interval_seconds": "3518",
+         "delta": "49",
+         "per_day": "1203.41"
+        },
+        {
+         "from_at": "2026-10-21T23:00:07.687750Z",
+         "to_at": "2026-10-21T23:57:37.687750Z",
+         "actual_interval_seconds": "3450",
+         "delta": "46",
+         "per_day": "1152"
+        },
+        {
+         "from_at": "2026-10-21T23:57:37.687750Z",
+         "to_at": "2026-10-22T01:01:20.687750Z",
+         "actual_interval_seconds": "3823",
+         "delta": "49",
+         "per_day": "1107.4"
+        },
+        {
+         "from_at": "2026-10-22T01:01:20.687750Z",
+         "to_at": "2026-10-22T01:59:49.687750Z",
+         "actual_interval_seconds": "3509",
+         "delta": "44",
+         "per_day": "1083.39"
+        },
+        {
+         "from_at": "2026-10-22T01:59:49.687750Z",
+         "to_at": "2026-10-22T04:01:23.687750Z",
+         "actual_interval_seconds": "7294",
+         "delta": "88",
+         "per_day": "1042.39"
+        },
+        {
+         "from_at": "2026-10-22T04:01:23.687750Z",
+         "to_at": "2026-10-22T05:58:48.687750Z",
+         "actual_interval_seconds": "7045",
+         "delta": "78",
+         "per_day": "956.59"
+        },
+        {
+         "from_at": "2026-10-22T05:58:48.687750Z",
+         "to_at": "2026-10-22T07:57:38.687750Z",
+         "actual_interval_seconds": "7130",
+         "delta": "75",
+         "per_day": "908.84"
+        },
+        {
+         "from_at": "2026-10-22T07:57:38.687750Z",
+         "to_at": "2026-10-22T09:58:02.687750Z",
+         "actual_interval_seconds": "7224",
+         "delta": "71",
+         "per_day": "849.17"
+        },
+        {
+         "from_at": "2026-10-22T09:58:02.687750Z",
+         "to_at": "2026-10-22T11:57:30.687750Z",
+         "actual_interval_seconds": "7168",
+         "delta": "66",
+         "per_day": "795.54"
+        },
+        {
+         "from_at": "2026-10-22T11:57:30.687750Z",
+         "to_at": "2026-10-22T14:01:19.687750Z",
+         "actual_interval_seconds": "7429",
+         "delta": "65",
+         "per_day": "755.96"
+        },
+        {
+         "from_at": "2026-10-22T14:01:19.687750Z",
+         "to_at": "2026-10-22T15:59:08.687750Z",
+         "actual_interval_seconds": "7069",
+         "delta": "57",
+         "per_day": "696.68"
+        },
+        {
+         "from_at": "2026-10-22T15:59:08.687750Z",
+         "to_at": "2026-10-22T17:59:06.687750Z",
+         "actual_interval_seconds": "7198",
+         "delta": "55",
+         "per_day": "660.18"
+        },
+        {
+         "from_at": "2026-10-22T17:59:06.687750Z",
+         "to_at": "2026-10-22T19:59:15.687750Z",
+         "actual_interval_seconds": "7209",
+         "delta": "51",
+         "per_day": "611.24"
+        },
+        {
+         "from_at": "2026-10-22T19:59:15.687750Z",
+         "to_at": "2026-10-22T21:59:34.687750Z",
+         "actual_interval_seconds": "7219",
+         "delta": "48",
+         "per_day": "574.48"
+        },
+        {
+         "from_at": "2026-10-22T21:59:34.687750Z",
+         "to_at": "2026-10-23T00:00:25.687750Z",
+         "actual_interval_seconds": "7251",
+         "delta": "46",
+         "per_day": "548.12"
+        },
+        {
+         "from_at": "2026-10-23T00:00:25.687750Z",
+         "to_at": "2026-10-23T01:57:55.687750Z",
+         "actual_interval_seconds": "7050",
+         "delta": "41",
+         "per_day": "502.47"
+        },
+        {
+         "from_at": "2026-10-23T01:57:55.687750Z",
+         "to_at": "2026-10-23T03:58:10.687750Z",
+         "actual_interval_seconds": "7215",
+         "delta": "40",
+         "per_day": "479"
+        },
+        {
+         "from_at": "2026-10-23T03:58:10.687750Z",
+         "to_at": "2026-10-23T05:56:54.687750Z",
+         "actual_interval_seconds": "7124",
+         "delta": "37",
+         "per_day": "448.74"
+        },
+        {
+         "from_at": "2026-10-23T05:56:54.687750Z",
+         "to_at": "2026-10-23T07:57:56.687750Z",
+         "actual_interval_seconds": "7262",
+         "delta": "36",
+         "per_day": "428.31"
+        },
+        {
+         "from_at": "2026-10-23T07:57:56.687750Z",
+         "to_at": "2026-10-23T09:57:58.687750Z",
+         "actual_interval_seconds": "7202",
+         "delta": "33",
+         "per_day": "395.89"
+        },
+        {
+         "from_at": "2026-10-23T09:57:58.687750Z",
+         "to_at": "2026-10-23T12:01:25.687750Z",
+         "actual_interval_seconds": "7407",
+         "delta": "31",
+         "per_day": "361.6"
+        },
+        {
+         "from_at": "2026-10-23T12:01:25.687750Z",
+         "to_at": "2026-10-23T13:59:54.687750Z",
+         "actual_interval_seconds": "7109",
+         "delta": "29",
+         "per_day": "352.45"
+        },
+        {
+         "from_at": "2026-10-23T13:59:54.687750Z",
+         "to_at": "2026-10-23T16:00:50.687750Z",
+         "actual_interval_seconds": "7256",
+         "delta": "28",
+         "per_day": "333.41"
+        },
+        {
+         "from_at": "2026-10-23T16:00:50.687750Z",
+         "to_at": "2026-10-23T17:58:34.687750Z",
+         "actual_interval_seconds": "7064",
+         "delta": "25",
+         "per_day": "305.78"
+        },
+        {
+         "from_at": "2026-10-23T17:58:34.687750Z",
+         "to_at": "2026-10-23T19:59:53.687750Z",
+         "actual_interval_seconds": "7279",
+         "delta": "24",
+         "per_day": "284.87"
+        },
+        {
+         "from_at": "2026-10-23T19:59:53.687750Z",
+         "to_at": "2026-10-23T21:57:14.687750Z",
+         "actual_interval_seconds": "7041",
+         "delta": "23",
+         "per_day": "282.23"
+        },
+        {
+         "from_at": "2026-10-23T21:57:14.687750Z",
+         "to_at": "2026-10-24T00:00:10.687750Z",
+         "actual_interval_seconds": "7376",
+         "delta": "22",
+         "per_day": "257.7"
+        },
+        {
+         "from_at": "2026-10-24T00:00:10.687750Z",
+         "to_at": "2026-10-24T01:59:01.687750Z",
+         "actual_interval_seconds": "7131",
+         "delta": "20",
+         "per_day": "242.32"
+        },
+        {
+         "from_at": "2026-10-24T01:59:01.687750Z",
+         "to_at": "2026-10-24T07:59:25.687750Z",
+         "actual_interval_seconds": "21624",
+         "delta": "53",
+         "per_day": "211.76"
+        },
+        {
+         "from_at": "2026-10-24T07:59:25.687750Z",
+         "to_at": "2026-10-24T13:57:54.687750Z",
+         "actual_interval_seconds": "21509",
+         "delta": "45",
+         "per_day": "180.76"
+        },
+        {
+         "from_at": "2026-10-24T13:57:54.687750Z",
+         "to_at": "2026-10-24T19:59:57.687750Z",
+         "actual_interval_seconds": "21723",
+         "delta": "39",
+         "per_day": "155.12"
+        },
+        {
+         "from_at": "2026-10-24T19:59:57.687750Z",
+         "to_at": "2026-10-25T02:01:21.687750Z",
+         "actual_interval_seconds": "21684",
+         "delta": "32",
+         "per_day": "127.5"
+        },
+        {
+         "from_at": "2026-10-25T02:01:21.687750Z",
+         "to_at": "2026-10-25T08:00:07.687750Z",
+         "actual_interval_seconds": "21526",
+         "delta": "28",
+         "per_day": "112.39"
+        },
+        {
+         "from_at": "2026-10-25T08:00:07.687750Z",
+         "to_at": "2026-10-25T13:56:56.687750Z",
+         "actual_interval_seconds": "21409",
+         "delta": "23",
+         "per_day": "92.82"
+        },
+        {
+         "from_at": "2026-10-25T13:56:56.687750Z",
+         "to_at": "2026-10-25T19:58:37.687750Z",
+         "actual_interval_seconds": "21701",
+         "delta": "21",
+         "per_day": "83.61"
+        },
+        {
+         "from_at": "2026-10-25T19:58:37.687750Z",
+         "to_at": "2026-10-26T02:00:45.687750Z",
+         "actual_interval_seconds": "21728",
+         "delta": "18",
+         "per_day": "71.58"
+        },
+        {
+         "from_at": "2026-10-26T02:00:45.687750Z",
+         "to_at": "2026-10-26T07:59:27.687750Z",
+         "actual_interval_seconds": "21522",
+         "delta": "16",
+         "per_day": "64.23"
+        },
+        {
+         "from_at": "2026-10-26T07:59:27.687750Z",
+         "to_at": "2026-10-26T13:58:57.687750Z",
+         "actual_interval_seconds": "21570",
+         "delta": "14",
+         "per_day": "56.08"
+        },
+        {
+         "from_at": "2026-10-26T13:58:57.687750Z",
+         "to_at": "2026-10-26T19:59:02.687750Z",
+         "actual_interval_seconds": "21605",
+         "delta": "12",
+         "per_day": "47.99"
+        },
+        {
+         "from_at": "2026-10-26T19:59:02.687750Z",
+         "to_at": "2026-10-27T01:58:06.687750Z",
+         "actual_interval_seconds": "21544",
+         "delta": "12",
+         "per_day": "48.12"
+        },
+        {
+         "from_at": "2026-10-27T01:58:06.687750Z",
+         "to_at": "2026-10-27T07:59:44.687750Z",
+         "actual_interval_seconds": "21698",
+         "delta": "10",
+         "per_day": "39.82"
+        },
+        {
+         "from_at": "2026-10-27T07:59:44.687750Z",
+         "to_at": "2026-10-27T13:57:21.687750Z",
+         "actual_interval_seconds": "21457",
+         "delta": "10",
+         "per_day": "40.27"
+        },
+        {
+         "from_at": "2026-10-27T13:57:21.687750Z",
+         "to_at": "2026-10-27T19:58:51.687750Z",
+         "actual_interval_seconds": "21690",
+         "delta": "9",
+         "per_day": "35.85"
+        },
+        {
+         "from_at": "2026-10-27T19:58:51.687750Z",
+         "to_at": "2026-10-28T02:00:16.687750Z",
+         "actual_interval_seconds": "21685",
+         "delta": "9",
+         "per_day": "35.86"
+        },
+        {
+         "from_at": "2026-10-28T02:00:16.687750Z",
+         "to_at": "2026-10-28T13:57:18.687750Z",
+         "actual_interval_seconds": "43022",
+         "delta": "16",
+         "per_day": "32.13"
+        },
+        {
+         "from_at": "2026-10-28T13:57:18.687750Z",
+         "to_at": "2026-10-29T01:59:58.687750Z",
+         "actual_interval_seconds": "43360",
+         "delta": "14",
+         "per_day": "27.9"
+        },
+        {
+         "from_at": "2026-10-29T01:59:58.687750Z",
+         "to_at": "2026-10-29T14:00:25.687750Z",
+         "actual_interval_seconds": "43227",
+         "delta": "14",
+         "per_day": "27.98"
+        },
+        {
+         "from_at": "2026-10-29T14:00:25.687750Z",
+         "to_at": "2026-10-30T01:58:51.687750Z",
+         "actual_interval_seconds": "43106",
+         "delta": "14",
+         "per_day": "28.06"
+        }
+       ],
+       "latest_interval": {
+        "from_at": "2026-10-29T14:00:25.687750Z",
+        "to_at": "2026-10-30T01:58:51.687750Z",
+        "actual_interval_seconds": "43106",
+        "delta": "14",
+        "per_day": "28.06"
+       },
+       "coverage": {
+        "point_count": 69,
+        "valid_count": 69,
+        "missing_count": 0,
+        "duplicate_timestamp_count": 0
+       }
+      },
+      "comments": {
+       "status": "ready",
+       "reason": null,
+       "intervals": [
+        {
+         "from_at": "2026-10-21T02:01:17.687750Z",
+         "to_at": "2026-10-21T02:59:50.687750Z",
+         "actual_interval_seconds": "3513",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T02:59:50.687750Z",
+         "to_at": "2026-10-21T04:00:22.687750Z",
+         "actual_interval_seconds": "3632",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T04:00:22.687750Z",
+         "to_at": "2026-10-21T04:58:24.687750Z",
+         "actual_interval_seconds": "3482",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T04:58:24.687750Z",
+         "to_at": "2026-10-21T06:00:03.687750Z",
+         "actual_interval_seconds": "3699",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T06:00:03.687750Z",
+         "to_at": "2026-10-21T06:58:58.687750Z",
+         "actual_interval_seconds": "3535",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T06:58:58.687750Z",
+         "to_at": "2026-10-21T08:00:32.687750Z",
+         "actual_interval_seconds": "3694",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T08:00:32.687750Z",
+         "to_at": "2026-10-21T08:58:34.687750Z",
+         "actual_interval_seconds": "3482",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T08:58:34.687750Z",
+         "to_at": "2026-10-21T10:01:29.687750Z",
+         "actual_interval_seconds": "3775",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T10:01:29.687750Z",
+         "to_at": "2026-10-21T10:59:19.687750Z",
+         "actual_interval_seconds": "3470",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T10:59:19.687750Z",
+         "to_at": "2026-10-21T11:59:55.687750Z",
+         "actual_interval_seconds": "3636",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T11:59:55.687750Z",
+         "to_at": "2026-10-21T12:58:05.687750Z",
+         "actual_interval_seconds": "3490",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T12:58:05.687750Z",
+         "to_at": "2026-10-21T14:00:40.687750Z",
+         "actual_interval_seconds": "3755",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T14:00:40.687750Z",
+         "to_at": "2026-10-21T14:58:02.687750Z",
+         "actual_interval_seconds": "3442",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T14:58:02.687750Z",
+         "to_at": "2026-10-21T16:01:29.687750Z",
+         "actual_interval_seconds": "3807",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T16:01:29.687750Z",
+         "to_at": "2026-10-21T16:56:43.687750Z",
+         "actual_interval_seconds": "3314",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T16:56:43.687750Z",
+         "to_at": "2026-10-21T17:57:00.687750Z",
+         "actual_interval_seconds": "3617",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T17:57:00.687750Z",
+         "to_at": "2026-10-21T18:57:05.687750Z",
+         "actual_interval_seconds": "3605",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T18:57:05.687750Z",
+         "to_at": "2026-10-21T19:58:39.687750Z",
+         "actual_interval_seconds": "3694",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T19:58:39.687750Z",
+         "to_at": "2026-10-21T21:00:00.687750Z",
+         "actual_interval_seconds": "3681",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T21:00:00.687750Z",
+         "to_at": "2026-10-21T22:01:29.687750Z",
+         "actual_interval_seconds": "3689",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T22:01:29.687750Z",
+         "to_at": "2026-10-21T23:00:07.687750Z",
+         "actual_interval_seconds": "3518",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T23:00:07.687750Z",
+         "to_at": "2026-10-21T23:57:37.687750Z",
+         "actual_interval_seconds": "3450",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-21T23:57:37.687750Z",
+         "to_at": "2026-10-22T01:01:20.687750Z",
+         "actual_interval_seconds": "3823",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T01:01:20.687750Z",
+         "to_at": "2026-10-22T01:59:49.687750Z",
+         "actual_interval_seconds": "3509",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T01:59:49.687750Z",
+         "to_at": "2026-10-22T04:01:23.687750Z",
+         "actual_interval_seconds": "7294",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T04:01:23.687750Z",
+         "to_at": "2026-10-22T05:58:48.687750Z",
+         "actual_interval_seconds": "7045",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T05:58:48.687750Z",
+         "to_at": "2026-10-22T07:57:38.687750Z",
+         "actual_interval_seconds": "7130",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T07:57:38.687750Z",
+         "to_at": "2026-10-22T09:58:02.687750Z",
+         "actual_interval_seconds": "7224",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T09:58:02.687750Z",
+         "to_at": "2026-10-22T11:57:30.687750Z",
+         "actual_interval_seconds": "7168",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T11:57:30.687750Z",
+         "to_at": "2026-10-22T14:01:19.687750Z",
+         "actual_interval_seconds": "7429",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T14:01:19.687750Z",
+         "to_at": "2026-10-22T15:59:08.687750Z",
+         "actual_interval_seconds": "7069",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T15:59:08.687750Z",
+         "to_at": "2026-10-22T17:59:06.687750Z",
+         "actual_interval_seconds": "7198",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T17:59:06.687750Z",
+         "to_at": "2026-10-22T19:59:15.687750Z",
+         "actual_interval_seconds": "7209",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T19:59:15.687750Z",
+         "to_at": "2026-10-22T21:59:34.687750Z",
+         "actual_interval_seconds": "7219",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-22T21:59:34.687750Z",
+         "to_at": "2026-10-23T00:00:25.687750Z",
+         "actual_interval_seconds": "7251",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T00:00:25.687750Z",
+         "to_at": "2026-10-23T01:57:55.687750Z",
+         "actual_interval_seconds": "7050",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T01:57:55.687750Z",
+         "to_at": "2026-10-23T03:58:10.687750Z",
+         "actual_interval_seconds": "7215",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T03:58:10.687750Z",
+         "to_at": "2026-10-23T05:56:54.687750Z",
+         "actual_interval_seconds": "7124",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T05:56:54.687750Z",
+         "to_at": "2026-10-23T07:57:56.687750Z",
+         "actual_interval_seconds": "7262",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T07:57:56.687750Z",
+         "to_at": "2026-10-23T09:57:58.687750Z",
+         "actual_interval_seconds": "7202",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T09:57:58.687750Z",
+         "to_at": "2026-10-23T12:01:25.687750Z",
+         "actual_interval_seconds": "7407",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T12:01:25.687750Z",
+         "to_at": "2026-10-23T13:59:54.687750Z",
+         "actual_interval_seconds": "7109",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T13:59:54.687750Z",
+         "to_at": "2026-10-23T16:00:50.687750Z",
+         "actual_interval_seconds": "7256",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T16:00:50.687750Z",
+         "to_at": "2026-10-23T17:58:34.687750Z",
+         "actual_interval_seconds": "7064",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T17:58:34.687750Z",
+         "to_at": "2026-10-23T19:59:53.687750Z",
+         "actual_interval_seconds": "7279",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T19:59:53.687750Z",
+         "to_at": "2026-10-23T21:57:14.687750Z",
+         "actual_interval_seconds": "7041",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-23T21:57:14.687750Z",
+         "to_at": "2026-10-24T00:00:10.687750Z",
+         "actual_interval_seconds": "7376",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-24T00:00:10.687750Z",
+         "to_at": "2026-10-24T01:59:01.687750Z",
+         "actual_interval_seconds": "7131",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-24T01:59:01.687750Z",
+         "to_at": "2026-10-24T07:59:25.687750Z",
+         "actual_interval_seconds": "21624",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-24T07:59:25.687750Z",
+         "to_at": "2026-10-24T13:57:54.687750Z",
+         "actual_interval_seconds": "21509",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-24T13:57:54.687750Z",
+         "to_at": "2026-10-24T19:59:57.687750Z",
+         "actual_interval_seconds": "21723",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-24T19:59:57.687750Z",
+         "to_at": "2026-10-25T02:01:21.687750Z",
+         "actual_interval_seconds": "21684",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-25T02:01:21.687750Z",
+         "to_at": "2026-10-25T08:00:07.687750Z",
+         "actual_interval_seconds": "21526",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-25T08:00:07.687750Z",
+         "to_at": "2026-10-25T13:56:56.687750Z",
+         "actual_interval_seconds": "21409",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-25T13:56:56.687750Z",
+         "to_at": "2026-10-25T19:58:37.687750Z",
+         "actual_interval_seconds": "21701",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-25T19:58:37.687750Z",
+         "to_at": "2026-10-26T02:00:45.687750Z",
+         "actual_interval_seconds": "21728",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-26T02:00:45.687750Z",
+         "to_at": "2026-10-26T07:59:27.687750Z",
+         "actual_interval_seconds": "21522",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-26T07:59:27.687750Z",
+         "to_at": "2026-10-26T13:58:57.687750Z",
+         "actual_interval_seconds": "21570",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-26T13:58:57.687750Z",
+         "to_at": "2026-10-26T19:59:02.687750Z",
+         "actual_interval_seconds": "21605",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-26T19:59:02.687750Z",
+         "to_at": "2026-10-27T01:58:06.687750Z",
+         "actual_interval_seconds": "21544",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-27T01:58:06.687750Z",
+         "to_at": "2026-10-27T07:59:44.687750Z",
+         "actual_interval_seconds": "21698",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-27T07:59:44.687750Z",
+         "to_at": "2026-10-27T13:57:21.687750Z",
+         "actual_interval_seconds": "21457",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-27T13:57:21.687750Z",
+         "to_at": "2026-10-27T19:58:51.687750Z",
+         "actual_interval_seconds": "21690",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-27T19:58:51.687750Z",
+         "to_at": "2026-10-28T02:00:16.687750Z",
+         "actual_interval_seconds": "21685",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-28T02:00:16.687750Z",
+         "to_at": "2026-10-28T13:57:18.687750Z",
+         "actual_interval_seconds": "43022",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-28T13:57:18.687750Z",
+         "to_at": "2026-10-29T01:59:58.687750Z",
+         "actual_interval_seconds": "43360",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-29T01:59:58.687750Z",
+         "to_at": "2026-10-29T14:00:25.687750Z",
+         "actual_interval_seconds": "43227",
+         "delta": null,
+         "per_day": null
+        },
+        {
+         "from_at": "2026-10-29T14:00:25.687750Z",
+         "to_at": "2026-10-30T01:58:51.687750Z",
+         "actual_interval_seconds": "43106",
+         "delta": null,
+         "per_day": null
+        }
+       ],
+       "latest_interval": null,
+       "coverage": {
+        "point_count": 69,
+        "valid_count": 0,
+        "missing_count": 69,
+        "duplicate_timestamp_count": 0
+       }
+      }
+     },
+     "methods": {
+      "ordering": "recorded_at_ascending",
+      "same_timestamp": "identical_values_collapsed_conflicts_unavailable",
+      "gaps": "no_interpolation_or_daily_allocation",
+      "rate": "signed_delta_per_exact_elapsed_second_times_86400_rounded_2dp_half_even",
+      "window": "evaluated_at_minus_28_days_through_counter_observation",
+      "views_definition": "interval_requires_one_known_definition_epoch",
+      "streams": "observations_from_actual_end",
+      "interaction_metrics": "independent_stored_counters_same_observation_window"
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.observed_history.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:08.005078Z",
+    "source_expires_at": "2026-10-30T11:46:07.996800Z"
+   }
+  },
+  "video.launch_comparison.v1:long:frozen": {
+   "request": {
+    "version": 1,
+    "operation": "video.launch_comparison.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCWPDMAINAAAAAAAAAAAAAAA"
+     },
+     "video_types": [
+      "long"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ]
+    },
+    "parameters": {
+     "video_id": "L0000000020",
+     "population": {
+      "kind": "frozen",
+      "frozen_ref": "frozen_REF-from-a-page_0123456789"
+     }
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.launch_comparison.v1",
+    "operation_fingerprint": "5e390993b20dcc7fa70649d97201ab84cddd2957df4f779404ad035ac3b496d6",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:08.018924Z",
+     "valid_before": "2026-10-30T11:46:08.018924Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 2
+     },
+     "status": "partial"
+    },
+    "result": {
+     "video_id": "L0000000020",
+     "video_type": "long",
+     "membership": "member",
+     "inspection": {
+      "mode": "frozen",
+      "evaluated_at": "2026-10-30T11:44:07.936365Z",
+      "valid_before": "2026-10-30T11:54:07.936365Z",
+      "position": 17,
+      "total_count": 138,
+      "frozen_fields": [
+       "video.category_id",
+       "video.comment_rate",
+       "video.comments",
+       "video.duration_seconds",
+       "video.id",
+       "video.like_rate",
+       "video.likes",
+       "video.published_at",
+       "video.tag_count",
+       "video.tags",
+       "video.thumbnail_url",
+       "video.title",
+       "video.title_length",
+       "video.views"
+      ]
+     },
+     "method": "measured_launch_before_horizon_v1",
+     "window": {
+      "days": 28,
+      "hours": 672,
+      "from_at": "2026-10-02T11:44:08.018924Z",
+      "to_at": "2026-10-30T11:44:07.936365Z"
+     },
+     "reference": {
+      "video_type": "long",
+      "publication_period": "all_time",
+      "reference_point": "published_at",
+      "query_conditions_applied": false,
+      "leave_one_out": true
+     },
+     "coverage": {
+      "population_count": 138,
+      "candidate_targets": 180,
+      "snapshot_rows": 164,
+      "reads_per_video_limit": 3,
+      "complete": true
+     },
+     "horizons": [
+      {
+       "key": "24h",
+       "horizon_seconds": 86400,
+       "tolerance_before_seconds": 7200,
+       "eligible_count": 56,
+       "quality": "ready",
+       "counts": {
+        "below_typical": 14,
+        "typical": 27,
+        "above_typical": 15
+       },
+       "ready_count": 56,
+       "definition": {
+        "state": "known",
+        "epoch": "youtube.views.play_start.20260824",
+        "unknown_definition_count": 0
+       },
+       "target": {
+        "status": "ready",
+        "target_at": "2026-10-22T01:59:06.687750Z",
+        "observed_at": "2026-10-22T01:01:20.687750Z",
+        "actual_age_seconds": "82934",
+        "views": "36673",
+        "definition_epoch": "youtube.views.play_start.20260824",
+        "comparison": {
+         "status": "ready",
+         "reference_count": 55,
+         "median": "25556",
+         "p25": "12342.5",
+         "p75": "35514",
+         "classification": "above_typical",
+         "multiplier": "1.44",
+         "multiplier_reason": null
+        }
+       }
+      },
+      {
+       "key": "7d",
+       "horizon_seconds": 604800,
+       "tolerance_before_seconds": 86400,
+       "eligible_count": 61,
+       "quality": "ready",
+       "counts": {
+        "below_typical": 16,
+        "typical": 29,
+        "above_typical": 16
+       },
+       "ready_count": 61,
+       "definition": {
+        "state": "known",
+        "epoch": "youtube.views.play_start.20260824",
+        "unknown_definition_count": 0
+       },
+       "target": {
+        "status": "ready",
+        "target_at": "2026-10-28T01:59:06.687750Z",
+        "observed_at": "2026-10-27T19:58:51.687750Z",
+        "actual_age_seconds": "583185",
+        "views": "70970",
+        "definition_epoch": "youtube.views.play_start.20260824",
+        "comparison": {
+         "status": "ready",
+         "reference_count": 60,
+         "median": "48318",
+         "p25": "30654",
+         "p75": "69902.25",
+         "classification": "above_typical",
+         "multiplier": "1.47",
+         "multiplier_reason": null
+        }
+       }
+      },
+      {
+       "key": "28d",
+       "horizon_seconds": 2419200,
+       "tolerance_before_seconds": 86400,
+       "eligible_count": 47,
+       "quality": "ready",
+       "counts": {
+        "below_typical": 12,
+        "typical": 22,
+        "above_typical": 13
+       },
+       "ready_count": 47,
+       "definition": {
+        "state": "known",
+        "epoch": "youtube.views.play_start.20260824",
+        "unknown_definition_count": 0
+       },
+       "target": {
+        "status": "not_reached",
+        "target_at": "2026-11-18T01:59:06.687750Z",
+        "observed_at": null,
+        "actual_age_seconds": null,
+        "views": null,
+        "definition_epoch": null,
+        "comparison": {
+         "status": "unavailable",
+         "reference_count": 47,
+         "median": null,
+         "p25": null,
+         "p75": null,
+         "classification": null,
+         "multiplier": null,
+         "multiplier_reason": null
+        }
+       }
+      }
+     ]
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.launch_comparison.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:08.025606Z",
+    "source_expires_at": "2026-10-30T11:46:08.018924Z"
+   }
+  },
+  "video.lifetime_baseline.v1:long:frozen": {
+   "request": {
+    "version": 1,
+    "operation": "video.lifetime_baseline.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCWPDMAINAAAAAAAAAAAAAAA"
+     },
+     "video_types": [
+      "long"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ]
+    },
+    "parameters": {
+     "video_id": "L0000000020",
+     "population": {
+      "kind": "frozen",
+      "frozen_ref": "frozen_REF-from-a-page_0123456789"
+     }
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.lifetime_baseline.v1",
+    "operation_fingerprint": "90b2ab76f0b7bb89a8ca1934e8d6bea499015ae2ca196deabe6a45494949cd36",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:08.038634Z",
+     "valid_before": "2026-10-30T11:46:08.038634Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 2
+     },
+     "status": "partial"
+    },
+    "result": {
+     "video_id": "L0000000020",
+     "video_type": "long",
+     "membership": "member",
+     "inspection": {
+      "mode": "frozen",
+      "evaluated_at": "2026-10-30T11:44:07.936365Z",
+      "valid_before": "2026-10-30T11:54:07.936365Z",
+      "position": 17,
+      "total_count": 138,
+      "frozen_fields": [
+       "video.category_id",
+       "video.comment_rate",
+       "video.comments",
+       "video.duration_seconds",
+       "video.id",
+       "video.like_rate",
+       "video.likes",
+       "video.published_at",
+       "video.tag_count",
+       "video.tags",
+       "video.thumbnail_url",
+       "video.title",
+       "video.title_length",
+       "video.views"
+      ]
+     },
+     "method": "current_lifetime_views_median_iqr_v1",
+     "status": "ready",
+     "sample_size": 137,
+     "missing_views": 1,
+     "median": "58989",
+     "p25": "37801",
+     "p75": "83293",
+     "definition": {
+      "state": "known",
+      "epoch": "youtube.views.play_start.20260824",
+      "unknown_definition_epoch_count": 0
+     },
+     "population_count": 138,
+     "reference": {
+      "video_type": "long",
+      "publication_period": "all_time",
+      "query_conditions_applied": false,
+      "includes_inspected_video": true
+     },
+     "target": {
+      "views": {
+       "value": "72520",
+       "state": "known",
+       "observed_at": "2026-10-30T01:58:51.687750Z",
+       "expires_at": "2026-11-28T01:58:51.687750Z"
+      }
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.lifetime_baseline.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:08.044637Z",
+    "source_expires_at": "2026-10-30T11:46:08.038634Z"
+   }
+  },
+  "video.launch_comparison.v1:stream:query": {
+   "request": {
+    "version": 1,
+    "operation": "video.launch_comparison.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCWPDMAINAAAAAAAAAAAAAAA"
+     },
+     "video_types": [
+      "stream"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ]
+    },
+    "parameters": {
+     "video_id": "S0000000005",
+     "population": {
+      "kind": "query"
+     }
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.launch_comparison.v1",
+    "operation_fingerprint": "190a938918b540ecf1086a2e1c9af0a08114eaad0262f980bd9b5f616cca3ca5",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:08.055357Z",
+     "valid_before": "2026-10-30T11:46:08.055357Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {
+      "source_rows_unavailable": 2
+     },
+     "status": "partial"
+    },
+    "result": {
+     "video_id": "S0000000005",
+     "video_type": "stream",
+     "membership": "member",
+     "inspection": {
+      "mode": "query"
+     },
+     "method": "measured_launch_before_horizon_v1",
+     "window": {
+      "days": 28,
+      "hours": 672,
+      "from_at": "2026-10-02T11:44:08.055357Z",
+      "to_at": "2026-10-30T11:44:08.055357Z"
+     },
+     "reference": {
+      "video_type": "stream",
+      "publication_period": "all_time",
+      "reference_point": "actual_end_at",
+      "query_conditions_applied": false,
+      "leave_one_out": true
+     },
+     "coverage": {
+      "population_count": 38,
+      "candidate_targets": 53,
+      "snapshot_rows": 51,
+      "reads_per_video_limit": 3,
+      "complete": true
+     },
+     "horizons": [
+      {
+       "key": "24h",
+       "horizon_seconds": 86400,
+       "tolerance_before_seconds": 7200,
+       "eligible_count": 14,
+       "quality": "ready",
+       "counts": {
+        "below_typical": 4,
+        "typical": 6,
+        "above_typical": 4
+       },
+       "ready_count": 14,
+       "definition": {
+        "state": "known",
+        "epoch": "youtube.views.play_start.20260824",
+        "unknown_definition_count": 0
+       },
+       "target": {
+        "status": "ready",
+        "target_at": "2026-10-23T10:23:06.687750Z",
+        "observed_at": "2026-10-23T09:25:25.687750Z",
+        "actual_age_seconds": "82939",
+        "views": "6813",
+        "definition_epoch": "youtube.views.play_start.20260824",
+        "comparison": {
+         "status": "ready",
+         "reference_count": 13,
+         "median": "26976",
+         "p25": "19346",
+         "p75": "40918",
+         "classification": "below_typical",
+         "multiplier": "0.25",
+         "multiplier_reason": null
+        }
+       }
+      },
+      {
+       "key": "7d",
+       "horizon_seconds": 604800,
+       "tolerance_before_seconds": 86400,
+       "eligible_count": 18,
+       "quality": "ready",
+       "counts": {
+        "below_typical": 5,
+        "typical": 8,
+        "above_typical": 5
+       },
+       "ready_count": 18,
+       "definition": {
+        "state": "known",
+        "epoch": "youtube.views.play_start.20260824",
+        "unknown_definition_count": 0
+       },
+       "target": {
+        "status": "ready",
+        "target_at": "2026-10-29T10:23:06.687750Z",
+        "observed_at": "2026-10-29T09:24:04.687750Z",
+        "actual_age_seconds": "601258",
+        "views": "12315",
+        "definition_epoch": "youtube.views.play_start.20260824",
+        "comparison": {
+         "status": "ready",
+         "reference_count": 17,
+         "median": "44860",
+         "p25": "33653",
+         "p75": "73985",
+         "classification": "below_typical",
+         "multiplier": "0.27",
+         "multiplier_reason": null
+        }
+       }
+      },
+      {
+       "key": "28d",
+       "horizon_seconds": 2419200,
+       "tolerance_before_seconds": 86400,
+       "eligible_count": 19,
+       "quality": "ready",
+       "counts": {
+        "below_typical": 5,
+        "typical": 9,
+        "above_typical": 5
+       },
+       "ready_count": 19,
+       "definition": {
+        "state": "known",
+        "epoch": "youtube.views.play_start.20260824",
+        "unknown_definition_count": 0
+       },
+       "target": {
+        "status": "not_reached",
+        "target_at": "2026-11-19T10:23:06.687750Z",
+        "observed_at": null,
+        "actual_age_seconds": null,
+        "views": null,
+        "definition_epoch": null,
+        "comparison": {
+         "status": "unavailable",
+         "reference_count": 19,
+         "median": null,
+         "p25": null,
+         "p75": null,
+         "classification": null,
+         "multiplier": null,
+         "multiplier_reason": null
+        }
+       }
+      }
+     ]
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.launch_comparison.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:08.060387Z",
+    "source_expires_at": "2026-10-30T11:46:08.055357Z"
+   }
+  },
+  "video.static_details.v1:short:query": {
+   "request": {
+    "version": 1,
+    "operation": "video.static_details.v1",
+    "query": {
+     "query_version": 1,
+     "source": {
+      "id": "public.videos.current.v1"
+     },
+     "scope": {
+      "kind": "channel",
+      "id": "UCWPDMAINAAAAAAAAAAAAAAA"
+     },
+     "video_types": [
+      "short"
+     ],
+     "select": [
+      "video.id"
+     ],
+     "order_by": [
+      {
+       "field": "video.id",
+       "direction": "asc"
+      }
+     ]
+    },
+    "parameters": {
+     "video_id": "H0000000001",
+     "population": {
+      "kind": "query"
+     }
+    }
+   },
+   "response": {
+    "version": 1,
+    "operation": "video.static_details.v1",
+    "operation_fingerprint": "b635cf6e543c94a4c788336c73471b22df22b4e32d6561cf33ad2a20439f0154",
+    "context": {
+     "source_id": "public.videos.current.v1",
+     "registry_version": 11,
+     "evaluated_at": "2026-10-30T11:44:08.072071Z",
+     "valid_before": "2026-10-30T11:46:08.072071Z",
+     "preferences_revision": "existing-v1",
+     "consistency": "current",
+     "observation_age_limit_seconds": null
+    },
+    "coverage": {
+     "basis": "channel_inventory",
+     "channels_in_scope": 1,
+     "channels_complete": 1,
+     "eligible_count": null,
+     "reasons": {},
+     "status": "complete"
+    },
+    "result": {
+     "video_id": "H0000000001",
+     "video_type": "short",
+     "membership": "member",
+     "inspection": {
+      "mode": "query"
+     },
+     "cells": {
+      "video.id": {
+       "value": "H0000000001",
+       "state": "known",
+       "observed_at": "2026-10-30T10:44:06.687750Z",
+       "expires_at": "2026-11-28T10:44:06.687750Z"
+      },
+      "video.title": {
+       "value": "Stra\u00dfe guide",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/H0000000001/mqdefault.jpg",
+       "state": "known",
+       "observed_at": "2026-10-30T10:44:06.687750Z",
+       "expires_at": "2026-11-28T10:44:06.687750Z"
+      },
+      "video.duration_seconds": {
+       "value": "2474",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.views": {
+       "value": "35703",
+       "state": "known",
+       "observed_at": "2026-10-30T09:37:58.687750Z",
+       "expires_at": "2026-11-28T09:37:58.687750Z"
+      },
+      "video.likes": {
+       "value": "1321",
+       "state": "known",
+       "observed_at": "2026-10-30T09:37:58.687750Z",
+       "expires_at": "2026-11-28T09:37:58.687750Z"
+      },
+      "video.comments": {
+       "value": "71",
+       "state": "known",
+       "observed_at": "2026-10-30T09:37:58.687750Z",
+       "expires_at": "2026-11-28T09:37:58.687750Z"
+      },
+      "video.published_at": {
+       "value": "2026-10-29T09:40:06.687750Z",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.category_id": {
+       "value": "27",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.tags": {
+       "value": [
+        "Stra\u00dfe",
+        "b",
+        "c"
+       ],
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      }
+     },
+     "derived": {
+      "video.like_rate": {
+       "value": "3.699969",
+       "state": "known",
+       "observed_at": "2026-10-30T09:37:58.687750Z",
+       "expires_at": "2026-11-28T09:37:58.687750Z"
+      },
+      "video.comment_rate": {
+       "value": "0.198863",
+       "state": "known",
+       "observed_at": "2026-10-30T09:37:58.687750Z",
+       "expires_at": "2026-11-28T09:37:58.687750Z"
+      },
+      "video.title_length": {
+       "value": "12",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      },
+      "video.tag_count": {
+       "value": "3",
+       "state": "known",
+       "observed_at": "2026-10-30T09:44:06.687750Z",
+       "expires_at": "2026-11-28T09:44:06.687750Z"
+      }
+     },
+     "category": {
+      "id": "27",
+      "label": "Category 27"
+     },
+     "clocks": {
+      "counters_checked_at": "2026-10-30T09:37:58.687750Z",
+      "metadata_checked_at": "2026-10-30T09:44:06.687750Z"
+     },
+     "methods": {
+      "rates": "counter_times_100_divided_by_views_6dp_half_even",
+      "zero_views": "unavailable",
+      "title_length": "unicode_code_points",
+      "tag_count": "stored_array_length",
+      "duration": "youtube_duration_seconds_v1_integer",
+      "stale_values": "unknown_or_expired_row_kept"
+     }
+    },
+    "provenance": {
+     "origin": "calculated",
+     "method": "video.static_details.v1",
+     "population": "all_authorized_matching_rows_before_pagination",
+     "missing_values": "excluded_per_metric",
+     "definition_epoch": null
+    },
+    "warnings": [
+     "current_population_may_change"
+    ],
+    "source_read_at": "2026-10-30T11:44:08.076958Z",
+    "source_expires_at": "2026-10-30T11:46:08.072071Z"
+   }
+  }
+ },
+ "growth_row": {
+  "id": "gLedge3h1s0",
+  "cells": {
+   "observation.growth_28d_status": {
+    "value": "partial",
+    "state": "known",
+    "provenance_ref": "observation.growth_28d_status:youtube.views.play_start.20260824",
+    "observed_at": "2026-10-30T06:44:15.221465Z",
+    "expires_at": "2026-10-31T09:44:16.221465Z",
+    "observation": {
+     "method": "video.observed_growth_28d.v1",
+     "version": 1,
+     "status": "partial",
+     "reason": "full_window_history_unavailable",
+     "from_at": "2026-10-02T09:44:16.221465Z",
+     "to_at": "2026-10-30T06:44:15.221465Z",
+     "from_views": "100",
+     "to_views": "500",
+     "actual_interval_seconds": "2408399",
+     "boundary_distance_seconds": null,
+     "tracked_days": "27",
+     "definition_epoch": "youtube.views.play_start.20260824",
+     "from_definition_epoch": "youtube.views.play_start.20260824",
+     "to_definition_epoch": "youtube.views.play_start.20260824",
+     "time_zone": "UTC"
+    }
+   },
+   "observation.views_gained_28d": {
+    "value": "400",
+    "state": "known",
+    "provenance_ref": "observation.views_gained_28d:youtube.views.play_start.20260824",
+    "observed_at": "2026-10-30T06:44:15.221465Z",
+    "expires_at": "2026-10-31T09:44:16.221465Z",
+    "observation": null
+   },
+   "observation.views_per_day_28d": {
+    "value": "14.35",
+    "state": "known",
+    "provenance_ref": "observation.views_per_day_28d:youtube.views.play_start.20260824",
+    "observed_at": "2026-10-30T06:44:15.221465Z",
+    "expires_at": "2026-10-31T09:44:16.221465Z",
+    "observation": null
+   },
+   "observation.growth_28d_interval_seconds": {
+    "value": "2408399",
+    "state": "known",
+    "provenance_ref": "observation.growth_28d_interval_seconds:youtube.views.play_start.20260824",
+    "observed_at": "2026-10-30T06:44:15.221465Z",
+    "expires_at": "2026-10-31T09:44:16.221465Z",
+    "observation": null
+   },
+   "observation.growth_28d_tracked_days": {
+    "value": "27",
+    "state": "known",
+    "provenance_ref": "observation.growth_28d_tracked_days:youtube.views.play_start.20260824",
+    "observed_at": "2026-10-30T06:44:15.221465Z",
+    "expires_at": "2026-10-31T09:44:16.221465Z",
+    "observation": null
+   }
+  }
+ }
+}

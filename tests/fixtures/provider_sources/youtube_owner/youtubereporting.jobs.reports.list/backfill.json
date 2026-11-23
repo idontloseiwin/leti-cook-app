@@ -1,0 +1,54 @@
+{
+ "case": "three reports: report-2 replaces report-1 (same window, later createTime)",
+ "request": {
+  "context": "owner",
+  "method": "youtubereporting.jobs.reports.list",
+  "parameters": {
+   "createdAfter": "2026-10-01T00:00:00Z",
+   "jobId": "job-synthetic-1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "reports": [
+     {
+      "createTime": "2026-10-02T10:00:00Z",
+      "downloadUrl": "https://youtubereporting.googleapis.com/v1/media/CHANNEL/MARKER-CHANNEL-REF/jobs/job-synthetic-1/reports/report-1?alt=media",
+      "endTime": "2026-10-02T08:00:00Z",
+      "id": "report-1",
+      "jobId": "job-synthetic-1",
+      "startTime": "2026-10-01T08:00:00Z"
+     },
+     {
+      "createTime": "2026-10-05T10:00:00Z",
+      "downloadUrl": "https://youtubereporting.googleapis.com/v1/media/CHANNEL/MARKER-CHANNEL-REF/jobs/job-synthetic-1/reports/report-2?alt=media",
+      "endTime": "2026-10-02T08:00:00Z",
+      "id": "report-2",
+      "jobId": "job-synthetic-1",
+      "startTime": "2026-10-01T08:00:00Z"
+     },
+     {
+      "createTime": "2026-10-03T10:00:00Z",
+      "downloadUrl": "https://youtubereporting.googleapis.com/v1/media/CHANNEL/MARKER-CHANNEL-REF/jobs/job-synthetic-1/reports/report-3?alt=media",
+      "endTime": "2026-10-03T08:00:00Z",
+      "id": "report-3",
+      "jobId": "job-synthetic-1",
+      "startTime": "2026-10-02T08:00:00Z"
+     }
+    ]
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs.reports/list",
+ "synthetic": true
+}

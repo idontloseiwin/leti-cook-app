@@ -1,0 +1,1991 @@
+{
+ "content_sha256": "de47e37401425ee9dfb92f5f89250f896d6cb7f66a4c33ccf08f74f552a4208a",
+ "fields": {
+  "youtube.channels.list": {
+   "brandingSettings.channel.country": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "contentDetails.relatedPlaylists.uploads": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   },
+   "id": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.country": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.publishedAt": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.thumbnails.default.url": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.title": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "statistics.hiddenSubscriberCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "indirect"
+    }
+   },
+   "statistics.subscriberCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "statistics.videoCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "statistics.viewCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   }
+  },
+  "youtube.i18nLanguages.list": {
+   "snippet.hl": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "no"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   },
+   "snippet.name": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "no"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   }
+  },
+  "youtube.playlistItems.list": {
+   "contentDetails.videoId": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "indirect"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   },
+   "contentDetails.videoPublishedAt": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   },
+   "nextPageToken": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "no"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   },
+   "pageInfo.totalResults": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "indirect"
+    }
+   }
+  },
+  "youtube.videoCategories.list": {
+   "id": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "no"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "indirect"
+    }
+   },
+   "snippet.title": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "no"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "indirect"
+    }
+   }
+  },
+  "youtube.videos.batchGetStats": {
+   "contentDetails.duration": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "no"
+    },
+    "parse_supported": {
+     "value": "partial"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "no"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   },
+   "id": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.publishTime": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "no"
+    },
+    "parse_supported": {
+     "value": "partial"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "no"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   },
+   "statistics.commentCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "statistics.likeCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "statistics.viewCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   }
+  },
+  "youtube.videos.list": {
+   "contentDetails.caption": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "contentDetails.duration": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "id": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "liveStreamingDetails.actualEndTime": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "liveStreamingDetails.actualStartTime": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "no"
+    },
+    "ui_supported": {
+     "value": "no"
+    }
+   },
+   "liveStreamingDetails.scheduledStartTime": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "paidProductPlacementDetails.hasPaidProductPlacement": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "no"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.categoryId": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.channelId": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.defaultAudioLanguage": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.defaultLanguage": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.description": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "no"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.liveBroadcastContent": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "indirect"
+    }
+   },
+   "snippet.publishedAt": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.tags[]": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "snippet.title": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "statistics.commentCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "statistics.likeCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "statistics.viewCount": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   },
+   "status.privacyStatus": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "indirect"
+    }
+   },
+   "status.uploadStatus": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "no"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "indirect"
+    },
+    "ui_supported": {
+     "value": "indirect"
+    }
+   },
+   "topicDetails.topicCategories[]": {
+    "described": {
+     "value": "yes"
+    },
+    "live_verified": {
+     "value": "operational_only"
+    },
+    "parse_supported": {
+     "value": "yes"
+    },
+    "query_supported": {
+     "value": "yes"
+    },
+    "request_supported": {
+     "value": "yes"
+    },
+    "storage_supported": {
+     "value": "yes"
+    },
+    "ui_supported": {
+     "value": "yes"
+    }
+   }
+  }
+ },
+ "methods": {
+  "youtube.activities.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.captions.download": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.captions.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.channelSections.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.channels.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "partial"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "partial"
+   },
+   "ui_supported": {
+    "value": "partial"
+   }
+  },
+  "youtube.commentThreads.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.comments.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.i18nLanguages.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "indirect"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "yes"
+   },
+   "ui_supported": {
+    "value": "indirect"
+   }
+  },
+  "youtube.i18nRegions.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.liveBroadcasts.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.liveChatMessages.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "partial"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.liveChatModerators.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.liveStreams.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.members.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.membershipsLevels.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.playlistImages.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "partial"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.playlistItems.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "indirect"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "partial"
+   },
+   "ui_supported": {
+    "value": "indirect"
+   }
+  },
+  "youtube.playlists.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.search.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.subscriptions.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.superChatEvents.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.thirdPartyLinks.list": {
+   "described": {
+    "value": "discovery_only"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "no"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "no"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.videoAbuseReportReasons.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.videoCategories.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "indirect"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "yes"
+   },
+   "ui_supported": {
+    "value": "partial"
+   }
+  },
+  "youtube.videoTrainability.get": {
+   "described": {
+    "value": "discovery_only"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "no"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "no"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.videos.batchGetStats": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "partial"
+   },
+   "query_supported": {
+    "value": "partial"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "partial"
+   },
+   "ui_supported": {
+    "value": "partial"
+   }
+  },
+  "youtube.videos.getRating": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtube.videos.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "yes"
+   },
+   "parse_supported": {
+    "value": "partial"
+   },
+   "query_supported": {
+    "value": "partial"
+   },
+   "request_supported": {
+    "value": "partial"
+   },
+   "storage_supported": {
+    "value": "partial"
+   },
+   "ui_supported": {
+    "value": "partial"
+   }
+  },
+  "youtube.youtube.v3.liveChat.messages.stream": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "no"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "no"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubeAnalytics.groupItems.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubeAnalytics.groups.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubeAnalytics.reports.query": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "partial"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubereporting.jobs.get": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubereporting.jobs.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubereporting.jobs.reports.get": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubereporting.jobs.reports.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubereporting.media.download": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "partial"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  },
+  "youtubereporting.reportTypes.list": {
+   "described": {
+    "value": "yes"
+   },
+   "live_verified": {
+    "value": "no"
+   },
+   "parse_supported": {
+    "value": "yes"
+   },
+   "query_supported": {
+    "value": "no"
+   },
+   "request_supported": {
+    "value": "yes"
+   },
+   "storage_supported": {
+    "value": "no"
+   },
+   "ui_supported": {
+    "value": "no"
+   }
+  }
+ },
+ "state_names": [
+  "described",
+  "request_supported",
+  "parse_supported",
+  "live_verified",
+  "storage_supported",
+  "query_supported",
+  "ui_supported"
+ ],
+ "values": {
+  "discovery_only": "only the Discovery schema exists; no official reference page",
+  "indirect": "used only through another entity or derived value, not as own rows/fields",
+  "no": "not supported",
+  "operational_only": "Successful requests have been observed for this method.",
+  "partial": "Support is limited to a subset of the method or its fields.",
+  "yes": "proved for the whole public surface of the method/field"
+ }
+}

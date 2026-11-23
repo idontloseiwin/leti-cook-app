@@ -1,0 +1,154 @@
+{
+ "empty": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.groups.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "analytics_group",
+  "version": 1
+ },
+ "mine_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "youtube_analytics": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtubeAnalytics.groups.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 0,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "http_status": 200,
+    "page": 1,
+    "parts": [],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "youtube_analytics",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "33eeecc210abb3e52d3bfc577128e75bbe6357739718273d518558af1e99d05c",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.itemCount": {
+      "state": "known",
+      "value": 3
+     },
+     "contentDetails.itemType": {
+      "state": "known",
+      "value": "youtube#video"
+     },
+     "id": {
+      "state": "known",
+      "value": "group-synthetic-1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-05-01T10:00:00Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Group 1"
+     }
+    },
+    "identity": {
+     "id": "group-synthetic-1",
+     "kind": "analytics_group"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.itemCount": {
+      "state": "known",
+      "value": 3
+     },
+     "contentDetails.itemType": {
+      "state": "known",
+      "value": "youtube#video"
+     },
+     "id": {
+      "state": "known",
+      "value": "group-synthetic-2"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-05-01T10:00:00Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Group 2"
+     }
+    },
+    "identity": {
+     "id": "group-synthetic-2",
+     "kind": "analytics_group"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "analytics_group",
+  "version": 1
+ }
+}

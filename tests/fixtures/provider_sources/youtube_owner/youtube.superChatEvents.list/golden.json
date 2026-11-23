@@ -1,0 +1,126 @@
+{
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.superChatEvents.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "5a90f375f2c4c61d001ca59a7a97f9db6180489a483f46571544988272fbb563",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "super_chat_event",
+  "version": 1
+ },
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.superChatEvents.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "945a809405d9a2895e3b8b8ad075b8db63e27c0058eb09c0aed64664459874e7",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "MARKER-EVENT-ID-1"
+     },
+     "snippet.amountMicros": {
+      "state": "known",
+      "value": 5000000
+     },
+     "snippet.createdAt": {
+      "state": "known",
+      "value": "2026-10-20T19:00:00Z"
+     },
+     "snippet.currency": {
+      "state": "known",
+      "value": "EUR"
+     },
+     "snippet.displayString": {
+      "state": "known",
+      "value": "€5.00"
+     },
+     "snippet.isSuperStickerEvent": {
+      "state": "known",
+      "value": false
+     },
+     "snippet.messageType": {
+      "state": "known",
+      "value": 2
+     },
+     "snippet.supporterDetails.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     }
+    },
+    "identity": {
+     "id": "MARKER-EVENT-ID-1",
+     "kind": "super_chat_event"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "super_chat_event",
+  "version": 1
+ }
+}

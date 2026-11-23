@@ -1,0 +1,528 @@
+{
+ "version": 1,
+ "about": "Older Library views stored publication dates and years as UTC instants at midnight in the saved time zone. Each case must reopen with the same filters and select the same rows as the calendar fields.",
+ "cases": [
+  {
+   "name": "published from on Berlin DST day",
+   "video_type": "long",
+   "time_zone": "Europe/Berlin",
+   "where": {
+    "field": "video.published_at",
+    "op": "gte",
+    "value": "2026-03-28T23:00:00Z"
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2026-03-29",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "published before after Berlin DST day",
+   "video_type": "long",
+   "time_zone": "Europe/Berlin",
+   "where": {
+    "field": "video.published_at",
+    "op": "lt",
+    "value": "2026-03-29T22:00:00Z"
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "2026-03-30",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "published from on Santiago DST start (no local midnight)",
+   "video_type": "long",
+   "time_zone": "America/Santiago",
+   "where": {
+    "field": "video.published_at",
+    "op": "gte",
+    "value": "2026-09-06T04:00:00Z"
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2026-09-06",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "published range around Santiago DST end",
+   "video_type": "long",
+   "time_zone": "America/Santiago",
+   "where": {
+    "all": [
+     {
+      "field": "video.published_at",
+      "op": "gte",
+      "value": "2026-04-04T03:00:00Z"
+     },
+     {
+      "field": "video.published_at",
+      "op": "lt",
+      "value": "2026-04-06T04:00:00Z"
+     }
+    ]
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2026-04-04",
+     "published_before": "2026-04-06",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "published range UTC",
+   "video_type": "long",
+   "time_zone": "UTC",
+   "where": {
+    "all": [
+     {
+      "field": "video.published_at",
+      "op": "gte",
+      "value": "2024-01-01T00:00:00Z"
+     },
+     {
+      "field": "video.published_at",
+      "op": "lt",
+      "value": "2024-02-01T00:00:00Z"
+     }
+    ]
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "2024-01-01",
+     "published_before": "2024-02-01",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "year UTC",
+   "video_type": "long",
+   "time_zone": "UTC",
+   "where": {
+    "all": [
+     {
+      "field": "video.published_at",
+      "op": "gte",
+      "value": "2024-01-01T00:00:00Z"
+     },
+     {
+      "field": "video.published_at",
+      "op": "lt",
+      "value": "2025-01-01T00:00:00Z"
+     }
+    ]
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2024
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "year in UTC+14",
+   "video_type": "long",
+   "time_zone": "Pacific/Kiritimati",
+   "where": {
+    "all": [
+     {
+      "field": "video.published_at",
+      "op": "gte",
+      "value": "2025-12-31T10:00:00Z"
+     },
+     {
+      "field": "video.published_at",
+      "op": "lt",
+      "value": "2026-12-31T10:00:00Z"
+     }
+    ]
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2026
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "year in UTC-11",
+   "video_type": "long",
+   "time_zone": "Pacific/Pago_Pago",
+   "where": {
+    "all": [
+     {
+      "field": "video.published_at",
+      "op": "gte",
+      "value": "2026-01-01T11:00:00Z"
+     },
+     {
+      "field": "video.published_at",
+      "op": "lt",
+      "value": "2027-01-01T11:00:00Z"
+     }
+    ]
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2026
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "two years Tokyo",
+   "video_type": "long",
+   "time_zone": "Asia/Tokyo",
+   "where": {
+    "any": [
+     {
+      "all": [
+       {
+        "field": "video.published_at",
+        "op": "gte",
+        "value": "2021-12-31T15:00:00Z"
+       },
+       {
+        "field": "video.published_at",
+        "op": "lt",
+        "value": "2022-12-31T15:00:00Z"
+       }
+      ]
+     },
+     {
+      "all": [
+       {
+        "field": "video.published_at",
+        "op": "gte",
+        "value": "2023-12-31T15:00:00Z"
+       },
+       {
+        "field": "video.published_at",
+        "op": "lt",
+        "value": "2024-12-31T15:00:00Z"
+       }
+      ]
+     }
+    ]
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [
+      2024,
+      2022
+     ],
+     "published_older_than": null,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "older than",
+   "video_type": "long",
+   "time_zone": "UTC",
+   "where": {
+    "field": "video.published_at",
+    "op": "lt",
+    "value": "2023-01-01T00:00:00Z"
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": 2023,
+     "cohort": null
+    }
+   }
+  },
+  {
+   "name": "years and older merge",
+   "video_type": "long",
+   "time_zone": "America/New_York",
+   "where": {
+    "field": "video.published_at",
+    "op": "lt",
+    "value": "2026-01-01T05:00:00Z"
+   },
+   "order_by": [
+    {
+     "direction": "desc",
+     "field": "video.published_at",
+     "nulls": "last"
+    }
+   ],
+   "conditions": {
+    "version": 1,
+    "filters": {
+     "q": "",
+     "category_id": "",
+     "published_from": "",
+     "published_before": "",
+     "min_views": "",
+     "max_views": "",
+     "min_duration_seconds": "",
+     "max_duration_seconds": "",
+     "sort_by": "published_at",
+     "sort_order": "desc"
+    },
+    "facets": {
+     "version": 1,
+     "view_buckets": [],
+     "duration_buckets": [],
+     "published_years": [],
+     "published_older_than": 2026,
+     "cohort": null
+    }
+   },
+   "note": "saved as years touching 'older than'; it opens as the later 'older than' (same rows)"
+  }
+ ]
+}

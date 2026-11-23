@@ -1,0 +1,42 @@
+{
+ "case": "no hits: complete, no rows",
+ "request": {
+  "budget": {
+   "max_requests": 1,
+   "max_units": {
+    "search_queries": 1
+   }
+  },
+  "method": "youtube.search.list",
+  "parameters": {
+   "q": "nothing at all"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#searchListResponse",
+    "pageInfo": {
+     "resultsPerPage": 0,
+     "totalResults": 0
+    },
+    "regionCode": "US"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/search/list",
+ "synthetic": true
+}

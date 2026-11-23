@@ -1,0 +1,14 @@
+.explorer-app.is-updated .explorer-v2-video-launch { min-width: 0; }
+.explorer-app.is-updated .explorer-v2-video-drawer:has(.explorer-v2-video-launch) > * { flex-shrink: 0; }
+.explorer-app.is-updated .explorer-v2-launch-horizon { margin: 10px 0 14px; padding-top: 10px; border-top: 1px solid var(--explorer-line-soft); }
+.explorer-app.is-updated .explorer-v2-launch-horizon h4 { margin: 0 0 7px; font-size: 12px; }
+.explorer-app.is-updated .explorer-v2-launch-result { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 5px 12px; margin: 0 0 4px; }
+.explorer-app.is-updated .explorer-v2-launch-result strong { font-size: 14px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.explorer-app.is-updated .explorer-v2-launch-result span { font-size: 11px; }
+.explorer-app.is-updated .explorer-v2-launch-ratio { margin: 3px 0; font-size: 12px; font-variant-numeric: tabular-nums; }
+.explorer-app.is-updated .explorer-v2-launch-caption { margin: 4px 0; font-size: 10px; line-height: 1.5; color: var(--explorer-muted); }
+.explorer-app.is-updated .explorer-v2-launch-details { margin: 7px 0 10px; font-size: 10px; line-height: 1.5; color: var(--explorer-muted); }
+.explorer-app.is-updated .explorer-v2-launch-details summary { cursor: pointer; color: var(--explorer-ink); }
+.explorer-app.is-updated .explorer-v2-launch-details summary:focus-visible { outline: 2px solid var(--explorer-accent, #4be7bd); outline-offset: 3px; }
+.explorer-app.is-updated .explorer-v2-launch-details p { margin: 7px 0; overflow-wrap: anywhere; }
+.explorer-app.is-updated .explorer-v2-launch-details .explorer-v2-video-drawer-details { margin-top: 8px; }

@@ -1,0 +1,27 @@
+{
+ "case": "tfmt=vtt but the body is SubRip: rejected",
+ "request": {
+  "context": "owner",
+  "method": "youtube.captions.download",
+  "parameters": {
+   "id": "AUieDaSyntheticTrack1",
+   "tfmt": "vtt"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body_text": "1\n00:00:00,000 --> 00:00:02,000\nMARKER-CAPTION line one\n\n2\n00:00:02,500 --> 00:00:04,000\nline two\n",
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/captions/download",
+ "synthetic": true
+}

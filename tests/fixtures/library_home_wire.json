@@ -1,0 +1,3611 @@
+{
+ "feed_7d_first": {
+  "request": {
+   "query_version": 1,
+   "source": {
+    "id": "public.videos.current.v1"
+   },
+   "scope": {
+    "kind": "library"
+   },
+   "video_types": [
+    "long"
+   ],
+   "select": [
+    "video.id",
+    "video.channel_id",
+    "video.title",
+    "video.thumbnail_url",
+    "video.published_at",
+    "video.views",
+    "video.likes",
+    "video.comments",
+    "video.lifetime_views_per_day"
+   ],
+   "where": {
+    "field": "video.published_at",
+    "op": "within_last_hours_v1",
+    "value": "168"
+   },
+   "order_by": [
+    {
+     "field": "video.published_at",
+     "direction": "desc",
+     "nulls": "last"
+    },
+    {
+     "field": "video.id",
+     "direction": "desc",
+     "nulls": "last"
+    }
+   ],
+   "time": {
+    "mode": "current",
+    "timezone": "UTC"
+   },
+   "coverage": {
+    "mode": "available",
+    "required_fields": []
+   },
+   "consistency": "current",
+   "page": {
+    "size": 20
+   }
+  },
+  "response": {
+   "query_version": 1,
+   "query_fingerprint": "ed3681f0e1fa83e3aab66eace5ca8087b3197af2dc0eca67664fd4d2f41e3922",
+   "context": {
+    "source_id": "public.videos.current.v1",
+    "source_schema_version": 1,
+    "registry_version": 11,
+    "lifecycle_profile": {
+     "id": "public_standard_696h",
+     "version": 1,
+     "revision": "public-696h-v1"
+    },
+    "preferences_revision": "existing-v1",
+    "type_policy": {
+     "id": "canonical_membership",
+     "version": 1,
+     "revision": "canonical-membership-v1"
+    },
+    "evaluated_at": "2026-10-30T11:44:19.366390Z",
+    "valid_before": "2026-10-30T11:46:19.366390Z",
+    "consistency": "current",
+    "observation_age_limit_seconds": null,
+    "time_zone": "UTC"
+   },
+   "columns": [
+    "video.id",
+    "video.channel_id",
+    "video.title",
+    "video.thumbnail_url",
+    "video.published_at",
+    "video.views",
+    "video.likes",
+    "video.comments",
+    "video.lifetime_views_per_day"
+   ],
+   "provenance": {
+    "video.id": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.id"
+     ],
+     "method": "canonical_membership_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.channel_id": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.snippet.channelId"
+     ],
+     "method": "canonical_membership_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.title": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.snippet.title"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.thumbnail_url": {
+     "origin": "normalized",
+     "source_paths": [
+      "videos.id"
+     ],
+     "method": "youtube_mqdefault_reference_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.published_at": {
+     "origin": "normalized",
+     "source_paths": [
+      "videos.snippet.publishedAt"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.views": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.statistics.viewCount"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.likes": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.statistics.likeCount"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.comments": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.statistics.commentCount"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.lifetime_views_per_day": {
+     "origin": "calculated",
+     "source_paths": [
+      "videos.statistics.viewCount",
+      "videos.snippet.publishedAt"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    }
+   },
+   "rows": [
+    {
+     "id": "syoung00001",
+     "cells": {
+      "video.id": {
+       "value": "syoung00001",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Special syoung00001",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:34:18.929462Z",
+       "expires_at": "2026-11-28T11:34:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/syoung00001/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T11:24:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:34:18.929462Z",
+       "expires_at": "2026-11-28T11:34:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "1000",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:34:18.929462Z",
+       "expires_at": "2026-11-28T11:34:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "7",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:34:18.929462Z",
+       "expires_at": "2026-11-28T11:34:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:34:18.929462Z",
+       "expires_at": "2026-11-28T11:34:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "24000",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:34:18.929462Z",
+       "expires_at": "2026-11-28T11:34:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "sprecheck01",
+     "cells": {
+      "video.id": {
+       "value": "sprecheck01",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Special sprecheck01",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:04:18.929462Z",
+       "expires_at": "2026-11-28T10:04:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/sprecheck01/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T10:14:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:04:18.929462Z",
+       "expires_at": "2026-11-28T10:04:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "50",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:04:18.929462Z",
+       "expires_at": "2026-11-28T10:04:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "7",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:04:18.929462Z",
+       "expires_at": "2026-11-28T10:04:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:04:18.929462Z",
+       "expires_at": "2026-11-28T10:04:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": null,
+       "state": "unavailable",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:04:18.929462Z",
+       "expires_at": "2026-11-28T10:04:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000001",
+     "cells": {
+      "video.id": {
+       "value": "b0000000001",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 1",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000001/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T09:57:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "7920",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "1",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "1",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000001",
+     "cells": {
+      "video.id": {
+       "value": "a0000000001",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 1",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000001/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T09:57:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "7920",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "1",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "1",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000001",
+     "cells": {
+      "video.id": {
+       "value": "c0000000001",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 1",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000001/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T09:57:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "7920",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "1",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "1",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "113725.776965",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000002",
+     "cells": {
+      "video.id": {
+       "value": "b0000000002",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 2",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000002/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T08:10:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "15840",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "2",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "2",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000002",
+     "cells": {
+      "video.id": {
+       "value": "a0000000002",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 2",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000002/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T08:10:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "15840",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "2",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "2",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000002",
+     "cells": {
+      "video.id": {
+       "value": "c0000000002",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 2",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000002/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T08:10:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "15840",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "2",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "2",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "113886.660564",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "i0000000001",
+     "cells": {
+      "video.id": {
+       "value": "i0000000001",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCIIIIIIIIIIIIIIIIIIIIII",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 1",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/i0000000001/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T06:44:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "7920",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "1",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "1",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "38924.232082",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:37:18.929462Z",
+       "expires_at": "2026-11-28T11:37:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000003",
+     "cells": {
+      "video.id": {
+       "value": "b0000000003",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 3",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000003/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T06:23:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "23760",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000003",
+     "cells": {
+      "video.id": {
+       "value": "a0000000003",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 3",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000003/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T06:23:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "23760",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000003",
+     "cells": {
+      "video.id": {
+       "value": "c0000000003",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 3",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000003/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T06:23:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "23760",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "113940.389632",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000004",
+     "cells": {
+      "video.id": {
+       "value": "b0000000004",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 4",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000004/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T04:36:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "31680",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "4",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "4",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000004",
+     "cells": {
+      "video.id": {
+       "value": "a0000000004",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 4",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000004/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T04:36:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "31680",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "4",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "4",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000004",
+     "cells": {
+      "video.id": {
+       "value": "c0000000004",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 4",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000004/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T04:36:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "31680",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "4",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "4",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "113967.273181",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000005",
+     "cells": {
+      "video.id": {
+       "value": "b0000000005",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 5",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000005/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T02:49:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "39600",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "5",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "5",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000005",
+     "cells": {
+      "video.id": {
+       "value": "a0000000005",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 5",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000005/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T02:49:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "39600",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "5",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "5",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000005",
+     "cells": {
+      "video.id": {
+       "value": "c0000000005",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 5",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000005/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T02:49:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "39600",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "5",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "5",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "113983.409401",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:09:18.929462Z",
+       "expires_at": "2026-11-28T11:09:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "i0000000002",
+     "cells": {
+      "video.id": {
+       "value": "i0000000002",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCIIIIIIIIIIIIIIIIIIIIII",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 2",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/i0000000002/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T01:44:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "15840",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "2",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "2",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "38924.232082",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:30:18.929462Z",
+       "expires_at": "2026-11-28T11:30:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000006",
+     "cells": {
+      "video.id": {
+       "value": "b0000000006",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 6",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000006/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T01:02:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "47520",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "6",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "6",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      }
+     }
+    }
+   ],
+   "coverage": {
+    "status": "partial",
+    "basis": "channel_inventory",
+    "channels_in_scope": 4,
+    "channels_complete": 3,
+    "eligible_count": null,
+    "reasons": {
+     "inventory_incomplete": 1,
+     "source_rows_unavailable": 3
+    }
+   },
+   "page": {
+    "has_more": true,
+    "next_cursor": "3ppoc8ADwZEHZS5Op7gRry1zOTv8reIOt-zVAwPOL2lxA-K_5KOrYXw7EZ0GDNeZ9azhrDF2jP5X6eKqu9LQ8kcaerCKfjohqheJ-0P1hjnut_FFVQf22v533ZZfwLql5Df0b62kL4ZIL1kKilzkx7skSiiOXJ0iicdbpWDSIzsHCkeNOvwQgwoZQJnKbU0XH83KFKw-5YXmIkqw4tUPa0CpBcSzqytIg4fLJTMt83tZ0jZ0yA0vwf-ZUDoBSj8f2WFYi4mqj2W8ohERQ3lq29lt_tSEUU87wiW_s6CtrvFEKLN2bmZMVMW3kke-SADI3ZYmn7txSV_YJVYUNAwvdabXibLqFSht02E1PUbmLWHf0o8cHgzq_a1PzLeQ0c9kf0mO5HXlu9VF7FE5-q_YxZ_sXZir3MhoXSLaNUxLD2fgEjz_fH81aPXSwZhbOokxKDzssGc"
+   },
+   "warnings": [
+    "current_pages_may_change"
+   ],
+   "source_read_at": "2026-10-30T11:44:19.378450Z",
+   "source_expires_at": "2026-10-30T11:46:19.366390Z"
+  }
+ },
+ "feed_7d_next": {
+  "request": {
+   "query_version": 1,
+   "source": {
+    "id": "public.videos.current.v1"
+   },
+   "scope": {
+    "kind": "library"
+   },
+   "video_types": [
+    "long"
+   ],
+   "select": [
+    "video.id",
+    "video.channel_id",
+    "video.title",
+    "video.thumbnail_url",
+    "video.published_at",
+    "video.views",
+    "video.likes",
+    "video.comments",
+    "video.lifetime_views_per_day"
+   ],
+   "where": {
+    "all": [
+     {
+      "field": "video.published_at",
+      "op": "within_last_hours_v1",
+      "value": "168"
+     },
+     {
+      "field": "video.published_at",
+      "op": "lte",
+      "value": "2026-10-30T01:02:18.929462Z"
+     },
+     {
+      "not": {
+       "field": "video.id",
+       "op": "in",
+       "value": [
+        "b0000000006"
+       ]
+      }
+     }
+    ]
+   },
+   "order_by": [
+    {
+     "field": "video.published_at",
+     "direction": "desc",
+     "nulls": "last"
+    },
+    {
+     "field": "video.id",
+     "direction": "desc",
+     "nulls": "last"
+    }
+   ],
+   "time": {
+    "mode": "current",
+    "timezone": "UTC"
+   },
+   "coverage": {
+    "mode": "available",
+    "required_fields": []
+   },
+   "consistency": "current",
+   "page": {
+    "size": 20
+   }
+  },
+  "key": {
+   "published_at": "2026-10-30T01:02:18.929462Z",
+   "tied": [
+    "b0000000006"
+   ]
+  },
+  "response": {
+   "query_version": 1,
+   "query_fingerprint": "de2b282bad544f5c11a519e3024bf3818cbd1a0fce26002b7348116850ae47aa",
+   "context": {
+    "source_id": "public.videos.current.v1",
+    "source_schema_version": 1,
+    "registry_version": 11,
+    "lifecycle_profile": {
+     "id": "public_standard_696h",
+     "version": 1,
+     "revision": "public-696h-v1"
+    },
+    "preferences_revision": "existing-v1",
+    "type_policy": {
+     "id": "canonical_membership",
+     "version": 1,
+     "revision": "canonical-membership-v1"
+    },
+    "evaluated_at": "2026-10-30T11:44:19.390522Z",
+    "valid_before": "2026-10-30T11:46:19.390522Z",
+    "consistency": "current",
+    "observation_age_limit_seconds": null,
+    "time_zone": "UTC"
+   },
+   "columns": [
+    "video.id",
+    "video.channel_id",
+    "video.title",
+    "video.thumbnail_url",
+    "video.published_at",
+    "video.views",
+    "video.likes",
+    "video.comments",
+    "video.lifetime_views_per_day"
+   ],
+   "provenance": {
+    "video.id": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.id"
+     ],
+     "method": "canonical_membership_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.channel_id": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.snippet.channelId"
+     ],
+     "method": "canonical_membership_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.title": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.snippet.title"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.thumbnail_url": {
+     "origin": "normalized",
+     "source_paths": [
+      "videos.id"
+     ],
+     "method": "youtube_mqdefault_reference_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.published_at": {
+     "origin": "normalized",
+     "source_paths": [
+      "videos.snippet.publishedAt"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.views": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.statistics.viewCount"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.likes": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.statistics.likeCount"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.comments": {
+     "origin": "youtube_reported",
+     "source_paths": [
+      "videos.statistics.commentCount"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    },
+    "video.lifetime_views_per_day": {
+     "origin": "calculated",
+     "source_paths": [
+      "videos.statistics.viewCount",
+      "videos.snippet.publishedAt"
+     ],
+     "method": "reported_current_v1",
+     "definition_epoch": null,
+     "type_rule": null
+    }
+   },
+   "rows": [
+    {
+     "id": "a0000000006",
+     "cells": {
+      "video.id": {
+       "value": "a0000000006",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 6",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000006/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T01:02:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "47520",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "6",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "6",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000006",
+     "cells": {
+      "video.id": {
+       "value": "c0000000006",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 6",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000006/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-30T01:02:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "47520",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "6",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "6",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "113994.16942",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:02:18.929462Z",
+       "expires_at": "2026-11-28T11:02:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000007",
+     "cells": {
+      "video.id": {
+       "value": "b0000000007",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 7",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000007/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T23:15:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "55440",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "7",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "7",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000007",
+     "cells": {
+      "video.id": {
+       "value": "a0000000007",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 7",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000007/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T23:15:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "55440",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "7",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "7",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000007",
+     "cells": {
+      "video.id": {
+       "value": "c0000000007",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 7",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000007/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T23:15:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "55440",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "7",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "7",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114001.856391",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:55:18.929462Z",
+       "expires_at": "2026-11-28T10:55:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000008",
+     "cells": {
+      "video.id": {
+       "value": "b0000000008",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 8",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000008/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T21:28:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "63360",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "8",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "8",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000008",
+     "cells": {
+      "video.id": {
+       "value": "a0000000008",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 8",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000008/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T21:28:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "63360",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "8",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "8",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000008",
+     "cells": {
+      "video.id": {
+       "value": "c0000000008",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 8",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000008/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T21:28:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "63360",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "8",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "8",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114007.6223",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:48:18.929462Z",
+       "expires_at": "2026-11-28T10:48:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "i0000000003",
+     "cells": {
+      "video.id": {
+       "value": "i0000000003",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCIIIIIIIIIIIIIIIIIIIIII",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 3",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/i0000000003/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T20:44:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "23760",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "3",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "38924.232082",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:23:18.929462Z",
+       "expires_at": "2026-11-28T11:23:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000009",
+     "cells": {
+      "video.id": {
+       "value": "b0000000009",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 9",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000009/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T19:41:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "71280",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "9",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "9",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000009",
+     "cells": {
+      "video.id": {
+       "value": "a0000000009",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 9",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000009/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T19:41:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "71280",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "9",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "9",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114048",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000009",
+     "cells": {
+      "video.id": {
+       "value": "c0000000009",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 9",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000009/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T19:41:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "71280",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "9",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "9",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "114012.1073",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T10:41:18.929462Z",
+       "expires_at": "2026-11-28T10:41:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000010",
+     "cells": {
+      "video.id": {
+       "value": "b0000000010",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 10",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000010/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T17:54:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "79200",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "10",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "10",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "106586.915888",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000010",
+     "cells": {
+      "video.id": {
+       "value": "a0000000010",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 10",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000010/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T17:54:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "79200",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "10",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "10",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "106586.915888",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000010",
+     "cells": {
+      "video.id": {
+       "value": "c0000000010",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 10",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000010/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T17:54:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "79200",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "10",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "10",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "106558.69941",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:44:18.929462Z",
+       "expires_at": "2026-11-28T11:44:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000011",
+     "cells": {
+      "video.id": {
+       "value": "b0000000011",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 11",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000011/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T16:07:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "87120",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "11",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "11",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "107133.048676",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "a0000000011",
+     "cells": {
+      "video.id": {
+       "value": "a0000000011",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCAAAAAAAAAAAAAAAAAAAAAA",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 11",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/a0000000011/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T16:07:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "87120",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "11",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "11",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "107133.048676",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "c0000000011",
+     "cells": {
+      "video.id": {
+       "value": "c0000000011",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCCCCCCCCCCCCCCCCCCCCCCC",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 11",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/c0000000011/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T16:07:01.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "87120",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "11",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "11",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "107107.133201",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:38:18.929462Z",
+       "expires_at": "2026-11-28T11:38:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "i0000000004",
+     "cells": {
+      "video.id": {
+       "value": "i0000000004",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCIIIIIIIIIIIIIIIIIIIIII",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 4",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/i0000000004/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T15:44:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "31680",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "4",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "4",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "38924.232082",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:16:18.929462Z",
+       "expires_at": "2026-11-28T11:16:18.929462Z",
+       "observation": null
+      }
+     }
+    },
+    {
+     "id": "b0000000012",
+     "cells": {
+      "video.id": {
+       "value": "b0000000012",
+       "state": "known",
+       "provenance_ref": "video.id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.channel_id": {
+       "value": "UCBBBBBBBBBBBBBBBBBBBBBB",
+       "state": "known",
+       "provenance_ref": "video.channel_id",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.title": {
+       "value": "Home video 12",
+       "state": "known",
+       "provenance_ref": "video.title",
+       "observed_at": "2026-10-30T11:32:18.929462Z",
+       "expires_at": "2026-11-28T11:32:18.929462Z",
+       "observation": null
+      },
+      "video.thumbnail_url": {
+       "value": "https://img.youtube.com/vi/b0000000012/mqdefault.jpg",
+       "state": "known",
+       "provenance_ref": "video.thumbnail_url",
+       "observed_at": "2026-10-30T10:44:18.929462Z",
+       "expires_at": "2026-11-28T10:44:18.929462Z",
+       "observation": null
+      },
+      "video.published_at": {
+       "value": "2026-10-29T14:20:18.929462Z",
+       "state": "known",
+       "provenance_ref": "video.published_at",
+       "observed_at": "2026-10-30T11:32:18.929462Z",
+       "expires_at": "2026-11-28T11:32:18.929462Z",
+       "observation": null
+      },
+      "video.views": {
+       "value": "95040",
+       "state": "known",
+       "provenance_ref": "video.views",
+       "observed_at": "2026-10-30T11:32:18.929462Z",
+       "expires_at": "2026-11-28T11:32:18.929462Z",
+       "observation": null
+      },
+      "video.likes": {
+       "value": "12",
+       "state": "known",
+       "provenance_ref": "video.likes",
+       "observed_at": "2026-10-30T11:32:18.929462Z",
+       "expires_at": "2026-11-28T11:32:18.929462Z",
+       "observation": null
+      },
+      "video.comments": {
+       "value": "12",
+       "state": "known",
+       "provenance_ref": "video.comments",
+       "observed_at": "2026-10-30T11:32:18.929462Z",
+       "expires_at": "2026-11-28T11:32:18.929462Z",
+       "observation": null
+      },
+      "video.lifetime_views_per_day": {
+       "value": "107592.45283",
+       "state": "known",
+       "provenance_ref": "video.lifetime_views_per_day",
+       "observed_at": "2026-10-30T11:32:18.929462Z",
+       "expires_at": "2026-11-28T11:32:18.929462Z",
+       "observation": null
+      }
+     }
+    }
+   ],
+   "coverage": {
+    "status": "partial",
+    "basis": "channel_inventory",
+    "channels_in_scope": 4,
+    "channels_complete": 3,
+    "eligible_count": null,
+    "reasons": {
+     "inventory_incomplete": 1,
+     "source_rows_unavailable": 3
+    }
+   },
+   "page": {
+    "has_more": true,
+    "next_cursor": "kQJrzjiUm4s0QW6iyTlVtr6YNHpiOVyKhBoQJqGnWVvTzV_6H6L_qgu1ylFbR_OFQTCPTftxDRRtnzNM9SLaJ6XOpyzxB1El3klpk11kqOVYhVdHZcv_EvgdRHrbUIWuMM2QGihvU6I9ey5oM8YFYcVv9opBoERmSot21pDeGvLWYdDFSNUfMYrKJGOfX_3MRnv55aDvhswYqy0vP9H0IOPZ_8bWwZBvFgx2d7ew7s7GvgUU_hdH9UnryxCuFPp4v-Pn7iQxPqao4KszStJW7mS3x3uPRxZSxx3Lp85hbkCsJ0DLIoIswlO3FljvTIUffAIFauU2GtdI1SeHt0VZOm_pAK1Se-HagZrKeCb4LSsXCYBUCQFqG7HRMkcWy1z7YGu8MYLXVTyF0QP6tTc8zpwK_I16v3Ytadrh7LDKHWWPo5bjpuKe3G--wfjPTyBKgYrBEwA"
+   },
+   "warnings": [
+    "current_pages_may_change"
+   ],
+   "source_read_at": "2026-10-30T11:44:19.399545Z",
+   "source_expires_at": "2026-10-30T11:46:19.390522Z"
+  }
+ },
+ "pace_7d": {
+  "request": {
+   "version": 1,
+   "operation": "video.view_pace_median.v1",
+   "query": {
+    "query_version": 1,
+    "source": {
+     "id": "public.videos.current.v1"
+    },
+    "scope": {
+     "kind": "library"
+    },
+    "video_types": [
+     "long"
+    ],
+    "select": [
+     "video.id",
+     "video.channel_id",
+     "video.title",
+     "video.thumbnail_url",
+     "video.published_at",
+     "video.views",
+     "video.likes",
+     "video.comments",
+     "video.lifetime_views_per_day"
+    ],
+    "where": {
+     "field": "video.published_at",
+     "op": "within_last_hours_v1",
+     "value": "168"
+    },
+    "order_by": [
+     {
+      "field": "video.published_at",
+      "direction": "desc",
+      "nulls": "last"
+     },
+     {
+      "field": "video.id",
+      "direction": "desc",
+      "nulls": "last"
+     }
+    ],
+    "time": {
+     "mode": "current",
+     "timezone": "UTC"
+    },
+    "coverage": {
+     "mode": "available",
+     "required_fields": []
+    },
+    "consistency": "current",
+    "page": {
+     "size": 20
+    }
+   },
+   "parameters": {}
+  },
+  "response": {
+   "version": 1,
+   "operation": "video.view_pace_median.v1",
+   "operation_fingerprint": "77db6568b58b24fe3bcf8e18f05c5110886257d77174f375983ee27c30479823",
+   "context": {
+    "source_id": "public.videos.current.v1",
+    "registry_version": 11,
+    "evaluated_at": "2026-10-30T11:44:19.415426Z",
+    "valid_before": "2026-10-30T12:06:01.929462Z",
+    "preferences_revision": "existing-v1",
+    "consistency": "current",
+    "observation_age_limit_seconds": null
+   },
+   "coverage": {
+    "basis": "channel_inventory",
+    "channels_in_scope": 4,
+    "channels_complete": 3,
+    "eligible_count": null,
+    "reasons": {
+     "inventory_incomplete": 1,
+     "source_rows_unavailable": 3
+    },
+    "status": "partial"
+   },
+   "result": {
+    "field": "video.lifetime_views_per_day",
+    "median": "14618.833615",
+    "method": "median_of_lifetime_views_per_day_v1",
+    "missing": {
+     "unknown": 1,
+     "expired": 0,
+     "unavailable": 1
+    },
+    "definition": {
+     "state": "known",
+     "epoch": "youtube.views.play_start.20260824",
+     "excluded_count": 0
+    },
+    "known_count": 315,
+    "population_count": 317
+   },
+   "provenance": {
+    "origin": "calculated",
+    "method": "video.view_pace_median.v1",
+    "population": "all_authorized_matching_rows_before_pagination",
+    "missing_values": "excluded_per_metric",
+    "definition_epoch": null
+   },
+   "warnings": [
+    "current_population_may_change"
+   ],
+   "source_read_at": "2026-10-30T11:44:19.428025Z",
+   "source_expires_at": "2026-10-30T12:06:01.929462Z"
+  }
+ }
+}

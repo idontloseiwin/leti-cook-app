@@ -1,0 +1,30 @@
+{
+ "case": "memberships enabled, no levels defined: an empty list",
+ "request": {
+  "context": "owner",
+  "method": "youtube.membershipsLevels.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#membershipsLevelListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/membershipsLevels/list",
+ "synthetic": true
+}

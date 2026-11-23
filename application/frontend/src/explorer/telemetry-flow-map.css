@@ -1,0 +1,24 @@
+.telemetry-v2-map { padding: 24px 0 20px; border-bottom: 1px solid var(--explorer-line-soft); }
+.telemetry-v2-map-stage { position: relative; min-width: 0; overflow: hidden; border-radius: 12px; background: radial-gradient(ellipse at center,rgba(102,227,180,.035),transparent 72%), radial-gradient(var(--explorer-line-soft) .65px,transparent .65px); background-size: auto,22px 22px; }
+.telemetry-v2-map-svg { width: 100%; height: 100%; position: absolute; inset: 0; overflow: visible; }
+.telemetry-v2-map-edge { color: #36505b; }
+.telemetry-v2-map-track { fill: none; stroke: currentColor; stroke-width: 1.5; }
+.telemetry-v2-map-edge:is(.is-active,.is-selected) { color: var(--explorer-mint); }
+.telemetry-v2-map-edge.is-selected .telemetry-v2-map-track { stroke-width: 2.5; }
+.telemetry-v2-map-hit { fill: none; stroke: transparent; stroke-width: 18; cursor: pointer; }
+.telemetry-v2-map-hit:focus-visible { outline: none; stroke: rgba(102,227,180,.2); }
+.telemetry-v2-map-node { position: absolute; transform: translate(-50%,-50%); display: grid; grid-template-columns: 7px minmax(0,1fr); gap: 5px 9px; padding: 14px 12px; box-sizing: border-box; background: var(--explorer-surface); border: 1px solid var(--explorer-line); border-radius: 10px; pointer-events: none; }
+.telemetry-v2-map-node strong { font-size: 12px; font-weight: 650; line-height: 1.4; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.telemetry-v2-map-node small { grid-column: 2; color: var(--explorer-muted); font-size: 10px; line-height: 1.4; }
+.telemetry-v2-map-node-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--explorer-muted); align-self: center; }
+.telemetry-v2-map-node.is-active { border-color: rgba(102,227,180,.7); box-shadow: 0 0 24px rgba(102,227,180,.075); }
+.telemetry-v2-map-node.is-active .telemetry-v2-map-node-dot { background: var(--explorer-mint); }
+.telemetry-v2-map-particle { fill: var(--explorer-mint); filter: drop-shadow(0 0 5px var(--explorer-mint)); pointer-events: none; }
+.telemetry-v2-map-particle.is-failed { fill: var(--explorer-red); filter: drop-shadow(0 0 5px var(--explorer-red)); }
+.telemetry-v2-map .telemetry-v2-map-live { color: var(--explorer-mint); }
+.telemetry-v2-map-empty { position: absolute; top: 46%; width: 100%; text-align: center; color: var(--explorer-muted); padding: 0 20px; box-sizing: border-box; }
+.telemetry-v2-map-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; color: var(--explorer-muted); font-size: 11px; padding-top: 12px; }
+.telemetry-v2-map-footer > span:first-child { display: flex; align-items: center; gap: 7px; }
+.telemetry-v2-map-footer i { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--explorer-mint); }
+.telemetry-v2-map-footer i.is-error { background: var(--explorer-red); margin-left: 10px; }
+@media (max-width: 560px) { .telemetry-v2-map-node { padding: 12px 9px; gap: 5px 6px; } .telemetry-v2-map-node strong { font-size: 11px; } .telemetry-v2-map-node small { font-size: 9px; } }

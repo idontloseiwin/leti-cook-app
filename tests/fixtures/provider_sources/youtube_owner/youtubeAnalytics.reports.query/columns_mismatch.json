@@ -1,0 +1,63 @@
+{
+ "case": "columnHeaders in another order than requested: rejected",
+ "request": {
+  "context": "owner",
+  "method": "youtubeAnalytics.reports.query",
+  "parameters": {
+   "dimensions": "day",
+   "endDate": "2026-09-03",
+   "ids": "channel==MINE",
+   "maxResults": 2,
+   "metrics": "views,estimatedMinutesWatched,averageViewPercentage",
+   "startDate": "2026-09-01"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "columnHeaders": [
+     {
+      "columnType": "DIMENSION",
+      "dataType": "STRING",
+      "name": "day"
+     },
+     {
+      "columnType": "METRIC",
+      "dataType": "INTEGER",
+      "name": "estimatedMinutesWatched"
+     },
+     {
+      "columnType": "METRIC",
+      "dataType": "INTEGER",
+      "name": "views"
+     },
+     {
+      "columnType": "METRIC",
+      "dataType": "FLOAT",
+      "name": "averageViewPercentage"
+     }
+    ],
+    "kind": "youtubeAnalytics#resultTable",
+    "rows": [
+     [
+      "2026-09-01",
+      300,
+      120,
+      41.5
+     ]
+    ]
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/analytics/reference/reports/query",
+ "synthetic": true
+}

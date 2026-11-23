@@ -1,0 +1,26 @@
+{
+ "case": "no tfmt: the original format (here SubViewer)",
+ "request": {
+  "context": "owner",
+  "method": "youtube.captions.download",
+  "parameters": {
+   "id": "AUieDaSyntheticTrack1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body_text": "0:00:00.000,0:00:02.000\nMARKER-CAPTION line one\n\n0:00:02.500,0:00:04.000\nline two\n",
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/captions/download",
+ "synthetic": true
+}

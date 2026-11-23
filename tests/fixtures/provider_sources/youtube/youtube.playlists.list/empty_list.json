@@ -1,0 +1,35 @@
+{
+ "case": "a channel without public playlists: an empty list in the expected envelope, complete",
+ "request": {
+  "method": "youtube.playlists.list",
+  "parameters": {
+   "channelId": "UCBBBBBBBBBBBBBBBBBBBBB2"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#playlistListResponse",
+    "pageInfo": {
+     "resultsPerPage": 50,
+     "totalResults": 0
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlists#resource",
+ "synthetic": true
+}

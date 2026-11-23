@@ -1,0 +1,32 @@
+{
+ "case": "a video without caption tracks",
+ "request": {
+  "context": "owner",
+  "method": "youtube.captions.list",
+  "parameters": {
+   "videoId": "vidxxxxxxx1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#captionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/captions/list",
+ "synthetic": true
+}

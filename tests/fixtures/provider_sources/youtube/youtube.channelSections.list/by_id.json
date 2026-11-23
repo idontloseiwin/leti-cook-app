@@ -1,0 +1,61 @@
+{
+ "case": "an id list where one section does not come back: omitted",
+ "request": {
+  "method": "youtube.channelSections.list",
+  "parameters": {
+   "id": [
+    "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+    "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02",
+    "UCAAAAAAAAAAAAAAAAAAAAA1.SectionMissing"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-01",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+      "kind": "youtube#channelSection",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "position": 0,
+       "type": "recentUploads"
+      }
+     },
+     {
+      "contentDetails": {
+       "playlists": [
+        "PLsyntheticPlaylist000000000000001"
+       ]
+      },
+      "etag": "etag-02",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02",
+      "kind": "youtube#channelSection",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "position": 1,
+       "type": "singlePlaylist"
+      }
+     }
+    ],
+    "kind": "youtube#channelSectionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/channelSections/list",
+ "synthetic": true
+}

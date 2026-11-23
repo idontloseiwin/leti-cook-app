@@ -1,0 +1,37 @@
+{
+ "case": "only the id part",
+ "request": {
+  "method": "youtube.channelSections.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "id"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+      "kind": "youtube#channelSection"
+     }
+    ],
+    "kind": "youtube#channelSectionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/channelSections/list",
+ "synthetic": true
+}

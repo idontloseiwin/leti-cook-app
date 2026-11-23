@@ -1,0 +1,29 @@
+{
+ "case": "an empty items list: complete, no rows",
+ "request": {
+  "method": "youtube.i18nRegions.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#i18nRegionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/i18nRegions/list",
+ "synthetic": true
+}

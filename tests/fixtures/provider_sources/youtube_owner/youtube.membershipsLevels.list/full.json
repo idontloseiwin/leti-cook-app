@@ -1,0 +1,54 @@
+{
+ "case": "two levels",
+ "request": {
+  "context": "owner",
+  "method": "youtube.membershipsLevels.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "id",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e1",
+      "id": "level-silver",
+      "kind": "youtube#membershipsLevel",
+      "snippet": {
+       "creatorChannelId": "UCoooooooooooooooooooooo",
+       "levelDetails": {
+        "displayName": "MARKER-LEVEL Silver"
+       }
+      }
+     },
+     {
+      "etag": "e2",
+      "id": "level-gold",
+      "kind": "youtube#membershipsLevel",
+      "snippet": {
+       "creatorChannelId": "UCoooooooooooooooooooooo",
+       "levelDetails": {
+        "displayName": "MARKER-LEVEL Gold"
+       }
+      }
+     }
+    ],
+    "kind": "youtube#membershipsLevelListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/membershipsLevels",
+ "synthetic": true
+}

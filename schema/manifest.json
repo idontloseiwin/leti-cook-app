@@ -1,0 +1,38 @@
+{
+  "api_data_rows": 0,
+  "baseline_id": "leti-cook-release-01",
+  "baseline_version": 51,
+  "configuration_seed_counts": {
+    "channel_discovery_queue_control": 1,
+    "channel_labels": 1,
+    "typed_video_collection_runtime": 2,
+    "video_collection_cadence": 16,
+    "video_collection_control": 1,
+    "research_preferences": 1,
+    "websub_hub_state": 1,
+    "discovery_runtime_control": 1
+  },
+  "files": {
+    "baseline/schema.sql": "70f9af54a8ea29f350b48e97abc0a674da976226fd6b6992436e8d246c1a4eac",
+    "configuration-seeds.sql": "f283d89f1491f302b795c51e4f906938f9bda0cb043169251ce5cb7c015c7bcb",
+    "schema.sql": "0106b0238c6be9e89dfadfe1e1dbe931e5b37200c8f6eb3e88e2985b750dcb98",
+    "steps/0052-video-engagement-observations.sql": "613df491eb7250d5a1e23d43780573ced80489c5098b338cb54ca17d98ac5f02"
+  },
+  "format": "leti-cook-self-hosted-schema",
+  "fresh_database_only": true,
+  "postgres_major": 17,
+  "schema_version": 52,
+  "schemas": [
+    "public",
+    "operator_private"
+  ],
+  "steps": [
+    {
+      "version": 52,
+      "file": "steps/0052-video-engagement-observations.sql",
+      "sha256": "613df491eb7250d5a1e23d43780573ced80489c5098b338cb54ca17d98ac5f02"
+    }
+  ],
+  "user_work_rows": 0,
+  "version": 1
+}

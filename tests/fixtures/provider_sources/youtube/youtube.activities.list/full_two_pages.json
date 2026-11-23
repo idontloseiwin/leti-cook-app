@@ -1,0 +1,174 @@
+{
+ "case": "a channel feed: an upload and a playlist addition, then the last page; the other type objects are absent by documentation",
+ "request": {
+  "budget": {
+   "max_requests": 3,
+   "max_units": {
+    "general": 3
+   }
+  },
+  "method": "youtube.activities.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+   "maxResults": 2,
+   "publishedAfter": "2026-10-01"
+  },
+  "selection": {
+   "fields": [
+    "contentDetails.playlistItem.playlistId",
+    "contentDetails.playlistItem.playlistItemId",
+    "contentDetails.playlistItem.resourceId.videoId",
+    "contentDetails.upload.videoId",
+    "id",
+    "snippet.channelId",
+    "snippet.description",
+    "snippet.groupId",
+    "snippet.publishedAt",
+    "snippet.thumbnails.default.url",
+    "snippet.title",
+    "snippet.type"
+   ],
+   "parts": [
+    "contentDetails",
+    "id",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "upload": {
+        "videoId": "vidxxxxxxx1"
+       }
+      },
+      "etag": "etag-a1",
+      "id": "ActSyntheticActivity0000000000000001",
+      "kind": "youtube#activity",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "",
+       "groupId": "GroupSynthetic1",
+       "publishedAt": "2026-10-21T08:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/a1/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/a1/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE activity 1",
+       "type": "upload"
+      }
+     },
+     {
+      "contentDetails": {
+       "playlistItem": {
+        "playlistId": "PLsyntheticPlaylist000000000000001",
+        "playlistItemId": "UExzeW50aGV0aWMx",
+        "resourceId": {
+         "kind": "youtube#video",
+         "videoId": "vidxxxxxxx2"
+        }
+       }
+      },
+      "etag": "etag-a2",
+      "id": "ActSyntheticActivity0000000000000002",
+      "kind": "youtube#activity",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "",
+       "groupId": "GroupSynthetic2",
+       "publishedAt": "2026-10-22T08:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/a2/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/a2/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE activity 2",
+       "type": "playlistItem"
+      }
+     }
+    ],
+    "kind": "youtube#activityListResponse",
+    "nextPageToken": "MARKER-TOKEN-PAGE-2",
+    "pageInfo": {
+     "resultsPerPage": 2,
+     "totalResults": 3
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  },
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "contentDetails": {
+       "upload": {
+        "videoId": "vidxxxxxxx3"
+       }
+      },
+      "etag": "etag-a3",
+      "id": "ActSyntheticActivity0000000000000003",
+      "kind": "youtube#activity",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "channelTitle": "MARKER-CHANNEL Synthetic",
+       "description": "",
+       "groupId": "GroupSynthetic3",
+       "publishedAt": "2026-10-23T08:00:00Z",
+       "thumbnails": {
+        "default": {
+         "height": 90,
+         "url": "https://i.ytimg.com/synthetic/a3/default.jpg",
+         "width": 120
+        },
+        "high": {
+         "height": 360,
+         "url": "https://i.ytimg.com/synthetic/a3/hqdefault.jpg",
+         "width": 480
+        }
+       },
+       "title": "MARKER-TITLE activity 3",
+       "type": "upload"
+      }
+     }
+    ],
+    "kind": "youtube#activityListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 3
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/activities/list",
+ "synthetic": true
+}

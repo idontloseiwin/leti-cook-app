@@ -1,0 +1,41 @@
+{
+ "case": "only the id part: no personal data at all",
+ "request": {
+  "method": "youtube.commentThreads.list",
+  "parameters": {
+   "videoId": "vidxxxxxxx1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "id"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e",
+      "id": "UgxSyntheticThread000001",
+      "kind": "youtube#commentThread"
+     }
+    ],
+    "kind": "youtube#commentThreadListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/commentThreads/list",
+ "synthetic": true
+}

@@ -1,0 +1,673 @@
+{
+ "for_handle": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "@synthetic1": "present"
+  },
+  "method": "youtube.channels.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "4875a820957bacc7da168f3dd177ff2107f3173d73b0ebb762fd27489d390222",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet",
+     "statistics"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.country": {
+      "state": "known",
+      "value": "NZ"
+     },
+     "snippet.customUrl": {
+      "state": "known",
+      "value": "@synthetic1"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION channel 1"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "x"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2016-05-01T12:00:00.123456Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 1"
+     },
+     "statistics.hiddenSubscriberCount": {
+      "state": "known",
+      "value": false
+     },
+     "statistics.subscriberCount": {
+      "state": "known",
+      "value": 1230
+     },
+     "statistics.videoCount": {
+      "state": "known",
+      "value": 17
+     },
+     "statistics.viewCount": {
+      "state": "known",
+      "value": 1234567
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1",
+     "kind": "channel"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel",
+  "version": 1
+ },
+ "for_handle_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "@nobody": "not_found"
+  },
+  "method": "youtube.channels.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "e730c8b7e96b4b858c619f2b94d460631d0776913565d56bc7f8531b79efaa95",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "channel",
+  "version": 1
+ },
+ "for_username": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "SyntheticLegacyName": "present"
+  },
+  "method": "youtube.channels.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "e039231754147746e44adb9a0635f396d102c08531b820c2263feaae743f2d1a",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "localizations",
+     "snippet",
+     "status",
+     "topicDetails"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "localizations.{key}.title": {
+      "state": "known",
+      "value": {
+       "de": "Synthetisch",
+       "fr": "Synthétique"
+      }
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Synthetisch"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Synthetic"
+     },
+     "status.isLinked": {
+      "state": "known",
+      "value": true
+     },
+     "status.madeForKids": {
+      "state": "known",
+      "value": false
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     },
+     "topicDetails.topicCategories[]": {
+      "state": "known",
+      "value": [
+       "https://en.wikipedia.org/wiki/Music"
+      ]
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1",
+     "kind": "channel"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel",
+  "version": 1
+ },
+ "for_username_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "NobodySynthetic": "not_found"
+  },
+  "method": "youtube.channels.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "e730c8b7e96b4b858c619f2b94d460631d0776913565d56bc7f8531b79efaa95",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "channel",
+  "version": 1
+ },
+ "full": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCAAAAAAAAAAAAAAAAAAAAA1": "present",
+   "UCBBBBBBBBBBBBBBBBBBBBB2": "present"
+  },
+  "method": "youtube.channels.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "91f67e1ab932ee8177a71ae40591cd30a7af4bd5b92a93e84e7e7f06eb5e3a4e",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "brandingSettings",
+     "contentDetails",
+     "id",
+     "snippet",
+     "statistics",
+     "status",
+     "topicDetails"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "brandingSettings.channel.country": {
+      "state": "known",
+      "value": "NZ"
+     },
+     "brandingSettings.channel.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 1"
+     },
+     "contentDetails.relatedPlaylists.uploads": {
+      "state": "known",
+      "value": "UUAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.country": {
+      "state": "known",
+      "value": "NZ"
+     },
+     "snippet.customUrl": {
+      "state": "known",
+      "value": "@synthetic1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2016-05-01T12:00:00.123456Z"
+     },
+     "snippet.thumbnails.default.url": {
+      "state": "known",
+      "value": "https://yt3.ggpht.com/synthetic1=s88"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 1"
+     },
+     "statistics.hiddenSubscriberCount": {
+      "state": "known",
+      "value": false
+     },
+     "statistics.subscriberCount": {
+      "state": "known",
+      "value": 1230
+     },
+     "statistics.videoCount": {
+      "state": "known",
+      "value": 17
+     },
+     "statistics.viewCount": {
+      "state": "known",
+      "value": 1234567
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     },
+     "topicDetails.topicCategories[]": {
+      "state": "known",
+      "value": [
+       "https://en.wikipedia.org/wiki/Lifestyle_(sociology)"
+      ]
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1",
+     "kind": "channel"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "brandingSettings.channel.country": {
+      "state": "known",
+      "value": "NZ"
+     },
+     "brandingSettings.channel.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 2"
+     },
+     "contentDetails.relatedPlaylists.uploads": {
+      "state": "known",
+      "value": "UUBBBBBBBBBBBBBBBBBBBBB2"
+     },
+     "id": {
+      "state": "known",
+      "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+     },
+     "snippet.country": {
+      "state": "known",
+      "value": "NZ"
+     },
+     "snippet.customUrl": {
+      "state": "known",
+      "value": "@synthetic2"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2016-05-01T12:00:00.123456Z"
+     },
+     "snippet.thumbnails.default.url": {
+      "state": "known",
+      "value": "https://yt3.ggpht.com/synthetic2=s88"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 2"
+     },
+     "statistics.hiddenSubscriberCount": {
+      "state": "known",
+      "value": true
+     },
+     "statistics.subscriberCount": {
+      "absence": "owner_only",
+      "state": "owner_only"
+     },
+     "statistics.videoCount": {
+      "state": "known",
+      "value": 17
+     },
+     "statistics.viewCount": {
+      "state": "known",
+      "value": 1234567
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     },
+     "topicDetails.topicCategories[]": {
+      "state": "known",
+      "value": [
+       "https://en.wikipedia.org/wiki/Lifestyle_(sociology)"
+      ]
+     }
+    },
+    "identity": {
+     "id": "UCBBBBBBBBBBBBBBBBBBBBB2",
+     "kind": "channel"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel",
+  "version": 1
+ },
+ "omitted_id": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCAAAAAAAAAAAAAAAAAAAAA1": "present",
+   "UCCCCCCCCCCCCCCCCCCCCCC3": "omitted"
+  },
+  "method": "youtube.channels.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "e730c8b7e96b4b858c619f2b94d460631d0776913565d56bc7f8531b79efaa95",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.country": {
+      "state": "known",
+      "value": "NZ"
+     },
+     "snippet.customUrl": {
+      "state": "known",
+      "value": "@synthetic1"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION channel 1"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "x"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2016-05-01T12:00:00.123456Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 1"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1",
+     "kind": "channel"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel",
+  "version": 1
+ },
+ "unknown_enum_and_field": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCAAAAAAAAAAAAAAAAAAAAA1": "present"
+  },
+  "method": "youtube.channels.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "9f2d264f3015cbda184d9af87c908a8496b9ff97a3cd78f1e3c1c596b1992bbf",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "snippet.brandNewField"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.country": {
+      "state": "known",
+      "value": "NZ"
+     },
+     "snippet.customUrl": {
+      "state": "known",
+      "value": "@synthetic1"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION channel 1"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "x"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2016-05-01T12:00:00.123456Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Title 1"
+     },
+     "status.isLinked": {
+      "state": "known",
+      "value": true
+     },
+     "status.madeForKids": {
+      "state": "known",
+      "value": false
+     },
+     "status.privacyStatus": {
+      "state": "unknown_enum",
+      "value": "membersOnly"
+     }
+    },
+    "identity": {
+     "id": "UCAAAAAAAAAAAAAAAAAAAAA1",
+     "kind": "channel"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel",
+  "version": 1
+ }
+}

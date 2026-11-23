@@ -1,0 +1,41 @@
+{
+ "case": "an undescribed envelope key and snippet field: names counted, values dropped",
+ "request": {
+  "method": "youtube.i18nLanguages.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-en",
+      "id": "en",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "en",
+       "name": "English",
+       "script": "MARKER-UNKNOWN Latn"
+      }
+     }
+    ],
+    "kind": "youtube#i18nLanguageListResponse",
+    "newEnvelopeKey": "MARKER-UNKNOWN"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/i18nLanguages/list",
+ "synthetic": true
+}

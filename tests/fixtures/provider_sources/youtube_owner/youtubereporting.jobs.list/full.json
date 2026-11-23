@@ -1,0 +1,33 @@
+{
+ "case": "one job created by jobs.create (a control operation outside reads)",
+ "request": {
+  "context": "owner",
+  "method": "youtubereporting.jobs.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "jobs": [
+     {
+      "createTime": "2026-10-01T10:00:00.123456Z",
+      "id": "job-synthetic-1",
+      "name": "MARKER-JOB name",
+      "reportTypeId": "channel_basic_a3"
+     }
+    ]
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs/list",
+ "synthetic": true
+}

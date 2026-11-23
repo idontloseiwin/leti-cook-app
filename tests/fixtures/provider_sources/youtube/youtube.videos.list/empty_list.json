@@ -1,0 +1,38 @@
+{
+ "case": "no requested video comes back: every ID is omitted (never deletion proof)",
+ "request": {
+  "method": "youtube.videos.list",
+  "parameters": {
+   "id": [
+    "vidxxxxxxx1",
+    "vidxxxxxxx2"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [],
+    "kind": "youtube#videoListResponse",
+    "pageInfo": {
+     "resultsPerPage": 0,
+     "totalResults": 0
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos#resource",
+ "synthetic": true
+}

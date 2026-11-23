@@ -1,0 +1,40 @@
+{
+ "case": "400 videoChartNotFound: the chart is not available for that region",
+ "request": {
+  "method": "youtube.videos.list",
+  "parameters": {
+   "chart": "mostPopular",
+   "regionCode": "AQ"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 400,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "videoChartNotFound"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 400
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos/list#errors",
+ "synthetic": true
+}

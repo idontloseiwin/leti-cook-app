@@ -1,0 +1,35 @@
+{
+ "case": "a playlist without a custom image",
+ "request": {
+  "context": "owner",
+  "method": "youtube.playlistImages.list",
+  "parameters": {
+   "playlistId": "PLsyntheticPlaylist000000000000002"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "items": [],
+    "kind": "youtube#playlistImageListResponse",
+    "pageInfo": {
+     "resultsPerPage": 0,
+     "totalResults": 0
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlistImages/list",
+ "synthetic": true
+}

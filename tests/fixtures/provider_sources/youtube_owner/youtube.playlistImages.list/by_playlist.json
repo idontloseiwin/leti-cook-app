@@ -1,0 +1,47 @@
+{
+ "case": "playlistId filter (reference page): one hero image",
+ "request": {
+  "context": "owner",
+  "method": "youtube.playlistImages.list",
+  "parameters": {
+   "playlistId": "PLsyntheticPlaylist000000000000001"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "id",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "items": [
+     {
+      "id": "playlist-image-1",
+      "kind": "youtube#playlistImage",
+      "snippet": {
+       "height": 1152,
+       "playlistId": "PLsyntheticPlaylist000000000000001",
+       "type": "hero",
+       "width": 2048
+      }
+     }
+    ],
+    "kind": "youtube#playlistImageListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/playlistImages",
+ "synthetic": true
+}

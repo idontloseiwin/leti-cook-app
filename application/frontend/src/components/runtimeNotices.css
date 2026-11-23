@@ -1,0 +1,7 @@
+.runtime-notices { padding: 18px clamp(18px, 3vw, 44px) 0; }
+.runtime-notice { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; padding: 12px 16px; border-left: 3px solid var(--explorer-amber); border-radius: 0 8px 8px 0; background: var(--explorer-surface); color: var(--explorer-text); font-size: 13px; }
+.runtime-notice-info { border-left-color: var(--explorer-mint); }
+.runtime-notice p { margin: 0; flex: 1; }
+.runtime-notice button { flex-shrink: 0; padding: 6px 10px; border: 1px solid var(--explorer-line); border-radius: 6px; background: transparent; color: var(--explorer-text); font: inherit; cursor: pointer; }
+.runtime-notice button:focus-visible { outline: 2px solid var(--explorer-mint); outline-offset: 3px; }
+@media (max-width: 600px) { .runtime-notice { flex-wrap: wrap; } }

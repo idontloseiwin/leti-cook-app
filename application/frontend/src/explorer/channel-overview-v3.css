@@ -1,0 +1,45 @@
+/* V3-only corrections over the preserved V2 Overview stylesheet.
+ * No API, data, viewport breakpoint or other entry is changed here.
+ */
+/* Strict upper bound meets the wide composition without a fractional gap. */
+@media (1041px <= width < 1882px) {
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .explorer-v2-hero-kpis .explorer-v2-kpi-card:nth-child(3n + 1) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .explorer-v2-hero-kpis .explorer-v2-kpi-card:last-child {
+    padding-right: 16px;
+  }
+}
+
+/* At wide viewports, restore the base composition instead of the inherited
+ * V2 open-library stack. Explicit defaults mirror channel-overview.css.
+ */
+@media (min-width: 1882px) {
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .explorer-v2-channel-hero {
+    grid-template-columns: minmax(300px, .85fr) minmax(0, 2.3fr);
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .explorer-overview-insights {
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .overview-breakdown-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    row-gap: normal;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .overview-breakdown-column {
+    padding: 0 24px;
+    border-top: 0;
+    border-left: 1px solid var(--ov-line);
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .overview-breakdown-column:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .overview-breakdown-column:last-child {
+    padding-right: 0;
+  }
+  :root[data-explorer-root='/app-explorer-v3'] .explorer-app.is-updated.explorer-v2-library-inline.explorer-v2-library-open .explorer-v2-workspace .explorer-v2-hero-kpis > .explorer-v2-kpi-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    row-gap: 0;
+  }
+}

@@ -1,0 +1,1002 @@
+{
+ "absent_parts": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "8f0787b103d5999596de29cb14830415b51ffed79e1998cd08463722f55981a4",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "snippet",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.itemCount": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000004"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 4\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 4"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 4"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-05-14T08:30:04Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 4"
+     },
+     "status.podcastStatus": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "status.privacyStatus": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000004",
+     "kind": "playlist"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "playlist",
+  "version": 1
+ },
+ "budget_cut": {
+  "completeness": "partial",
+  "continuation": "<encrypted continuation>",
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "4d59a91e109432733d7d8ae76882b1d58b8d2f76d098181747a71187c7127a09",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "4d59a91e109432733d7d8ae76882b1d58b8d2f76d098181747a71187c7127a09",
+    "http_status": 200,
+    "page": 1,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "2d06ac10d83cf5ffbc857640c027099ff5e69bc21e80a986c7790d98321335a7",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000001"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 1\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 1"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-02-11T08:30:01Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 1"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000001",
+     "kind": "playlist"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000002"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 2\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 2"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 2"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-03-12T08:30:02Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 2"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000002",
+     "kind": "playlist"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": "budget_requests",
+  "unit": "playlist",
+  "version": 1
+ },
+ "channel_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCCCCCCCCCCCCCCCCCCCCCC3": "not_found"
+  },
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "4d59a91e109432733d7d8ae76882b1d58b8d2f76d098181747a71187c7127a09",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "playlist",
+  "version": 1
+ },
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "4d59a91e109432733d7d8ae76882b1d58b8d2f76d098181747a71187c7127a09",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "playlist",
+  "version": 1
+ },
+ "full_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "a7793ea2e2d541628c64ff584c17d0b865d70c41830fc42023e0d5a6d990afe1",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "localizations",
+     "player",
+     "snippet",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "a7793ea2e2d541628c64ff584c17d0b865d70c41830fc42023e0d5a6d990afe1",
+    "http_status": 200,
+    "page": 1,
+    "parts": [
+     "contentDetails",
+     "id",
+     "localizations",
+     "player",
+     "snippet",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "33eeecc210abb3e52d3bfc577128e75bbe6357739718273d518558af1e99d05c",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.itemCount": {
+      "state": "known",
+      "value": 3
+     },
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000001"
+     },
+     "localizations.{key}.description": {
+      "state": "known",
+      "value": {
+       "de": "Beschreibung 1",
+       "en": "MARKER-DESCRIPTION 1"
+      }
+     },
+     "localizations.{key}.title": {
+      "state": "known",
+      "value": {
+       "de": "Reihe 1",
+       "en": "Series 1"
+      }
+     },
+     "player.embedHtml": {
+      "state": "known",
+      "value": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000001\"></iframe>"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 1\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 1"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-02-11T08:30:01Z"
+     },
+     "snippet.thumbnails.default.url": {
+      "state": "known",
+      "value": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg"
+     },
+     "snippet.thumbnails.high.height": {
+      "state": "known",
+      "value": 360
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 1"
+     },
+     "status.podcastStatus": {
+      "state": "known",
+      "value": "disabled"
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000001",
+     "kind": "playlist"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.itemCount": {
+      "state": "known",
+      "value": 6
+     },
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000002"
+     },
+     "localizations.{key}.description": {
+      "state": "known",
+      "value": {
+       "de": "Beschreibung 2",
+       "en": "MARKER-DESCRIPTION 2"
+      }
+     },
+     "localizations.{key}.title": {
+      "state": "known",
+      "value": {
+       "de": "Reihe 2",
+       "en": "Series 2"
+      }
+     },
+     "player.embedHtml": {
+      "state": "known",
+      "value": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000002\"></iframe>"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 2\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 2"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 2"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-03-12T08:30:02Z"
+     },
+     "snippet.thumbnails.default.url": {
+      "state": "known",
+      "value": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg"
+     },
+     "snippet.thumbnails.high.height": {
+      "state": "known",
+      "value": 360
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 2"
+     },
+     "status.podcastStatus": {
+      "state": "known",
+      "value": "enabled"
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000002",
+     "kind": "playlist"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.itemCount": {
+      "state": "known",
+      "value": 9
+     },
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000003"
+     },
+     "localizations.{key}.description": {
+      "state": "known",
+      "value": {
+       "de": "Beschreibung 3",
+       "en": "MARKER-DESCRIPTION 3"
+      }
+     },
+     "localizations.{key}.title": {
+      "state": "known",
+      "value": {
+       "de": "Reihe 3",
+       "en": "Series 3"
+      }
+     },
+     "player.embedHtml": {
+      "state": "known",
+      "value": "<iframe width=\"640\" height=\"360\" src=\"//www.youtube.com/embed/videoseries?list=PLsyntheticPlaylist000000000000003\"></iframe>"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 3\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 3"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 3"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-04-13T08:30:03Z"
+     },
+     "snippet.thumbnails.default.url": {
+      "state": "known",
+      "value": "https://i.ytimg.com/vi/vidxxxxxxx1/default.jpg"
+     },
+     "snippet.thumbnails.high.height": {
+      "state": "known",
+      "value": 360
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 3"
+     },
+     "status.podcastStatus": {
+      "state": "known",
+      "value": "disabled"
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000003",
+     "kind": "playlist"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "playlist",
+  "version": 1
+ },
+ "minimal": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000001"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000001",
+     "kind": "playlist"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "playlist",
+  "version": 1
+ },
+ "omitted_id": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "PLsyntheticMissing000000000000099": "omitted",
+   "PLsyntheticPlaylist000000000000001": "present",
+   "PLsyntheticPlaylist000000000000002": "present"
+  },
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "4d59a91e109432733d7d8ae76882b1d58b8d2f76d098181747a71187c7127a09",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000001"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 1\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 1"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 1"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-02-11T08:30:01Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 1"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000001",
+     "kind": "playlist"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000002"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 2\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 2"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 2"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-03-12T08:30:02Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 2"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000002",
+     "kind": "playlist"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "playlist",
+  "version": 1
+ },
+ "unknown_enum": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "99aff8c48f921ee00c636bc15a934db64bd79b5d03874001c7daaf270144c4f4",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000006"
+     },
+     "status.podcastStatus": {
+      "state": "known",
+      "value": "enabled"
+     },
+     "status.privacyStatus": {
+      "state": "unknown_enum",
+      "value": "membersOnly"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000006",
+     "kind": "playlist"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "playlist",
+  "version": 1
+ },
+ "unknown_field": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.playlists.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "4d59a91e109432733d7d8ae76882b1d58b8d2f76d098181747a71187c7127a09",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "newEnvelopeKey",
+     "newPart",
+     "snippet.brandNewField"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "PLsyntheticPlaylist000000000000005"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCAAAAAAAAAAAAAAAAAAAAA1"
+     },
+     "snippet.channelTitle": {
+      "state": "known",
+      "value": "MARKER-CHANNEL Synthetic"
+     },
+     "snippet.defaultLanguage": {
+      "state": "known",
+      "value": "en"
+     },
+     "snippet.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 5\nsecond line"
+     },
+     "snippet.localized.description": {
+      "state": "known",
+      "value": "MARKER-DESCRIPTION 5"
+     },
+     "snippet.localized.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 5"
+     },
+     "snippet.publishedAt": {
+      "state": "known",
+      "value": "2026-06-15T08:30:05Z"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Series 5"
+     }
+    },
+    "identity": {
+     "id": "PLsyntheticPlaylist000000000000005",
+     "kind": "playlist"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "playlist",
+  "version": 1
+ }
+}

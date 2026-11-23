@@ -1,0 +1,47 @@
+{
+ "case": "400 invalidSearchFilter: a filter combination the provider refuses",
+ "request": {
+  "budget": {
+   "max_requests": 1,
+   "max_units": {
+    "search_queries": 1
+   }
+  },
+  "method": "youtube.search.list",
+  "parameters": {
+   "q": "synthetic",
+   "type": "video",
+   "videoDuration": "short"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 400,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "invalidSearchFilter"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 400
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/search/list#errors",
+ "synthetic": true
+}

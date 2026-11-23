@@ -1,0 +1,57 @@
+{
+ "case": "the counter parts the collector uses (id, statistics)",
+ "request": {
+  "method": "youtube.videos.batchGetStats",
+  "parameters": {
+   "id": [
+    "vidxxxxxxx1"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "id",
+    "statistics"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic",
+    "items": [
+     {
+      "contentDetails": {
+       "duration": "253s"
+      },
+      "etag": "s1",
+      "id": "vidxxxxxxx1",
+      "kind": "youtube#videoStat",
+      "snippet": {
+       "publishTime": "2026-10-21T11:00:00Z"
+      },
+      "statistics": {
+       "commentCount": "0",
+       "likeCount": "42",
+       "viewCount": "9007199254740993"
+      }
+     }
+    ],
+    "kind": "youtube#batchGetStatsResponse",
+    "summary": {
+     "failedVideoCount": 0,
+     "failedVideoIds": [],
+     "requestedVideoCount": 1,
+     "succeededVideoCount": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/videos/batchGetStats",
+ "synthetic": true
+}

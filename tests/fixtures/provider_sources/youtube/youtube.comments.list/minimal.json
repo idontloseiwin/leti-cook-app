@@ -1,0 +1,41 @@
+{
+ "case": "only the id part",
+ "request": {
+  "method": "youtube.comments.list",
+  "parameters": {
+   "parentId": "UgxSyntheticThread000001"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "id"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "e",
+      "id": "UgxSyntheticThread000001.ReplySynthetic01",
+      "kind": "youtube#comment"
+     }
+    ],
+    "kind": "youtube#commentListResponse",
+    "pageInfo": {
+     "resultsPerPage": 1,
+     "totalResults": 1
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/comments/list",
+ "synthetic": true
+}

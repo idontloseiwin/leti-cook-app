@@ -1,0 +1,305 @@
+{
+ "all_current_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 4
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.members.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e957cb4a482aaeaf573f97e502fbcbde4ce16dbcfe104cb445f6de0ec2fce9c9",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 2,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e957cb4a482aaeaf573f97e502fbcbde4ce16dbcfe104cb445f6de0ec2fce9c9",
+    "http_status": 200,
+    "page": 1,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 2,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "33eeecc210abb3e52d3bfc577128e75bbe6357739718273d518558af1e99d05c",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "snippet.memberDetails.channelId": {
+      "state": "known",
+      "value": "UCmember0000000000000001"
+     },
+     "snippet.memberDetails.displayName": {
+      "state": "known",
+      "value": "MARKER-MEMBER 1"
+     },
+     "snippet.membershipsDetails.accessibleLevels[]": {
+      "state": "known",
+      "value": [
+       "level-silver",
+       "level-gold"
+      ]
+     },
+     "snippet.membershipsDetails.highestAccessibleLevel": {
+      "state": "known",
+      "value": "level-gold"
+     },
+     "snippet.membershipsDetails.membershipsDuration.memberTotalDurationMonths": {
+      "state": "known",
+      "value": 21
+     },
+     "snippet.membershipsDetails.membershipsDurationAtLevels[].level": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "level-silver"
+       },
+       {
+        "state": "known",
+        "value": "level-gold"
+       }
+      ]
+     },
+     "snippet.membershipsDetails.membershipsDurationAtLevels[].memberTotalDurationMonths": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": 21
+       },
+       {
+        "state": "known",
+        "value": 9
+       }
+      ]
+     }
+    },
+    "identity": null,
+    "page": 0
+   },
+   {
+    "fields": {
+     "snippet.memberDetails.channelId": {
+      "state": "known",
+      "value": "UCmember0000000000000002"
+     },
+     "snippet.memberDetails.displayName": {
+      "state": "known",
+      "value": "MARKER-MEMBER 2"
+     },
+     "snippet.membershipsDetails.accessibleLevels[]": {
+      "state": "known",
+      "value": [
+       "level-silver",
+       "level-gold"
+      ]
+     },
+     "snippet.membershipsDetails.highestAccessibleLevel": {
+      "state": "known",
+      "value": "level-gold"
+     },
+     "snippet.membershipsDetails.membershipsDuration.memberTotalDurationMonths": {
+      "state": "known",
+      "value": 21
+     },
+     "snippet.membershipsDetails.membershipsDurationAtLevels[].level": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "level-silver"
+       },
+       {
+        "state": "known",
+        "value": "level-gold"
+       }
+      ]
+     },
+     "snippet.membershipsDetails.membershipsDurationAtLevels[].memberTotalDurationMonths": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": 21
+       },
+       {
+        "state": "known",
+        "value": 9
+       }
+      ]
+     }
+    },
+    "identity": null,
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel_member",
+  "version": 1
+ },
+ "filter_by_member": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.members.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "3d06c1e83c20dfb2437a7c19309c7e394ed50f5be532485288503cdbb4b5b301",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 2,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "snippet.memberDetails.channelId": {
+      "state": "known",
+      "value": "UCmember0000000000000001"
+     }
+    },
+    "identity": null,
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "channel_member",
+  "version": 1
+ },
+ "memberships_not_enabled": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "youtube.members.list": "disabled"
+  },
+  "method": "youtube.members.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e957cb4a482aaeaf573f97e502fbcbde4ce16dbcfe104cb445f6de0ec2fce9c9",
+    "http_status": 400,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 2,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "channel_member",
+  "version": 1
+ },
+ "updates_first_poll": {
+  "completeness": "partial",
+  "continuation": "<encrypted continuation>",
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.members.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "e957cb4a482aaeaf573f97e502fbcbde4ce16dbcfe104cb445f6de0ec2fce9c9",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 2,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "updates_poll",
+  "unit": "channel_member",
+  "version": 1
+ }
+}

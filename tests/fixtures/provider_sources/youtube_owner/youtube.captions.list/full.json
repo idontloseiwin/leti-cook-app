@@ -1,0 +1,72 @@
+{
+ "case": "two caption tracks of the owner video, every snippet field",
+ "request": {
+  "context": "owner",
+  "method": "youtube.captions.list",
+  "parameters": {
+   "videoId": "vidxxxxxxx1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "id",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-1",
+      "id": "AUieDaSyntheticTrack1",
+      "kind": "youtube#caption",
+      "snippet": {
+       "audioTrackType": "primary",
+       "isAutoSynced": false,
+       "isCC": false,
+       "isDraft": false,
+       "isEasyReader": false,
+       "isLarge": false,
+       "language": "en",
+       "lastUpdated": "2026-10-01T10:00:00.000Z",
+       "name": "MARKER-TRACK-NAME 1",
+       "status": "serving",
+       "trackKind": "standard",
+       "videoId": "vidxxxxxxx1"
+      }
+     },
+     {
+      "etag": "etag-2",
+      "id": "AUieDaSyntheticTrack2",
+      "kind": "youtube#caption",
+      "snippet": {
+       "audioTrackType": "primary",
+       "isAutoSynced": true,
+       "isCC": false,
+       "isDraft": false,
+       "isEasyReader": false,
+       "isLarge": false,
+       "language": "de",
+       "lastUpdated": "2026-10-02T10:00:00.000Z",
+       "name": "MARKER-TRACK-NAME 2",
+       "status": "serving",
+       "trackKind": "asr",
+       "videoId": "vidxxxxxxx1"
+      }
+     }
+    ],
+    "kind": "youtube#captionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/captions",
+ "synthetic": true
+}

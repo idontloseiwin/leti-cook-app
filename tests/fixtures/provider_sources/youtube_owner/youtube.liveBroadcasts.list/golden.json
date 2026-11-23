@@ -1,0 +1,472 @@
+{
+ "auth_expired": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.liveBroadcasts.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "292b5c1a8645d62e480176455a59a7b3217c039df85423952db1096485af5479",
+    "http_status": 401,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "owner_auth_expired",
+  "unit": "live_broadcast",
+  "version": 1
+ },
+ "by_id_omitted": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "brdxxxxxxx1": "present",
+   "brdxxxxxxx9": "omitted"
+  },
+  "method": "youtube.liveBroadcasts.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "26b17ce4a594b47940d335aea0add33a92fcb3da7c3edd2622d44256d8b9ec18",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "brdxxxxxxx1"
+     },
+     "status.lifeCycleStatus": {
+      "state": "known",
+      "value": "complete"
+     },
+     "status.madeForKids": {
+      "state": "known",
+      "value": false
+     },
+     "status.privacyStatus": {
+      "state": "known",
+      "value": "public"
+     },
+     "status.recordingStatus": {
+      "state": "known",
+      "value": "recorded"
+     },
+     "status.selfDeclaredMadeForKids": {
+      "state": "known",
+      "value": false
+     }
+    },
+    "identity": {
+     "id": "brdxxxxxxx1",
+     "kind": "live_broadcast"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "live_broadcast",
+  "version": 1
+ },
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.liveBroadcasts.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "292b5c1a8645d62e480176455a59a7b3217c039df85423952db1096485af5479",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "live_broadcast",
+  "version": 1
+ },
+ "mine_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.liveBroadcasts.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "58782f6fea8a9e7b3c3e13810d9e3dc96fd6e68d653b280181014ecb5f6c935a",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "contentDetails",
+     "id",
+     "monetizationDetails",
+     "snippet",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "58782f6fea8a9e7b3c3e13810d9e3dc96fd6e68d653b280181014ecb5f6c935a",
+    "http_status": 200,
+    "page": 1,
+    "parts": [
+     "contentDetails",
+     "id",
+     "monetizationDetails",
+     "snippet",
+     "status"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "33eeecc210abb3e52d3bfc577128e75bbe6357739718273d518558af1e99d05c",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "contentDetails.availabilityConfig.regionsConfig.regionIntervals[].interval.endTime": {
+      "state": "known",
+      "value": [
+       {
+        "absence": "absent_unknown",
+        "state": "absent"
+       },
+       {
+        "state": "known",
+        "value": "2026-10-03T18:00:00Z"
+       }
+      ]
+     },
+     "contentDetails.availabilityConfig.regionsConfig.regionIntervals[].regionCode": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "DE"
+       },
+       {
+        "state": "known",
+        "value": "FR"
+       }
+      ]
+     },
+     "contentDetails.boundStreamId": {
+      "state": "known",
+      "value": "stream-synthetic-1"
+     },
+     "contentDetails.latencyPreference": {
+      "state": "known",
+      "value": "normal"
+     },
+     "contentDetails.monitorStream.embedHtml": {
+      "state": "known",
+      "value": "<iframe src=\"https://www.youtube.com/embed/x\"></iframe>"
+     },
+     "id": {
+      "state": "known",
+      "value": "brdxxxxxxx1"
+     },
+     "monetizationDetails.cuepointSchedule.enabled": {
+      "state": "known",
+      "value": false
+     },
+     "snippet.actualEndTime": {
+      "state": "known",
+      "value": "2026-10-02T19:30:00Z"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCoooooooooooooooooooooo"
+     },
+     "snippet.liveChatId": {
+      "state": "known",
+      "value": "Cg0KC2xpdmVjaGF0aWQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Live 1"
+     },
+     "status.lifeCycleStatus": {
+      "state": "known",
+      "value": "complete"
+     },
+     "status.recordingStatus": {
+      "state": "known",
+      "value": "recorded"
+     }
+    },
+    "identity": {
+     "id": "brdxxxxxxx1",
+     "kind": "live_broadcast"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "contentDetails.availabilityConfig.regionsConfig.regionIntervals[].interval.endTime": {
+      "state": "known",
+      "value": [
+       {
+        "absence": "absent_unknown",
+        "state": "absent"
+       },
+       {
+        "state": "known",
+        "value": "2026-10-03T18:00:00Z"
+       }
+      ]
+     },
+     "contentDetails.availabilityConfig.regionsConfig.regionIntervals[].regionCode": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "DE"
+       },
+       {
+        "state": "known",
+        "value": "FR"
+       }
+      ]
+     },
+     "contentDetails.boundStreamId": {
+      "state": "known",
+      "value": "stream-synthetic-1"
+     },
+     "contentDetails.latencyPreference": {
+      "state": "known",
+      "value": "normal"
+     },
+     "contentDetails.monitorStream.embedHtml": {
+      "state": "known",
+      "value": "<iframe src=\"https://www.youtube.com/embed/x\"></iframe>"
+     },
+     "id": {
+      "state": "known",
+      "value": "brdxxxxxxx2"
+     },
+     "monetizationDetails.cuepointSchedule.enabled": {
+      "state": "known",
+      "value": false
+     },
+     "snippet.actualEndTime": {
+      "state": "known",
+      "value": "2026-10-02T19:30:00Z"
+     },
+     "snippet.channelId": {
+      "state": "known",
+      "value": "UCoooooooooooooooooooooo"
+     },
+     "snippet.liveChatId": {
+      "state": "known",
+      "value": "Cg0KC2xpdmVjaGF0aWQ"
+     },
+     "snippet.title": {
+      "state": "known",
+      "value": "MARKER-TITLE Live 2"
+     },
+     "status.lifeCycleStatus": {
+      "state": "known",
+      "value": "live"
+     },
+     "status.recordingStatus": {
+      "state": "known",
+      "value": "recorded"
+     }
+    },
+    "identity": {
+     "id": "brdxxxxxxx2",
+     "kind": "live_broadcast"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "live_broadcast",
+  "version": 1
+ },
+ "not_enabled": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "mine": "access_denied"
+  },
+  "method": "youtube.liveBroadcasts.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "292b5c1a8645d62e480176455a59a7b3217c039df85423952db1096485af5479",
+    "http_status": 403,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "live_broadcast",
+  "version": 1
+ },
+ "scope_insufficient": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.liveBroadcasts.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "owner:synthetic-binding",
+    "fields_mask_sha256": "292b5c1a8645d62e480176455a59a7b3217c039df85423952db1096485af5479",
+    "http_status": 403,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "owner_scope_insufficient",
+  "unit": "live_broadcast",
+  "version": 1
+ }
+}

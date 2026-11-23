@@ -1,0 +1,42 @@
+{
+ "case": "404 commentThreadNotFound for an id batch names no ID: every ID of the batch is omitted",
+ "request": {
+  "method": "youtube.commentThreads.list",
+  "parameters": {
+   "id": [
+    "UgxSyntheticThread000001",
+    "UgxSyntheticThread000002"
+   ]
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "error": {
+     "code": 404,
+     "errors": [
+      {
+       "domain": "youtube.common",
+       "message": "synthetic refusal text MARKER-ERROR",
+       "reason": "commentThreadNotFound"
+      }
+     ],
+     "message": "synthetic refusal text MARKER-ERROR"
+    }
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 404
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/commentThreads/list#errors",
+ "synthetic": true
+}

@@ -1,0 +1,48 @@
+{
+ "case": "a row whose id is not a language code is rejected (counted), the others stay",
+ "request": {
+  "method": "youtube.i18nLanguages.list",
+  "parameters": {},
+  "selection": {
+   "fields": [],
+   "parts": [
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-en",
+      "id": "en",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "en",
+       "name": "English"
+      }
+     },
+     {
+      "etag": "etag-xx",
+      "id": "not a code!",
+      "kind": "youtube#i18nLanguage",
+      "snippet": {
+       "hl": "xx",
+       "name": "MARKER-BAD"
+      }
+     }
+    ],
+    "kind": "youtube#i18nLanguageListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/i18nLanguages/list",
+ "synthetic": true
+}

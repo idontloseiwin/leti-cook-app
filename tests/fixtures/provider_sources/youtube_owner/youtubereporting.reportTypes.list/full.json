@@ -1,0 +1,38 @@
+{
+ "case": "two channel report types",
+ "request": {
+  "context": "owner",
+  "method": "youtubereporting.reportTypes.list",
+  "parameters": {
+   "pageSize": 2
+  },
+  "selection": {
+   "fields": [],
+   "parts": []
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "reportTypes": [
+     {
+      "id": "channel_basic_a3",
+      "name": "User activity"
+     },
+     {
+      "id": "channel_combined_a3",
+      "name": "Combined",
+      "systemManaged": false
+     }
+    ]
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/reportTypes/list",
+ "synthetic": true
+}

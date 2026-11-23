@@ -1,0 +1,435 @@
+"""Passive trace privacy, correlation, loss visibility and bounded journal checks."""
+from concurrent.futures import ThreadPoolExecutor
+import json
+import os
+from pathlib import Path
+import sys
+import tempfile
+import threading
+import unittest
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "application"))
+import pipeline_trace as trace
+import telemetry
+from telemetry_contract import build_event, encode_event, normalize_stored_event, TelemetryContractError
+from telemetry_sink import JsonlTelemetryJournal, TelemetryEmitter, MAX_READ_BYTES, configured_max_bytes, configured_path
+
+VIDEO = "abcdefghijk"
+CHANNEL = "UC" + "a" * 22
+
+
+class TraceSetup(unittest.TestCase):
+    def setUp(self):
+        self.env = patch.dict(os.environ, LIC_DEPLOYMENT_PROFILE="self-hosted")
+        self.env.start()
+        self.addCleanup(self.env.stop)
+
+
+class TraceTests(TraceSetup):
+    def test_collection_phase_records_actual_completion_and_unit(self):
+        cases = [
+            ("video_collection", {"updated": 2304, "stopped_reason": "no_claimable_work"}, "completed", 2304),
+            ("video_collection", {"updated": 12, "completion_outcome": "partial", "stopped_reason": "no_claimable_work"}, "partial", 12),
+            ("channel_metadata", {"processed": 421, "stopped_reason": "sweep_exhausted"}, "completed", 421),
+            ("typed_inventory", {"processed": 3, "stopped_reason": "time_budget"}, "deferred", 3),
+            ("video_collection", {"errors": 1, "completion_outcome": "partial"}, "error", None),
+            ("video_collection", {"settlement_unknown": True, "errors": 1}, "unknown", None),
+            ("video_collection", {"completion_unknown": True}, "unknown", None),
+            ("video_collection", {"yield_requested": True}, "deferred", None),
+        ]
+        for phase, result, status, count in cases:
+            with self.subTest(phase=phase, result=result):
+                rows, calls = [], []
+                def callback(**options):
+                    calls.append(options)
+                    return result
+                with patch.object(telemetry, "emit_event", side_effect=lambda *args, **kw: rows.append(build_event(*args, **kw))):
+                    observed = trace.observe_collection_phase(phase, callback, limit=20)
+                self.assertIs(observed, result)
+                self.assertEqual(calls, [{"limit": 20}])
+                self.assertEqual([r["status"] for r in rows], ["started", status])
+                self.assertTrue(all(r["phase"] == phase for r in rows))
+                self.assertEqual(rows[-1].get("count"), count)
+                if count is None:
+                    self.assertNotIn("count", rows[-1])
+
+    def test_collection_phase_failure_keeps_identity_and_original_exception(self):
+        failure = RuntimeError("domain failure")
+        rows, calls = [], []
+        def callback():
+            calls.append(True)
+            raise failure
+        with patch.object(telemetry, "emit_event", side_effect=lambda *args, **kw: rows.append(build_event(*args, **kw))):
+            with self.assertRaises(RuntimeError) as caught:
+                trace.observe_collection_phase("video_collection", callback)
+        self.assertIs(caught.exception, failure)
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(rows[-1]["status"], "unknown")
+        self.assertEqual(rows[-1]["phase"], "video_collection")
+        self.assertEqual(dict(trace.capture()), {})
+        with patch.object(telemetry, "emit_event", side_effect=OSError("sink failed")):
+            value = {"updated": 5}
+            self.assertIs(trace.observe_collection_phase("video_collection", lambda: value), value)
+
+    def test_manifest_full_correlation_fits_default_event_budget_and_roundtrips(self):
+        facts = dict(trace_id="a" * 32, span_id="b" * 32, parent_span_id="c" * 32,
+                     operation_id="operation-123", sync_run_id=50, job_id="12345678-1234-1234-1234-123456789abc",
+                     channel_id=CHANNEL, video_id=VIDEO, batch_id="d" * 32,
+                     request_attempt_id="e" * 32, retry_of_request_attempt_id="f" * 32,
+                     reason="scheduled", error_code="55P03", error_type="LockNotAvailable", due_at="2026-10-15T00:00:00Z", observed_at="2026-10-15T00:00:01Z",
+                     requested_count=50, received_count=49, missing_count=1, quota_bucket="video_batch_get_stats", retry_after_seconds=30,
+                     video_type="short", attempt=1, inflight=8, video_ids=[str(i).zfill(11) for i in range(50)],
+                     item_index=49, endpoint="videos:batchGetStats", writer_id="0" * 32, sequence=23,
+                     dropped_total=1, invalid_total=1, sink_errors_total=0, monotonic_ns=1234567890123456)
+        item = build_event("pipeline", "collector", "collector", "request_finished", status="received", **facts)
+        self.assertLessEqual(len(encode_event(item)), 4096)
+        self.assertEqual(normalize_stored_event(item), item)
+
+    def test_retry_delay_roundtrips_as_an_exact_optional_integer(self):
+        for value in (0, 30, 2**53 - 1, "30"):
+            with self.subTest(value=value):
+                item = build_event("pipeline", "collector", "collector", "video_write",
+                                   status="confirmed", retry_after_seconds=value)
+                encoded = json.loads(encode_event(item))
+                self.assertEqual(encoded["retry_after_seconds"], int(value))
+                self.assertIs(type(encoded["retry_after_seconds"]), int)
+                self.assertEqual(normalize_stored_event(encoded), item)
+                self.assertNotIn("due_at", item)  # A requested delay is not a stored deadline.
+        item = build_event("pipeline", "collector", "collector", "video_write",
+                           status="confirmed", retry_after_seconds=None)
+        self.assertNotIn("retry_after_seconds", item)
+
+    def test_retry_delay_rejects_invalid_or_inexact_values(self):
+        base = build_event("pipeline", "collector", "collector", "video_write", status="confirmed")
+        for value in (-1, True, False, 0.5, float("nan"), float("inf"), 2**53, "-1", "0.5", {}, []):
+            with self.subTest(value=value):
+                with self.assertRaises(TelemetryContractError):
+                    build_event("pipeline", "collector", "collector", "video_write", retry_after_seconds=value)
+                self.assertIsNone(normalize_stored_event({**base, "retry_after_seconds": value}))
+
+    def test_rejects_raw_payload_secret_and_invalid_identity(self):
+        invalid = [dict(payload={"items": []}), dict(view_count=9000), dict(reason=ValueError("secret")),
+                   dict(video_ids=[VIDEO] * 51), dict(video_ids=["title"]), dict(channel_id="A title"),
+                   dict(request_attempt_id="AIza" + "A" * 35), dict(endpoint="https://youtube/?key=secret"),
+                   dict(due_at="2026-10-15T00:00:00"), dict(inflight=-1), dict(monotonic_ns=True)]
+        for facts in invalid:
+            with self.subTest(facts=tuple(facts)):
+                with self.assertRaises(TelemetryContractError):
+                    build_event("pipeline", "collector", "collector", "sent", **facts)
+
+    def test_stored_reader_is_profile_free_and_never_revives_legacy_detail(self):
+        row = dict(schema_version=1, id="old-1", ts="2026-10-15T00:00:00Z",
+                   kind="phase", source="collector", target="collector", operation="collect",
+                   detail="Historical provider payload must not be displayed")
+        with patch.dict(os.environ, {}, clear=True):
+            normalized = normalize_stored_event(row)
+            self.assertIsNotNone(normalized)
+            self.assertNotIn("detail", normalized)
+            self.assertNotIn("LIC_DEPLOYMENT_PROFILE", os.environ)
+
+    def test_legacy_rows_still_read_and_unknown_fields_still_rejected(self):
+        item = build_event("phase", "sync_engine", "sync_engine", "sync", status="completed")
+        for version in (None, 0, 1, 2):
+            old = dict(item)
+            old["schema_version"] = version
+            self.assertIsNotNone(normalize_stored_event(old))
+        self.assertIsNone(normalize_stored_event(dict(item, payload={"secret": "x"})))
+
+    def test_telemetry_failure_does_not_replace_domain_exception_or_leak_context(self):
+        failure = RuntimeError("domain failure")
+        with patch.object(telemetry, "emit_event", side_effect=OSError("sink broke")):
+            with self.assertRaises(RuntimeError) as caught:
+                with trace.scope("collection", sync_run_id=5):
+                    raise failure
+            self.assertIs(caught.exception, failure)
+        self.assertEqual(dict(trace.capture()), {})
+
+    def test_finish_is_unknown_without_confirmation_and_exception_preserves_unknown(self):
+        rows = []
+        with patch.object(telemetry, "emit_event", side_effect=lambda *args, **kw: rows.append(kw)):
+            with trace.scope("collection"):
+                pass
+            with self.assertRaises(ValueError):
+                with trace.scope("collection") as span:
+                    span.finish("completed")
+                    raise ValueError("failure after finish")
+        self.assertEqual([r["status"] for r in rows], ["started", "unknown", "started", "unknown"])
+        self.assertTrue(all(r["duration_ms"] >= 0 for r in rows if "duration_ms" in r))
+
+    def test_parallel_handoffs_have_common_trace_distinct_spans_and_no_pool_leak(self):
+        rows = []
+        lock = threading.Lock()
+        def emit(*args, **kw):
+            row = build_event(*args, **kw)
+            with lock:
+                rows.append(row)
+        def work(index):
+            with trace.scope("video", video_id=str(index).zfill(11)) as span:
+                trace.event("stored", "confirmed")
+                span.finish("completed")
+        with patch.object(telemetry, "emit_event", side_effect=emit):
+            with trace.scope("sync", sync_run_id=7) as root:
+                parent = trace.capture()
+                with ThreadPoolExecutor(max_workers=8) as pool:
+                    for future in [pool.submit(trace.run, parent, work, i) for i in range(24)]:
+                        future.result()
+                    self.assertTrue(all(not dict(pool.submit(trace.capture).result()) for _ in range(8)))
+                root.finish("completed")
+        stored = [r for r in rows if r["operation"] == "stored"]
+        self.assertEqual(len(stored), 24)
+        self.assertEqual(len({r["trace_id"] for r in rows}), 1)
+        self.assertEqual(len({r["span_id"] for r in stored}), 24)
+        self.assertEqual({r["parent_span_id"] for r in stored}, {parent["span_id"]})
+        self.assertEqual(dict(trace.capture()), {})
+
+    def test_bind_does_not_emit_lifecycle_and_run_none_inherits(self):
+        rows = []
+        with patch.object(telemetry, "emit_event", side_effect=lambda *a, **kw: rows.append(kw)):
+            with trace.bind(batch_id="batch-1", video_ids=[VIDEO]):
+                context = trace.capture()
+                self.assertEqual(context["video_ids"], (VIDEO,))
+                self.assertEqual(trace.run(None, lambda: trace.capture()["batch_id"]), "batch-1")
+                with self.assertRaises(TypeError):
+                    context["batch_id"] = "bad"
+            self.assertEqual(dict(trace.capture()), {})
+        self.assertEqual(rows, [])
+
+    def test_scope_manifest_is_an_immutable_context_snapshot(self):
+        ids = [VIDEO]
+        with patch.object(telemetry, "emit_event"):
+            with trace.scope("batch", video_ids=ids):
+                captured = trace.capture()
+                ids.append("zyxwvutsrqp")
+                self.assertEqual(captured["video_ids"], (VIDEO,))
+                self.assertEqual(trace.capture()["video_ids"], (VIDEO,))
+
+    def test_clock_duration_uses_monotonic_even_wall_clock_moves(self):
+        rows = []
+        with patch.object(telemetry, "emit_event", side_effect=lambda *a, **kw: rows.append(kw)):
+            with patch.object(trace.time, "monotonic_ns", side_effect=[100, 110, 250, 260]):
+                with trace.scope("sync") as span:
+                    span.finish("completed")
+        self.assertEqual(rows[-1]["duration_ms"], 150 / 1_000_000)
+
+
+class JournalTests(TraceSetup):
+    def journal(self, directory, **kw):
+        return JsonlTelemetryJournal(Path(directory) / "events.jsonl", **kw)
+
+    def test_queue_overflow_and_sink_loss_visible_in_next_event(self):
+        with tempfile.TemporaryDirectory() as directory:
+            journal = self.journal(directory)
+            emitter = TelemetryEmitter(journal, queue_size=1, batch_size=1)
+            with patch.object(emitter, "_ensure_thread"):
+                first = emitter.emit("pipeline", "collector", "collector", "batch", status="started")
+                self.assertIsNone(emitter.emit("pipeline", "collector", "collector", "batch", status="started"))
+                terminal = emitter.emit("pipeline", "collector", "collector", "batch", status="completed")
+                self.assertEqual((first["sequence"], terminal["sequence"]), (1, 3))
+                emitter.buffer.get_batch(1, 0)
+                emitter.buffer.task_done(1)
+                fourth = emitter.emit("pipeline", "collector", "collector", "next", status="started")
+                self.assertEqual(fourth["dropped_total"], 2)
+                self.assertEqual(fourth["writer_id"], first["writer_id"])
+            emitter.buffer.get_batch(1, 0)
+            emitter.buffer.task_done(1)
+            emitter.close(0)
+
+    def test_emit_from_inside_emit_on_the_same_thread_follows_without_hanging(self):
+        # A generator closed by the garbage collector emits while this thread builds an event.
+        import telemetry_sink
+        with tempfile.TemporaryDirectory() as directory:
+            emitter = TelemetryEmitter(self.journal(directory), queue_size=8, batch_size=8)
+            real, calls, returned = telemetry_sink.build_event, [], []
+            def build_with_collected_generator(*args, **kwargs):
+                calls.append(args[3])
+                if len(calls) == 1:
+                    returned.append(emitter.emit("pipeline", "collector", "collector", "interrupted", status="started"))
+                return real(*args, **kwargs)
+            def run():
+                returned.append(emitter.emit("pipeline", "collector", "collector", "claims", status="started"))
+            with patch.object(emitter, "_ensure_thread"), \
+                    patch.object(telemetry_sink, "build_event", build_with_collected_generator):
+                worker = threading.Thread(target=run, daemon=True)
+                worker.start()
+                worker.join(5)
+                self.assertFalse(worker.is_alive(), "emit waited on its own lock")
+            self.assertIsNone(returned[0])
+            self.assertEqual(returned[1]["sequence"], 1)
+            batch = emitter.buffer.get_batch(8, 0)
+            emitter.buffer.task_done(len(batch))
+            self.assertEqual([(row["operation"], row["sequence"]) for row in batch], [("claims", 1), ("interrupted", 2)])
+            emitter.close(0)
+
+    def test_emit_while_the_writer_thread_counts_does_not_hang(self):
+        with tempfile.TemporaryDirectory() as directory:
+            emitter = TelemetryEmitter(self.journal(directory), queue_size=8, batch_size=8)
+            class CollectingCounter(type(emitter._metrics)):
+                fired = False
+                def __setitem__(self, key, value):
+                    super().__setitem__(key, value)
+                    if not CollectingCounter.fired:
+                        CollectingCounter.fired = True
+                        emitter.emit("pipeline", "collector", "collector", "interrupted", status="started")
+            emitter._metrics = CollectingCounter()
+            with patch.object(emitter, "_ensure_thread"):
+                worker = threading.Thread(target=emitter._increment, args=("written",), daemon=True)
+                worker.start()
+                worker.join(5)
+                self.assertFalse(worker.is_alive(), "emit waited on the metrics lock its own thread holds")
+            batch = emitter.buffer.get_batch(8, 0)
+            emitter.buffer.task_done(len(batch))
+            self.assertEqual([row["operation"] for row in batch], ["interrupted"])
+            emitter.close(0)
+
+    def _held_emit_lock(self, emitter, held):
+        class ObservedLock:
+            def __init__(self):
+                self.lock = threading.Lock()
+            def __enter__(self):
+                self.lock.acquire()
+                held.set()
+                return self
+            def __exit__(self, *unused):
+                self.lock.release()
+        emitter._emit_lock = ObservedLock()
+
+    def test_writer_counting_and_a_concurrent_producer_do_not_wait_on_each_other(self):
+        # The writer counts under the metrics lock and a collected generator
+        # emits there, while another producer holds the emit lock and waits for metrics.
+        with tempfile.TemporaryDirectory() as directory:
+            emitter = TelemetryEmitter(self.journal(directory), queue_size=8, batch_size=8)
+            metrics_held, emit_held = threading.Event(), threading.Event()
+            self._held_emit_lock(emitter, emit_held)
+            class CollectingCounter(type(emitter._metrics)):
+                fired = False
+                def __setitem__(self, key, value):
+                    super().__setitem__(key, value)
+                    if not CollectingCounter.fired:
+                        CollectingCounter.fired = True
+                        metrics_held.set()
+                        assert emit_held.wait(2)
+                        emitter.emit("pipeline", "collector", "collector", "interrupted", status="started")
+            emitter._metrics = CollectingCounter()
+            with patch.object(emitter, "_ensure_thread"):
+                writer = threading.Thread(target=emitter._increment, args=("written",), daemon=True)
+                writer.start()
+                self.assertTrue(metrics_held.wait(2))
+                producer = threading.Thread(target=lambda: emitter.emit(
+                    "pipeline", "collector", "collector", "claims", status="started"), daemon=True)
+                producer.start()
+                writer.join(5)
+                producer.join(5)
+                self.assertFalse(writer.is_alive() or producer.is_alive(), "two threads wait on each other")
+            batch = emitter.buffer.get_batch(8, 0)
+            emitter.buffer.task_done(len(batch))
+            self.assertEqual([(row["operation"], row["sequence"]) for row in batch], [("claims", 1), ("interrupted", 2)])
+            counts = emitter.metrics()
+            self.assertEqual((counts["written"], counts["emitted"], counts["queued"]), (1, 2, 0))
+            emitter.close(0)
+
+    def test_writer_taking_a_batch_and_a_concurrent_producer_do_not_wait_on_each_other(self):
+        # The same cycle through the buffer: the writer holds the buffer while taking a
+        # batch, a collected generator emits there, and a producer holding the emit
+        # lock waits to put its event into the buffer.
+        import telemetry_sink
+        with tempfile.TemporaryDirectory() as directory:
+            emitter = TelemetryEmitter(self.journal(directory), queue_size=8, batch_size=8)
+            buffer_held, emit_held = threading.Event(), threading.Event()
+            self._held_emit_lock(emitter, emit_held)
+            class CollectingBuffer(telemetry_sink.BoundedEventBuffer):
+                fired = False
+                def get_batch(self, limit, timeout):
+                    with self._condition:
+                        if not CollectingBuffer.fired:
+                            CollectingBuffer.fired = True
+                            buffer_held.set()
+                            assert emit_held.wait(2)
+                            emitter.emit("pipeline", "collector", "collector", "interrupted", status="started")
+                    return []
+            emitter.buffer = CollectingBuffer(8)
+            with patch.object(emitter, "_ensure_thread"):
+                writer = threading.Thread(target=emitter._take_batch, daemon=True)
+                writer.start()
+                self.assertTrue(buffer_held.wait(2))
+                producer = threading.Thread(target=lambda: emitter.emit(
+                    "pipeline", "collector", "collector", "claims", status="started"), daemon=True)
+                producer.start()
+                writer.join(5)
+                producer.join(5)
+                self.assertFalse(writer.is_alive() or producer.is_alive(), "two threads wait on each other")
+            queued = [event for _, event in emitter.buffer._items]
+            self.assertEqual([(row["operation"], row["sequence"]) for row in queued], [("claims", 1), ("interrupted", 2)])
+            self.assertEqual(emitter.metrics()["emitted"], 2)
+            emitter.close(0)
+
+    def test_sink_failure_is_passive_and_loss_counter_survives_recovery(self):
+        with tempfile.TemporaryDirectory() as directory:
+            journal = self.journal(directory)
+            emitter = TelemetryEmitter(journal, queue_size=4, batch_size=1)
+            with patch.object(journal, "append_batch", side_effect=OSError("disk full")):
+                emitter.emit("pipeline", "collector", "collector", "stored", status="confirmed")
+                self.assertTrue(emitter.flush(2))
+            next_row = emitter.emit("pipeline", "collector", "collector", "next", status="started")
+            self.assertTrue(emitter.flush(2))
+            self.assertEqual(next_row["dropped_total"], 1)
+            self.assertEqual(next_row["sink_errors_total"], 1)
+            self.assertEqual(len(journal.tail_snapshot()["events"]), 1)
+            emitter.close(1)
+
+    def test_rotation_and_tail_do_not_read_whole_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            journal = self.journal(directory, max_bytes=4096)
+            rows = [build_event("pipeline", "collector", "collector", "event", status="ok", item_index=i) for i in range(80)]
+            with patch.object(Path, "read_bytes", side_effect=AssertionError("unbounded read")):
+                journal.append_batch(rows)
+                tail = journal.tail_snapshot(4)
+            self.assertLessEqual(journal.path.stat().st_size, 4096)
+            self.assertEqual([r["item_index"] for r in tail["events"]], [76, 77, 78, 79])
+
+    def test_read_cursor_preserves_all_rows_instead_of_skipping_to_last_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            journal = self.journal(directory)
+            journal.append_batch([build_event("pipeline", "collector", "collector", "event", item_index=i) for i in range(13)])
+            state = journal.state()
+            position = 0
+            indexes = []
+            while position < state["size"]:
+                result = journal.read_since(position, state["generation"], limit=3)
+                self.assertGreater(result["position"], position)
+                indexes.extend(r["item_index"] for r in result["events"])
+                position = result["position"]
+            self.assertEqual(indexes, list(range(13)))
+
+    def test_read_byte_budget_keeps_cursor_before_unreturned_rows(self):
+        with tempfile.TemporaryDirectory() as directory:
+            journal = self.journal(directory)
+            rows = [build_event("pipeline", "collector", "collector", "event", item_index=i,
+                                video_ids=[str(n).zfill(11) for n in range(50)]) for i in range(1800)]
+            journal.append_batch(rows)
+            state = journal.state()
+            first = journal.read_since(0, state["generation"], limit=2000)
+            self.assertLessEqual(first["position"], MAX_READ_BYTES)
+            self.assertLess(first["position"], state["size"])
+            second = journal.read_since(first["position"], state["generation"], limit=2000)
+            self.assertEqual([r["item_index"] for r in first["events"] + second["events"]], list(range(1800)))
+
+    def test_state_volume_path_survives_recreation_and_override_wins(self):
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.dict(os.environ, {"TELEMETRY_PATH": "", "LIC_AUTH_DATABASE": str(Path(directory) / "auth.sqlite3")}):
+                self.assertEqual(configured_path(), Path(directory) / "pipeline-telemetry.jsonl")
+                with patch.dict(os.environ, {"TELEMETRY_PATH": str(Path(directory) / "custom.jsonl")}):
+                    self.assertEqual(configured_path(), Path(directory) / "custom.jsonl")
+            with patch.dict(os.environ, {"TELEMETRY_PATH": "", "LIC_AUTH_DATABASE": "relative.sqlite3"}):
+                self.assertEqual(configured_path(), Path(tempfile.gettempdir()) / "youtube-tracker-telemetry.jsonl")
+
+    def test_disk_configuration_has_safe_default_and_upper_bound(self):
+        with patch.dict(os.environ, {"TELEMETRY_MAX_BYTES": "999999999999"}):
+            self.assertEqual(configured_max_bytes(), 512 * 1024 * 1024)
+        with patch.dict(os.environ, {"TELEMETRY_MAX_BYTES": "invalid"}):
+            self.assertEqual(configured_max_bytes(), 128 * 1024 * 1024)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,984 @@
+{
+ "by_id": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UgxSyntheticThread000001": "present",
+   "UgxSyntheticThread000099": "omitted"
+  },
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "3fa542a9a94c7a2b4ee4f7bb9140abc540fbb958b5b71c7295343b72e43cbe19",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.totalReplyCount": {
+      "state": "known",
+      "value": 2
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "by_id_google_plus_only": {
+  "completeness": "partial",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 400,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": "operation_not_supported",
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "by_id_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UgxSyntheticThread000001": "omitted",
+   "UgxSyntheticThread000002": "omitted"
+  },
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "channel_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "UCCCCCCCCCCCCCCCCCCCCCC3": "not_found"
+  },
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "channel_threads": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "a4918d2fddee7b97428ad10120277225af8399d9cef83246f1cc0df41ff1db71",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.totalReplyCount": {
+      "state": "known",
+      "value": 0
+     },
+     "snippet.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000002"
+     },
+     "snippet.totalReplyCount": {
+      "state": "known",
+      "value": 4
+     },
+     "snippet.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx2"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000002",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "comments_disabled": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx2": "disabled"
+  },
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 403,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "default_selection": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "empty_list": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "full_two_pages": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 2
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider_param:time",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "bdb95a7f048a546b611e4abe8f880e2f47ce12372dceb1d19501833df62c7a34",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "replies",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   },
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "bdb95a7f048a546b611e4abe8f880e2f47ce12372dceb1d19501833df62c7a34",
+    "http_status": 200,
+    "page": 1,
+    "parts": [
+     "id",
+     "replies",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000002",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "33eeecc210abb3e52d3bfc577128e75bbe6357739718273d518558af1e99d05c",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 2,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "replies.comments[].id": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "UgxSyntheticThread000001.ReplySynthetic01"
+       },
+       {
+        "state": "known",
+        "value": "UgxSyntheticThread000001.ReplySynthetic02"
+       }
+      ]
+     },
+     "replies.comments[].snippet.authorChannelId.value": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+       },
+       {
+        "absence": "absent_unknown",
+        "state": "absent"
+       }
+      ]
+     },
+     "replies.comments[].snippet.likeCount": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": 1
+       },
+       {
+        "state": "known",
+        "value": 0
+       }
+      ]
+     },
+     "replies.comments[].snippet.parentId": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "UgxSyntheticThread000001"
+       },
+       {
+        "state": "known",
+        "value": "UgxSyntheticThread000001"
+       }
+      ]
+     },
+     "replies.comments[].snippet.publishedAt": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "2026-10-20T10:00:00Z"
+       },
+       {
+        "state": "known",
+        "value": "2026-10-20T10:00:00Z"
+       }
+      ]
+     },
+     "replies.comments[].snippet.textDisplay": {
+      "state": "known",
+      "value": [
+       {
+        "state": "known",
+        "value": "<b>MARKER-TEXT</b> reply one"
+       },
+       {
+        "state": "known",
+        "value": "<b>MARKER-TEXT</b> reply two"
+       }
+      ]
+     },
+     "snippet.canReply": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.isPublic": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.topLevelComment.id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.topLevelComment.snippet.authorChannelId.value": {
+      "state": "known",
+      "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+     },
+     "snippet.topLevelComment.snippet.likeCount": {
+      "state": "known",
+      "value": 5
+     },
+     "snippet.topLevelComment.snippet.parentId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "snippet.topLevelComment.snippet.textDisplay": {
+      "state": "known",
+      "value": "<b>MARKER-TEXT</b> top"
+     },
+     "snippet.topLevelComment.snippet.viewerRating": {
+      "state": "known",
+      "value": "none"
+     },
+     "snippet.totalReplyCount": {
+      "state": "known",
+      "value": 3
+     },
+     "snippet.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000002"
+     },
+     "replies.comments[].id": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "replies.comments[].snippet.authorChannelId.value": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "replies.comments[].snippet.likeCount": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "replies.comments[].snippet.parentId": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "replies.comments[].snippet.publishedAt": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "replies.comments[].snippet.textDisplay": {
+      "absence": "absent_unknown",
+      "state": "absent"
+     },
+     "snippet.canReply": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.isPublic": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.topLevelComment.id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000002"
+     },
+     "snippet.topLevelComment.snippet.authorChannelId.value": {
+      "state": "known",
+      "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+     },
+     "snippet.topLevelComment.snippet.likeCount": {
+      "state": "known",
+      "value": 5
+     },
+     "snippet.topLevelComment.snippet.parentId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "snippet.topLevelComment.snippet.textDisplay": {
+      "state": "known",
+      "value": "<b>MARKER-TEXT</b> top"
+     },
+     "snippet.topLevelComment.snippet.viewerRating": {
+      "state": "known",
+      "value": "none"
+     },
+     "snippet.totalReplyCount": {
+      "state": "known",
+      "value": 0
+     },
+     "snippet.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000002",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   },
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000003"
+     },
+     "replies.comments[].id": {
+      "state": "known_empty",
+      "value": []
+     },
+     "replies.comments[].snippet.authorChannelId.value": {
+      "state": "known_empty",
+      "value": []
+     },
+     "replies.comments[].snippet.likeCount": {
+      "state": "known_empty",
+      "value": []
+     },
+     "replies.comments[].snippet.parentId": {
+      "state": "known_empty",
+      "value": []
+     },
+     "replies.comments[].snippet.publishedAt": {
+      "state": "known_empty",
+      "value": []
+     },
+     "replies.comments[].snippet.textDisplay": {
+      "state": "known_empty",
+      "value": []
+     },
+     "snippet.canReply": {
+      "state": "known",
+      "value": false
+     },
+     "snippet.isPublic": {
+      "state": "known",
+      "value": true
+     },
+     "snippet.topLevelComment.id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000003"
+     },
+     "snippet.topLevelComment.snippet.authorChannelId.value": {
+      "state": "known",
+      "value": "UCBBBBBBBBBBBBBBBBBBBBB2"
+     },
+     "snippet.topLevelComment.snippet.likeCount": {
+      "state": "known",
+      "value": 5
+     },
+     "snippet.topLevelComment.snippet.parentId": {
+      "absence": "absent_means_not_applicable",
+      "state": "absent"
+     },
+     "snippet.topLevelComment.snippet.textDisplay": {
+      "state": "known",
+      "value": "<b>MARKER-TEXT</b> top"
+     },
+     "snippet.topLevelComment.snippet.viewerRating": {
+      "state": "known",
+      "value": "none"
+     },
+     "snippet.totalReplyCount": {
+      "state": "known",
+      "value": 0
+     },
+     "snippet.videoId": {
+      "state": "known",
+      "value": "vidxxxxxxx1"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000003",
+     "kind": "comment_thread"
+    },
+    "page": 1
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "minimal": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "null_and_unknown": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "5828a8266c212603259031226fb28e1ba2f014648de4d02e90ef9f3c11060705",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": [
+     "snippet.pinned"
+    ]
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.topLevelComment.snippet.likeCount": {
+      "state": "null_reported"
+     },
+     "snippet.topLevelComment.snippet.viewerRating": {
+      "state": "unknown_enum",
+      "value": "love"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "plain_text": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {},
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "682a512752b876c50d4153e612dbd2f8d2156a03c270d276ee65b13e22b29420",
+    "http_status": 200,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [
+   {
+    "fields": {
+     "id": {
+      "state": "known",
+      "value": "UgxSyntheticThread000001"
+     },
+     "snippet.topLevelComment.snippet.textDisplay": {
+      "state": "known",
+      "value": "MARKER-TEXT plain"
+     }
+    },
+    "identity": {
+     "id": "UgxSyntheticThread000001",
+     "kind": "comment_thread"
+    },
+    "page": 0
+   }
+  ],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ },
+ "video_not_found": {
+  "completeness": "complete",
+  "continuation": null,
+  "cost": {
+   "general": 1
+  },
+  "duplicate_rows_dropped": 0,
+  "entities": {
+   "vidxxxxxxx3": "not_found"
+  },
+  "method": "youtube.commentThreads.list",
+  "notes": [],
+  "order": "provider",
+  "pages": [
+   {
+    "context": "public_key",
+    "fields_mask_sha256": "1784ee4dea0056d7fffeebdeaee1a4fb6f57491ccd67593763004c72ddfb5db2",
+    "http_status": 404,
+    "page": 0,
+    "parts": [
+     "id",
+     "snippet"
+    ],
+    "plan_fingerprint": "<plan fingerprint>",
+    "quota_bucket": "general",
+    "quota_units": 1,
+    "registry_revision": "<registry revision>",
+    "rejected_items": 0,
+    "request_attempt_id": "00000000-0000-4000-8000-000000000001",
+    "request_started_at": "2026-10-29T10:00:00Z",
+    "response_date": "2026-10-29T10:00:00Z",
+    "token_chain_sha256": "b5285382c4d3c1d0efcb9c735d197181c54c1b6dcbd595440e651be651572851",
+    "unknown_field_paths": []
+   }
+  ],
+  "plan_fingerprint": "<plan fingerprint>",
+  "requests_sent": 1,
+  "retry_after_seconds": null,
+  "rows": [],
+  "stop_reason": null,
+  "unit": "comment_thread",
+  "version": 1
+ }
+}

@@ -1,0 +1,76 @@
+{
+ "case": "sections of a channel: uploads (no list), one playlist, several channels; one request, no pages",
+ "request": {
+  "method": "youtube.channelSections.list",
+  "parameters": {
+   "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1"
+  },
+  "selection": {
+   "fields": [],
+   "parts": [
+    "contentDetails",
+    "id",
+    "snippet"
+   ]
+  },
+  "version": 1
+ },
+ "responses": [
+  {
+   "body": {
+    "etag": "synthetic-etag",
+    "items": [
+     {
+      "etag": "etag-01",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth01",
+      "kind": "youtube#channelSection",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "position": 0,
+       "type": "recentUploads"
+      }
+     },
+     {
+      "contentDetails": {
+       "playlists": [
+        "PLsyntheticPlaylist000000000000001"
+       ]
+      },
+      "etag": "etag-02",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth02",
+      "kind": "youtube#channelSection",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "position": 1,
+       "type": "singlePlaylist"
+      }
+     },
+     {
+      "contentDetails": {
+       "channels": [
+        "UCBBBBBBBBBBBBBBBBBBBBB2",
+        "UCCCCCCCCCCCCCCCCCCCCCC3"
+       ]
+      },
+      "etag": "etag-03",
+      "id": "UCAAAAAAAAAAAAAAAAAAAAA1.SectionSynth03",
+      "kind": "youtube#channelSection",
+      "snippet": {
+       "channelId": "UCAAAAAAAAAAAAAAAAAAAAA1",
+       "position": 2,
+       "title": "MARKER-TITLE Friends",
+       "type": "multipleChannels"
+      }
+     }
+    ],
+    "kind": "youtube#channelSectionListResponse"
+   },
+   "headers": {
+    "Date": "Thu, 29 Oct 2026 10:00:00 GMT"
+   },
+   "status": 200
+  }
+ ],
+ "source_url": "https://developers.google.com/youtube/v3/docs/channelSections/list",
+ "synthetic": true
+}
