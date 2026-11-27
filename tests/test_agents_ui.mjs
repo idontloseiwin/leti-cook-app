@@ -15,6 +15,14 @@ const key = { id, name: 'Claude Code', created_at: 1_790_000_000, expires_at: 1_
 assert.equal(secret.length, 50);
 const list = agents.parseAgentKeyList({ keys: [key], mcp_url: url, max_keys: 32, scope: 'research.read' });
 assert.deepEqual(list, { keys: [key], mcpUrl: url, maxKeys: 32 });
+for (const mcp_url of ['http://localhost:9712/mcp', 'http://[::1]:8123/mcp', 'https://mý.example/mcp']) {
+  const endpoint = agents.parseAgentKeyList({ keys: [], mcp_url, max_keys: 1 }).mcpUrl;
+  const link = new URL(agents.cursorInstallUrl(endpoint));
+  assert.equal(link.protocol + '//' + link.host + link.pathname, 'cursor://anysphere.cursor-deeplink/mcp/install');
+  assert.equal(link.searchParams.get('name'), 'leti-cook');
+  assert.deepEqual(JSON.parse(atob(link.searchParams.get('config'))), { url: new URL(mcp_url).href });
+}
+assert.throws(() => agents.parseAgentKeyList({ keys: [], mcp_url: 'http://user:pass@localhost/mcp', max_keys: 1 }));
 for (const bad of [{ keys: [key], mcp_url: 'http://127.0.0.1:8002/api', max_keys: 32 }, { keys: [{ ...key, id: 'x' }], mcp_url: url, max_keys: 32 },
   { keys: [{ ...key, expires_at: key.created_at }], mcp_url: url, max_keys: 32 }, { keys: {}, mcp_url: url, max_keys: 32 }, null]) {
   assert.throws(() => agents.parseAgentKeyList(bad));

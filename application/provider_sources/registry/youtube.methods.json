@@ -53,7 +53,7 @@
    "unit": "requests"
   }
  },
- "content_sha256": "dd695f5d8f0add686d5adc2888092084226a77aaf123e89d8c3b10b2259c9633",
+ "content_sha256": "ef48fc59b5a242c63337370cbec5c3fc8ed22c5ef8b7f10dcb693ad0a6009dd0",
  "control_methods": {
   "youtube.abuseReports.insert": {
    "api": "data",
@@ -1487,11 +1487,15 @@
      "videoId",
      "allThreadsRelatedToChannelId",
      "id"
+    ],
+    "special_scope": [
+     "postId"
     ]
    },
    "auth_contexts": [
     "owner_oauth",
-    "public_key"
+    "public_key",
+    "special_scope"
    ],
    "envelope_kind": "youtube#commentThreadListResponse",
    "family": "commentThreads",
@@ -1499,6 +1503,7 @@
     "exactly_one_of": [
      "allThreadsRelatedToChannelId",
      "id",
+     "postId",
      "videoId"
     ]
    },
@@ -1662,6 +1667,18 @@
      "min": null,
      "repeated": true,
      "required": true,
+     "type": "string"
+    },
+    "postId": {
+     "default": null,
+     "discovery_values": [],
+     "doc_only": true,
+     "inventory_access_condition": "see_method_combination_rules",
+     "max": null,
+     "min": null,
+     "note": "Available only to approved participants in the YouTube Posts pilot.",
+     "repeated": false,
+     "required": false,
      "type": "string"
     },
     "searchTerms": {
@@ -4145,6 +4162,9 @@
     "public_key"
    ],
    "envelope_kind": "youtube#subscriptionListResponse",
+   "envelope_kind_aliases": [
+    "youtube#SubscriptionListResponse"
+   ],
    "family": "subscriptions",
    "filters": {
     "exactly_one_of": [
@@ -6315,7 +6335,7 @@
     "status": "no_data_api_units",
     "units": 1
    },
-   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs/reports/get",
+   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs.reports/get",
    "response_schema": "Report",
    "row_path": "",
    "row_unit": "report_file",
@@ -6463,7 +6483,7 @@
     "status": "no_data_api_units",
     "units": 1
    },
-   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs/reports/list",
+   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/jobs.reports/list",
    "response_schema": "ListReportsResponse",
    "row_path": "reports[]",
    "row_unit": "report_file",
@@ -6533,7 +6553,7 @@
     "status": "no_data_api_units",
     "units": 1
    },
-   "reference": "https://developers.google.com/youtube/reporting/v1/reference/rest/v1/media/download",
+   "reference": "https://developers.google.com/youtube/reporting/v1/reports",
    "response_schema": "GdataMedia",
    "row_unit": "report_csv_row",
    "scope": "read",
@@ -6659,5 +6679,5 @@
   }
  },
  "registry_format": 1,
- "registry_revision": 5
+ "registry_revision": 6
 }

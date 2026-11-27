@@ -60,6 +60,7 @@ class SearchPathTests(unittest.TestCase):
             'guard_inventory_chain_consistency',
             # and the read-model queue and inventory tracking hooks.
             'queue_video_search_projection', 'track_video_search_inventory',
+            'alert_duration_clock', 'alert_folder_clock', 'alert_visibility_clock', 'capture_alert_observations',
         })
         self.assertEqual(len(names), len(set(names)))
         for name in names:

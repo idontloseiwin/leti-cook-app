@@ -26,13 +26,17 @@ class CurrentWorkflowOwners(unittest.TestCase):
   self.assertNotIn('is_hidden IS NOT TRUE',source)
   for term in ("'hidden_at',control.hidden_at","'channel_ref',coalesce(m.user_channel_ref,m.restore_owner_ref)","'channel_ref',coalesce(c.user_channel_ref,c.restore_owner_ref)"):
    self.assertEqual(source.count(term),2)
- def test_transfer_validates_native_owners_before_exact_two_writes(self):
+ def test_merge_transfers_user_work_and_rebinds_eligible_alert_rules(self):
   tx=Mock();tx.fetch_one.side_effect=[{'id':'old','owner':'new'},{'present':True}]
   binding._transfer(tx,'old','new',adopt=False)
-  self.assertEqual(tx.fetch_one.call_count,2);self.assertEqual(tx.execute.call_count,2)
+  self.assertEqual(tx.fetch_one.call_count,2);self.assertEqual(tx.execute.call_count,3)
   for call,table in zip(tx.execute.call_args_list,('saved_collection_members','video_type_review_cases')):
    self.assertIn('UPDATE public.'+table+' SET user_channel_ref=%s::uuid,restore_owner_ref=NULL',call.args[0])
    self.assertEqual(call.args[1],('new','old'))
+  sql,params=tx.execute.call_args_list[2].args
+  self.assertIn('UPDATE public.alert_rules r SET scope_owner=c.user_work_id,restored_scope_since=clock_timestamp()',sql)
+  self.assertIn("r.definition->'scope'->>'id'=c.channel_id",sql)
+  self.assertIn('r.deleted_at IS NULL',sql);self.assertEqual(params,('new','old'))
   tx=Mock();tx.fetch_one.side_effect=[{'id':'old','owner':'new'},{'present':False}]
   with self.assertRaisesRegex(DatabaseError,'user_work_adopt_invalid'):binding._transfer(tx,'old','new',adopt=False)
   tx.execute.assert_not_called()

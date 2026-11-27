@@ -24,6 +24,7 @@ KEYS={
  'memberships':(VIDEO,ORIGINAL,'long'), 'video_snapshots':('42',),
  'channel_snapshots':(ORIGINAL,OLD), 'typed_video_collection_receipts':(VIDEO,UUID),
  'availability_events':('42',), 'availability_incidents':('42',), 'review_evidence':(UUID,),
+ 'alert_observations':('42',), 'alert_inbox':('42',),
  'playlist_state':(ORIGINAL,'long'), 'inventory_scans':(UUID,),
  'inventory_receipts':('scan_transition',UUID), 'operator_jobs':(UUID,),
  'operator_job_targets':(UUID,VIDEO), 'sync_runs':('42',), 'quota_attempts':(UUID,),

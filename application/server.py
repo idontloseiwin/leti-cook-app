@@ -142,11 +142,12 @@ app.include_router(create_organization_router(cache=read_cache, library=library_
 from provider_sources.daily_cap import CAPPED_BUCKET, PHASE as ACQUISITION_PHASE
 from provider_sources.service import AcquisitionService
 from web.provider_sources import create_provider_sources_router
+from db.channel.search_membership import library_membership
 app.include_router(create_provider_sources_router(AcquisitionService(
     attempt_recorder=YOUTUBE_QUOTA_ATTEMPT_RECORDER, api_key=API_KEY,
     ledger_reader=lambda quota_day, quota_bucket=CAPPED_BUCKET: core.YOUTUBE_QUOTA_REPOSITORY.list_phase_attempts(
         quota_day, phase=ACQUISITION_PHASE, quota_bucket=quota_bucket),
-)))
+), library_states=lambda ids: library_membership(database, ids)))
 app.include_router(create_frontend_router(FRONTEND_DIST_DIR=FRONTEND_DIST_DIR))
 
 # Every handler reads its body through this bound; owner access stays outermost.

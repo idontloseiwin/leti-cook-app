@@ -72,9 +72,14 @@ def probe():
             from fastapi.routing import iter_route_contexts
             if Path(server.__file__).resolve() != APPLICATION / "server.py":
                 raise AssertionError("server loaded from another checkout")
-            routes = sorted({(method, route.path)
+            routes = sorted((method, route.path)
                              for route in iter_route_contexts(server.app.routes)
-                             for method in (route.methods or ())})
+                             for method in (route.methods or ()))
+            assert len(routes) == len(set(routes)), "duplicate HTTP registration"
+            from web.websub import WebSubIngressMiddleware
+            assert server.app.user_middleware[0].cls is WebSubIngressMiddleware
+            from research_mcp import ROUTES as tool_routes
+            assert sorted(f"{method} {path}" for method, path in tool_routes) == fixture()['routes']['POST /mcp']['delegates_to']
             assert server.database._pool is None or server.database._pool.closed
             assert list(Path(temporary).iterdir()) == []
     print(json.dumps({"routes": routes}))
@@ -149,12 +154,41 @@ class ReadPathInventoryTests(unittest.TestCase):
     def test_every_application_route_has_a_verdict(self):
         self.assert_classified(application_routes(), self.data["routes"], "routes")
 
+    def test_public_ingress_methods_and_template(self):
+        from unittest.mock import Mock
+        from starlette.applications import Starlette
+        from starlette.testclient import TestClient
+        sys.path.insert(0, str(APPLICATION))
+        try:
+            import websub
+            from web.websub import WebSubIngressMiddleware
+        finally:
+            sys.path.pop(0)
+        base = 'https://hooks.example.com'
+        channel = 'UC' + 'a' * 22
+        path = websub.callback_url(base, b'x' * 32, channel, 1)[len(base):]
+        target, capability = websub.parse_path(path)
+        template = path.replace(target, '{channel_id}').replace(capability, '{capability}')
+        repo = Mock()
+        repo.subscription.return_value = None
+        app = WebSubIngressMiddleware(Starlette(), base=base, key=lambda: b'x' * 32, repository=repo)
+        allowed = set()
+        with TestClient(app, base_url=base) as client:
+            for method in ('GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'):
+                response = client.request(method, path, headers={'content-length':'0'})
+                if response.status_code != 405:
+                    self.assertEqual(response.status_code, 404)
+                    repo.subscription.assert_called_once_with(channel)
+                    allowed.add(f"{method} {template}")
+                repo.reset_mock()
+        self.assert_classified(allowed, self.data['public_ingress'], 'public callback handlers')
+
     def test_every_middleware_path_has_a_verdict(self):
         self.assert_classified(auth_paths() | setup_paths(), self.data["middleware_paths"], "middleware paths")
 
     def test_verdicts_are_known_and_gaps_are_named(self):
         gaps = self.data["gaps"]
-        for key, entry in [*self.data["routes"].items(), *self.data["middleware_paths"].items()]:
+        for key, entry in [*self.data["routes"].items(), *self.data["middleware_paths"].items(), *self.data["public_ingress"].items()]:
             with self.subTest(path=key):
                 self.assertIn(entry["verdict"], VERDICTS)
                 self.assertTrue(entry["reads"].strip())

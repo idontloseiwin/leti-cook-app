@@ -5,7 +5,7 @@ import os
 from uuid import uuid4
 
 from db.discovery_budget import DiscoveryBudgetRepository
-from db.retention.discovery_operational_retention import clean
+from runtime.discovery import DiscoveryMaintenance
 from discovery_policy import DiscoverySettings
 
 
@@ -67,8 +67,16 @@ def run_checks(admin,database):
     deleted_grant=grant(old_closed,closed);pending_grant=grant(old_pending,pending)
     plain_grant=grant(old_plain);current_grant=grant(current)
     grant(current,finishable)
-    result=clean(database,limit=200,days=90)
-    check(all(type(value) is int and 0<=value<=200 for value in result.values()),'cleanup_each_stage_bounded')
+    # Run the actual backend owner with no configured callback, rather than calling SQL by hand.
+    owner = DiscoveryMaintenance(database, ready=lambda: None, clock=lambda: 100)
+    counts = {}
+    cleanup = owner.cleanup
+    def collect_counts():
+        counts.update(cleanup())
+    owner.cleanup = collect_counts
+    check(owner.step() == 3600 and owner.last_cleanup_error is None, 'unconfigured_websub_cleanup_succeeds')
+    check(bool(counts) and all(type(value) is int and 0 <= value <= 200 for value in counts.values()),
+          'cleanup_each_stage_bounded')
     check(scalar('SELECT count(*) FROM public.discovery_repair_targets WHERE target_id=%s',(terminal,))==0,
           'closed_terminal_target_expires_after_operational_horizon')
     check(scalar('SELECT count(*) FROM public.discovery_repair_targets WHERE target_id=%s',(waiting,))==1,

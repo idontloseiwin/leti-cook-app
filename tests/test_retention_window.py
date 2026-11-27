@@ -53,7 +53,7 @@ WINDOW_USES = {
     'application/db/retention/category_reference_retention.py': 1,
     'application/db/retention/current_source_retention.py': 1,
     'application/db/retention/deleted_channel_retention.py': 1,
-    'application/db/retention/evidence_retention.py': 6,
+    'application/db/retention/evidence_retention.py': 7,
     'application/db/retention/inventory_chain_retention.py': 1,
     'application/db/retention/inventory_copies_retention.py': 1,
     'application/db/retention/inventory_retention.py': 1,
@@ -72,7 +72,10 @@ WINDOW_USES = {
     'application/db/videos/video_profile_completion.py': 1,
     'application/db/videos/video_queue_initialization.py': 2,
     # Reader views, retained predicates and deadlines of the schema.
-    'schema/schema.sql': 147,
+    'application/db/user_work/alerts.py': 3,
+    # Alert capture clamps an old start clock before subtracting the fallback
+    # comparison window when the channel has no added_at.
+    'schema/schema.sql': 151,
 }
 
 

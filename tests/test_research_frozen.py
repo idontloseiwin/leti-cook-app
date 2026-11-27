@@ -3,6 +3,7 @@
 The repository is a fake that returns what the frozen SQL statement returns;
 tests/research_frozen_pg.py proves the SQL itself on PostgreSQL 17.
 """
+from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
@@ -108,6 +109,36 @@ class FrozenTests(unittest.TestCase):
     def ids(self, page):
         return [row['id'] for row in page['rows']]
 
+    def test_packed_rows_reject_malformed_shape_or_count_without_expanding_all_rows(self):
+        from research_query.frozen_service import _json_rows
+        stream = _json_rows(' [ [1], ["a,b", [2]], broken ] ', 3)
+        self.assertEqual(next(stream), [1])
+        self.assertEqual(next(stream), ["a,b", [2]])
+        with self.assertRaises(ValueError):
+            next(stream)
+        for text, count in (('[]', 1), ('[[1]]', 0), ('[[1],]', 1), ('[[1]] extra', 1), ('[3]', 1)):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                list(_json_rows(text, count))
+        self.assertEqual(list(_json_rows('[]', 0)), [])
+
+    def test_disconnected_client_stops_a_build_during_row_packing(self):
+        from unittest.mock import patch
+        from research_query.frozen import compact_cells
+        self.repo.data = frozen_data(1000)
+        packed = 0
+
+        def pack(row_id, cells):
+            nonlocal packed
+            packed += 1
+            return compact_cells(row_id, cells)
+
+        with patch('research_query.frozen_service.compact_cells', pack):
+            self.rejected('query_budget_exceeded', lambda: self.service.execute(
+                canonical(frozen_query()), cancelled=lambda: packed > 0))
+        self.assertGreater(packed, 0)
+        self.assertLessEqual(packed, 128)
+        self.assertEqual(self.store.usage(), {'sessions': 0, 'bytes': 0})
+
     def test_pages_next_previous_total_and_start_index_from_one_read(self):
         first = self.execute()
         self.assertEqual(first['context']['consistency'], 'frozen')
@@ -210,23 +241,45 @@ class FrozenTests(unittest.TestCase):
         self.assertEqual(pair.usage()['sessions'], 1)
         self.rejected('cursor_expired', lambda: self.execute(service=service, after=first['page']['next_cursor']))
 
-    def test_third_concurrent_build_is_busy_at_once(self):
+    def test_facet_cache_yields_to_sessions_and_drops_invalidated_values(self):
+        query = frozen_query()
+        first = self.execute(query)
+        session = self.service.frozen_reference(first["context"]["frozen_ref"]).session
+        store = FrozenStore(max_bytes=2 * session.size, clock=lambda: self.now,
+                            monotonic=lambda: self.mono, auto_prune=False)
+        service = self.make_service(store=store)
+        first = self.execute(query, service=service)
+        session = service.frozen_reference(first["context"]["frozen_ref"]).session
+        before = store.usage()["bytes"]
+        store.remember_facets(session, b"facet data")
+        self.assertGreaterEqual(store.usage()["bytes"], before + len(b"facet data"))
+        self.assertEqual(store.facet_values(session), b"facet data")
+        self.execute(query, service=service)
+        self.assertEqual(store.usage()["sessions"], 2)
+        self.assertIsNone(store.facet_values(session))
+        store.require(session)
+        store.invalidate_channel(CHANNEL)
+        store.remember_facets(session, b"stale")
+        self.assertIsNone(store.facet_values(session))
+
+    def test_third_build_runs_after_the_first_pair_releases_capacity(self):
         self.repo.gate = threading.Event()
-        results = []
-        threads = [threading.Thread(target=lambda: results.append(self.execute())) for _ in range(2)]
-        for thread in threads:
-            thread.start()
-        deadline = time.monotonic()+5
-        while self.repo.reads < 2 and time.monotonic() < deadline:
-            time.sleep(.01)
-        started = time.monotonic()
-        self.rejected('query_busy', self.execute)
-        self.assertLess(time.monotonic()-started, .5)
-        self.repo.gate.set()
-        for thread in threads:
-            thread.join(5)
-        self.assertEqual(len(results), 2)
-        self.assertEqual(self.execute()['page']['total_count'], 120)
+        with ThreadPoolExecutor(3) as pool:
+            jobs = [pool.submit(self.execute) for _ in range(3)]
+            try:
+                until = time.monotonic() + 2
+                while time.monotonic() < until:
+                    with self.store._builds._condition:
+                        if self.repo.reads == 2 and len(self.store._builds._waiting) == 1:
+                            break
+                    time.sleep(.005)
+                else:
+                    self.fail('expected two active builds and one queued')
+            finally:
+                self.repo.gate.set()
+            pages = [job.result(3) for job in jobs]
+        self.assertEqual([page['page']['total_count'] for page in pages], [120, 120, 120])
+        self.assertEqual(self.repo.reads, 3)
 
     def test_invalidation_fences_builds_and_drops_only_matching_results(self):
         self.repo.on_read = lambda: self.store.invalidate_channel(OTHER)
@@ -329,6 +382,13 @@ class FrozenTests(unittest.TestCase):
         tiny = FrozenStore(max_session_bytes=size-1, clock=lambda: self.now, monotonic=lambda: self.mono, auto_prune=False)
         self.assertEqual(payload(lambda: self.execute(service=self.make_service(store=tiny))),
                          {'code': 'query_budget_exceeded', 'path': 'consistency', 'limit': 'memory'})
+        # Once just the fixed-size row bookkeeping exceeds the store, the
+        # service can stop before decoding even the first packed row.
+        tiny = FrozenStore(max_session_bytes=64, clock=lambda: self.now, monotonic=lambda: self.mono, auto_prune=False)
+        invalid = Repository(frozen_data(120, packed_video_rows=True, rows='deliberately unreadable'))
+        self.assertEqual(payload(lambda: self.execute(service=self.make_service(repo=invalid, store=tiny))),
+                         {'code': 'query_budget_exceeded', 'path': 'consistency', 'limit': 'memory'})
+        self.assertEqual(tiny.usage(), {'sessions': 0, 'bytes': 0})
         session = next(iter(self.store._sessions.values()))
         self.assertEqual(payload(lambda: tiny.insert(session, tiny.generation())),
                          {'code': 'query_budget_exceeded', 'path': 'consistency', 'limit': 'memory'})

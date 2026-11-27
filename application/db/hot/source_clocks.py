@@ -159,6 +159,9 @@ for name, table in (('sync_runs', 'sync_runs'), ('quota_attempts', 'youtube_api_
     _sources[name] = _source(table, 'started_at')
 _sources['category_reference'] = _source('youtube_category_reference', 'retrieved_at', inclusive=True)
 
+for table, field in (('alert_observations','evidence_expires_at'), ('alert_inbox','expires_at')):
+    _sources[table] = _source(table, field, inclusive=True, expires=True)
+
 SOURCE_CLOCKS = MappingProxyType(_sources)
 STARTUP_EXPIRY_SOURCES = MappingProxyType({
     name: value.startup_query() if isinstance(value, SourceClock) else value

@@ -460,6 +460,10 @@ def plan_request(request, registry):
         if max_pages < 1:
             raise PlanRejected("budget_units_exceeded")
         requests.append(PlannedRequest(params=base, targets=()))
+    elif method.id == "youtube.search.list" and values.get("maxResults") == ("0",):
+        # An explicit zero requests only the search envelope, even when Google supplies a token.
+        strategy, page_size, max_pages = "single", 0, 1
+        requests.append(PlannedRequest(params=base + (("maxResults", "0"),), targets=()))
     elif (method.pagination.style == "pageToken" and filter_param not in policy.SINGLE_RESULT_FILTERS.get(method.id, ())
           and (not method.parameters.get("pageToken") or not method.parameters["pageToken"].only_with
                or filter_param in method.parameters["pageToken"].only_with)):

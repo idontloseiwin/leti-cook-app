@@ -25,7 +25,7 @@ function row(id, published, { views = '1000', pace = '24000', paceState = 'known
       'video.id': cell(id, { expires: '2026-11-28T00:00:00Z' }),
       'video.channel_id': cell(A, { expires: '2026-11-28T00:00:00Z' }),
       'video.title': cell(`Title ${id}`),
-      'video.thumbnail_url': cell(`https://img.youtube.com/vi/${id}/mqdefault.jpg`),
+      'video.thumbnail_url': cell(`https://img.youtube.com/vi/${id}/hqdefault.jpg`),
       'video.published_at': cell(published),
       'video.views': views === null ? cell(null, { state: 'unknown' }) : cell(views, { expires }),
       'video.likes': cell('7'),

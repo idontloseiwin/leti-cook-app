@@ -50,7 +50,7 @@ class UpdateTests(unittest.TestCase):
         columns=re.findall(r'^    (?!CONSTRAINT)(\w+) ',body,re.M)
         for alter in re.findall(r'ALTER TABLE public\.channels\b(.*?);',schema,re.S):
             columns+=re.findall(r'\bADD COLUMN\s+(\w+) ',alter)
-        self.assertEqual(columns,[name for name,_ in writer.COLUMN_TYPES]);self.assertEqual(len(columns),47)
+        self.assertEqual(columns,[name for name,_ in writer.COLUMN_TYPES]);self.assertEqual(len(columns),48)
 
     def test_untargeted_generic_keeps_single_original_update(self):
         values={'title':'changed','initial_long_inventory_error_count':None}

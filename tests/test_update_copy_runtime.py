@@ -45,7 +45,7 @@ class CopyWindowTests(unittest.TestCase):
                   'memberships_absent','memberships_first','memberships_present','memberships_seen',
                   'operator_chain_ack_receipts','operator_chain_linked_scans','operator_jobs_ack_receipts',
                   'operator_jobs_and_targets','operator_jobs_linked_scans','playlist_legacy_completion',
-                  'playlist_source','queue_publication','queue_stream_end','quota_attempts','review_evidence',
+                  'alert_observations','alert_inbox','playlist_source','queue_publication','queue_stream_end','quota_attempts','review_evidence',
                   'snapshot_engagement','sync_runs','typed_video_collection_receipts','video_availability',
                   'video_comment_observation','video_counters','video_description','video_engagement_report',
                   'video_like_observation','video_metadata','video_paid_promotion','video_snapshots'}

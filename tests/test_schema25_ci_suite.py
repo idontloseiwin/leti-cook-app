@@ -62,7 +62,7 @@ class Schema25SuiteTests(unittest.TestCase):
     def test_intrinsic_pins_match_current_baseline(self):
         pins=json.loads((ROOT/'schema/function-body-pins.json').read_text())
         actual={f.key:hashlib.sha256(f.body.encode()).hexdigest() for f in (parse_function(s) for s in statements((ROOT/'schema/schema.sql').read_text()) if s.startswith('CREATE FUNCTION '))}
-        self.assertEqual(len(actual),15);self.assertEqual(actual,pins['functions'])
+        self.assertEqual(len(actual),19);self.assertEqual(actual,pins['functions'])
         self.assertEqual(hashlib.sha256((ROOT/'schema/schema.sql').read_bytes()).hexdigest(),pins['schema_sha256'])
 
     def test_current_identity_checks_real_body_digests_and_readiness(self):

@@ -1,6 +1,6 @@
 """Atomic import and pending-edit transactions used by user-work repositories.
 
-Import retains its ten-table NOWAIT fence, tombstone revision floor, pending
+Import uses a fixed NOWAIT table fence, tombstone revision floor, pending
 ownership and all current triggers. Native casts/JSONB sizes stay PostgreSQL's;
 Python owns branching and validation order. Runtime ACL prerequisites include
 Saved tombstone/receipt DELETE and review INSERT/locking rights. No helper
@@ -121,9 +121,22 @@ def _header(tx,document):
     info=tx.fetch_one('SELECT jsonb_typeof(%s::jsonb) AS kind,octet_length(%s::jsonb::text) AS bytes',
                      (None if document is None else Jsonb(document),None if document is None else Jsonb(document)))
     if info['kind']!='object' or info['bytes']>_MAX_BYTES:_reject('user_work_document_invalid')
-    _keys(document,[{'channels','collections','folders','labels','reviews','schema_version'}, {'channels','collections','folders','labels','reviews','queries','schema_version'}, {'channels','collections','folders','labels','reviews','queries','field_preferences','schema_version'}],'user_work_document_invalid')
-    if type(document['schema_version']) is not int or document['schema_version'] not in (2,3,4,5) or ('field_preferences' in document) != (document['schema_version']>=4) or (document['schema_version']==2 and 'queries' in document) or (document['schema_version']>=3 and not isinstance(document.get('queries'),list)) or any(not isinstance(document[k],list) for k in ('channels','collections','folders','labels','reviews')):
+    version = document.get('schema_version')
+    if type(version) is not int or version not in (2,3,4,5,6):
         _reject('user_work_document_invalid')
+    array_fields = {'channels','collections','folders','labels','reviews'}
+    if version >= 3:
+        array_fields.add('queries')
+    if version >= 6:
+        array_fields.add('alert_rules')
+    fields = array_fields | {'schema_version'}
+    if version >= 4:
+        fields.add('field_preferences')
+    _keys(document,[fields],'user_work_document_invalid')
+    if any(not isinstance(document[k],list) for k in array_fields):
+        _reject('user_work_document_invalid')
+    if len(document.get('alert_rules', [])) > 100:
+        _reject('user_work_import_limit')
     if any(len(document[k])>limit for k,limit in (('channels',10000),('folders',1000),('labels',1001),('collections',1000),('reviews',1000))):
         _reject('user_work_import_limit')
     # The retained function checks hidden_at before its table locks. Each native
@@ -158,7 +171,7 @@ def _header(tx,document):
 
 
 _EMPTY='''SELECT NOT (
- EXISTS(SELECT 1 FROM public.channels) OR EXISTS(SELECT 1 FROM public.folders)
+ EXISTS(SELECT 1 FROM public.alert_rules WHERE deleted_at IS NULL) OR EXISTS(SELECT 1 FROM public.channels) OR EXISTS(SELECT 1 FROM public.folders)
  OR EXISTS(SELECT 1 FROM public.channel_labels WHERE label_key<>'monetized' OR name<>'Monetized' OR label_type<>'preset')
  OR EXISTS(SELECT 1 FROM public.channel_label_assignments) OR EXISTS(SELECT 1 FROM public.saved_objects WHERE deleted_at IS NULL)
  OR EXISTS(SELECT 1 FROM public.saved_collection_members)
@@ -166,6 +179,17 @@ _EMPTY='''SELECT NOT (
   WHERE o.kind=c.collection_kind AND o.id=c.collection_id AND o.deleted_at IS NOT NULL))
  OR EXISTS(SELECT 1 FROM public.video_type_review_cases) OR EXISTS(SELECT 1 FROM public.video_type_review_history)
  OR EXISTS(SELECT 1 FROM public.user_channel_restore_items)) AS empty'''
+# A missing source gets an unrelated instance UUID. A later object with the
+# same public ID cannot acquire the rule. Both clocks start at import.
+_RESTORE_ALERT_RULES = """INSERT INTO public.alert_rules(id,definition,enabled,scope_owner,scope_created_at,started_at,restored_scope_since)
+ SELECT gen_random_uuid(),rule->'definition',(rule->>'enabled')::boolean,
+        coalesce(f.alert_identity,l.alert_identity,p.id,gen_random_uuid()),coalesce(f.created_at,l.created_at),
+        statement_timestamp(),statement_timestamp()
+ FROM jsonb_array_elements(%s::jsonb) AS entry(rule)
+ LEFT JOIN public.folders f ON rule->'definition'->'scope'->>'kind'='folder' AND f.id::text=rule->>'source_ref'
+ LEFT JOIN public.channel_labels l ON rule->'definition'->'scope'->>'kind'='label' AND l.label_key=rule->>'source_ref'
+ LEFT JOIN public.user_channel_restore_items p ON rule->'definition'->'scope'->>'kind' IN ('channel','video')
+      AND p.id::text=rule->>'source_ref'"""
 _FOLDERS='''INSERT INTO public.folders(id,name,created_at)
  SELECT (item->>'id')::uuid,item->>'name',(item->>'created_at')::timestamptz
  FROM jsonb_array_elements(%s::jsonb) WITH ORDINALITY AS e(item,ord) ORDER BY ord'''
@@ -274,6 +298,9 @@ def _view(view,facts,i,j):
 
 def _restore(tx,document):
     counts,facts=_header(tx,document)
+    # A creator counts rules before inserting. Serialize that count with the import.
+    if not tx.fetch_one('SELECT pg_try_advisory_xact_lock(864297301) AS available')['available']:
+        return {'outcome':'busy'}
     tx.lock_user_work_import()
     if not tx.fetch_one(_EMPTY)['empty']:return {'outcome':'workspace_not_empty'}
     tx.execute('DELETE FROM public.saved_collection_commands c USING public.saved_objects o '
@@ -347,6 +374,15 @@ def _restore(tx,document):
             parent=facts.cast(('review',i,'revision'))['number']
             if revision is not None and parent is not None and revision>parent:_reject('user_work_review_history_invalid')
         _insert_prefix(item['history'],validate_history,lambda rows:tx.execute(_HISTORY,(item.get('case_id'),Jsonb(rows))))
+    if document.get('alert_rules'):
+        from user_work_backup import normalize_alert_rules, UserWorkError
+        try:
+            rules = normalize_alert_rules(document['alert_rules'], {c['id'] for c in document['channels']},
+                                          {f['id'] for f in document['folders']},
+                                          {l['label_key'] for l in document['labels']})
+        except (UserWorkError, ValueError, TypeError):
+            _reject('user_work_document_invalid')
+        tx.execute(_RESTORE_ALERT_RULES, (Jsonb(rules),))
     if document['schema_version']>=4:
         from research_field_policy import normalize, FieldPolicyError
         try: preferences=normalize(document.get('field_preferences'))

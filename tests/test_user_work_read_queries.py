@@ -12,7 +12,7 @@ from db.user_work import user_work_read_queries as queries
 from db.base.postgres import DatabaseServerError, _reviewed_statement
 
 COUNTS = dict(channels=2, pending=1, objects=1, pending_views=1, folders=1,
-              labels=2, assignments=2, pending_labels=2, members=3, reviews=1, history=2)
+              labels=2, assignments=2, pending_labels=2, members=3, reviews=1, history=2, alert_rules=1)
 
 class Database:
     def __init__(self, *rows):
@@ -52,7 +52,7 @@ class SnapshotTests(unittest.TestCase):
     def test_capacity_boundaries_preserve_user_work_limits(self):
         limits={"channels":9999,"pending":9998,"objects":999,"pending_views":999,
                 "folders":1000,"labels":1001,"assignments":99998,"pending_labels":99998,
-                "members":100000,"reviews":1000,"history":10000}
+                "members":100000,"reviews":1000,"history":10000,"alert_rules":100}
         for key, allowed in limits.items():
             # Account for the other half of shared capacity in COUNTS.
             with self.subTest(key=key):
@@ -108,6 +108,7 @@ class SnapshotTests(unittest.TestCase):
             _reviewed_statement(statement,read=True,max_rows=1)
             self.assertNotIn("export_user_work_backup(",statement)
             self.assertNotIn("get_user_work_restore_status(",statement)
+        self.assertIn('FROM readable.research_preferences',queries._EXPORT_DOCUMENT)
         self.assertIn("hidden_at",queries._EXPORT_DOCUMENT)
         self.assertIn("restore_owner_ref",queries._EXPORT_DOCUMENT)
         self.assertIn("deleted_at IS NOT NULL",queries._STATUS_DOCUMENT)

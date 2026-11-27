@@ -355,6 +355,87 @@ class GrowthPostgres(unittest.TestCase):
                           'gLnoviews00': 'current_counter_unavailable', 'gLnosnap000': 'current_snapshot_missing'})
         self.assertNotIn('gLprivate00', cells)
 
+    def test_channel_page_growth_matches_the_complete_query(self):
+        with self.same_utc_day():
+            expected, _ = self.shared(CHANNEL, 'long')
+            request = self.query(CHANNEL, 'long', size=7)
+            request['page']['growth_lifetime'] = 'page'
+            actual = []
+            while True:
+                page = self.service.execute(canonical(request))
+                through = datetime.fromisoformat(page['context']['valid_before'])
+                for row in page['rows']:
+                    for cell in row['cells'].values():
+                        if cell['state'] == 'known' and cell['expires_at']:
+                            self.assertGreaterEqual(datetime.fromisoformat(cell['expires_at']), through)
+                actual.extend(page['rows'])
+                if not page['page']['has_more']:
+                    break
+                request['page']['after'] = page['page']['next_cursor']
+            self.assertGreater(len(actual), 7)
+            self.assertEqual([(r['id'], shared_view(r['cells'])) for r in actual],
+                             [(r['id'], shared_view(r['cells'])) for r in expected])
+
+    def test_growth_ranked_pages_match_frozen_values_for_filters_sort_and_missing_values(self):
+        for kind in ("long", "short", "stream"):
+            for field in growth.FIELDS:
+                options = {"order": [{"field": field, "direction": "desc"}], "size": 7}
+                if field == growth.STATUS:
+                    options["order"] = [{"field": "video.id", "direction": "asc"}]
+                    options["where"] = {"field": growth.STATUS, "op": "eq", "value": "partial"}
+                elif field == growth.GAINED:
+                    options["where"] = {"field": growth.GAINED, "op": "gte", "value": "0"}
+                with self.subTest(kind=kind, field=field), self.same_utc_day():
+                    expected, _ = self.shared(CHANNEL, kind, consistency="frozen", **options)
+                    request = self.query(CHANNEL, kind, **options)
+                    request["page"]["growth_lifetime"] = "page"
+                    actual = self.service.execute(canonical(request))["rows"]
+                    comparison = lambda rows: [(r["id"], shared_view(r["cells"])) for r in rows]
+                    self.assertEqual(comparison(actual), comparison(expected[:7]))
+
+    def test_channel_list_is_the_complete_growth_order(self):
+        """Library's ordered list for 28-day growth sorts: the order of every page of the shared query,
+        unknown growth last; its slices read exactly their videos in list order."""
+        for kind in ('long', 'short', 'stream'):
+            for field in (growth.GAINED, growth.PER_DAY):
+                for direction in ('desc', 'asc'):
+                    with self.subTest(kind=kind, field=field, direction=direction), self.same_utc_day():
+                        order = [{'field': field, 'direction': direction}]
+                        rows, _ = self.shared(CHANNEL, kind, order=order)
+                        request = self.query(CHANNEL, kind, order=order, size=7)
+                        request['page'] = {'size': 7, 'growth_lifetime': 'page', 'order': 'ids'}
+                        reply = self.service.execute(canonical(request))
+                        joined = reply['page']['order']['ids']
+                        listed = [joined[at:at + 11] for at in range(0, len(joined), 11)]
+                        self.assertEqual(listed, [row['id'] for row in rows])
+                        self.assertEqual(reply['page']['order']['total_count'], len(rows))
+                        self.assertEqual([(r['id'], shared_view(r['cells'])) for r in reply['rows']],
+                                         [(r['id'], shared_view(r['cells'])) for r in rows[:7]])
+                        request['page'] = {'size': 7, 'growth_lifetime': 'page', 'ids': listed[7:14]}
+                        self.assertEqual([r['id'] for r in self.service.execute(canonical(request))['rows']], listed[7:14])
+
+    def test_current_channel_anchor_restarts_inside_the_filtered_order(self):
+        for ordering in ([{'field': 'video.published_at', 'direction': 'asc'}],
+                         [{'field': growth.GAINED, 'direction': 'desc'}]):
+            with self.subTest(ordering=ordering), self.same_utc_day():
+                rows, _ = self.shared(CHANNEL, 'long', order=ordering)
+                ids = [row['id'] for row in rows]
+                query = self.query(CHANNEL, 'long', size=2, order=ordering)
+                def anchored(anchor):
+                    query['page'] = {'size': 2, 'growth_lifetime': 'page', 'anchor_id': anchor}
+                    return self.service.execute(canonical(query))
+                # Include a middle row and a near-end row with a missing sort value.
+                for i in (5, len(ids) - 3):
+                    reply = anchored(ids[i])
+                    self.assertEqual([r['id'] for r in reply['rows']], ids[i:i + 2])
+                    query['page'] = {'size': 2, 'growth_lifetime': 'page', 'after': reply['page']['next_cursor']}
+                    next_page = self.service.execute(canonical(query))
+                    self.assertEqual([r['id'] for r in next_page['rows']], ids[i + 2:i + 4])
+                for missing in ('Missing0000', 'gLprivate00'):
+                    self.assertEqual([r['id'] for r in anchored(missing)['rows']], ids[:2])
+                query['where'] = {'field': 'video.id', 'op': 'eq', 'value': ids[-1]}
+                self.assertEqual([r['id'] for r in anchored(ids[1])['rows']], ids[-1:])
+
     def test_numeric_growth_order_across_pages(self):
         for kind in ('long', 'short', 'stream'):
             for direction in ('desc', 'asc'):

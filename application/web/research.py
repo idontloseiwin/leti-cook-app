@@ -51,7 +51,9 @@ def create_research_router(database, frozen=None):
     repository, codec = ResearchQueryRepository(database), CursorCodec()
     frozen = frozen if frozen is not None else FrozenStore()
     pool_size = getattr(getattr(database, 'config', None), 'max_size', 4)
-    admission = ReadAdmission(concurrency=max(1, min(2, pool_size - 1)))
+    # Even when two fixed lists are being built, a default four-connection
+    # pool has room for a current page and one non-research operation.
+    admission = ReadAdmission(concurrency=max(1, min(3, pool_size - 1)))
     # All agent keys/processes share this single lane, before the global queue.
     agent_admission = LimitedReadAdmission(admission, concurrency=1)
 
@@ -116,4 +118,6 @@ def create_research_router(database, frozen=None):
             raise QueryRejected('backend_unavailable') from None
     router=create_router(service_provider, authorize_research, source_search)
     router.include_router(create_field_router(database, authorize_owner))
+    from .alerts import create_alert_router
+    router.include_router(create_alert_router(database, service_provider, authorize_owner))
     return router

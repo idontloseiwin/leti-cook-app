@@ -4,14 +4,17 @@ No caller-provided SQL/identifiers, OFFSET, table names or ordering fragments.
 This first current-page executor uses existing protected views, not raw tables.
 """
 from functools import lru_cache
+from . import research_growth
 from .research_observations import prepared_sql, proof_now, requested as observations_requested
 import unicodedata
 
 from psycopg.types.json import Jsonb
 
 from hot_storage import RETENTION_HOURS
-from research_query.contracts import MAX_FROZEN_ROWS
+from research_query.cell_layout import frozen_video_columns
+from research_query.contracts import MAX_FROZEN_ROWS, MAX_ORDER_IDS
 from research_query.frozen import FROZEN_TTL_SECONDS
+from research_query import growth
 from research_query.registry import FIELDS, UNICODE_VERSION, CHANNEL_SOURCE_ID
 from research_query.validation import QueryRejected, ValidatedQuery
 from db.inventory.automatic_type_policy import AUTOMATIC_TYPE_RULE_VERSION, AUTOMATIC_TYPE_MAX_SHORT_SECONDS
@@ -487,20 +490,28 @@ def sort_definition(request):
     return values
 
 
+def _after_keys(order, bounds, *, nullable_keys=False):
+    """Lexicographic suffix for the query's ASC/DESC keys, always NULLS LAST."""
+    terms, prefix = [], []
+    for (field, direction), (bound, can_advance) in zip(order, bounds):
+        col = _value(field, sort=True)
+        if can_advance:
+            comparator = ">" if direction == "asc" else "<"
+            after = f"({col} {comparator} {bound} OR {col} IS NULL)"
+            if nullable_keys:
+                after = f"({bound} IS NOT NULL AND {after})"
+            terms.append("(" + " AND ".join(prefix + [after]) + ")")
+        prefix.append(f"{col} IS NOT DISTINCT FROM {bound}")
+    return "(" + " OR ".join(terms) + ")" if terms else "FALSE"
+
+
 def _continuation(order, keys, params):
     if keys is None:
         return "TRUE"
     if len(keys) != len(order):
         raise QueryRejected("cursor_context_changed")
-    terms, prefix = [], []
-    for (field, direction), key in zip(order, keys):
-        col, kind = _value(field, sort=True), MAPPINGS[field][1]
-        bound = _bind(params, key, kind)
-        if key is not None:
-            comparator = ">" if direction == "asc" else "<"
-            terms.append("(" + " AND ".join(prefix + [f"({col} {comparator} {bound} OR {col} IS NULL)"]) + ")")
-        prefix.append(f"{col} IS NOT DISTINCT FROM {bound}")
-    return "(" + " OR ".join(terms) + ")" if terms else "FALSE"
+    return _after_keys(order, [(_bind(params, key, MAPPINGS[field][1]), key is not None)
+                               for (field, _), key in zip(order, keys)])
 
 
 def _scope_ctes(kind):
@@ -747,7 +758,7 @@ coverage AS MATERIALIZED (
  (SELECT min(source_expires_at) FROM inventory_state WHERE source_expires_at>(SELECT evaluated_at FROM args)),
  (SELECT data_deadline FROM raw_summary)) AS data_valid_before OFFSET 0) c),
 page AS MATERIALIZED (
- SELECT prepared.*,{sort_keys} AS sort_keys FROM prepared
+ {anchor_cte}SELECT prepared.*,{sort_keys} AS sort_keys FROM prepared{anchor_join}
  WHERE ({required}) AND ({predicate}) AND ({continuation}) ORDER BY {order} LIMIT %(limit)s),
 details AS ({details}){final}"""
 
@@ -771,9 +782,16 @@ RAW_DEADLINES = ",".join(future_deadline(clock) for clock in (
     "published_at"))
 _PAGE_FINAL = """
 SELECT scope_info.*,coverage.channels_complete,coverage.rejected_rows,coverage.required_missing,
- coverage.unresolved_collection_members,coverage.hidden_collection_members,least(coverage.valid_before,(SELECT min(type_expiry) FROM details){optional_page_deadline}) AS valid_before,a.evaluated_at,
+ coverage.unresolved_collection_members,coverage.hidden_collection_members,least(coverage.valid_before,(SELECT min(type_expiry) FROM details){optional_page_deadline}) AS valid_before,a.evaluated_at{order_columns},
  coalesce((SELECT jsonb_agg({json_row} ORDER BY {page_order}) FROM details),'[]'::jsonb) AS rows
-FROM scope_info CROSS JOIN coverage CROSS JOIN args a"""
+FROM scope_info CROSS JOIN coverage CROSS JOIN args a{order_join}"""
+# page.order = "ids": every row the page CTE could return (the same required
+# fields and predicate, no position), in the page CTE's own ORDER BY: one
+# snapshot, one order, so the page is a slice of this list by construction. Past
+# MAX_ORDER_IDS only the count is returned; the list is withheld, never cut.
+_ORDER_LIST = """ CROSS JOIN (SELECT count(*) AS order_total,CASE WHEN count(*)<=%(order_limit)s
+ THEN coalesce(string_agg(video_id,'' ORDER BY {order}),'') END AS order_ids
+ FROM prepared WHERE ({required}) AND ({predicate})) matched_order"""
 _SOURCE = _SOURCE.replace("{live_join}", _LIVE_JOIN)
 
 
@@ -825,7 +843,7 @@ judged AS MATERIALIZED (
 SELECT judged.video_id,CASE WHEN judged.reason IS NULL THEN judged.channel_id END AS channel_id,
  CASE WHEN judged.reason IS NULL THEN 'available' ELSE 'unavailable' END AS source_status,judged.reason AS source_reason,
  CASE WHEN judged.reason IS NULL THEN jsonb_build_object('video_id',judged.video_id,'video_type',judged.video_type,
- 'title',judged.title,'thumbnail_url','https://img.youtube.com/vi/'||judged.video_id||'/mqdefault.jpg',
+ 'title',judged.title,'thumbnail_url','https://img.youtube.com/vi/'||judged.video_id||'/hqdefault.jpg',
  'published_at',judged.published_at,'checked_at',judged.checked_at,'duration',judged.duration,
  'metadata_checked_at',judged.metadata_checked_at,'availability_checked_at',judged.availability_checked_at,
  'membership_checked_at',judged.membership_checked_at,'source_expires_at',judged.source_expires_at,'views',judged.views,
@@ -851,10 +869,10 @@ def compile_collection_members(collection_id, video_ids, as_of):
 _FROZEN_FINAL = """
 SELECT scope_info.*,coverage.channels_complete,coverage.rejected_rows,coverage.expiring_rows,coverage.required_missing,
  coverage.unresolved_collection_members,coverage.hidden_collection_members,a.evaluated_at,a.fresh_until,
- (SELECT count(*) FROM page) AS frozen_count,
+ true AS packed_video_rows,(SELECT count(*) FROM page) AS frozen_count,
  coalesce((SELECT array_agg(channel_id ORDER BY channel_id COLLATE "C") FROM scope),ARRAY[]::text[]) AS scope_channels,
  CASE WHEN (SELECT count(*) FROM page)<=%(frozen_rows)s THEN
- coalesce((SELECT jsonb_agg({json_row} ORDER BY {page_order}) FROM details),'[]'::jsonb) END AS rows
+ coalesce((SELECT json_agg({json_row} ORDER BY {page_order}) FROM details),'[]'::json)::text END AS rows
 FROM scope_info CROSS JOIN coverage CROSS JOIN args a"""
 
 
@@ -953,6 +971,19 @@ def compile_query(plan, continuation=None, *, population=False):
     window = window_pushdown(request, params)
     inventory_scope += window
     inventory_from = "FROM scope JOIN readable.video_search_projection p USING(channel_id) CROSS JOIN args a"
+    if channel and (frozen(plan) or not population):
+        # Rows with no masked video for this channel still contribute to
+        # coverage. Fetch those exceptions by ID with the original left join.
+        inventory_from = """FROM scope CROSS JOIN args a JOIN LATERAL (
+ SELECT matched.* FROM readable.video_search_projection matched
+ WHERE matched.channel_id=scope.channel_id AND matched.v_channel_id=scope.channel_id
+ UNION ALL
+ SELECT other.* FROM readable.video_search_projection_types seed
+ CROSS JOIN LATERAL (SELECT v.* FROM readable.video_search_projection v
+ WHERE v.video_id=seed.video_id AND v.channel_id=seed.channel_id LIMIT 1) other
+ WHERE seed.channel_id=scope.channel_id AND NOT EXISTS (
+   SELECT 1 FROM readable.videos vid WHERE vid.channel_id=scope.channel_id AND vid.video_id=seed.video_id)
+ ) p ON true"""
     if window and not population and not frozen(plan) and request.scope.kind in WINDOW_SCOPES:
         inventory_from = _WINDOW_FROM
         inventory_scope += _WINDOW_SCOPE
@@ -964,9 +995,32 @@ def compile_query(plan, continuation=None, *, population=False):
  JOIN scope ON scope.user_work_id=chosen.user_channel_ref CROSS JOIN args a
  JOIN LATERAL (SELECT p0.* FROM readable.video_search_projection p0
  WHERE p0.video_id=chosen.video_id AND p0.channel_id=scope.channel_id LIMIT 1) p ON true"""
-    statement = _SOURCE
+    anchor_cte, anchor_join = "", ""
+    if not population and not frozen(plan) and request.page.anchor_id:
+        # Only a member of this exact, current filtered population can position
+        # the page. A missing anchor leaves the first page and its cursor intact.
+        params["page_anchor_id"] = request.page.anchor_id
+        columns = ",".join(f"{_value(field, sort=True)} AS k{i}" for i, (field, _) in enumerate(order))
+        anchor_cte = ("WITH page_anchor AS MATERIALIZED (SELECT true AS found," + columns + " FROM prepared "
+                      "WHERE video_id=%(page_anchor_id)s AND (" + required + ") AND (" + predicate + ") LIMIT 1) ")
+        anchor_join = " LEFT JOIN page_anchor ON true"
+        suffix = _after_keys(order, [(f"page_anchor.k{i}", True) for i in range(len(order))], nullable_keys=True)
+        keyset = "page_anchor.found IS NULL OR video_id=%(page_anchor_id)s OR " + suffix
+    page_order = ordering
+    if not population and not frozen(plan) and request.page.ids:
+        # A slice of an ordered list: exactly these rows, if they still match,
+        # in the list's order. Everything else of the statement is unchanged.
+        params["page_ids"] = list(request.page.ids)
+        keyset = "video_id=ANY(%(page_ids)s::text[])"
+        page_order = "array_position(%(page_ids)s::text[],video_id)"
+    statement = _SOURCE.replace("{anchor_cte}", anchor_cte).replace("{anchor_join}", anchor_join)
     for key, value in frozen_terms(plan).items():
         statement = statement.replace("{"+key+"}", value)
+    order_list = not population and not frozen(plan) and request.page.order == "ids"
+    if order_list:
+        params["order_limit"] = MAX_ORDER_IDS
+    statement = statement.replace("{order_columns}", ",matched_order.order_total,matched_order.order_ids" if order_list else "")
+    statement = statement.replace("{order_join}", _ORDER_LIST if order_list else "")
     # An operation population also says why each scanned row was not admitted.
     statement = statement.replace("{raw_rejection}", _REJECTION if population else "")
     statement = statement.replace("{scope_ctes}", _scope_ctes(request.scope.kind))
@@ -990,11 +1044,36 @@ def compile_query(plan, continuation=None, *, population=False):
  WHERE r.video_id=page.video_id AND r.canonical_channel_id=page.channel_id AND r.canonical_video_type=page.video_type
  AND r.resolution_status='resolved' AND r.source_expires_at>""" + proof_now(plan) + """ LIMIT 1) proof ON true"""
         params.update(type_threshold=AUTOMATIC_TYPE_MAX_SHORT_SECONDS, type_rule_version=AUTOMATIC_TYPE_RULE_VERSION)
-    thumbnail = (",'https://img.youtube.com/vi/'||video_id||'/mqdefault.jpg' AS thumbnail_url,'known'::text AS thumbnail_url_state"
+    thumbnail = (",'https://img.youtube.com/vi/'||video_id||'/hqdefault.jpg' AS thumbnail_url,'known'::text AS thumbnail_url_state"
                  if 'video.thumbnail_url' in plan.referenced_fields else '')
     optional = _optional_fields(plan, population)
     details = details.replace('SELECT page.*', 'SELECT page.*' + optional.pop('optional_page_columns'), 1) + optional.pop('optional_page_join')
-    prepared, observation_deadline = prepared_sql(plan, params)
+    # Projection-only growth cannot affect membership or cursor order. The
+    # page's growth evidence can shorten its lifetime when a snapshot has
+    # older engagement. Growth used by a predicate, sort or required field
+    # keeps the population-wide lifetime. Aggregates retain their complete input.
+    observation_fields = {f for f in plan.referenced_fields if f.startswith("observation.")}
+    channel_growth = (channel and not population and not frozen(plan) and observation_fields
+                      and observation_fields <= set(growth.FIELDS))
+    deciding_growth = observation_fields & _filtering_fields(request) if channel_growth else set()
+    if channel_growth and not deciding_growth and request.page.growth_lifetime == "page":
+        params.update(research_growth.parameters(plan))
+        details = ("SELECT n.*," + ",".join(research_growth.FIELDS)
+                   + " FROM (" + details + ") n " + research_growth.joins(plan))
+        statement = statement.replace("{optional_page_deadline}",
+            ",(SELECT min(observation_growth_28d_expires_at) FROM details){optional_page_deadline}")
+        prepared = "prepared AS NOT MATERIALIZED (SELECT normalized.* FROM normalized)"
+        observation_deadline = "NULL::timestamptz"
+    elif deciding_growth:
+        # Sorting or filtering by growth still visits the whole channel. Build
+        # the detailed evidence JSON and remaining metrics for the output page.
+        names = {MAPPINGS[field][0] + suffix for field in deciding_growth for suffix in ("", "_state")}
+        population_columns, remaining = research_growth.split_columns(names)
+        prepared, observation_deadline = prepared_sql(plan, params, growth_columns=population_columns)
+        details = ("SELECT n.*," + ",".join(remaining)
+                   + " FROM (" + details + ") n " + research_growth.joins(plan))
+    else:
+        prepared, observation_deadline = prepared_sql(plan, params)
     # Time alone moves rows across a relative publication window.
     observation_deadline += window_deadline(request, params)
     # JSON numeric fractions otherwise become binary floats before the wire
@@ -1004,11 +1083,25 @@ def compile_query(plan, continuation=None, *, population=False):
         if 'observation.' + fraction in plan.referenced_fields:
             json_row += f" || jsonb_build_object('observation_{fraction}',details.observation_{fraction}::text)"
     json_row += pace_json(plan)
+    if frozen(plan):
+        expressions = []
+        for name in frozen_video_columns(request):
+            value = "details." + name
+            if name in {"observation_views_per_hour", "observation_views_per_day_28d"}:
+                value += "::text"
+            elif name == "lifetime_views_per_day":
+                value = _pace_text()
+            expressions.append(value)
+        # A bounded JSON array per row. Wide selections may exceed the SQL
+        # function argument limit, so join only those rare rows' arrays.
+        parts = ["json_build_array(" + ",".join(expressions[i:i + 90]) + ")"
+                 for i in range(0, len(expressions), 90)]
+        json_row = parts[0] if len(parts) == 1 else " || ".join(part + "::jsonb" for part in parts)
     statement = statement.replace("{pace_normalized}", pace_columns(plan, _horizon(plan, column=True)))
     for key, value in {"json_row":json_row, "prepared_sql": prepared, "observation_deadline": observation_deadline, **_extra_fields(plan), **_channel_fields(plan), **optional, "details":details, "thumbnail_normalized":thumbnail,
                        "title_key": title_key, "stored_title_key": stored_title_key, "raw_deadlines": RAW_DEADLINES,
                        "required": required, "predicate": predicate,
-                       "continuation": keyset, "order": ordering, "page_order": ordering,
+                       "continuation": keyset, "order": page_order, "page_order": page_order,
                        # A frozen result is addressed by position, not by keys.
                        "sort_keys": "NULL::jsonb" if frozen(plan) else "jsonb_build_array("+key_values+")"}.items():
         statement = statement.replace("{"+key+"}", value)
@@ -1146,9 +1239,12 @@ def pace_columns(plan, horizon):
             f"\n ,{state} AS lifetime_views_per_day_state")
 
 
+def _pace_text():
+    return "rtrim(rtrim(details.lifetime_views_per_day::text,'0'),'.')"
+
+
 def pace_json(plan):
     """The pace as canonical decimal text in a result row (never a JSON float)."""
     if PACE_FIELD not in plan.referenced_fields:
         return ""
-    return (" || jsonb_build_object('lifetime_views_per_day',"
-            "rtrim(rtrim(details.lifetime_views_per_day::text,'0'),'.'))")
+    return " || jsonb_build_object('lifetime_views_per_day'," + _pace_text() + ")"

@@ -1,4 +1,4 @@
-export type ExplorerOperationalPage = 'health' | 'telemetry' | 'agents';
+export type ExplorerOperationalPage = 'health' | 'telemetry' | 'agents' | 'alerts';
 
 // The only served workspace. Retired interface roots answer 410 on the server.
 export const EXPLORER_V3_ROOT = '/app-explorer-v3';
@@ -9,7 +9,7 @@ export function explorerOperationalPath(page: ExplorerOperationalPage): string {
 
 export function parseExplorerOperationalPath(pathname: string): ExplorerOperationalPage | undefined {
   const normalized = pathname.replace(/\/$/, '');
-  for (const page of ['health', 'telemetry', 'agents'] as const) {
+  for (const page of ['health', 'telemetry', 'agents', 'alerts'] as const) {
     if (normalized === explorerOperationalPath(page)) return page;
   }
   return undefined;

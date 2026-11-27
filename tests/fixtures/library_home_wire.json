@@ -120,7 +120,7 @@
      "source_paths": [
       "videos.id"
      ],
-     "method": "youtube_mqdefault_reference_v1",
+     "method": "youtube_hqdefault_reference_v1",
      "definition_epoch": null,
      "type_rule": null
     },
@@ -200,7 +200,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/syoung00001/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/syoung00001/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -277,7 +277,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/sprecheck01/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/sprecheck01/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -354,7 +354,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000001/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000001/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -431,7 +431,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000001/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000001/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -508,7 +508,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000001/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000001/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -585,7 +585,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000002/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000002/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -662,7 +662,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000002/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000002/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -739,7 +739,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000002/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000002/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -816,7 +816,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/i0000000001/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/i0000000001/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -893,7 +893,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000003/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000003/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -970,7 +970,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000003/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000003/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1047,7 +1047,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000003/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000003/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1124,7 +1124,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000004/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000004/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1201,7 +1201,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000004/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000004/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1278,7 +1278,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000004/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000004/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1355,7 +1355,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000005/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000005/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1432,7 +1432,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000005/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000005/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1509,7 +1509,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000005/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000005/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1586,7 +1586,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/i0000000002/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/i0000000002/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1663,7 +1663,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000006/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000006/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -1880,7 +1880,7 @@
      "source_paths": [
       "videos.id"
      ],
-     "method": "youtube_mqdefault_reference_v1",
+     "method": "youtube_hqdefault_reference_v1",
      "definition_epoch": null,
      "type_rule": null
     },
@@ -1960,7 +1960,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000006/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000006/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2037,7 +2037,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000006/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000006/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2114,7 +2114,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000007/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000007/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2191,7 +2191,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000007/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000007/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2268,7 +2268,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000007/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000007/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2345,7 +2345,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000008/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000008/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2422,7 +2422,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000008/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000008/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2499,7 +2499,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000008/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000008/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2576,7 +2576,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/i0000000003/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/i0000000003/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2653,7 +2653,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000009/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000009/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2730,7 +2730,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000009/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000009/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2807,7 +2807,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000009/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000009/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2884,7 +2884,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000010/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000010/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -2961,7 +2961,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000010/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000010/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -3038,7 +3038,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000010/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000010/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -3115,7 +3115,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000011/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000011/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -3192,7 +3192,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/a0000000011/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/a0000000011/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -3269,7 +3269,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/c0000000011/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/c0000000011/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -3346,7 +3346,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/i0000000004/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/i0000000004/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",
@@ -3423,7 +3423,7 @@
        "observation": null
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/b0000000012/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/b0000000012/hqdefault.jpg",
        "state": "known",
        "provenance_ref": "video.thumbnail_url",
        "observed_at": "2026-10-30T10:44:18.929462Z",

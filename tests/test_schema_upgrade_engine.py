@@ -86,7 +86,16 @@ class SchemaManifestTests(unittest.TestCase):
         self.assertEqual(plan.baseline_sha256,
                          '70f9af54a8ea29f350b48e97abc0a674da976226fd6b6992436e8d246c1a4eac')
         self.assertEqual([step.filename for step in plan.steps],
-                         ['steps/0052-video-engagement-observations.sql'])
+                         ['steps/0052-video-engagement-observations.sql',
+                          'steps/0053-collection-health-per-part.sql',
+                          'steps/0054-owner-alerts.sql',
+                          'steps/0055-channel-subscriber-alert-identity.sql',
+                          'steps/0056-alert-observation-retries.sql',
+                          'steps/0057-alert-queue-candidates.sql',
+                          'steps/0058-alert-rule-removal.sql',
+                          'steps/0059-shared-alert-observations.sql',
+                          'steps/0060-alert-channel-indexes.sql',
+                          'steps/0061-alert-scope-and-coverage.sql'])
         self.assertEqual(plan.schema_version, 51 + len(plan.steps))
         self.assertEqual(plan.baseline_sql == plan.schema_sql, not plan.steps)
         baseline = validate_schema_bundle(fixture(0))

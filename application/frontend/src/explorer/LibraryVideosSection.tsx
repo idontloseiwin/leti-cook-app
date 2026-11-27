@@ -1,6 +1,6 @@
 import { expireResourceState } from './resourceState';
 import { useSourceExpiry } from '../sourceLifetimeReact';
-import { sourceExpired, sourceOwnExpired } from '../sourceLifetime.ts';
+import { sourceExpired } from '../sourceLifetime.ts';
 import {
   useCallback,
   useEffect,
@@ -24,6 +24,7 @@ import {
   videoGrowthAttemptKey,
 } from './videoGrowth';
 import { ExplorerVideosWorkspace } from './ExplorerVideosWorkspace';
+import { WatchSelection } from './AlertEditor';
 import { SaveViewDialog } from './SaveViewDialog';
 import type { SavedViewSnapshot } from './savedViews';
 import type {
@@ -45,7 +46,7 @@ import { ROUTES } from './libraryData/wire.ts';
 import { libraryErrorState } from './libraryData/errors.ts';
 import { inspectorGates } from './libraryData/inspector.ts';
 import {
-  FROZEN_FACETS, categoryLabels, facetGroups, facetsRequest, parseFacets, parseLibraryCapabilities,
+  categoryLabels, facetGroups, facetsRequest, parseFacets, parseLibraryCapabilities,
   type LibraryCapabilities, type LibraryFacets,
 } from './libraryData/videos.ts';
 import {
@@ -138,25 +139,26 @@ export function useLibraryVideos(context: LibraryShellContext) {
   const durationPresets = presetsFor(videoType, 'duration');
   const durationOtherFormat = conditions.facets.duration_buckets.some((key) => !durationPresets?.some((preset) => preset.key === key));
 
-  // One frozen session per channel, format, conditions, sort, zone and Reload.
-  const currentCatalogueScope = useMemo(
-    () => `${catalogueAnalysisKey(channelId, conditions)}\ntype:${videoType}\n${applied.sort_by}:${applied.sort_order}\nzone:${timeZone}\nreload:${catalogueReloadToken}`,
-    [applied, conditions, channelId, videoType, timeZone, catalogueReloadToken],
+  // One list per channel, format, conditions, sort and zone; one browse query per list and Reload.
+  const currentListKey = useMemo(
+    () => `${catalogueAnalysisKey(channelId, conditions)}\ntype:${videoType}\n${applied.sort_by}:${applied.sort_order}\nzone:${timeZone}`,
+    [applied, conditions, channelId, videoType, timeZone],
   );
+  const currentCatalogueScope = `${currentListKey}\nreload:${catalogueReloadToken}`;
   useEffect(() => {
     setDraftConditions(navigation.state.conditions);
     setFilterErrors({});
     setFilterError('');
   }, [navigation.restored]);
 
-  // Selection and the anchor follow the matched set (channel, format, conditions), not the sort.
+  // Selection follows the matched set (channel, format, conditions), not the sort; the remembered card follows the list.
   const currentAnalysisScope = useMemo(
     // Long keeps the key it always had; Shorts and Streams add their format.
     () => `${catalogueAnalysisKey(channelId, conditions)}${videoType === 'long' ? '' : `\ntype:${videoType}`}`,
     [conditions, channelId, videoType],
   );
   const browse = useCatalogueBrowse({
-    channelId, videoType, conditions, timeZone, scopeKey: currentCatalogueScope, selectionScopeKey: currentAnalysisScope,
+    channelId, videoType, conditions, timeZone, scopeKey: currentCatalogueScope, listKey: currentListKey, selectionScopeKey: currentAnalysisScope,
     enabled: videosVisible && capabilitiesSettled && !navigation.error && !staticFiltersBlocked && !growthFiltersBlocked
       && !durationOtherFormat && (growthSortAvailable || applied.sort_by !== VIDEO_GROWTH_SORT_FIELD),
     gates, growthAllowed: growthSortAvailable,
@@ -168,7 +170,7 @@ export function useLibraryVideos(context: LibraryShellContext) {
 
   // Group counts: the same membership as the list, each group without its own condition.
   const facetReadsAvailable = facetsAvailable && Boolean(browse.translated) && !staticFiltersBlocked && !growthFiltersBlocked
-    && (!FROZEN_FACETS || (Boolean(browse.frozenRef) && !browse.pending));
+    && !browse.pending;
   // Category labels name the chip, the cards and the Inspector line even with the panel closed.
   const facetGroupsWanted = gates ? (filtersOpen ? facetGroups(gates) : ['category' as const]) : [];
   const facetScope = `${browse.sessionKey ?? ''}\n${facetGroupsWanted.join(',')}\n${facetReload}:${catalogueReloadToken}`;
@@ -316,24 +318,31 @@ export function LibraryVideosSection({
   const translatedQuery = browse.translated;
   const resolvedTitle = channelTitle;
   const origin = { surface: 'library' as const, channel_id: channelId, ...(resolvedTitle ? { channel_title: resolvedTitle } : {}), format: videoType, view: 'grid' as const };
-  const liveFrozen = rawPayload && !sourceOwnExpired(rawPayload) ? {
-    context: { frozen_ref: rawPayload.browse.frozen_ref, evaluated_at: rawPayload.browse.created_at, valid_before: rawPayload.browse.expires_at },
-    page: { total_count: rawPayload.browse.total_count },
-  } : null;
-  const openWhole = (): string | undefined => {
-    if (!onOpenWorkshop) return 'The research workshop is not available here.';
-    if (!browse.executed) return 'Load the catalogue before opening it in the research workshop.';
-    const handoff = selectionHandoff(browse.executed, liveFrozen, origin);
-    if ('refused' in handoff) return handoffRefusalText(handoff);
-    onOpenWorkshop(handoff);
+  /** The whole query as a fixed list; with `selected`, only when that list holds exactly the selected videos. */
+  const openWhole = async (selected?: ReadonlySet<string>): Promise<string | undefined> => {
+    if (!onOpenWorkshop || !browse.executed) return 'Load the catalogue before opening it in the research workshop.';
+    try {
+      const fixed = (await browse.freezeForWorkshop(selected)).browse;
+      if (fixed.consistency !== 'frozen') return 'The fixed list could not be verified.';
+      const handoff = selectionHandoff(browse.executed, {
+        context: { frozen_ref: fixed.frozen_ref, evaluated_at: fixed.created_at, valid_before: fixed.expires_at },
+        page: { total_count: fixed.total_count },
+      }, origin);
+      if ('refused' in handoff) return handoffRefusalText(handoff);
+      onOpenWorkshop(handoff);
+    } catch (error) {
+      if (!isAbortError(error)) return libraryErrorState(error, 'select_all').message ?? 'The fixed list could not be opened.';
+    }
     return undefined;
   };
   const workshop = onOpenWorkshop ? {
-    openSelection: openWhole,
-    sendSelected: (selected: ReadonlyArray<{ id: string; type?: 'long' | 'short' | 'stream' }>): string | undefined => {
+    openSelection: () => openWhole(),
+    sendSelected: async (selected: ReadonlyArray<{ id: string; type?: 'long' | 'short' | 'stream' }>): Promise<string | undefined> => {
       if (!browse.executed) return 'Load the catalogue before sending videos to the research workshop.';
-      // After "Select all matching" of this session the whole list travels as the selection itself.
-      if (browse.frozenIds && isWholeFrozenList(new Set(selected.map((item) => item.id)), browse.frozenIds)) return openWhole();
+      // The whole list selected ("Select all matching", in any sort of it) travels as the fixed list of the query,
+      // and only if that list holds exactly the selected videos (checked by ID); otherwise it is refused in words.
+      const chosen = new Set(selected.map((item) => item.id));
+      if (browse.listIds && isWholeFrozenList(chosen, browse.listIds)) return openWhole(chosen);
       const handoff = selectedIdsHandoff(browse.executed, selected, origin);
       if ('refused' in handoff) return handoffRefusalText(handoff);
       onOpenWorkshop(handoff);
@@ -345,7 +354,8 @@ export function LibraryVideosSection({
     || (!growthSortAvailable && applied.sort_by === VIDEO_GROWTH_SORT_FIELD && capabilitiesSettled ? BLOCKED_TEXT.growthSort : '')
     || (durationOtherFormat ? DURATION_OTHER_FORMAT_TEXT : '') || (browse.blocked ?? '');
   return (
-    <ExplorerVideosWorkspace
+    <>{translatedQuery && !blockedMessage && !navigation.error && <WatchSelection key={JSON.stringify(translatedQuery)} query={translatedQuery}/>}
+    <ExplorerVideosWorkspace key={browse.accessRevision}
       channelId={channelId}
       videoType={videoType}
       selectionScopeKey={currentAnalysisScope}
@@ -363,7 +373,11 @@ export function LibraryVideosSection({
         growthSortAvailable: growthSortAvailable || !capabilitiesSettled,
         facetsAvailable: !capabilitiesSettled || facetReadsAvailable || (Boolean(gates?.facets) && !browse.translated && !blockedMessage),
         derivedFiltersAvailable: derivedFiltersAvailable || !capabilitiesSettled, facetState: visibleFacetState,
-        matchedCount: visibleRawState.kind === 'ready' && rawPayload && !sourceExpired(rawPayload.pagination) ? rawPayload.pagination.matched_count : undefined,
+        matchedCount: visibleFacetState.kind === 'ready' && !sourceExpired(visibleFacetState.payload)
+          ? visibleFacetState.payload.matched_count
+          // The list's own total stays for as long as the list does (the bar above the grid says what time its order is from).
+          : browse.order ? browse.order.total
+          : rawPayload && !sourceExpired(rawPayload.pagination) ? rawPayload.pagination.matched_count : undefined,
         incomplete: Boolean(rawPayload) && !sourceExpired(rawPayload?.coverage) && rawPayload?.coverage.complete === false,
         resetKey: `${navigation.restored}:${activeSection}`,
         onChange: (next) => { setDraftConditions(next); setFilterErrors({}); setFilterError(''); },
@@ -390,7 +404,7 @@ export function LibraryVideosSection({
       inspector={gates ? { gates: inspectorGates(gates), timeZone } : undefined}
       workshop={workshop}
       onRetryCatalogue={() => setCatalogueReloadToken((value) => value + 1)}
-    />
+    /></>
   );
 }
 

@@ -295,7 +295,7 @@ FIELDS = MappingProxyType({item.id: item for item in (
           ("actual_end_at", "stream_actual_end_at", "videos.liveStreamingDetails.actualEndTime"))),
     _field("video.thumbnail_url", "text_code", origin="normalized", clock="membership",
            paths=("videos.id",), operators=_STATE_OPS, sortable=False,
-           evidence=("video_inventory.video_id",), normalization="youtube_mqdefault_reference_v1; not_fetched_or_cached"),
+           evidence=("video_inventory.video_id",), normalization="youtube_hqdefault_reference_v1; not_fetched_or_cached"),
     # Calculated from the current stored row with the Library's definitions and
     # gated with the other Baseline calculations (operations: video.static_metrics.v1).
     _field("video.title_length", "uint_decimal", unit="unicode_code_points", origin="calculated",

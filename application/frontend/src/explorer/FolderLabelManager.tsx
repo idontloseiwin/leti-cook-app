@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { organizationWrite, UnconfirmedOrganizationChange } from './sidebarReads';
 import type { ExplorerLabel, Folder } from '../types';
 import { deleteExplorerFolder, deleteExplorerLabel, renameExplorerFolder, renameExplorerLabel } from './api';
 
@@ -7,8 +8,8 @@ type Editing = { item: Item; name: string } | null;
 
 /** Rename or delete folders and labels. Channels always stay: a deleted folder's
  * channels move to no folder, and a deleted label is removed from every channel. */
-export function FolderLabelManager({ folders, labels, onChanged }: {
-  folders: Folder[]; labels: ExplorerLabel[]; onChanged: () => void;
+export function FolderLabelManager({ folders, labels, listState, onChanged }: {
+  folders: Folder[]; labels: ExplorerLabel[]; listState: 'ready' | 'loading' | 'error'; onChanged: () => Promise<boolean>;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
@@ -26,9 +27,21 @@ export function FolderLabelManager({ folders, labels, onChanged }: {
   ];
   const run = async (action: () => Promise<void>, done: string) => {
     setBusy(true); setMessage('');
-    try { await action(); setMessage(done); setEditing(null); setConfirming(null); onChanged(); }
-    catch (error) { setMessage(error instanceof Error ? error.message : String(error)); }
+    try {
+      await organizationWrite(action, onChanged);
+      setMessage(done); setEditing(null); setConfirming(null); await onChanged();
+    }
+    catch (error) {
+      if (error instanceof UnconfirmedOrganizationChange) { setEditing(null); setConfirming(null); }
+      setMessage(error instanceof Error ? error.message : String(error));
+    }
     finally { setBusy(false); }
+  };
+  const reload = async () => {
+    setBusy(true);
+    try {
+      if (await onChanged()) setMessage('Folders and labels reloaded. Check their current state.');
+    } finally { setBusy(false); }
   };
   const rename = (item: Item, name: string) => run(
     () => item.kind === 'folder' ? renameExplorerFolder(item.id, name) : renameExplorerLabel(item.id, name),
@@ -61,10 +74,15 @@ export function FolderLabelManager({ folders, labels, onChanged }: {
       <header><h2 id="folder-label-manager-title">Folders and labels</h2>
         <button type="button" aria-label="Close folders and labels" disabled={busy} onClick={close}>×</button></header>
       <p>Renaming changes the name everywhere. Deleting never removes a channel: a folder's channels move to no folder, and a label is taken off every channel.</p>
-      <h3>Folders</h3>
-      {items.some((item) => item.kind === 'folder') ? <ul>{items.filter((item) => item.kind === 'folder').map(row)}</ul> : <p>No folders yet.</p>}
-      <h3>Labels</h3>
-      {items.some((item) => item.kind === 'label') ? <ul>{items.filter((item) => item.kind === 'label').map(row)}</ul> : <p>No labels yet.</p>}
+      {listState === 'ready' ? <>
+        <h3>Folders</h3>
+        {items.some((item) => item.kind === 'folder') ? <ul>{items.filter((item) => item.kind === 'folder').map(row)}</ul> : <p>No folders yet.</p>}
+        <h3>Labels</h3>
+        {items.some((item) => item.kind === 'label') ? <ul>{items.filter((item) => item.kind === 'label').map(row)}</ul> : <p>No labels yet.</p>}
+      </> : listState === 'loading' ? <p>Loading folders and labels…</p> : <>
+        <p>Folders and labels are unavailable.</p>
+        <button type="button" disabled={busy} onClick={() => void reload()}>Reload folders and labels</button>
+      </>}
       <p role="status" aria-live="polite">{message}</p>
     </dialog>}
   </>;

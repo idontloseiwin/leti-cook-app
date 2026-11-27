@@ -21,8 +21,11 @@ QUOTA_MAX_ROWS = 100_000
 RETAINED_SQL_DEPENDENCIES = {}
 
 
-def _json(database, operation, statement, params=()):
-    row = database.read_row(operation, statement, params)
+def _json(database, operation, statement, params=(), *, disable_jit=False):
+    # On request this read turns JIT off: a summary over every video state would
+    # otherwise spend most of its time compiling expressions before it runs.
+    row = (database.read_row(operation, statement, params, disable_jit=True) if disable_jit
+           else database.read_row(operation, statement, params))
     if row is None:
         return None
     if not isinstance(row, Mapping) or set(row) != {"value"}:
@@ -83,7 +86,7 @@ def get_video_collection_health(database):
 
 
 def get_typed_video_collection_health(database):
-    return _json(database, "operational_typed_video_collection_health", TYPED_VIDEO_COLLECTION_SQL)
+    return _json(database, "operational_typed_video_collection_health", TYPED_VIDEO_COLLECTION_SQL, disable_jit=True)
 
 QUOTA_DAY_SQL = """
 with sampled as materialized (

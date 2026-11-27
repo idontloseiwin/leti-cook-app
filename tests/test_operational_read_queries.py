@@ -36,7 +36,8 @@ class DirectDatabase:
             raise DatabaseError('database_result_limit_exceeded')
         return value
 
-    def read_row(self, operation, statement, params=()):
+    def read_row(self, operation, statement, params=(), *, disable_jit=False):
+        self.jit_off = getattr(self, 'jit_off', []) + [(operation, disable_jit)]
         return self._read(operation, statement, params, 1)
 
     def read_rows(self, operation, statement, params=(), *, max_rows):
@@ -131,6 +132,8 @@ class HealthReadTests(unittest.TestCase):
         with patch('db.videos.video_collection.emit_event') as emit:
             self.assertEqual(VideoCollectionRepository(db).typed_health(), typed)
         self.assertTrue(all(call.args[3] == 'rpc:get_typed_video_collection_health' for call in emit.call_args_list))
+        # The summary over every video state runs without JIT; other summaries keep the server default.
+        self.assertEqual(db.jit_off[0], ('operational_typed_video_collection_health', True))
         self.assertEqual(ChannelSyncRepository(db).health(), sync)
         self.assertTrue(all(c[3] == 1 for c in db.calls))
 

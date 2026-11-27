@@ -4,6 +4,7 @@ from copy import deepcopy
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+import re
 import sys
 import time
 import unittest
@@ -252,6 +253,140 @@ class ServiceTests(unittest.TestCase):
         self.assertTrue(operation.read_only)
         self.assertTrue(operation.repeatable_read)
         self.assertTrue(operation.disable_jit)
+
+
+def list_row(index):
+    """The fixture row as video `index` (the test lists them in index order)."""
+    row = deepcopy(page()['rows'][0])
+    row.update(video_id='a%010d' % index, views=index, sort_keys=[str(index), 'a%010d' % index])
+    return row
+
+
+def joined(indices):
+    return ''.join('a%010d' % index for index in indices)
+
+
+class OrderedListTests(unittest.TestCase):
+    """page.order = "ids": the complete ordered ID list read with its first page; page.ids: its slices."""
+    CHANNEL = {'kind': 'channel', 'id': 'UC' + 'a' * 22}
+
+    def setUp(self):
+        self.repo = Repository()
+        self.service = QueryService(self.repo, lambda: CONTEXT, clock=lambda: NOW)
+        self.request = query(scope=self.CHANNEL, select=['video.id', 'video.title', 'video.views'])
+
+    def execute(self, page, rows, total=None, ids=None):
+        self.repo.data['rows'] = rows
+        if total is not None:
+            self.repo.data.update(order_total=total, order_ids=ids)
+        self.request['page'] = page
+        return self.service.execute(canonical(self.request))
+
+    def refused(self, *args, code='backend_unavailable'):
+        with self.assertRaisesRegex(QueryRejected, code):
+            self.execute(*args)
+
+    def test_the_list_page_returns_every_id_in_the_page_order(self):
+        listed = {'size': 3, 'growth_lifetime': 'page', 'order': 'ids'}
+        result = self.execute(listed, [list_row(i) for i in range(4)], 10, joined(range(10)))
+        self.assertEqual([row['id'] for row in result['rows']], ['a%010d' % i for i in range(3)])
+        self.assertEqual(result['page']['order'], {'total_count': 10, 'ids': joined(range(10)), 'limit': 200_000})
+        self.assertTrue(result['page']['has_more'])
+        # At an anchor the page is the list's slice from that row; the list stays whole.
+        anchored = {**listed, 'anchor_id': 'a0000000005'}
+        result = self.execute(anchored, [list_row(i) for i in range(5, 9)], 10, joined(range(10)))
+        self.assertEqual(result['page']['order']['ids'], joined(range(10)))
+        self.assertEqual(self.execute({**listed, 'anchor_id': 'a0000000007'}, [list_row(i) for i in range(7, 10)], 10,
+                                      joined(range(10)))['page']['has_more'], False)
+        # An empty list; a list past the limit keeps its count and withholds its IDs.
+        self.assertEqual(self.execute(listed, [], 0, '')['page']['order'], {'total_count': 0, 'ids': '', 'limit': 200_000})
+        past = self.execute(listed, [list_row(i) for i in range(4)], 200_001, None)['page']['order']
+        self.assertEqual(past, {'total_count': 200_001, 'ids': None, 'limit': 200_000})
+        # The page is not served unless it is exactly the list's slice at its first row.
+        self.refused(listed, [list_row(i) for i in range(1, 5)], 10, joined(range(10)))        # not from the start
+        self.refused(anchored, [list_row(i) for i in range(6, 10)], 10, joined(range(10)))     # not from the anchor
+        self.refused(anchored, [list_row(i) for i in range(5, 8)], 10, joined(range(10)))      # has_more disagrees
+        self.refused(listed, [list_row(i) for i in (0, 2, 1, 3)], 10, joined(range(10)))       # another order
+        self.refused(listed, [list_row(i) for i in range(4)], 10, joined([*range(9), 0]))      # an ID twice
+        self.refused(listed, [list_row(i) for i in range(4)], 10, 'b' + joined(range(10))[1:])  # misaligned
+        self.refused(listed, [list_row(i) for i in range(4)], 11, joined(range(10)))           # count disagrees
+        self.refused(listed, [list_row(i) for i in range(4)], 10, None)                        # withheld within the limit
+        self.refused(listed, [], 1, joined([0]))                                               # empty page of a list
+        self.refused(listed, [list_row(i) for i in range(4)], 10, joined(range(10)).replace('a', '!', 1))
+        for total in (-1, True, '10'):
+            self.refused(listed, [list_row(i) for i in range(4)], total, joined(range(10)))
+
+    def test_slices_return_requested_videos_in_the_requested_order(self):
+        wanted = ['a%010d' % i for i in (7, 3, 5)]
+        page = {'size': 3, 'growth_lifetime': 'page', 'ids': wanted}
+        result = self.execute(page, [list_row(7), list_row(5)])
+        self.assertEqual([row['id'] for row in result['rows']], [wanted[0], wanted[2]], 'a video that left is absent')
+        self.assertEqual(result['page'], {'has_more': False, 'next_cursor': None})
+        self.refused(page, [list_row(5), list_row(7)])
+        self.refused(page, [list_row(7), list_row(4)])
+
+    def test_list_options_keep_the_query_identity_and_its_text(self):
+        plain = {'size': 3, 'growth_lifetime': 'page'}
+        plans = [self.service.validate(canonical({**self.request, 'page': value})) for value in (
+            plain, {**plain, 'order': 'ids'}, {**plain, 'order': 'ids', 'anchor_id': 'a0000000001'},
+            {**plain, 'ids': ['a0000000001']})]
+        self.assertEqual(len({plan.fingerprint for plan in plans}), 1, 'a slice continues the list of its first page')
+        self.assertNotIn(b'"order"', plans[0].encoded)
+        self.assertNotIn(b'"ids"', plans[0].encoded)
+        # The list page's keyset cursor is a cursor of the same query.
+        cursor = self.execute({**plain, 'order': 'ids'}, [list_row(i) for i in range(4)], 10, joined(range(10)))['page']['next_cursor']
+        self.repo.data.pop('order_total'), self.repo.data.pop('order_ids')
+        self.assertEqual(len(self.execute({'size': 3, 'growth_lifetime': 'page', 'after': cursor}, [list_row(i) for i in range(3, 6)])['rows']), 3)
+
+    def test_list_options_need_a_current_channel_page(self):
+        for request in (
+                query(page={'size': 3, 'order': 'ids'}),                                  # folder scope
+                query(scope=self.CHANNEL, consistency='frozen', page={'size': 3, 'order': 'ids'}),
+                query(scope=self.CHANNEL, page={'size': 3, 'order': 'ids', 'after': 'abc'}),
+                query(scope=self.CHANNEL, page={'size': 3, 'order': 'ids', 'ids': ['a0000000001']}),
+                query(scope=self.CHANNEL, page={'size': 3, 'growth_lifetime': 'page', 'anchor_id': 'a0000000001', 'ids': ['a0000000001']}),
+                query(scope=self.CHANNEL, page={'size': 1, 'ids': ['a0000000001', 'a0000000002']}),
+                query(scope=self.CHANNEL, page={'size': 3, 'ids': ['a0000000001', 'a0000000001']}),
+                query(scope=self.CHANNEL, page={'size': 3, 'ids': []}),
+                query(scope=self.CHANNEL, page={'size': 3, 'ids': ['UC' + 'a' * 22]}),
+                query(scope=self.CHANNEL, page={'size': 3, 'order': 'all'})):
+            with self.subTest(page=request['page'], scope=request['scope']['kind']), self.assertRaisesRegex(QueryRejected, 'invalid_query'):
+                self.service.validate(canonical(request))
+
+    def test_the_whole_list_has_its_own_response_budget(self):
+        from research_query.contracts import MAX_ORDER_IDS, MAX_RESPONSE_BYTES
+        listed = {'size': 3, 'growth_lifetime': 'page', 'order': 'ids'}
+        result = self.execute(listed, [list_row(i) for i in range(4)], MAX_ORDER_IDS, joined(range(MAX_ORDER_IDS)))
+        self.assertEqual(len(result['page']['order']['ids']), MAX_ORDER_IDS * 11)
+        self.assertGreater(len(canonical(result)), MAX_RESPONSE_BYTES)
+
+    def test_the_list_uses_the_page_order_for_every_sort_key(self):
+        from db.reads.research_sql import compile_query
+        from research_query.validation import validate
+        page_order = re.compile(r"\) ORDER BY (.+?) LIMIT %\(limit\)s\)")
+        list_order = re.compile(r"string_agg\(video_id,'' ORDER BY (.+?)\),''\) END AS order_ids")
+        for field in ('video.views', 'video.likes', 'video.comments', 'video.published_at', 'video.duration_seconds', 'video.title'):
+            for direction in ('asc', 'desc'):
+                with self.subTest(field=field, direction=direction):
+                    request = {**self.request, 'select': ['video.id', field] if field != 'video.id' else ['video.id'],
+                               'order_by': [{'field': field, 'direction': direction}]}
+                    plain, _ = compile_query(validate(canonical({**request, 'page': {'size': 50, 'growth_lifetime': 'page'}}), CONTEXT))
+                    listed, params = compile_query(validate(canonical({**request, 'page': {'size': 50, 'growth_lifetime': 'page', 'order': 'ids'}}), CONTEXT))
+                    ordering = page_order.search(listed)[1]
+                    self.assertEqual(list_order.search(listed)[1], ordering, 'one ORDER BY for the page and its list')
+                    self.assertEqual(ordering.count('NULLS LAST'), 2, 'unknown values last; the video ID decides ties')
+                    self.assertTrue(ordering.endswith('video_id COLLATE "C" ASC NULLS LAST'))
+                    self.assertEqual(params['order_limit'], 200_000)
+                    self.assertNotIn('matched_order', plain)
+                    join = re.search(r" CROSS JOIN \(SELECT count\(\*\) AS order_total[\s\S]+? matched_order", listed)[0]
+                    self.assertEqual(listed.replace(join, '').replace(',matched_order.order_total,matched_order.order_ids', ''), plain,
+                                     'a page without the list keeps exactly its own text')
+                    sliced, params = compile_query(validate(canonical({**request, 'page': {'size': 50, 'growth_lifetime': 'page',
+                                                                                             'ids': ['a0000000002', 'a0000000001']}}), CONTEXT))
+                    self.assertEqual(params['page_ids'], ['a0000000002', 'a0000000001'])
+                    self.assertIn("AND (video_id=ANY(%(page_ids)s::text[])) ORDER BY array_position(%(page_ids)s::text[],video_id) LIMIT", sliced)
+                    self.assertIn('ORDER BY array_position(%(page_ids)s::text[],video_id)) FROM details', sliced)
+                    self.assertNotIn('matched_order', sliced)
 
 
 class HTTPTests(unittest.TestCase):

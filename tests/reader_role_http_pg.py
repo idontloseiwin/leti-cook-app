@@ -49,6 +49,9 @@ ROLE_PROBE = ("SELECT current_user::text AS role, session_user::text AS login, "
 READER = ('lic_reader', 'authenticator', 'on')
 # Protected routes this harness does not run, and why. Their reads follow the same gateway rule.
 NOT_HERE = {
+    'POST /research/alerts/rules': 'owner command stores a rule; alerts_pg.py',
+    'PATCH /research/alerts/rules/{rule_id}': 'owner command revises a rule; alerts_pg.py',
+    'POST /research/alerts/inbox/{item_id}/read': 'owner command updates a read receipt; alerts_pg.py',
     'GET /channels/{channel_id}/backfill-current-stats': 'channel command router (web/channels.py) needs the collection runtime',
     'GET /channels/{channel_id}/videos/long/backfill-current-stats': 'same router',
     'GET /channels/{channel_id}/hydration': 'same router',
@@ -159,12 +162,14 @@ class ReaderRoleHttp(unittest.TestCase):
         quota = YouTubeQuotaRepository(db, project_id='synthetic-reader')
         sources = AcquisitionService(attempt_recorder=cls.recorder, ledger_reader=lambda day, quota_bucket=CAPPED_BUCKET:
                                      quota.list_phase_attempts(day, phase=PHASE, quota_bucket=quota_bucket))
+        cls.source_service = sources
+        from db.channel.search_membership import library_membership
         for router in (create_research_router(db), create_explorer_router(database=db), library.router,
                        create_home_router(cache=cache, library=library, core=core, database=db),
                        create_saved_collections_router(SavedCollectionsRepository(db)),
                        create_video_type_reviews_router(VideoTypeReviewsRepository(db)),
                        create_channel_trash_router(ChannelTrashRepository(db)),
-                       create_provider_sources_router(sources),
+                       create_provider_sources_router(sources, library_states=lambda ids: library_membership(db, ids)),
                        create_system_router(cache=cache, PT=ZoneInfo('America/Los_Angeles'), core=core, database=db,
                                             VIDEO_TYPE_REVIEWS_REPOSITORY=VideoTypeReviewsRepository(db))):
             app.include_router(router)
@@ -315,7 +320,15 @@ class ReaderRoleHttp(unittest.TestCase):
             summary = value['summary']
             self.assertEqual((summary['subscriptions'], summary['deliveries_24h'], summary['events_pending']),
                              ({'pending': planned}, 1, 0))
-            self.assertTrue(summary['last_delivery_at'])
+            self.assertIsNotNone(datetime.fromisoformat(summary['last_delivery_at']).utcoffset())
+            self.assertIs(type(summary['ramp_stage']), int)
+            self.assertGreaterEqual(summary['ramp_stage'], 0)
+            expected = json.loads((ROOT/'tests/fixtures/websub_health_wire.json').read_bytes())
+            expected['summary'].update(last_delivery_at=summary['last_delivery_at'],
+                                       subscriptions={'pending': planned}, ramp_stage=summary['ramp_stage'])
+            self.assertEqual(value, expected)
+            # JSON-level equality distinguishes false and 0 on the browser boundary.
+            self.assertEqual(json.dumps(value, sort_keys=True), json.dumps(expected, sort_keys=True))
             self.assertEqual((summary['breaker_open'], summary['events_24h']), (False, {}))
             # Totals only: no channel, video, callback or key reaches the answer.
             self.assertNotIn('UC', json.dumps(summary))
@@ -346,7 +359,41 @@ class ReaderRoleHttp(unittest.TestCase):
             answer = self.read('post', '/sources/acquisitions/execute', json=body, headers={'X-Saved-Work': '1'}).json()
         self.assertEqual((answer['completeness'], len(answer['rows']), pages), ('complete', 3, []))
 
+    def case_channel_search(self):
+        from provider_sources.transport import Exchange
+        fresh = 'UC' + 'Z' * 22
+        channels = (VISIBLE, HIDDEN, fresh)
+        seen = []
+
+        def send(plan, params, **kwargs):
+            seen.append(plan.method_id)
+            if plan.method_id == 'youtube.search.list':
+                envelope = {'kind': 'youtube#searchListResponse', 'items': [
+                    {'id': {'kind': 'youtube#channel', 'channelId': channel}} for channel in channels]}
+            else:
+                self.assertEqual(plan.method_id, 'youtube.channels.list')
+                envelope = {'kind': 'youtube#channelListResponse', 'items': [{'id': channel} for channel in channels]}
+            return Exchange(200, json.dumps(envelope).encode(), None, None, None)
+
+        ticket = self.client.post('/sources/channel-search/preview', json={'mode': 'channel', 'q': 'studio', 'stats': False})
+        self.assertEqual(ticket.status_code, 200)
+        preview = ticket.json()
+        self.assertEqual(preview['max_cost'], {'search_queries': 1, 'general': 1})
+        with patch.object(self.source_service, 'send', send):
+            result = self.read('post', '/sources/channel-search/execute', headers={'X-Saved-Work': '1'},
+                               json={'action_id': preview['action_id'], 'confirmed_cost': preview['max_cost']}).json()
+        self.assertEqual(seen, ['youtube.search.list', 'youtube.channels.list'])
+        self.assertEqual(result['library'], {VISIBLE: 'tracked', HIDDEN: 'removed', fresh: 'new'})
+
+    def case_alert_preview(self):
+        rule = {'event':'video.views','name':'Views','direction':'up','threshold':'100',
+                'scope':{'kind':'channel','id':FIXTURE['channels'][0]['id']},'video_type':'long'}
+        self.read('post','/research/alerts/preview',json=rule)
+
     CASES = {
+        'POST /research/alerts/preview': case_alert_preview,
+        'GET /research/alerts/inbox': lambda self: self.read('get','/research/alerts/inbox'),
+        'GET /research/alerts/rules': lambda self: self.read('get','/research/alerts/rules'),
         'POST /research/queries/execute': case_research_query,
         'POST /research/queries/frozen-ids': case_frozen_ids,
         'POST /research/operations/execute': case_operation,
@@ -361,6 +408,7 @@ class ReaderRoleHttp(unittest.TestCase):
         'GET /saved/collections/{collection_id}/members': case_members,
         'GET /user-work/deleted-channels/titles': case_deleted_titles,
         'POST /sources/acquisitions/execute': case_acquisition,
+        'POST /sources/channel-search/execute': case_channel_search,
         'GET /system/websub': case_websub,
     }
 

@@ -49,24 +49,34 @@ def metric_values(values, rows='population'):
     return "metric_values AS MATERIALIZED (\n " + views + other + ")"
 
 
-# Numeric interpolation at the two bounding ranks (R-7, n-1); no double precision cast.
-QUANTILES = ',\n'.join(
-    f"(max(value) FILTER(WHERE r=floor((n-1)*{p})+1)"
-    f"*(1-max((n-1)*{p}-floor((n-1)*{p})))+"
-    f"max(value) FILTER(WHERE r=ceil((n-1)*{p})+1)"
-    f"*max((n-1)*{p}-floor((n-1)*{p})))::text AS {name}"
-    for name, p in [('q1', '.25'), ('median', '.5'), ('q3', '.75')])
+# Exact R-7 quantiles at p = 1/4, 1/2 and 3/4. Their one-based ranks use
+# integer division. With n constant per metric, the fractional weight needs
+# to be computed only after aggregation. Numeric weights preserve precision.
+_QUARTILES = (('q1', 1, 4, '.25'), ('median', 1, 2, '.5'), ('q3', 3, 4, '.25'))
+_RANK_VALUES = ',\n '.join(
+    f"max(value) FILTER (WHERE r=((n-1)*{numerator})/{denominator}+1) AS {name}_lo,\n "
+    f"max(value) FILTER (WHERE r=(((n-1)*{numerator})+{denominator-1})/{denominator}+1) AS {name}_hi"
+    for name, numerator, denominator, _ in _QUARTILES)
+
+
+def _interpolation(name, numerator, denominator, step):
+    weight = f"(mod((known_count-1)*{numerator},{denominator})*{step})"
+    return f"({name}_lo*(1-{weight})+{name}_hi*{weight})::text AS {name}"
 
 
 # Exact count, total, mean, extremes and quartiles per metric of metric_values.
 SUMMARIES = """ranked_values AS (
  SELECT metric,value,row_number() OVER(PARTITION BY metric ORDER BY value) AS r,
  count(*) OVER(PARTITION BY metric) AS n FROM metric_values),
-summaries AS (
+rank_summary AS (
  SELECT metric,count(*) AS known_count,sum(value)::text AS total,avg(value)::text AS mean,
  min(value)::text AS min,max(value)::text AS max,
- """ + QUANTILES + """
- FROM ranked_values GROUP BY metric)"""
+ """ + _RANK_VALUES + """
+ FROM ranked_values GROUP BY metric),
+summaries AS (
+ SELECT metric,known_count,total,mean,min,max,
+ """ + ',\n '.join(_interpolation(*q) for q in _QUARTILES) + """
+ FROM rank_summary)"""
 
 
 VIEW_DEFINITION = view_definition()

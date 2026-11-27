@@ -24,7 +24,7 @@ def proof_now(plan):
 AGE_FROM = "CASE WHEN n.video_type='stream' THEN n.actual_end_at ELSE n.published_at END"
 
 
-def prepared_sql(plan, params):
+def prepared_sql(plan, params, *, growth_columns=None):
     if not requested(plan):
         return "prepared AS NOT MATERIALIZED (SELECT normalized.* FROM normalized)", "NULL::timestamptz"
     options=plan.request.observations
@@ -97,7 +97,7 @@ def prepared_sql(plan, params):
         # 28-day growth never narrows the population: every admitted row gets a status.
         params.update(research_growth.parameters(plan))
         joins.append(research_growth.joins(plan))
-        fields += list(research_growth.FIELDS)
+        fields += research_growth.FIELDS if growth_columns is None else growth_columns
         deadlines += list(research_growth.DEADLINES)
     fields.append('least('+','.join(deadlines)+') AS observation_deadline')
     # Observation joins feed both whole-scope expiry and the sorted page.

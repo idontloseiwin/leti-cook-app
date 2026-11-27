@@ -70,12 +70,12 @@ class ProviderRefusalTests(unittest.TestCase):
     def test_a_part_that_is_not_an_object_is_a_typed_shape_error(self):
         # An AttributeError before; an empty or missing part still means "no values".
         for part in ('statistics','snippet','contentDetails'):
-            for value in ('x',7,[{}],True):
+            for value in ('x',7,[{}],True,False,0,[], ''):
                 with self.subTest(part=part,value=value):
                     with self.assertRaises(YouTubeBatchStatsError) as caught:
                         batch(200,{'items':[{'id':'vid00000001',part:value}]})
                     self.assertEqual(caught.exception.code,'invalid_items_shape')
-        for value in (None,{},[],''):
+        for value in (None,{}):
             result=batch(200,{'items':[{'id':'vid00000001','statistics':value}]})
             self.assertEqual(result['items'][0]['views'],None)
 

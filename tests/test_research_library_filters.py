@@ -339,13 +339,14 @@ class FrozenFacetTests(unittest.TestCase):
         request_ = listed.request
         session = type('Session', (), dict(source_id=request_.source.id, video_type=request_.video_types[0],
             scope_kind=request_.scope.kind, scope_id=request_.scope.id, plan=listed, columns=tuple(columns), rows=rows,
+            ids=tuple(json.loads(row)[0] for row in rows), session_id='facet-test',
             valid_before=NOW + timedelta(seconds=600)))()
         finished = []
         return type('Handle', (), dict(session=session, require_current=lambda self: finished.append(True), finished=finished))()
 
     def bind(self, operation, handle):
         with patch('research_query.frozen_service.frozen_reference', return_value=handle) as reference:
-            binding = facets.bind(object(), operation, lambda: False, 0)
+            binding = facets.bind(QueryService(None, lambda: CONTEXT), operation, lambda: False, 0)
         self.assertEqual(reference.call_args.args[1], 'abc')
         return binding
 

@@ -15,6 +15,13 @@ _NONNEGATIVE_INTEGER_RE = re.compile(r"^\d+$")
 _MAX_COUNTER = 9_223_372_036_854_775_807
 
 
+def youtube_unsigned_long(value: Any) -> int | None:
+    """A nonnegative integer or its ASCII decimal encoding in the uint64 range."""
+    if isinstance(value, str) and 1 <= len(value) <= 20 and value.isascii() and value.isdecimal():
+        value = int(value)
+    return value if type(value) is int and 0 <= value < 2**64 else None
+
+
 def youtube_counter_integer(value: Any, *, maximum: int = _MAX_COUNTER) -> int | None:
     """Normalize one public counter without inventing or truncating a value.
 

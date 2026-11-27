@@ -42,6 +42,23 @@ const file={format:'leti-cook-user-work',version:5,created_at:row.created_at,use
 assert.equal(backup.parseUserWorkBackup(file).user_work.queries[0].conditions.query.video_types[0],'stream');
 const preview=backup.parseUserWorkPreview({counts:{folders:0,labels:0,channels:0,collections:0,reviews:0,queries:1},can_restore:true,backup:file});
 assert.equal(preview.counts.queries,1);
+const alertFile = structuredClone(file);
+alertFile.version = 6;
+const portableRule = {definition:{name:'Watch',scope:{kind:'label',id:'monetized'},event:'channel.subscribers',direction:'up',threshold:'9223372036854775807'},enabled:false,source_ref:null};
+alertFile.user_work.alert_rules = [portableRule];
+alertFile.user_work.folders = [{id,name:'Undated folder',created_at:null}];
+assert.equal(backup.parseUserWorkBackup(alertFile).user_work.folders[0].created_at,null);
+assert.deepEqual(backup.parseUserWorkBackup(alertFile).user_work.alert_rules,[portableRule]);
+const named = structuredClone(alertFile);
+named.user_work.alert_rules[0].definition.name = '\uFEFF';
+named.user_work.alert_rules[0].definition.video_type = null;
+assert.deepEqual(backup.parseUserWorkBackup(named).user_work.alert_rules[0].definition,{...portableRule.definition,name:'\uFEFF'});
+assert.equal(backup.parseUserWorkPreview({counts:{...preview.counts,alert_rules:1},can_restore:true,backup:alertFile}).counts.alert_rules,1);
+for (const mutate of [r => r.definition.measured = '10', r => r.started_at = '2026-01-01', r => r.source_ref = 'monetized', r => r.definition.scope.kind = 'folder', r => r.definition.threshold = '9223372036854775808']) {
+  const bad = structuredClone(alertFile);
+  mutate(bad.user_work.alert_rules[0]);
+  assert.throws(() => backup.parseUserWorkBackup(bad));
+}
 for(const key of ['rows','last_result','access_token']){const bad=structuredClone(file);bad.user_work.queries[0][key]=[];assert.throws(()=>backup.parseUserWorkBackup(bad));}
 console.log('Saved v2 query, source bindings, exact numbers, observation windows and backup v5 passed.');
 

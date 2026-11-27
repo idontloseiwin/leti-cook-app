@@ -1,5 +1,5 @@
 import { captureSourceLifetime, sourceLifetimeParser } from '../sourceLifetime.ts';
-import { serverErrorMessage } from '../serverText.ts';
+import { serverErrorMessage, unreadableAnswerError } from '../serverText.ts';
 import { observeDiscoveryResponse } from '../discoveryJournal';
 import type {
   ExplorerChannelLookupResult,
@@ -138,8 +138,10 @@ export async function requestJson(
   if (signal?.aborted) controller.abort();
   signal?.addEventListener('abort', abortFromCaller, { once: true });
   const timeout = window.setTimeout(() => {
-    timedOut = true;
-    controller.abort();
+    if (!controller.signal.aborted) {
+      timedOut = true;
+      controller.abort();
+    }
   }, REQUEST_TIMEOUT_MS);
   try {
     const headers = new Headers(init?.headers);
@@ -153,9 +155,9 @@ export async function requestJson(
       // fetch rejects with a TypeError only when no answer arrived.
       throw error instanceof TypeError && !isAbortError(error) ? new ExplorerNetworkError(error) : error;
     });
-    const payload = await response.json().catch(() => undefined);
     if (!response.ok) {
-      const details = errorDetails(payload);
+      // The refusal status still applies when the server sends no JSON error detail.
+      const details = errorDetails(await response.json().catch(() => undefined));
       throw new ExplorerApiError(
         serverErrorMessage(response.status, details.code, details.message),
         response.status,
@@ -163,10 +165,17 @@ export async function requestJson(
         details.limit,
       );
     }
+    const payload = await response.json().catch((error: unknown) => {
+      if (isAbortError(error)) throw error;
+      if (error instanceof TypeError) throw new ExplorerNetworkError(error);
+      throw unreadableAnswerError(error);
+    });
+    controller.signal.throwIfAborted();
     observeDiscoveryResponse(payload, response.headers);
     return captureSourceLifetime(payload, response.headers, requestStarted);
   } catch (error) {
-    if (timedOut && isAbortError(error)) {
+    if (signal?.aborted) throw controller.signal.reason;
+    if (timedOut && !(error instanceof ExplorerApiError)) {
       throw new ExplorerApiError(
         'The Explorer request timed out. Try again.',
         408,
@@ -323,26 +332,39 @@ export async function createExplorerLabel(
   }));
 }
 
+function checkOrganizationReceipt(payload: unknown, expected: Record<string, unknown>) {
+  if (!payload || typeof payload !== 'object'
+    || Object.entries(expected).some(([key, value]) => (payload as Record<string, unknown>)[key] !== value)) {
+    throw new ExplorerContractError('The server did not confirm the requested change.');
+  }
+}
+
 // Renames answer with the new name; deletes keep the channels (a deleted
 // folder's channels move to no folder, a deleted label is removed from them).
 export async function renameExplorerFolder(folderId: string, name: string, signal?: AbortSignal): Promise<void> {
-  await requestJson(`/folders/${encodeURIComponent(folderId)}`, signal, {
+  const folder = parseExplorerFolder(await requestJson(`/folders/${encodeURIComponent(folderId)}`, signal, {
     method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }),
-  });
+  }));
+  checkOrganizationReceipt(folder, { id: folderId, name: name.trim() });
 }
 
 export async function deleteExplorerFolder(folderId: string, signal?: AbortSignal): Promise<void> {
-  await requestJson(`/folders/${encodeURIComponent(folderId)}`, signal, { method: 'DELETE' });
+  const result = await requestJson(`/folders/${encodeURIComponent(folderId)}`, signal, { method: 'DELETE' });
+  checkOrganizationReceipt(result, { status: 'deleted', id: folderId });
 }
 
 export async function renameExplorerLabel(labelKey: string, name: string, signal?: AbortSignal): Promise<void> {
-  await requestJson(`/labels/${encodeURIComponent(labelKey)}`, signal, {
+  const label = parseExplorerLabel(await requestJson(`/labels/${encodeURIComponent(labelKey)}`, signal, {
     method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }),
-  });
+  }));
+  // The label endpoint collapses Python whitespace, including the four ASCII separators.
+  const savedName = name.replace(/[\p{White_Space}\u001c-\u001f]+/gu, ' ').replace(/^ | $/g, '');
+  checkOrganizationReceipt(label, { label_key: labelKey, name: savedName });
 }
 
 export async function deleteExplorerLabel(labelKey: string, signal?: AbortSignal): Promise<void> {
-  await requestJson(`/labels/${encodeURIComponent(labelKey)}`, signal, { method: 'DELETE' });
+  const result = await requestJson(`/labels/${encodeURIComponent(labelKey)}`, signal, { method: 'DELETE' });
+  checkOrganizationReceipt(result, { status: 'deleted', label_key: labelKey });
 }
 
 export async function assignExplorerChannelLabel(
@@ -351,7 +373,7 @@ export async function assignExplorerChannelLabel(
   enabled: boolean,
   signal?: AbortSignal,
 ): Promise<void> {
-  await requestJson(
+  const result = await requestJson(
     `/channels/${encodeURIComponent(channelId)}/labels/${encodeURIComponent(labelKey)}`,
     signal,
     {
@@ -360,6 +382,7 @@ export async function assignExplorerChannelLabel(
       body: JSON.stringify({ enabled }),
     },
   );
+  checkOrganizationReceipt(result, { status: 'ok', enabled });
 }
 
 export async function assignExplorerChannelFolder(
@@ -368,11 +391,12 @@ export async function assignExplorerChannelFolder(
   signal?: AbortSignal,
 ): Promise<void> {
   const encoded = encodeURIComponent(channelId);
-  await requestJson(`/channels/${encoded}/folder`, signal, {
+  const result = await requestJson(`/channels/${encoded}/folder`, signal, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ folder_id: folderId }),
   });
+  checkOrganizationReceipt(result, { status: 'ok' });
 }
 
 export function isContractError(error: unknown): error is ExplorerContractError {

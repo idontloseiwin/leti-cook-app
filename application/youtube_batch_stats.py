@@ -4,7 +4,7 @@ Persistence and scheduler routing remain owned by the collection services.
 """
 
 from youtube_client import youtube_api_get
-from youtube_source_fields import youtube_counter_integer
+from youtube_source_fields import youtube_counter_integer, youtube_unsigned_long
 from youtube_errors import classify_youtube_outcome, youtube_response_error
 
 
@@ -124,15 +124,6 @@ def unique_video_ids(video_ids):
     return result
 
 
-def int_or_none(value):
-    if value is None:
-        return None
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
-
-
 def normalize_parts(parts):
     normalized = []
     seen = set()
@@ -160,7 +151,7 @@ def normalize_batch_stats_item(item):
         "comment_count": youtube_counter_integer(statistics.get("commentCount")),
         "published_at": snippet.get("publishTime"),
         "duration": content_details.get("duration"),
-        "duration_ms": int_or_none(content_details.get("durationMillis")),
+        "duration_ms": youtube_unsigned_long(content_details.get("durationMillis")),
     }
 
 
@@ -182,7 +173,7 @@ def normalize_batch_stats_response(payload, requested_video_ids):
     # shape too; an empty or missing part still means "no values".
     if not isinstance(raw_items, list) or any(
         not isinstance(item, dict)
-        or any(item.get(part) and not isinstance(item.get(part), dict)
+        or any(item.get(part) is not None and not isinstance(item[part], dict)
                for part in ("statistics", "snippet", "contentDetails"))
         for item in raw_items
     ):
@@ -247,7 +238,10 @@ def normalize_batch_stats_response(payload, requested_video_ids):
         raw_failed_ids = raw_summary.get("failedVideoIds")
         if raw_failed_ids is None:
             raw_failed_ids = []
-        if not isinstance(raw_failed_ids, list):
+        if (not isinstance(raw_failed_ids, list)
+                or any(not isinstance(video_id, str) or not video_id or video_id != video_id.strip()
+                       for video_id in raw_failed_ids)
+                or len(set(raw_failed_ids)) != len(raw_failed_ids)):
             raise YouTubeBatchStatsError(
                 "videos.batchGetStats returned invalid failedVideoIds",
                 code="invalid_failed_ids_shape",
@@ -256,10 +250,10 @@ def normalize_batch_stats_response(payload, requested_video_ids):
                     "failed_ids_type": type(raw_failed_ids).__name__,
                 },
             )
-        failed_ids = unique_video_ids(raw_failed_ids)
-        requested_count = int_or_none(raw_summary.get("requestedVideoCount"))
-        succeeded_count = int_or_none(raw_summary.get("succeededVideoCount"))
-        failed_count = int_or_none(raw_summary.get("failedVideoCount"))
+        failed_ids = list(raw_failed_ids)
+        requested_count = youtube_unsigned_long(raw_summary.get("requestedVideoCount"))
+        succeeded_count = youtube_unsigned_long(raw_summary.get("succeededVideoCount"))
+        failed_count = youtube_unsigned_long(raw_summary.get("failedVideoCount"))
 
         diagnostics = {
             **diagnostics,

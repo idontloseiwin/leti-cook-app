@@ -596,6 +596,146 @@ class NativeFrozenTests(unittest.TestCase):
         print('FROZEN_FACETS ' + json.dumps({'rows': total, 'frozen_ms': round(frozen_s * 1000), 'after_writes_ms': round(kept_s * 1000)}),
               flush=True)
 
+    # --- Library's current list: page.order = "ids" and slices (page.ids) ---------------------------
+
+    def listed(self, q, **page):
+        """Library's first page of q and the ordered IDs of its whole list (None past the limit)."""
+        reply = self.query({**q, 'consistency': 'current', 'page': {'size': 50, 'growth_lifetime': 'page', 'order': 'ids', **page}})
+        joined = reply['page']['order']['ids']
+        return reply, None if joined is None else [joined[at:at + 11] for at in range(0, len(joined), 11)]
+
+    def sliced(self, q, ids):
+        return self.query({**q, 'consistency': 'current', 'page': {'size': 50, 'growth_lifetime': 'page', 'ids': ids}})
+
+    def test_14d_current_list_is_the_complete_order_for_every_sort_key(self):
+        """The list equals the one-statement order of the whole set (the frozen list) for each sort key and
+        direction: equal values by video ID, unknown values last. Its page is the plain current first page."""
+        shorts = ['z%010d' % n for n in range(LONG + 1, LONG + SHORT + 1)]
+        counters, metadata = sorted([shorts[10], shorts[11], shorts[500]]), sorted([shorts[20], shorts[21], shorts[600]])
+        old = -700 * 3600  # past the 696-hour window: the values are expired, the rows stay admitted
+        with self.clock_shift(counters[0], checked_at=old), self.clock_shift(counters[1], checked_at=old), \
+                self.clock_shift(counters[2], checked_at=old), self.clock_shift(metadata[0], metadata_checked_at=old), \
+                self.clock_shift(metadata[1], metadata_checked_at=old), self.clock_shift(metadata[2], metadata_checked_at=old):
+            for field in ('video.views', 'video.likes', 'video.comments', 'video.published_at', 'video.duration_seconds',
+                          'video.title'):
+                for direction in ('desc', 'asc'):
+                    with self.subTest(field=field, direction=direction):
+                        q = self.big('short', order_by=[{'field': field, 'direction': direction}])
+                        expected = self.ids_of(self.query(q))['ids']
+                        first, ids = self.listed(q)
+                        self.assertEqual(ids, expected)
+                        self.assertEqual(first['page']['order']['total_count'], SHORT)
+                        unknown = counters if field in ('video.views', 'video.likes', 'video.comments') else metadata
+                        self.assertEqual(ids[-3:], unknown, 'unknown values last, by video ID, never as zero')
+                        if field == 'video.views':
+                            known = [v for v in shorts if v not in unknown]
+                            sign = -1 if direction == 'desc' else 1
+                            self.assertEqual(ids[:-3], sorted(known, key=lambda v: (sign * (int(v[1:]) % 500) * 10, v)),
+                                             'equal views follow each other by video ID')
+                        plain = self.query({**q, 'consistency': 'current', 'page': {'size': 50, 'growth_lifetime': 'page'}})
+                        self.assertEqual([r['id'] for r in first['rows']], ids[:50])
+                        self.assertEqual((first['rows'], first['coverage'], first['provenance'], first['columns']),
+                                         (plain['rows'], plain['coverage'], plain['provenance'], plain['columns']),
+                                         'the same cells, states, sources and coverage as without the list')
+                        self.assertEqual(first['page']['has_more'], plain['page']['has_more'])
+
+    def test_14e_slices_never_skip_or_repeat_while_values_change(self):
+        q = self.big()  # views desc, 20,000 videos, ties every 500
+        started = time.perf_counter()
+        first, ids = self.listed(q)
+        list_ms = (time.perf_counter() - started) * 1000
+        started = time.perf_counter()
+        plain = self.query({**q, 'consistency': 'current', 'page': {'size': 50, 'growth_lifetime': 'page'}})
+        plain_ms = (time.perf_counter() - started) * 1000
+        self.assertEqual((len(ids), len(set(ids))), (LONG, LONG))
+        self.assertEqual(ids, self.ids_of(self.query(q))['ids'])
+        seen = [r['id'] for r in first['rows']]
+        # Between slices the collector lifts a coming video to the top and drops a shown one to zero.
+        rising, falling = ids[160], ids[3]
+        old = {v: self.admin.execute('SELECT views,checked_at FROM public.videos WHERE video_id=%s', (v,)).fetchone()
+               for v in (rising, falling)}
+        try:
+            slice_ms = []
+            for start in range(50, 250, 50):
+                if start == 100:
+                    self.admin.execute('UPDATE public.videos SET views=987654321,checked_at=clock_timestamp() WHERE video_id=%s', (rising,))
+                    self.admin.execute('UPDATE public.videos SET views=0,checked_at=clock_timestamp() WHERE video_id=%s', (falling,))
+                began = time.perf_counter()
+                reply = self.sliced(q, ids[start:start + 50])
+                slice_ms.append((time.perf_counter() - began) * 1000)
+                self.assertEqual([r['id'] for r in reply['rows']], ids[start:start + 50])
+                self.assertNotIn('order', reply['page'])
+                seen.extend(r['id'] for r in reply['rows'])
+                if rising in ids[start:start + 50]:
+                    row = next(r for r in reply['rows'] if r['id'] == rising)
+                    self.assertEqual(row['cells']['video.views']['value'], '987654321', 'a slice reads current values')
+            self.assertEqual(seen, ids[:250], 'nothing skipped, nothing repeated')
+            # A new read of the list sees the change.
+            _, moved = self.listed(q)
+            self.assertEqual(moved[0], rising)
+            self.assertGreater(moved.index(falling), ids.index(falling))
+            self.assertEqual(sorted(moved), sorted(ids))
+        finally:
+            for video, (views, checked) in old.items():
+                self.admin.execute('UPDATE public.videos SET views=%s,checked_at=%s WHERE video_id=%s', (views, checked, video))
+        print('ORDER_LIST ' + json.dumps({'rows': LONG, 'list_page_ms': round(list_ms), 'plain_page_ms': round(plain_ms),
+                                          'slice_ms_avg': round(sum(slice_ms) / len(slice_ms)),
+                                          'list_page_bytes': len(canonical(first)), 'plain_page_bytes': len(canonical(plain))}), flush=True)
+
+    def test_14f_a_video_that_stops_matching_is_absent_and_nothing_fills_its_place(self):
+        q = self.big(where={'field': 'video.views', 'op': 'gte', 'value': '2500'})
+        _, ids = self.listed(q)
+        self.assertEqual(len(ids), sum(1 for n in range(1, LONG + 1) if (n % 500) * 10 >= 2500))
+        leaving, private = ids[70], ids[80]
+        old = {v: self.admin.execute('SELECT views,checked_at,availability_status,availability_checked_at FROM public.videos'
+                                     ' WHERE video_id=%s', (v,)).fetchone() for v in (leaving, private)}
+        try:
+            self.admin.execute('UPDATE public.videos SET views=10,checked_at=clock_timestamp() WHERE video_id=%s', (leaving,))
+            self.admin.execute("UPDATE public.videos SET availability_status='private',availability_checked_at=clock_timestamp()"
+                               " WHERE video_id=%s", (private,))
+            reply = self.sliced(q, ids[50:100])
+            self.assertEqual([r['id'] for r in reply['rows']], [v for v in ids[50:100] if v not in (leaving, private)])
+            self.assertEqual([r['id'] for r in self.sliced(q, ids[100:150])['rows']], ids[100:150], 'the next slice is unchanged')
+        finally:
+            for video, values in old.items():
+                self.admin.execute('UPDATE public.videos SET views=%s,checked_at=%s,availability_status=%s,availability_checked_at=%s'
+                                   ' WHERE video_id=%s', (*values, video))
+
+    def test_14g_reload_at_a_remembered_video_keeps_the_top_reachable(self):
+        q = self.big(order_by=[{'field': 'video.published_at', 'direction': 'asc'}])
+        _, ids = self.listed(q)
+        anchored, same = self.listed(q, anchor_id=ids[1234])
+        self.assertEqual(same, ids, 'the whole list, not the rows after the anchor')
+        self.assertEqual([r['id'] for r in anchored['rows']], ids[1234:1284])
+        self.assertEqual([r['id'] for r in self.sliced(q, ids[1184:1234])['rows']], ids[1184:1234])
+        missing, again = self.listed(q, anchor_id='q0000000001')
+        self.assertEqual(([r['id'] for r in missing['rows']], again), (ids[:50], ids))
+
+    def test_14h_a_list_past_the_limit_keeps_its_count_and_withholds_its_ids(self):
+        q = self.big()
+        with patch('db.reads.research_sql.MAX_ORDER_IDS', 1000), patch('research_query.service.MAX_ORDER_IDS', 1000):
+            first, ids = self.listed(q)
+        self.assertIsNone(ids)
+        self.assertEqual(first['page']['order'], {'total_count': LONG, 'ids': None, 'limit': 1000})
+        # Its pages continue in the same order by their cursor.
+        after = self.query({**q, 'consistency': 'current', 'page': {'size': 50, 'growth_lifetime': 'page',
+                                                                    'after': first['page']['next_cursor']}})
+        expected = self.ids_of(self.query(q))['ids']
+        self.assertEqual([r['id'] for r in first['rows'] + after['rows']], expected[:100])
+        # After the cursor's lifetime Library resumes at its last loaded card with the same page size: the same
+        # query (one fingerprint), and the resumed page's cursor continues it.
+        page = {'size': 50, 'growth_lifetime': 'page'}
+        resumed = self.query({**q, 'consistency': 'current', 'page': {**page, 'anchor_id': expected[99]}})
+        self.assertEqual(resumed['query_fingerprint'], first['query_fingerprint'])
+        self.assertEqual([r['id'] for r in resumed['rows']], expected[99:149])
+        further = self.query({**q, 'consistency': 'current', 'page': {**page, 'after': resumed['page']['next_cursor']}})
+        self.assertEqual([r['id'] for r in further['rows']], expected[149:199])
+        # A page of another size is another query: its cursor does not continue this one.
+        other = self.query({**q, 'consistency': 'current', 'page': {'size': 51, 'growth_lifetime': 'page', 'anchor_id': expected[99]}})
+        self.assertNotEqual(other['query_fingerprint'], first['query_fingerprint'])
+        with self.assertRaisesRegex(QueryRejected, 'cursor_context_changed'):
+            self.query({**q, 'consistency': 'current', 'page': {**page, 'after': other['page']['next_cursor']}})
+
     def test_15_lagging_read_model_is_complete_or_refused_never_truncated(self):
         # Worst case: every row of the channel waits for the background refresh,
         # so the statement reads the protected views directly. Runs last: the

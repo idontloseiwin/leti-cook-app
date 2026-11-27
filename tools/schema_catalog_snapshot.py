@@ -195,6 +195,11 @@ def snapshot_sql(seed_clocks=None):
         excluded = "ARRAY[" + ",".join("'" + _identifier(clock)[1:-1] + "'" for clock in clocks) + "]::text[]"
         validity = " AND ".join(f"t.{_identifier(clock)} IS NOT NULL AND isfinite(t.{_identifier(clock)})" for clock in clocks) or "true"
         values = f"to_jsonb(t)-{excluded}"
+        if table == 'public.channel_labels':
+            # A fresh installation gives each label its own rule-binding UUID.
+            # Baseline schemas predate this column and use the same snapshotter.
+            values = f"({values})-'alert_identity'"
+            validity += " AND (NOT (to_jsonb(t) ? 'alert_identity') OR (to_jsonb(t)->>'alert_identity')::uuid IS NOT NULL)"
         if table in BOOTSTRAP_RECONCILIATION_TABLES:
             values = ("CASE WHEN t.last_reconciled_at IS NOT NULL AND isfinite(t.last_reconciled_at) "
                       "AND t.last_reconciled_at=t.updated_at AND t.reconciliation_required IS FALSE "

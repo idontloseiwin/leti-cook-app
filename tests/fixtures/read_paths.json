@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "about": "Retention verdict of every HTTP path. protected: every YouTube field is checked against its own clock (29 days) before it leaves the server; partial: some fields are not, see gaps; unprotected: none checked; no_youtube_data: only IDs, user work or operational state. A new route needs a review and an entry here.",
+  "about": "Route-local retention and admission classification. Protected reads apply the named source rules. no_youtube_data describes the envelope, IDs, user work or operational state read directly by the route. For an MCP tool result follow the delegated research route. Access roles are checked separately. Public callback ingress is handled before the router.",
   "gaps": {
     "inventory_freshness": "The inventory view and count estimate each have a freshness window and require independent checks.",
     "saved_collection_window": "Saved collection pages validate source_expires_at against checked_at and the allowed source window."
@@ -11,8 +11,8 @@
   ],
   "summary": {
     "routes": {
-      "protected": 23,
-      "no_youtube_data": 84,
+      "protected": 29,
+      "no_youtube_data": 89,
       "partial": 0,
       "unprotected": 0
     }
@@ -384,7 +384,17 @@
     },
     "POST /mcp": {
       "verdict": "no_youtube_data",
-      "reads": "MCP protocol envelope only; every tool call re-enters the protected research routes with the same agent key."
+      "reads": "Envelope and tool metadata are local. A tool result may include YouTube fields from an allowed internal route under the current agent credentials.",
+      "delegates_to": [
+        "GET /research/capabilities",
+        "GET /research/contracts",
+        "GET /research/sources",
+        "POST /research/graphs/execute",
+        "POST /research/graphs/validate",
+        "POST /research/operations/execute",
+        "POST /research/queries/execute",
+        "POST /research/queries/validate"
+      ]
     },
     "GET /mcp": {
       "verdict": "no_youtube_data",
@@ -393,6 +403,10 @@
     "DELETE /mcp": {
       "verdict": "no_youtube_data",
       "reads": "Answers 405: no session; reads nothing."
+    },
+    "GET /agent-setup/{client}": {
+      "verdict": "no_youtube_data",
+      "reads": "Installation address and bundled setup files for the owner."
     },
     "GET /agent-keys": {
       "verdict": "no_youtube_data",
@@ -430,6 +444,14 @@
       "verdict": "no_youtube_data",
       "reads": "Daily one-off acquisition cap: quota ledger units of the current Pacific day and per-acquisition limits; operational counts only."
     },
+    "POST /sources/channel-search/preview": {
+      "verdict": "no_youtube_data",
+      "reads": "Owner-bound action estimate and opaque reference. Preview sends no provider requests and returns no source values."
+    },
+    "POST /sources/channel-search/execute": {
+      "verdict": "protected",
+      "reads": "Provider page and enrichment retained in bounded owner memory for ten minutes, plus Library membership for the returned channel IDs."
+    },
     "POST /sources/acquisitions/preview": {
       "verdict": "no_youtube_data",
       "reads": "Pure request plan and worst-case cost from the registry plus the daily cap reading; no provider request, no source read."
@@ -445,6 +467,38 @@
     "GET /research/sources": {
       "verdict": "no_youtube_data",
       "reads": "Bounded folder/label/collection IDs and user names only; agent or owner authorization rechecked after read"
+    },
+    "GET /research/alerts/capabilities": {
+      "verdict": "no_youtube_data",
+      "reads": "Registry, scope kinds and enabled formats only."
+    },
+    "GET /research/alerts/rules": {
+      "verdict": "no_youtube_data",
+      "reads": "Owner-authored definitions and processing status."
+    },
+    "POST /research/alerts/rules": {
+      "verdict": "protected",
+      "reads": "Verifies the monitored source and stores an owner rule."
+    },
+    "PATCH /research/alerts/rules/{rule_id}": {
+      "verdict": "protected",
+      "reads": "Verifies source membership before enabling a revised rule."
+    },
+    "DELETE /research/alerts/rules/{rule_id}": {
+      "verdict": "no_youtube_data",
+      "reads": "Removes a user rule and its pending work and messages."
+    },
+    "POST /research/alerts/preview": {
+      "verdict": "protected",
+      "reads": "Current Library query sampled under its access and expiry gates."
+    },
+    "GET /research/alerts/inbox": {
+      "verdict": "protected",
+      "reads": "Visible owner, enabled format and unexpired observation evidence."
+    },
+    "POST /research/alerts/inbox/{item_id}/read": {
+      "verdict": "protected",
+      "reads": "Checks source lifetime and visibility before marking a notification read."
     }
   },
   "middleware_paths": {
@@ -527,6 +581,16 @@
     "/oauth/token": {
       "verdict": "no_youtube_data",
       "reads": "agent sign-in: code and refresh token exchange; no library data"
+    }
+  },
+  "public_ingress": {
+    "GET /websub/{channel_id}/{capability}": {
+      "verdict": "no_youtube_data",
+      "reads": "Subscription and callback verification. The body echoes the hub challenge for a valid request."
+    },
+    "POST /websub/{channel_id}/{capability}": {
+      "verdict": "no_youtube_data",
+      "reads": "Receives signed notifications and queues IDs. A successful acknowledgement has an empty body."
     }
   }
 }

@@ -9,7 +9,7 @@ export class UserWorkRequestError extends Error {
   constructor(message: string, status: number, code: string) { super(message); this.name = 'UserWorkRequestError'; this.status = status; this.code = code; }
 }
 const errorMessages: Record<string, string> = {
-  workspace_not_empty: 'This installation already holds channels, folders or labels. Restore the backup into a new installation. Nothing was changed.',
+  workspace_not_empty: 'This installation already holds user work. Restore the backup into a new installation. Nothing was changed.',
   conflict: 'This saved item changed. Refresh status before trying again.',
   parent_pending: 'Reconnect the parent channel first, or remove its parent link.',
   parent_missing: 'The parent channel is unavailable. Refresh status and check its link.',

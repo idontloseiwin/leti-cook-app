@@ -1,3 +1,5 @@
+import type { VideoType } from '../types';
+
 export interface VideoGridAnchor {
   videoId: string;
   /** The anchored row's top edge relative to the viewport. */
@@ -16,6 +18,35 @@ export interface VideoGridLayout {
   rows: VideoGridRow[];
   height: number;
   columns: number;
+}
+
+/**
+ * The card's two forms: Long (16:9) for long videos and streams, Shorts (2:3) for the Videos tab's Shorts.
+ * A grid that mixes types (a collection) has no type and keeps the Long form.
+ */
+export type VideoCardForm = 'long' | 'shorts';
+export function videoCardForm(videoType?: VideoType): VideoCardForm {
+  return videoType === 'short' ? 'shorts' : 'long';
+}
+
+/**
+ * The thumbnail's height per width and the card's padding and fixed text block under it (videos.css).
+ * Long: title 8 + 44 and two rows of 6 + 24 in Large, title 8 + 36 and the same rows in Compact.
+ * Shorts: title 8 + 40, rows of 6 + 24, 6 + 24, 4 + 20 and 6 + 24 in Large; Compact as Long.
+ */
+const VIDEO_CARD_BOX = {
+  long: { ratio: 9 / 16, large: { padding: 8, text: 112 }, compact: { padding: 6, text: 104 } },
+  shorts: { ratio: 3 / 2, large: { padding: 8, text: 162 }, compact: { padding: 6, text: 104 } },
+} as const;
+
+/**
+ * A row's height before it is measured: 2 × padding + the thumbnail (16:9, or 2:3 for Shorts) + the text block.
+ * Rows are still measured; this only places them until then.
+ */
+export function estimatedVideoRowHeight(cardWidth: number, density: 'large' | 'compact', form: VideoCardForm = 'long'): number {
+  const box = VIDEO_CARD_BOX[form];
+  const { padding, text } = box[density];
+  return 2 * padding + Math.max(0, cardWidth - 2 * padding) * box.ratio + text;
 }
 
 /** Read resolved CSS tracks, not a second JavaScript breakpoint table. */

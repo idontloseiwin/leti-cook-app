@@ -293,7 +293,7 @@ group counts and Overview.
 | "This selection took too long to prepare." | The read reached its time limit: 8 seconds of work for Library's list, counted from the moment its read starts. Narrow the filters or try again. |
 | "These conditions are too large or too complex for one read." | The search and filters hold too many conditions or values, or nest too deep. Remove some conditions or values. |
 | "This result is too large to send at once." | The answer, for example one page with long tag lists, is over the server's response limit. Narrow the filters or choose fewer columns. |
-| "The server is busy with other reads or lists. Try again shortly." | Heavy reads run two at a time, and this one waited its limit for a turn: up to 4 seconds for Library's list, up to 8 seconds in total for other reads. A third list prepared at the same moment is refused at once. Nothing was read or changed. Try again in a moment. |
+| "The server is busy with other reads or lists. Try again shortly." | The queue is full or the request exceeded its wait budget. A new fixed list can wait up to 8 seconds for build capacity, including up to 4 seconds for a read slot. Other reads have 8 seconds in total. Try again in a moment. |
 | "This selection is too large to browse at once." | The server refused the list as too large without naming the limit. Narrow the filters. |
 | "A field in these filters is turned off in Collection fields." | A condition uses a field that is not collected for this format. Remove that condition, or turn the field on in **Collection fields**. |
 | "Data needed for these filters is turned off in Collection fields." | The filters need data whose collection is turned off. Turn it on in **Collection fields**, or remove the filter. |

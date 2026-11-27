@@ -26,6 +26,8 @@ Leti Cook collects Long-form videos and Shorts by default. You can also enable
 Streams. Library has an Overview, a filterable video grid and a video Inspector
 for each enabled format.
 
+In **Find channels**, search YouTube by video topic, channel keywords or video category. Review the authors and their matching videos, then add a channel to your Library.
+
 In the Research Workshop, connect a channel, folder, label or collection to
 filters and sorting, inspect the resulting video cards and save the study.
 Agents can query the catalogue through the [read-only MCP endpoint](docs/MCP.md).
@@ -35,7 +37,7 @@ you add channels directly from YouTube.
 
 **In active development.** No releases have been published. You can
 [run from source](#quick-start). The app is designed for one owner on their own
-installation. Version 0.2.0 does not update a 0.1.0 installation; see
+installation. Version 0.3.0 does not update a 0.1.0 installation; see
 [Coming from version 0.1.0](docs/INSTALLATION.md#coming-from-version-010).
 
 **[First steps →](docs/INSTALLATION.md#using-the-workspace)**

@@ -146,7 +146,9 @@ class StartupSourceManifestTests(unittest.TestCase):
                 self.assertTrue(query.endswith('LIMIT 1'))
                 self.assertIn(" > '-infinity'::timestamptz", query)
                 self.assertIn('clock.cutoff', query)
-                if name!='review_evidence':self.assertNotIn("interval '696 hours'",query)
+                if name in ('review_evidence','alert_observations','alert_inbox'):
+                    self.assertIn("clock.cutoff + interval '696 hours'",query)
+                else:self.assertNotIn("interval '696 hours'",query)
         self.assertIn('< clock.cutoff', STARTUP_EXPIRY_SOURCES['category_reference'])
         self.assertIn('NOT clock.strict_entry', STARTUP_EXPIRY_SOURCES['category_reference'])
         self.assertIn('= clock.cutoff', STARTUP_EXPIRY_SOURCES['category_reference'])

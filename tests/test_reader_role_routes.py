@@ -13,6 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 # The actual mutation requests follow the nonmutating reads.
 PROTECTED_ROUTES = (
+    "POST /research/alerts/preview", "GET /research/alerts/inbox",
+    "POST /research/alerts/rules", "PATCH /research/alerts/rules/{rule_id}",
+    "POST /research/alerts/inbox/{item_id}/read",
     "POST /research/queries/execute",  # Native HTTP proof: research_query_pg.py.
     "POST /research/queries/frozen-ids",  # Native HTTP proof: research_frozen_pg.py.
     "POST /research/operations/execute",  # Exercises the research operation under the reader role.
@@ -38,12 +41,14 @@ PROTECTED_ROUTES = (
     # Native reader-role proof: provider_sources_pg.py (ledger read as lic_reader, fake provider).
     # Fresh provider values only; a harness must never send this route to YouTube.
     "POST /sources/acquisitions/execute",
+    "POST /sources/channel-search/execute",  # Real role and Library membership with a synthetic provider.
 )
 
 # Routes without YouTube data whose reads still run as lic_reader. Each is a native case in
 # reader_role_http_pg.py too, so a relation that role cannot read fails there and not on an
 # installation (system/websub read public.websub_* and answered 500 on every call).
 READER_ROLE_READS = (
+    "GET /research/alerts/rules",
     "GET /system/websub",  # WebSub totals through readable.websub_health.
 )
 

@@ -17,7 +17,7 @@ refusals: 401 ``owner_auth_expired`` (the installation key is never marked),
 from __future__ import annotations
 
 from collections import Counter
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import math
 import time
@@ -30,7 +30,7 @@ from . import transport
 from .errors import PlanRejected, ResponseInvalid
 from .families import policy
 from .families.hooks import hook_for
-from .pagination import CHAIN_START, chain, next_page_token, poll_position
+from .pagination import CHAIN_START, SearchPageHistory, chain, next_page_token, poll_position
 from .parse import decode_json, parse_page
 from .results import AcquisitionResult, Completeness, EntityState, PageProvenance, frozen_mapping
 
@@ -162,6 +162,9 @@ def acquire(plan, *, registry, credential, cancelled, deadline, attempt_recorder
                 if continuation is not None else {})
     batch_index = int(position.get("next", 0)) if plan.strategy == "id_batch" else 0
     token = position.get("token") if plan.strategy in ("page_token", "poll") else None
+    search_history = SearchPageHistory(position) if plan.method_id == "youtube.search.list" else None
+    if search_history is not None:
+        token = search_history.resume_token(position)
     not_before = position.get("not_before") if plan.strategy == "poll" else None
     if isinstance(not_before, (int, float)) and started.timestamp() < not_before:
         # The provider asks for pollingIntervalMillis between polls; an early poll is refused unsent.
@@ -278,8 +281,19 @@ def acquire(plan, *, registry, credential, cancelled, deadline, attempt_recorder
                           targets=planned.targets if plan.strategy == "id_batch" else tuple(requested_ids))
             failed, summary_reported = (hook.batch_accounting(payload, planned.targets)
                                         if plan.strategy == "id_batch" else (frozenset(), False))
-            next_token = (next_page_token(payload, page.item_count, seen_tokens, poll=bool(plan.options.get("poll")))
-                          if plan.strategy == "page_token" else None)
+            if plan.method_id == "youtube.search.list" and plan.page_size == 0:
+                if page.item_count:
+                    raise ResponseInvalid("response_page_size_invalid")
+                estimate = (payload.get("pageInfo") or {}).get("totalResults")
+                if estimate is not None and estimate > 2**31 - 1:
+                    raise ResponseInvalid("response_page_info_invalid")
+                provenance["estimated_total_results"] = estimate
+            next_token = None
+            if plan.strategy == "page_token":
+                next_token = next_page_token(payload, page.item_count, seen_tokens,
+                                             allow_empty=search_history is not None or bool(plan.options.get("poll")))
+                if search_history is not None and next_token is not None:
+                    search_history.observe(next_token, page_index + 1)
             polled = poll_position(payload) if plan.strategy == "poll" else None
             for note in hook.page_notes(method, payload):
                 if note not in page_notes and len(page_notes) < MAX_PAGE_NOTES:
@@ -312,7 +326,7 @@ def acquire(plan, *, registry, credential, cancelled, deadline, attempt_recorder
                 finished = True             # offlineAt: the chat went offline, nothing more will come
             else:
                 stop = "live_chat_open"     # a live chat never ends by itself; poll again later
-                retry_after = None if poll_wait_ms is None else min(60, math.ceil(poll_wait_ms / 1000))
+                retry_after = None if poll_wait_ms is None else math.ceil(poll_wait_ms / 1000)
                 if next_token is not None:
                     token = next_token
                     chain_value = chain(chain_value, token)
@@ -353,20 +367,24 @@ def acquire(plan, *, registry, credential, cancelled, deadline, attempt_recorder
     notes = tuple(notes) + tuple(finish_notes)
     continuation_token = None
     if not finished and stop in RESUMABLE and codec is not None:
+        issued = clock()
+        eligible_at = None
         if plan.strategy == "id_batch" and batch_index < len(plan.requests):
             next_position = {"next": batch_index, "page": page_index}
         elif plan.strategy == "page_token":
-            next_position = {"token": token, "chain": chain_value, "page": page_index}
+            next_position = search_history.position(token) if search_history is not None else {"token": token}
+            next_position.update(chain=chain_value, page=page_index)
         elif plan.strategy == "start_index":
             next_position = {"start": start_index, "page": page_index}
         elif plan.strategy == "poll" and token is not None:
+            eligible_at = issued + timedelta(milliseconds=poll_wait_ms or 0)
             next_position = {"token": token, "chain": chain_value, "page": page_index,
-                             "not_before": clock().timestamp() + (poll_wait_ms or 0) / 1000}
+                             "not_before": eligible_at.timestamp()}
         else:
             next_position = None
         if next_position is not None:
             continuation_token = codec.encode(fingerprint=plan.fingerprint, context=plan.context,
-                                              position=next_position, now=clock())
+                                              position=next_position, now=issued, eligible_at=eligible_at)
     result = AcquisitionResult(
         method_id=plan.method_id, unit=plan.row_unit, rows=tuple(rows), entities=frozen_mapping(entities),
         pages=tuple(pages), completeness=Completeness.COMPLETE if finished else Completeness.PARTIAL,

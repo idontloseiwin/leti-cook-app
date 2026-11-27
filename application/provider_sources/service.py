@@ -10,6 +10,7 @@
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 from datetime import datetime, timezone
 import threading
 import time
@@ -146,6 +147,12 @@ class AcquisitionService:
             raise ServiceRefused("plan_changed", 409)
         if confirmed != dict(plan.worst_cost):
             raise ServiceRefused("cost_not_confirmed", 409)
+        with self.admit(plan.worst_cost) as session:
+            return self.run_plan(request, plan, cancelled, session, self.monotonic() + plan.deadline_seconds, continuation)
+
+    @contextmanager
+    def admit(self, worst_cost):
+        """Share one admission and the daily cap sessions across a bounded owner action."""
         if not self._busy.acquire(blocking=False):
             raise ServiceRefused("acquisition_busy", 409)
         try:
@@ -154,28 +161,29 @@ class AcquisitionService:
             # The general cap is always read (fail closed); a capped bucket of the plan as well.
             try:
                 sessions = {bucket: cap.session() for bucket, cap in self.caps.items()
-                            if bucket in (CAPPED_BUCKET, plan.quota_bucket)}
+                            if bucket == CAPPED_BUCKET or bucket in worst_cost}
             except CapUnavailable:
                 raise ServiceRefused("daily_cap_unavailable", 503) from None
             for bucket, session in sessions.items():
-                if plan.worst_cost.get(bucket, 0) > session.remaining:
+                if worst_cost.get(bucket, 0) > session.remaining:
                     seconds = max(1, int((next_reset(self.clock()) - self.clock()).total_seconds()))
                     raise ServiceRefused("daily_cap_reached", 429, retry_after=seconds, subject=bucket)
-            session = CapSessions(sessions.values())
-            deadline = self.monotonic() + plan.deadline_seconds
-            try:
-                credential = resolve_credential(request.auth, owner_provider=self.owner_provider,
-                                                scopes=frozenset(plan.owner_scopes), deadline=deadline)
-            except OwnerAuthUnavailable as error:
-                raise ServiceRefused(error.code, 409) from None
-            options = {} if self.send is None else {"send": self.send}
-            try:
-                result = acquire(plan, registry=self.registry_loader(), credential=credential, cancelled=cancelled,
-                                 deadline=deadline, attempt_recorder=self.attempt_recorder, api_key=self.api_key,
-                                 cap=session, codec=self.codec, continuation=continuation, clock=self.clock,
-                                 monotonic=self.monotonic, **options)
-            except PlanRejected as error:
-                raise ServiceRefused(error.code, 409 if error.code.startswith("continuation") else 422) from None
-            return to_wire(result, max_bytes=OUTPUT_LIMIT_BYTES)
+            yield CapSessions(sessions.values())
         finally:
             self._busy.release()
+
+    def run_plan(self, request, plan, cancelled, session, deadline, continuation=None):
+        try:
+            credential = resolve_credential(request.auth, owner_provider=self.owner_provider,
+                                            scopes=frozenset(plan.owner_scopes), deadline=deadline)
+        except OwnerAuthUnavailable as error:
+            raise ServiceRefused(error.code, 409) from None
+        options = {} if self.send is None else {"send": self.send}
+        try:
+            result = acquire(plan, registry=self.registry_loader(), credential=credential, cancelled=cancelled,
+                             deadline=deadline, attempt_recorder=self.attempt_recorder, api_key=self.api_key,
+                             cap=session, codec=self.codec, continuation=continuation, clock=self.clock,
+                             monotonic=self.monotonic, **options)
+        except PlanRejected as error:
+            raise ServiceRefused(error.code, 409 if error.code.startswith("continuation") else 422) from None
+        return to_wire(result, max_bytes=OUTPUT_LIMIT_BYTES)

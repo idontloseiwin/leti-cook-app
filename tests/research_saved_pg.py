@@ -67,6 +67,10 @@ class SavedNativeTests(unittest.TestCase):
     def tearDownClass(cls):cls.db.close();cls.admin.close()
     def test_00_intrinsic_readiness_and_missing_trigger_refusal(self):
         from db.readiness.intrinsic_capabilities import READINESS_SQL
+        for search_path in ('public','pg_catalog'):
+            with self.admin.transaction(force_rollback=True):
+                self.admin.execute("SELECT set_config('search_path',%s,true)",(search_path,))
+                self.assertEqual(self.admin.execute(READINESS_SQL).fetchone(), (True,True,True))
         actual = self.admin.execute(READINESS_SQL).fetchone()
         self.assertEqual(actual, (True, True, True))
         with self.admin.transaction(force_rollback=True):
@@ -107,6 +111,137 @@ class SavedNativeTests(unittest.TestCase):
         self.assertEqual(restored['name'],'Renamed study');self.assertEqual(restored['conditions'],definition)
         self.assertFalse(restored['channel_available']);self.assertGreater(restored['revision'],renamed['revision'])
         self.service.delete(identity,restored['revision'])
+    def test_01a_alert_definitions_roundtrip_through_owner_api(self):
+        from fastapi import FastAPI
+        from fastapi.testclient import TestClient
+        from db.base.read_context import http_read_scope
+        from db.user_work.user_work_backup import UserWorkBackupRepository
+        from user_work_service import create_user_work_router
+        from web.alerts import create_alert_router
+
+        self.addCleanup(self.admin.execute,'DELETE FROM public.alert_rules')
+        folder_id = str(uuid.uuid4())
+        self.addCleanup(self.admin.execute,'DELETE FROM public.folders WHERE id=%s',(folder_id,))
+        app = FastAPI()
+        app.include_router(create_user_work_router(UserWorkBackupRepository(self.db)))
+        app.include_router(create_alert_router(self.db, lambda _: None, lambda: None))
+        self.admin.execute("INSERT INTO public.channel_labels(label_key,name,label_type) VALUES('monetized','Monetized','preset') ON CONFLICT DO NOTHING")
+        preset = {'kind':'label','id':'monetized'}
+        def create(client, name, scope):
+            definition = dict(name=name, scope=scope, event='channel.subscribers', threshold='937', direction='up')
+            response = client.post('/alerts/rules',json={'id':str(uuid.uuid4()),'rule':definition})
+            self.assertEqual(response.status_code,201,response.text)
+            return response.json()
+        def backup(client):
+            response = client.post('/user-work/backup',json={'browser_preferences':None})
+            self.assertEqual(response.status_code,200,response.text)
+            return response.json()['backup']
+
+        with TestClient(app, headers={'X-Saved-Work':'1'}) as client, http_read_scope():
+            original = create(client,'Missing',preset)
+            self.admin.execute("DELETE FROM public.channel_labels WHERE label_key='monetized'")
+            self.admin.execute("INSERT INTO public.channel_labels(label_key,name,label_type) VALUES('monetized','Monetized','preset')")
+            paused = create(client,'Paused',preset)
+            response = client.patch('/alerts/rules/'+paused['id'],json={'version':1,'enabled':False})
+            self.assertEqual(response.status_code,200,response.text)
+            self.admin.execute("UPDATE public.alert_rules SET gap_count=47,last_gap_at=clock_timestamp() WHERE id=%s",(paused['id'],))
+            obsolete = create(client,'Deleted',preset)
+            self.assertEqual(client.delete('/alerts/rules/'+obsolete['id']+'?version=1').status_code,200)
+            self.admin.execute("INSERT INTO public.folders(id,name,created_at) VALUES(%s,'Undated folder',NULL)",(folder_id,))
+            undated = create(client,'Undated folder',{'kind':'folder','id':folder_id})
+            doc = backup(client)
+            self.assertIsNone(doc['user_work']['folders'][0]['created_at'])
+            self.admin.execute('DELETE FROM public.folders WHERE id=%s',(folder_id,))
+            self.assertEqual(doc['version'],6)
+            expected = [{'definition':original['definition'],'enabled':True,'source_ref':None},
+                        {'definition':paused['definition'],'enabled':False,'source_ref':'monetized'},
+                        {'definition':undated['definition'],'enabled':True,'source_ref':folder_id}]
+            self.assertCountEqual(doc['user_work']['alert_rules'],expected)
+            self.assertFalse(client.get('/user-work/status').json()['can_restore'])
+            preview = client.post('/user-work/restore/preview',json=doc).json()
+            self.assertEqual(preview['counts']['alert_rules'],3)
+            self.assertFalse(preview['can_restore'])
+            self.assertEqual(client.post('/user-work/restore',json=doc).status_code,409)
+            for rule,version in ((paused,2),(original,1),(undated,1)):
+                self.assertEqual(client.delete('/alerts/rules/'+rule['id']+'?version='+str(version)).status_code,200)
+            self.assertTrue(client.get('/user-work/status').json()['can_restore'])
+            before = self.admin.execute('SELECT clock_timestamp()').fetchone()[0]
+            with self.admin.transaction(force_rollback=True):
+                self.admin.execute('SELECT pg_advisory_xact_lock(864297301)')
+                self.assertEqual(client.post('/user-work/restore',json=doc).json()['code'],'busy')
+            response = client.post('/user-work/restore',json=doc)
+            self.assertEqual(response.status_code,200,response.text)
+            rules = client.get('/alerts/rules').json()['items']
+            self.assertEqual({r['definition']['name']:(r['enabled'],r['source_available']) for r in rules},
+                             {'Missing':(True,False),'Paused':(False,True),'Undated folder':(True,True)})
+            for rule in rules:
+                self.assertNotIn(rule['id'],{original['id'],paused['id']})
+                self.assertEqual((rule['version'],rule['gap_count'],rule['last_gap_at']),(1,0,None))
+                self.assertGreaterEqual(datetime.fromisoformat(rule['started_at']),before)
+            self.assertEqual(backup(client)['user_work']['alert_rules'],doc['user_work']['alert_rules'])
+            self.assertEqual(client.post('/user-work/restore',json=doc).status_code,409)
+            self.assertEqual(self.admin.execute('SELECT created_at FROM public.folders WHERE id=%s',(folder_id,)).fetchone(),(None,))
+
+    def test_01aa_pending_alert_source_needs_confirmed_reconnection(self):
+        from db.base.read_context import http_read_scope
+        from db.user_work.alerts import AlertsRepository
+        from db.user_work.user_work_backup import UserWorkBackupRepository
+        from user_work_service import UserWorkService
+
+        repo = UserWorkBackupRepository(self.db)
+        service = UserWorkService(repo)
+        alerts = AlertsRepository(self.db)
+        expected_channel, other_channel = 'UC'+'a'*22, 'UC'+'b'*22
+        pending_ref, tracked_ref = str(uuid.uuid4()), str(uuid.uuid4())
+        doc = service.export({'browser_preferences':None})['backup']
+        doc['user_work']['channels'] = [dict(id=pending_ref,user_input='https://www.youtube.com/@fixture',
+            folder_id=None,parent_ref=None,is_hidden=False,added_at=None,label_keys=[],saved_views=[])]
+        def portable(name,kind,identity):
+            definition = dict(name=name,scope=dict(kind=kind,id=identity),event='channel.subscribers',
+                              direction='up',threshold='100')
+            if kind == 'video':
+                definition.update(event='video.views',video_type='long')
+            return dict(definition=definition,enabled=True,source_ref=pending_ref)
+        def observe(value):
+            self.admin.execute("""INSERT INTO public.channel_snapshots(channel_id,subscribers,recorded_at,source)
+                VALUES(%s,%s,clock_timestamp(),'youtube_channel_metadata_refresh')""",(expected_channel,value))
+        rules = [portable('Expected','channel',expected_channel),portable('Different','channel',other_channel),
+                 portable('Video','video','v'*11)]
+        doc['user_work']['alert_rules'] = rules
+        try:
+            self.assertEqual(service.restore(doc)['status'],'restored')
+            self.assertCountEqual(service.export({'browser_preferences':None})['backup']['user_work']['alert_rules'],rules)
+            self.admin.execute('INSERT INTO public.channels(channel_id,user_work_id,added_at) VALUES(%s,%s,clock_timestamp())',
+                               (expected_channel,tracked_ref))
+            self.admin.execute("INSERT INTO public.channel_collection_state(channel_id,user_work_id,owner_permission,is_hidden,control_epoch) VALUES(%s,%s,'accepted',false,1)",
+                               (expected_channel,tracked_ref))
+            with http_read_scope():
+                before_merge = alerts.rules()
+                self.assertTrue(all(not row['source_available'] for row in before_merge))
+            observe(99)
+            self.assertTrue(repo.bind_pending(pending_ref,1,expected_channel)['merged'])
+            with http_read_scope():
+                self.assertEqual({r['definition']['name']:r['source_available'] for r in alerts.rules()},
+                                 {'Expected':True,'Different':False,'Video':False})
+            observe(101)
+            self.assertGreater(alerts.process(('long',)),0)
+            self.assertEqual(alerts.inbox(2**63-1,('long',)),[])
+            observe(99)
+            observe(101)
+            self.assertGreater(alerts.process(('long',)),0)
+            [crossing] = alerts.inbox(2**63-1,('long',))
+            self.assertEqual((crossing['rule_name'],crossing['previous_value'],crossing['current_value']),
+                             ('Expected','99','101'))
+            self.assertEqual({r['id']:r['started_at'] for r in alerts.rules()},
+                             {r['id']:r['started_at'] for r in before_merge})
+            again = service.export({'browser_preferences':None})['backup']['user_work']['alert_rules']
+            self.assertEqual({r['definition']['name']:r['source_ref'] for r in again},
+                             {'Expected':tracked_ref,'Different':None,'Video':tracked_ref})
+        finally:
+            self.admin.execute('DELETE FROM public.alert_rules')
+            self.admin.execute('DELETE FROM public.user_channel_restore_items WHERE id=%s',(pending_ref,))
+            self.admin.execute('DELETE FROM public.channels WHERE channel_id=%s',(expected_channel,))
+
     def test_01b_library_presentation_and_typed_members_survive_restore(self):
         from research_field_policy import defaults
         from db.user_work.research_preferences import ResearchPreferencesRepository

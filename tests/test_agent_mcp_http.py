@@ -258,6 +258,47 @@ class McpEndpointTests(unittest.IsolatedAsyncioTestCase):
 
 
 class OwnerKeyTests(unittest.IsolatedAsyncioTestCase):
+    async def test_owner_downloads_client_setup_without_credentials_or_new_grants(self):
+        from io import BytesIO
+        import tomllib
+        from zipfile import ZipFile
+
+        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {'LIC_PUBLIC_ORIGIN': ORIGIN,
+                'LIC_AUTH_DATABASE': str(Path(directory) / 'owner.sqlite3')}):
+            site = Installation(directory, 'local')
+            async with site.client(Origin=ORIGIN) as owner:
+                for client, suffix in [('claude-desktop', '.mcpb'), ('codex', '.zip'), ('claude-code', '.zip')]:
+                    reply = await owner.get('/agent-setup/' + client)
+                    self.assertEqual(reply.status_code, 200)
+                    self.assertTrue(reply.headers['content-disposition'].endswith(suffix + '"'))
+                    with ZipFile(BytesIO(reply.content)) as archive:
+                        if client == 'claude-desktop':
+                            self.assertEqual(set(archive.namelist()), {'manifest.json', 'server/bridge.cjs'})
+                            manifest = json.loads(archive.read('manifest.json'))
+                            self.assertTrue(manifest['user_config']['agent_key']['sensitive'])
+                            env = manifest['server']['mcp_config']['env']
+                            self.assertEqual(env, {'LETI_MCP_URL': ORIGIN + '/mcp',
+                                                   'LETI_AGENT_KEY': '${user_config.agent_key}'})
+                            self.assertEqual(archive.read('server/bridge.cjs'),
+                                             (ROOT / 'application' / 'claude_desktop_bridge.cjs').read_bytes())
+                        else:
+                            self.assertTrue(archive.getinfo('Leti Cook/Open on macOS.command').external_attr >> 16 & 0o100)
+                            if client == 'claude-code':
+                                settings = json.loads(archive.read('Leti Cook/.mcp.json'))
+                                self.assertEqual(settings['mcpServers'], {'leti-cook': {'type': 'http', 'url': ORIGIN + '/mcp'}})
+                            else:
+                                settings = tomllib.loads(archive.read('Leti Cook/.codex/config.toml').decode())
+                                self.assertEqual(settings['mcp_servers'], {'leti-cook': {'url': ORIGIN + '/mcp'}})
+                self.assertEqual((await owner.get('/agent-setup/unknown')).status_code, 404)
+                with patch.dict(os.environ, {'LIC_PUBLIC_ORIGIN': 'https://outside.example'}):
+                    self.assertEqual((await owner.get('/agent-setup/claude-desktop')).status_code, 409)
+                self.assertEqual((await owner.get('/agent-keys')).json()['keys'], [])
+                self.assertEqual((await owner.get('/agent-connections')).json()['connections'], [])
+            _, key = issue(site.owner, 'reader')
+            async with site.client(Authorization='Bearer ' + key) as agent:
+                self.assertIn((await agent.get('/agent-setup/claude-desktop')).status_code, (401, 403))
+
+
     async def test_owner_creates_lists_uses_and_revokes_a_key(self):
         with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ, {'LIC_PUBLIC_ORIGIN': ORIGIN,
                 'LIC_AUTH_DATABASE': str(Path(directory) / 'owner.sqlite3')}):

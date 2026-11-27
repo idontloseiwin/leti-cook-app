@@ -5,6 +5,7 @@ Python sees one bounded page and shapes evidence, clocks and continuation.
 """
 from datetime import datetime, timezone
 from contextlib import nullcontext
+import re
 import time
 
 from pydantic import ValidationError
@@ -13,19 +14,18 @@ from hot_storage import HOT_DATA_WINDOW
 # Stored data only: the provider gate refuses every request inside these calls.
 from provider_boundary import stored_data_only
 
-from . import growth
-from .contracts import MAX_RESPONSE_BYTES, QueryResult
+from .cell_layout import INSTANT, RAW, field_specs
+from .contracts import MAX_ORDER_IDS, MAX_RESPONSE_BYTES, VIDEO_ID_CHARS, QueryResult
 from .cursor import CursorCodec
 from .frozen import CELL_KEYS, FrozenStore
-from .operations import FIELD_OPERATIONS
-from .registry import FIELDS, REGISTRY_VERSION, SOURCE, CHANNEL_SOURCE_ID
+from .registry import REGISTRY_VERSION, SOURCE, CHANNEL_SOURCE_ID
 from .observation_limits import change_age_limit
 from .validation import QueryRejected, canonical, check_budget, validate
 
 # A frozen build reads up to MAX_FROZEN_ROWS rows in one statement. Waiting
-# for a read slot is not its work: it waits at most
-# FROZEN_WAIT_SECONDS from arrival, then has FROZEN_BUILD_SECONDS from getting
-# the slot for the read, shaping and scope recheck (worst answer 12 s). Pages of
+# for a shared read slot is limited to FROZEN_WAIT_SECONDS within the total
+# build queue deadline. After admission FROZEN_BUILD_SECONDS covers the read,
+# shaping and scope recheck. Pages of
 # a frozen result, current pages and operations keep one budget, waits included.
 FROZEN_WAIT_SECONDS = 4.0
 FROZEN_BUILD_SECONDS = 8.0
@@ -80,7 +80,6 @@ def coverage_from(data, request, extra=()):
     return coverage
 
 
-_RAW, _TEXT, _INSTANT = "raw", "text", "instant"  # How a known value is written.
 _UNSET = object()
 
 
@@ -97,38 +96,7 @@ def _written_utc(raw):
     return None
 
 
-def _field_specs(request):
-    """Facts of each selected field, computed once per call."""
-    specs = []
-    growth_carrier = growth.evidence_carrier(request.select)
-    for field_id in request.select:
-        field = FIELDS[field_id]
-        column = ({"video.id": "video_id", "channel.id":"channel_id", "video.channel_id": "channel_id", "video.type": "video_type"}.get(field_id)
-                  or (field_id.replace('.', '_') if field_id.startswith(('channel.', 'observation.')) else field_id.removeprefix('video.')))
-        core = field.clock_family in {"membership","scope"}
-        observation = field_id in FIELD_OPERATIONS
-        # The five growth cells of a row share one clock pair and evidence object.
-        growth_cell = field_id in growth.FIELDS
-        evidence_column = growth.EVIDENCE_PREFIX if growth_cell else column
-        clock_key = (evidence_column + "_observed_at") if observation else {"scope":"identity_clock", "membership":"identity_clock", "counters":"checked_at", "metadata":"metadata_checked_at",
-                     "channel_profile":"channel_metadata_checked_at", "channel_country":"country_collected_at",
-                     "description":"description_checked_at", "paid_promotion":"paid_promotion_checked_at"}[field.clock_family]
-        # Without its own expiry a clock is current for HOT_DATA_WINDOW (None).
-        expiry_key = evidence_column + "_expires_at" if observation else "identity_expiry" if core else None
-        base = {"origin": field.origin, "source_paths": list(field.api_paths),
-                "method": "tracked_channel_reference_v1" if field_id=="channel.id" else "canonical_membership_v1" if core else "reported_current_v1",
-                "definition_epoch": None}
-        if field_id == 'video.thumbnail_url':
-            base['method'] = 'youtube_mqdefault_reference_v1'
-        writes = (_RAW if field.value_type in {"boolean", "text_array"} else
-                  _INSTANT if field.value_type == "utc_instant" else _TEXT)
-        specs.append((field_id, column, column + "_state" if field.nullable else None, writes, clock_key, expiry_key,
-                      evidence_column + "_evidence" if observation else None, observation, growth_cell,
-                      field_id == growth_carrier, FIELD_OPERATIONS.get(field_id), base))
-    return specs
-
-
-def shape_cells(request, source_rows):
+def iter_cells(request, source_rows, provenance):
     """Row IDs, cells and provenance from SQL rows; one rule for every mode.
 
     A cell is a tuple in frozen.CELL_KEYS order. A frozen read shapes up to
@@ -139,8 +107,7 @@ def shape_cells(request, source_rows):
     every cell on its own."""
     channel_source = request.source.id == CHANNEL_SOURCE_ID
     id_key = "channel_id" if channel_source else "video_id"
-    specs = _field_specs(request)
-    provenance, ids, rows = {}, [], []
+    specs = field_specs(request)
     # Only str and datetime inputs are kept (hashable, compared by value; equal
     # datetimes are one instant). A failure raises and is never kept.
     clocks, windows, instants, proofs = {}, {}, {}, {}
@@ -193,8 +160,8 @@ def shape_cells(request, source_rows):
              growth_cell, carrier, operation, base) in specs:
             state = "known" if state_key is None else source[state_key]
             value = source[column] if state == "known" else None
-            if value is not None and writes is not _RAW:
-                value = instant_text(value) if writes is _INSTANT else str(value)
+            if value is not None and writes != RAW:
+                value = instant_text(value) if writes == INSTANT else str(value)
             if expiry_key is None:
                 observed, expires = window_texts(source[clock_key])
             else:
@@ -235,7 +202,13 @@ def shape_cells(request, source_rows):
             elif field_id not in provenance:
                 provenance[field_id] = {**base, 'source_paths': list(base['source_paths'])}
             cells.append((state, value, ref, observed, expires, evidence))
-        ids.append(source[id_key])
+        yield source[id_key], cells, source.get("type_expiry")
+
+
+def shape_cells(request, source_rows):
+    provenance, ids, rows = {}, [], []
+    for row_id, cells, _ in iter_cells(request, source_rows, provenance):
+        ids.append(row_id)
         rows.append(cells)
     return ids, rows, provenance
 
@@ -250,6 +223,53 @@ def shape_rows(request, source_rows):
     ids, rows, provenance = shape_cells(request, source_rows)
     columns = request.select
     return [wire_row(columns, row_id, cells) for row_id, cells in zip(ids, rows)], provenance
+
+
+_ORDER_IDS = re.compile(r"(?:[A-Za-z0-9_-]{%d})*" % VIDEO_ID_CHARS)
+
+
+def _aligned(ids, row_id):
+    """The position of row_id among the joined fixed-width IDs, or -1."""
+    at = ids.find(row_id)
+    while at >= 0 and at % VIDEO_ID_CHARS:
+        at = ids.find(row_id, at + 1)
+    return -1 if at < 0 else at // VIDEO_ID_CHARS
+
+
+def order_result(request, data, rows, has_more):
+    """PageResult.order of a list page, checked against the page it came with.
+
+    The list and the page share one statement, snapshot and ORDER BY, so the
+    page is the list's slice at the page's first row: from the start, or from
+    the anchor when the page starts there. Anything else is not served."""
+    total, ids = data["order_total"], data["order_ids"]
+    if type(total) is not int or total < 0:
+        raise ValueError("invalid_order")
+    if ids is None:
+        if total <= MAX_ORDER_IDS:
+            raise ValueError("invalid_order")
+    else:
+        if (type(ids) is not str or total > MAX_ORDER_IDS or len(ids) != total * VIDEO_ID_CHARS
+                or not _ORDER_IDS.fullmatch(ids)):
+            raise ValueError("invalid_order")
+        if len({ids[at:at + VIDEO_ID_CHARS] for at in range(0, len(ids), VIDEO_ID_CHARS)}) != total:
+            raise ValueError("invalid_order")
+        start = _aligned(ids, rows[0]["id"]) if rows else 0
+        page = "".join(row["id"] for row in rows)
+        anchored = request.page.anchor_id is not None and rows and rows[0]["id"] == request.page.anchor_id
+        if (start < 0 or (start and not anchored) or (not rows and total)
+                or ids[start * VIDEO_ID_CHARS:start * VIDEO_ID_CHARS + len(page)] != page
+                or has_more != (start + len(rows) < total)):
+            raise ValueError("invalid_order")
+    return {"total_count": total, "ids": ids, "limit": MAX_ORDER_IDS}
+
+
+def slice_rows(request, rows):
+    """A slice page returns requested IDs only, in the requested order."""
+    wanted = {row_id: at for at, row_id in enumerate(request.page.ids)}
+    positions = [wanted.get(row["id"], -1) for row in rows]
+    if -1 in positions or positions != sorted(positions):
+        raise ValueError("invalid_page")
 
 
 def result_context(request, context, evaluated, valid_before, plan, consistency="current"):
@@ -340,16 +360,24 @@ class QueryService:
             rows, provenance = shape_rows(request, source_rows[:request.page.size])
             next_cursor = self.codec.encode(plan, scope_revision=data["scope_revision"],
                 keys=source_rows[request.page.size-1]["sort_keys"], valid_before=iso(valid_before)) if has_more else None
+            page = {"has_more": has_more, "next_cursor": next_cursor}
+            if request.page.ids is not None:
+                slice_rows(request, rows)
+            order = order_result(request, data, rows, has_more) if request.page.order == "ids" else None
+            if order is not None:
+                page["order"] = order
             output = {
                 "query_version": 1, "query_fingerprint": plan.fingerprint,
                 "context": result_context(request, context, evaluated, valid_before, plan),
                 "columns": request.select, "provenance": provenance, "rows": rows,
-                "coverage": coverage, "page": {"has_more": has_more, "next_cursor": next_cursor},
+                "coverage": coverage, "page": page,
                 "warnings": ["current_pages_may_change"],
             }
             output = QueryResult.model_validate(output).model_dump(mode="json")
             encoded = canonical(output)
-            if len(encoded) > MAX_RESPONSE_BYTES:
+            # The ordered ID list has its own bound (MAX_ORDER_IDS); the page keeps the usual one.
+            listed = len(order["ids"]) if order is not None and order["ids"] is not None else 0
+            if len(encoded) > MAX_RESPONSE_BYTES + listed:
                 raise QueryRejected("query_budget_exceeded", limit="response")
         except QueryRejected:
             raise

@@ -8,6 +8,7 @@ import research_query_pg as native
 from test_research_query_contract import query
 from test_research_channels import channel_query
 from research_query.validation import canonical,QueryRejected
+from research_query.registry import preset_buckets
 from research_query.aggregate import SUMMARY,CALENDAR,HISTORY,SUMMARY_FIELDS,METRICS
 from fractions import Fraction
 from statistics import median
@@ -46,7 +47,35 @@ class AggregatePostgres(unittest.TestCase):
                         self.assertEqual(int(metric_result['min']), min(values))
                         self.assertEqual(int(metric_result['max']), max(values))
                         self.assertEqual(Fraction(metric_result['median']), median([Fraction(v) for v in values]))
-                    self.assertEqual(sum(b['count'] for b in out['metrics'][metric]['buckets']),len(values))
+                    presets = preset_buckets('duration' if metric == 'duration_seconds' else metric, kind)
+                    buckets = [(b.key, sum((b.min is None or v >= b.min) and (b.max is None or v < b.max)
+                                           for v in values)) for b in presets]
+                    self.assertEqual([(b['key'], b['count']) for b in metric_result['buckets']], buckets)
+
+    def test_histogram_counts_values_at_every_matching_boundary(self):
+        from decimal import Decimal
+        from psycopg.types.json import Jsonb
+        from db.reads.research_operations.summary import HISTOGRAM_CTES
+        # Include repeated/unique values, a missing metric, overlaps, exact
+        # edges and an integer too large for a binary float to distinguish.
+        large = 9007199254740993
+        values = [None, 0, 0, Decimal('0.25'), 1, 2, 2, *range(3, 204), large-1, large]
+        bounds = [('metric', 'below', None, 0), ('metric', 'one', 0, 1),
+                  ('metric', 'overlap', 0, 3), ('metric', 'two', 2, 3),
+                  ('metric', 'empty', 300, 301), ('metric', 'large', large, None),
+                  ('metric', 'all', None, None), ('missing', 'all', None, None),
+                  ('unbounded', 'all', None, None)]
+        buckets = [dict(metric=metric, key=key, label=key, lower=low, upper=high, ordinal=i)
+                   for i,(metric,key,low,high) in enumerate(bounds)]
+        known = {'metric': [v for v in values if v is not None], 'unbounded': [0], 'missing': []}
+        expected = [sum((lo is None or v >= lo) and (hi is None or v < hi) for v in known[metric])
+                    for metric, key, lo, hi in bounds]
+        sql = ("WITH metric_values AS (SELECT 'metric'::text AS metric,value FROM unnest(%(values)s::numeric[]) AS data(value) "
+               "UNION ALL SELECT 'unbounded',0::numeric),"
+               + HISTOGRAM_CTES + " SELECT count FROM buckets ORDER BY ordinal")
+        params = {'values': [Decimal(v) if v is not None else None for v in values], 'buckets': Jsonb(buckets)}
+        actual = self.admin.execute(sql, params).fetchall()
+        self.assertEqual([row[0] for row in actual], expected)
 
     def test_02_calendar_uses_whole_population_timezone_and_year(self):
         q=query(select=['video.published_at'],page={'size':100})
@@ -153,6 +182,33 @@ class AggregatePostgres(unittest.TestCase):
                                  {key: None if expected[key] is None else expected[key] if key.endswith('_count') else str(expected[key])
                                   for key in KEYS})
         print('EXACT_SUMMARY_SQL ' + _json.dumps(texts), flush=True)
+
+    def test_quartile_ranks_for_small_populations(self):
+        from decimal import Decimal
+        from db.reads.research_operations.population_stats import SUMMARIES
+        # Two equal values, a fraction and neighboring integers above the
+        # precision of a binary float exercise all four rank remainders.
+        known = [Decimal(x) for x in ('0', '0', '-0.25', '2.25', '9007199254740993',
+                                      '9007199254740994', '4', '9')]
+        sql = ("WITH metric_values AS (SELECT 'x' AS metric,v AS value FROM unnest(%s::numeric[]) v "
+               "WHERE v IS NOT NULL)," + SUMMARIES + " SELECT known_count,total,min,max,q1,median,q3 FROM summaries")
+        for size in range(9):
+            with self.subTest(size=size):
+                sample = known[:size]
+                row = self.admin.execute(sql, ([*sample, None],)).fetchone()
+                if not size:
+                    self.assertIsNone(row)
+                    continue
+                count, total, low, high, *quartiles = row
+                self.assertEqual((count, Decimal(total), Decimal(low), Decimal(high)),
+                                 (size, sum(sample), min(sample), max(sample)))
+                ordered = sorted(map(Fraction, sample))
+                expected = []
+                for p in (Fraction(1, 4), Fraction(1, 2), Fraction(3, 4)):
+                    position, fraction = divmod((size - 1) * p, 1)
+                    following = min(position + 1, size - 1)
+                    expected.append(ordered[position] * (1 - fraction) + ordered[following] * fraction)
+                self.assertEqual(list(map(Fraction, quartiles)), expected)
 
     @classmethod
     def facet_seed(cls):

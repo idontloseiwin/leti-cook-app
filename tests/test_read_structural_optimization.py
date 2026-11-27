@@ -14,12 +14,15 @@ from test_user_work_read_queries import Database, COUNTS
 
 class ExportEncodingTests(unittest.TestCase):
     def test_document_projects_each_section_once_and_sizes_it_in_sql(self):
-        # Each user-work section is projected once, in its own materialized CTE, in this order.
+        # The main row sections each have a materialized projection.
         sections=[line.split('(WITH projected AS MATERIALIZED (SELECT ',1)[0].strip().split("'")[1]
                   for line in export._EXPORT_DOCUMENT.splitlines() if '(WITH projected AS MATERIALIZED (SELECT ' in line]
         self.assertEqual(sections,['folders','labels','channels','assignments','saved_objects','members','pending','reviews'])
-        preferences="'field_preferences',(SELECT coalesce(pending_import,document) FROM public.research_preferences WHERE workspace_id='installation'),\n"
+        preferences="'field_preferences',(SELECT coalesce(pending_import,document) FROM readable.research_preferences WHERE workspace_id='installation'),\n"
         self.assertEqual(export._EXPORT_DOCUMENT.count(preferences),1)
+        self.assertEqual(export._EXPORT_DOCUMENT.count(export._ALERT_EXPORT),1)
+        self.assertEqual(export._EXPORT_ESTIMATE.count(export._ALERT_EXPORT),1)
+        self.assertIn('FROM readable.alert_rules',export._ALERT_EXPORT)
         self.assertEqual(export._EXPORT_DOCUMENT.count('sized as not materialized'),1)
         self.assertEqual(export._EXPORT_DOCUMENT.count('value::text'),1)
         self.assertEqual(export._EXPORT_DOCUMENT.count('octet_length('),1)

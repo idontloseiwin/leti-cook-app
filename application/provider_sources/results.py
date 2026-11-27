@@ -67,6 +67,7 @@ class Row:
     identity: tuple[str, str] | None
     fields: Mapping[str, FieldValue]
     page_index: int
+    source_position: int | None = None
 
 
 @dataclass(frozen=True)
@@ -87,6 +88,7 @@ class PageProvenance:
     context: str
     unknown_field_paths: tuple[str, ...] = ()
     rejected_items: int = 0
+    estimated_total_results: int | None = None
 
 
 @dataclass(frozen=True)
@@ -159,6 +161,7 @@ def field_wire(value):
 def row_wire(row):
     return {"identity": None if row.identity is None else {"kind": row.identity[0], "id": row.identity[1]},
             "page": row.page_index,
+            **({"source_position": row.source_position} if row.source_position is not None else {}),
             "fields": {path: field_wire(value) for path, value in sorted(row.fields.items())}}
 
 
@@ -171,6 +174,7 @@ def page_wire(page):
         "http_status": page.http_status, "quota_bucket": page.quota_bucket, "quota_units": page.quota_units,
         "request_attempt_id": page.request_attempt_id, "context": page.context,
         "unknown_field_paths": list(page.unknown_field_paths), "rejected_items": page.rejected_items,
+        **({"estimated_total_results": page.estimated_total_results} if page.estimated_total_results is not None else {}),
     }
 
 

@@ -1,9 +1,6 @@
 import { useSourceExpiry } from '../sourceLifetimeReact';
-import { freshSourceRows, sourceExpired, sourceOwnExpired } from '../sourceLifetime.ts';
-import {
-  AlertTriangle,
-  ExternalLink,
-} from 'lucide-react';
+import { sourceExpired, sourceOwnExpired } from '../sourceLifetime.ts';
+import { AlertTriangle } from 'lucide-react';
 import {
   useCallback,
   useEffect,
@@ -12,6 +9,7 @@ import {
   useRef,
   useState,
   type MouseEvent as ReactMouseEvent,
+  type ReactNode,
 } from 'react';
 import type {
   ChannelExplorerVideo,
@@ -19,25 +17,27 @@ import type {
 } from '../types';
 import {
   formatCount,
-  formatDuration,
-  hasMetricValue,
   youtubeVideoUrl,
 } from './format';
-import { presentVideoViewGrowth } from './videoGrowth';
-import { formatDateLocal } from './localTime';
+import {
+  CARD_DASH, cardAge, cardCount, cardDateWords, cardDuration, cardDurationSeconds, cardGrowth, exactCount,
+  isSingleCount, videoCardLabel,
+} from './videoCardFormat';
+import { formatDateLocal, formatExactLocal, formatTimestampLocal } from './localTime';
+import { safeVideoThumbnailUrl } from './videoPresentation';
 import type { LibraryVideosState } from './useCatalogueBrowse';
-import type { LibraryCardField, LibraryVideo, LibraryVideosPayload } from './libraryData/videos.ts';
+import { listPosition, type LibraryCardField, type LibraryValueState, type LibraryVideo, type LibraryVideosPayload } from './libraryData/videos.ts';
 import type { InspectorGates } from './libraryData/inspector.ts';
-import { LIBRARY_ERROR_TEXT } from './libraryData/errors.ts';
+import { LIBRARY_ERROR_TEXT, orderLimitText } from './libraryData/errors.ts';
 import { ErrorState, LoadingState } from './ModuleState';
 import { resourcePayload } from './resourceState';
 import type { CatalogueDensity } from './cataloguePreferences';
 import {
   VirtualVideoGrid, type VideoGridRestoreAnchor, type VirtualVideoGridHandle,
 } from './VirtualVideoGrid';
-import type { VideoGridAnchor } from './videoGridGeometry';
+import { videoCardForm, type VideoCardForm, type VideoGridAnchor } from './videoGridGeometry';
 import { addSelectedRecords, type CollectMatching, type SelectionProgress } from './catalogueSelection';
-import { VideoThumbnail, videoTitle } from './VideoThumbnail';
+import { videoTitle } from './VideoThumbnail';
 import { VideoInspector } from './VideoInspector';
 
 /** The selection of a format nobody has selected in yet (never written). */
@@ -46,7 +46,6 @@ const NO_SELECTION: ReadonlyMap<string, ChannelExplorerVideo> = new Map();
 // Saved collections import the Inspector from here as well.
 export { VideoInspector };
 
-const MISSING_VALUE = '\u2014';
 /**
  * The next page loads well before its boundary reaches the window, so the
  * "Load more videos" button never sits under the pointer while cards arrive.
@@ -78,11 +77,11 @@ export function selectAllMatchingButtonState(busy: boolean, unavailable: boolean
 /** The Inspector's shared-backend setup for this tab (`library` prop): gates and the viewer's zone. */
 export type LibraryInspectorSetup = { gates: InspectorGates; timeZone: string };
 /** The frozen session the grid shows (its latest reference and identity; `pending` while a new one is built). */
-export type LibrarySessionView = { frozenRef: string; sessionKey: string; pending: boolean };
+export type LibrarySessionView = { frozenRef?: string; sessionKey: string; pending: boolean };
 /** Both return a refusal text, or nothing when the workshop opened. */
 export type LibraryWorkshopActions = {
-  openSelection: () => string | undefined;
-  sendSelected: (selected: ReadonlyArray<{ id: string; type?: VideoType }>) => string | undefined;
+  openSelection: () => Promise<string | undefined> | string | undefined;
+  sendSelected: (selected: ReadonlyArray<{ id: string; type?: VideoType }>) => Promise<string | undefined> | string | undefined;
 };
 
 function CatalogueNotice({
@@ -143,133 +142,231 @@ function ScopeNotice({ payload }: { payload: LibraryVideosPayload }) {
   );
 }
 
-/** A value the frozen row has but cannot show: "—" with the reason. */
-function missingValue(video: ChannelExplorerVideo, field: LibraryCardField): string | undefined {
-  const state = (video as Partial<LibraryVideo>).value_states?.[field];
-  return state === 'expired' ? 'Needs refresh' : state === 'unavailable' ? 'Unavailable' : undefined;
+/** The state of a card value the frozen row has but cannot show ("—" with its word), if any. */
+function valueState(video: ChannelExplorerVideo, field: LibraryCardField): LibraryValueState | undefined {
+  return (video as Partial<LibraryVideo>).value_states?.[field];
 }
 
-function VideoSelectionToggle({
-  video,
-  checked,
-  onChange,
-}: {
-  video: ChannelExplorerVideo;
-  checked: boolean;
-  onChange: (video: ChannelExplorerVideo, checked: boolean) => void;
+/** The word next to "—" and the hover text that explains it; a value without state is "Not reported". */
+const STATE_WORD: Record<LibraryValueState, string> = { expired: 'Needs refresh', unavailable: 'Unavailable' };
+const STATE_HINT: Record<LibraryValueState, string> = {
+  expired: 'Data is out of date. New numbers appear after the next refresh.',
+  unavailable: 'YouTube no longer returns this value.',
+};
+const NOT_REPORTED = 'Not reported';
+
+// Card icons; decorative, the controls carry the names.
+const LIKE_ICON = (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 7.2 7.6 2c1 0 1.7.8 1.7 1.8v2.4h3c.8 0 1.4.7 1.2 1.5l-1 4.6c-.1.6-.6 1-1.2 1H5zM5 7.2H2.5v6.1H5" />
+  </svg>
+);
+const COMMENT_ICON = (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" aria-hidden="true">
+    <path d="M2.5 3.5h11v7.5H8l-3 2.5V11H2.5z" />
+  </svg>
+);
+const EXTERNAL_ICON = (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M9 3h4v4M13 3 7.5 8.5M11 9.5V13H3V5h3.5" />
+  </svg>
+);
+const CHECK_ICON = (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="m3.5 8.3 3 3 6-6.5" />
+  </svg>
+);
+const NO_THUMBNAIL_ICON = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M4 5h16v14H4zM4 16l4.5-4.5 3 3M3 3l18 18" />
+  </svg>
+);
+
+/** Likes or comments: icon and short count; "—" with the reason when there is no number. */
+function CardStat({ value, state, noun, icon }: {
+  value: ChannelExplorerVideo['like_count'];
+  state?: LibraryValueState;
+  noun: 'like' | 'comment';
+  icon: ReactNode;
 }) {
-  const id = video.video_id?.trim();
-  const title = videoTitle(video);
+  const text = cardCount(value);
+  const nouns = isSingleCount(value) ? noun : `${noun}s`;
+  const reason = state ? STATE_WORD[state] : NOT_REPORTED;
   return (
-    <label className="explorer-v2-video-checkbox">
-      <input
-        type="checkbox"
-        data-grid-focus="selection"
-        checked={checked}
-        disabled={!id}
-        onChange={(event) => onChange(video, event.currentTarget.checked)}
-        aria-label={`Select ${title}`}
-      />
-    </label>
+    <span className="video-card-stat" title={text === null ? (state ? STATE_HINT[state] : NOT_REPORTED) : `${exactCount(value)} ${nouns}`}>
+      {icon}{text ?? CARD_DASH}
+      <span className="explorer-sr-only">{text === null ? ` ${nouns}: ${reason.toLowerCase()}` : ` ${nouns}`}</span>
+    </span>
   );
 }
 
+/**
+ * One video of the Videos grid and of a collection: the thumbnail (only scaled) with its duration, a title
+ * of two lines and rows of fixed height, so every card of a grid has the same height.
+ * Long form (16:9; every collection card): Large: views and growth; date, likes, comments and the
+ * YouTube link. Compact: views and date; growth and the link.
+ * Shorts form (2:3, centre-cropped; the Videos tab's Shorts): Large: views; growth; likes and comments;
+ * date and the link. Compact: views and the link; growth.
+ * Tab order: thumbnail, title, checkbox, link. Only numbers from the data and their difference; a missing
+ * value is "—", never 0.
+ */
 export function VideoCard({
   video,
   growthAvailable,
   selected,
+  selecting = false,
+  density = 'large',
+  form = 'long',
   onToggleSelected,
   onInspect,
 }: {
   video: ChannelExplorerVideo;
   growthAvailable: boolean;
   selected: boolean;
+  /** A card of the list is selected: every checkbox stays visible. */
+  selecting?: boolean;
+  density?: CatalogueDensity;
+  /** The grid's form: Shorts only in the Videos tab's Shorts grid; collections keep Long for every type. */
+  form?: VideoCardForm;
   onToggleSelected: (video: ChannelExplorerVideo, checked: boolean) => void;
   onInspect: (video: ChannelExplorerVideo, trigger: 'thumbnail' | 'title') => void;
 }) {
   const title = videoTitle(video);
+  const id = video.video_id?.trim();
   const href = youtubeVideoUrl(video.video_id);
-  const publishedMissing = missingValue(video, 'published_at');
-  const published = publishedMissing ? MISSING_VALUE : formatDateLocal(video.published_at);
-  const views = formatCount(video.views);
-  const viewsMissing = missingValue(video, 'views');
-  const growth = growthAvailable
-    ? presentVideoViewGrowth(
-      (video as Partial<LibraryVideo>).view_growth,
-    )
-    : null;
-  const durationLabel = hasMetricValue(video.duration)
-    ? `Duration ${formatDuration(video.duration)}`
-    : 'Duration not reported';
+  const large = density !== 'compact';
+  const shorts = form === 'shorts';
+  const viewsState = valueState(video, 'views');
+  const unavailable = viewsState === 'unavailable';
+  const views = cardCount(video.views);
+  const viewNoun = isSingleCount(video.views) ? 'view' : 'views';
+  const growth = growthAvailable ? cardGrowth((video as Partial<LibraryVideo>).view_growth) : null;
+  const seconds = cardDurationSeconds(video.duration);
+  const publishedState = valueState(video, 'published_at');
+  // Counted from now at each render, without a timer: the frozen session keeps the instant, not the age.
+  const age = publishedState ? null : cardAge(video.published_at, Date.now());
+  const date = publishedState || !video.published_at ? CARD_DASH : age ?? formatDateLocal(video.published_at);
+  const dateTitle = publishedState ? STATE_HINT[publishedState]
+    : video.published_at ? `Published ${formatExactLocal(video.published_at)}` : NOT_REPORTED;
+  // An unavailable video shows the placeholder instead of its thumbnail.
+  const thumbnailUrl = unavailable ? undefined : safeVideoThumbnailUrl(video.thumbnail_url);
+  const label = videoCardLabel({
+    type: video.video_type,
+    title,
+    views: video.views,
+    viewsState: (viewsState ? STATE_WORD[viewsState] : NOT_REPORTED).toLowerCase(),
+    growthWords: growth?.words,
+    durationSeconds: seconds,
+    published: publishedState ? null : cardDateWords(video.published_at),
+  });
+
+  const viewsValue = views !== null ? (
+    <span className="video-card-views" title={`${exactCount(video.views)} ${viewNoun}`}>
+      <b>{views}</b><i>{viewNoun}</i>
+    </span>
+  ) : (
+    <span className="video-card-views" title={viewsState ? STATE_HINT[viewsState] : NOT_REPORTED}>
+      <b>{CARD_DASH}</b>
+      <em className={`video-card-state${viewsState === 'expired' ? ' is-warning' : ''}`}>
+        {viewsState ? STATE_WORD[viewsState] : NOT_REPORTED}
+      </em>
+    </span>
+  );
+  const growthChip = growth && (
+    <span className={`video-card-growth is-${growth.tone}`} title={growth.title}>{growth.text}</span>
+  );
+  const dateText = <span className="video-card-date" title={dateTitle}>{date}</span>;
+  const youtubeLink = href && (
+    <a
+      className="video-card-youtube"
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      data-grid-focus="youtube"
+      title="Open on YouTube"
+      aria-label={`Open ${title} on YouTube`}
+    >
+      {EXTERNAL_ICON}
+    </a>
+  );
+  const likes = <CardStat value={video.like_count} state={valueState(video, 'like_count')} noun="like" icon={LIKE_ICON} />;
+  const comments = <CardStat value={video.comment_count} state={valueState(video, 'comment_count')} noun="comment" icon={COMMENT_ICON} />;
+  const classes = ['video-card', shorts ? 'is-shorts' : 'is-long', large ? 'is-large' : 'is-compact', selected && 'is-selected',
+    selecting && 'is-selecting', unavailable && 'is-unavailable'].filter(Boolean).join(' ');
 
   return (
-    <article
-      className={`explorer-v2-video-card${selected ? ' is-selected' : ''}`}
-      aria-label={title}
-      data-video-id={video.video_id}
-    >
-      <div className="explorer-v2-video-card-media">
+    <article className={classes} aria-label={label} data-video-id={video.video_id}>
+      <div className="video-card-media">
         <button
           type="button"
-          className="explorer-v2-video-card-thumbnail-button"
+          className="video-card-thumbnail"
           data-inspector-trigger="thumbnail"
           data-grid-focus="thumbnail"
           onClick={() => onInspect(video, 'thumbnail')}
-          aria-label={`Inspect ${title}. ${durationLabel}`}
-        >
-          <VideoThumbnail video={video} />
-        </button>
-        <VideoSelectionToggle
-          video={video}
-          checked={selected}
-          onChange={onToggleSelected}
-        />
-      </div>
-
-      <div className="explorer-v2-video-card-body">
-        <button
-          type="button"
-          className="explorer-v2-video-card-title"
-          data-inspector-trigger="title"
-          data-grid-focus="title"
-          onClick={() => onInspect(video, 'title')}
           aria-label={`Inspect ${title}`}
         >
-          <strong title={title}>{title}</strong>
+          <span className="video-card-placeholder">{NO_THUMBNAIL_ICON}</span>
+          {/* A failed image hides itself and uncovers the placeholder (no state: the card stays a plain render). */}
+          {thumbnailUrl && (
+            <img
+              key={thumbnailUrl}
+              src={thumbnailUrl}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+              onError={(event) => { event.currentTarget.hidden = true; }}
+            />
+          )}
         </button>
-
-        <div className="explorer-v2-video-card-meta">
-          <span title={publishedMissing ?? published}>{published}</span>
-          {href && (
-            <a
-              href={href}
-              target="_blank"
-              rel="noreferrer"
-              data-grid-focus="youtube"
-              aria-label={`Open ${title} on YouTube`}
-            >
-              YouTube <ExternalLink size={12} aria-hidden="true" />
-            </a>
-          )}
-        </div>
-
-        <div className="explorer-v2-video-card-views">
-          <span className="explorer-v2-video-card-total-views">
-            {hasMetricValue(video.views) ? (
-              <><strong>{views}</strong>{' total views'}</>
-            ) : viewsMissing ? <span title={viewsMissing}><strong>{MISSING_VALUE}</strong>{' total views'}</span> : 'Views not reported'}
-          </span>
-          {growth && (
-            <span
-              className={`explorer-v2-video-card-growth is-${growth.tone}`}
-              aria-label={`View growth: ${growth.text}`}
-              title={growth.title ?? growth.text}
-            >
-              {growth.text}
-            </span>
-          )}
-        </div>
+        {/* YouTube reports 0 for a video without a length yet (a live or upcoming stream): "—", not "0:00". */}
+        <span className="video-card-badge">{seconds ? cardDuration(seconds) : CARD_DASH}</span>
       </div>
+      <button
+        type="button"
+        className="video-card-title"
+        data-inspector-trigger="title"
+        data-grid-focus="title"
+        onClick={() => onInspect(video, 'title')}
+        aria-label={`Inspect ${title}`}
+        title={large ? title : `${title} · ${dateTitle}`}
+      >
+        <span>{title}</span>
+      </button>
+      <label className="video-card-check">
+        <input
+          type="checkbox"
+          data-grid-focus="selection"
+          checked={selected}
+          disabled={!id}
+          onChange={(event) => onToggleSelected(video, event.currentTarget.checked)}
+          aria-label={`Select ${title}`}
+        />
+        <span aria-hidden="true">{CHECK_ICON}</span>
+      </label>
+      {shorts && large ? (
+        <>
+          <div className="video-card-row">{viewsValue}</div>
+          <div className="video-card-row">{growthChip}</div>
+          <div className="video-card-row is-small video-card-meta">{likes}{comments}</div>
+          <div className="video-card-row video-card-meta">{dateText}{youtubeLink}</div>
+        </>
+      ) : shorts ? (
+        <>
+          <div className="video-card-row">{viewsValue}{youtubeLink}</div>
+          <div className="video-card-row">{growthChip}</div>
+        </>
+      ) : large ? (
+        <>
+          <div className="video-card-row">{viewsValue}{growthChip}</div>
+          <div className="video-card-row video-card-meta">{dateText}{likes}{comments}{youtubeLink}</div>
+        </>
+      ) : (
+        <>
+          <div className="video-card-row">{viewsValue}{dateText}</div>
+          <div className="video-card-row">{growthChip}{youtubeLink}</div>
+        </>
+      )}
     </article>
   );
 }
@@ -283,6 +380,12 @@ export function ExplorerVideosPanel({
   selectionScopeKey,
   hasMore = false,
   hasPrevious = false,
+  anchorMissing,
+  onStartFromBeginning,
+  onRefreshOrder,
+  departedShown = 0,
+  refreshProblem,
+  leftResults = 0,
   isLoadingMore = false,
   loadMoreError,
   loadMoreErrorDirection = 'next',
@@ -308,6 +411,17 @@ export function ExplorerVideosPanel({
   selectionScopeKey: string;
   hasMore?: boolean;
   hasPrevious?: boolean;
+  anchorMissing?: boolean;
+  /** "Show from the beginning": the loaded part of the list starts below its top. */
+  onStartFromBeginning?: () => void;
+  /** Read the list again (its order, total and values) at the remembered card. */
+  onRefreshOrder?: () => void;
+  /** Shown cards that no longer match the filters or are no longer available: they stay until the list is read again. */
+  departedShown?: number;
+  /** The last background update of the numbers failed (the cards are unchanged), in words. */
+  refreshProblem?: string;
+  /** Videos of the loaded part that no longer match or are no longer available. */
+  leftResults?: number;
   isLoadingMore?: boolean;
   loadMoreError?: string | null;
   loadMoreErrorDirection?: 'next' | 'previous';
@@ -327,7 +441,8 @@ export function ExplorerVideosPanel({
   preparing?: boolean;
 }) {
   const payload = resourcePayload(state);
-  const videos = freshSourceRows(payload?.videos ?? []);
+  // Every loaded card stays: a value past its own lifetime arrives here already marked expired (useCatalogueBrowse).
+  const videos = useMemo(() => payload?.videos ?? [], [payload?.videos]);
   const selectionChannel = channelId || payload?.channel?.channel_id || 'preview';
   const selectionIdentity = useRef({ channel: selectionChannel, scope: selectionScopeKey });
   selectionIdentity.current = { channel: selectionChannel, scope: selectionScopeKey };
@@ -348,12 +463,30 @@ export function ExplorerVideosPanel({
       return updated;
     });
   }, [videoType]);
-  const [inspectedVideo, setInspectedVideo] = useState<ChannelExplorerVideo | null>(null);
-  useSourceExpiry(inspectedVideo, () => setInspectedVideo(null));
+  const [inspectorTarget, setInspectedVideo] = useState<ChannelExplorerVideo | null>(null);
+  const currentInspector = useRef(false);
+  // A current card's last loaded values: another sort of the same matched set keeps the Inspector open
+  // while the video is in the new list, even before its card loads there.
+  const lastInspected = useRef<ChannelExplorerVideo | null>(null);
+  const loadedInspected = inspectorTarget && currentInspector.current
+    ? videos.find(video => video.video_id === inspectorTarget.video_id) ?? null : null;
+  if (loadedInspected) lastInspected.current = loadedInspected;
+  const inspectedListed = Boolean(inspectorTarget?.video_id && lastInspected.current?.video_id === inspectorTarget.video_id
+    && listPosition(payload?.browse?.order, inspectorTarget.video_id) >= 0);
+  const inspectedVideo = inspectorTarget && currentInspector.current
+    ? loadedInspected ?? (inspectedListed ? lastInspected.current : null) : inspectorTarget;
+  const [inspectorNotice, setInspectorNotice] = useState('');
+  useEffect(() => {
+    if (inspectorTarget && currentInspector.current && !inspectedVideo && state.kind === 'ready') {
+      setInspectedVideo(null);
+      setInspectorNotice('This video is no longer in these results. The Inspector was closed.');
+    }
+  }, [inspectorTarget, inspectedVideo, state.kind]);
+  // Time alone never closes the Inspector; its panels read and refresh their own data.
   useSourceExpiry(selectedVideos, () => setSelectedVideos((previous) => new Map([...previous].map(([id, video]) =>
     [id, sourceExpired(video) ? { video_id: id, video_type: video.video_type } : video]))));
 
-  // The session the Inspector was opened in: its panels stay active only while it is the grid's session.
+  // Frozen Inspector panels belong to the session in which their card was opened.
   const [inspectorSession, setInspectorSession] = useState<string>();
   const [selectionProgress, setSelectionProgress] = useState<SelectionProgress | null>(null);
   const [selectionMessage, setSelectionMessage] = useState('');
@@ -394,6 +527,7 @@ export function ExplorerVideosPanel({
 
   useEffect(() => {
     setSelectionByType(new Map());
+    setInspectorNotice('');
     setInspectedVideo(null);
     setInspectorSession(undefined);
     inspectorReturnRef.current = null;
@@ -404,6 +538,7 @@ export function ExplorerVideosPanel({
     setInspectorSession(undefined);
     inspectorReturnRef.current = null;
   }, [videoType]);
+  useEffect(() => setInspectorNotice(''), [selectionScopeKey]);
 
   useEffect(() => {
     selectionRequest.current?.abort();
@@ -541,20 +676,30 @@ export function ExplorerVideosPanel({
       scope: scopeRef.current, anchor: gridRef.current?.captureAnchor() ?? null,
       videoId: video.video_id || '', trigger,
     };
-    setInspectedVideo(sourceExpired(video) ? null : video);
+    currentInspector.current = payload?.browse?.consistency === 'current';
+    setInspectorNotice('');
+    // A card of the current list opens by its ID (the panels read their own data); a fixed row only while it is current.
+    setInspectedVideo(currentInspector.current ? { video_id: video.video_id } : sourceExpired(video) ? null : video);
     setInspectorSession(session?.sessionKey);
-  }, [session?.sessionKey]);
+  }, [session?.sessionKey, payload?.browse?.consistency]);
   const restoreInspectorFocus = useCallback(() => {
     const saved = inspectorReturnRef.current;
     if (saved && saved.scope === scopeRef.current) {
       gridRef.current?.restore(saved.anchor, { videoId: saved.videoId, trigger: saved.trigger });
     }
   }, []);
-  const workshopFeedback = (message: string | undefined) => {
+  const workshopFeedback = async (result: Promise<string | undefined> | string | undefined) => {
+    const scope = scopeRef.current;
+    const message = await result;
+    if (scope !== scopeRef.current) return;
     keepSelectionViewport();
     setSelectionMessage(message ?? '');
   };
   const loadingLabel = preparing ? LIBRARY_ERROR_TEXT.preparing : `Loading stored ${FORMAT_NOUNS[videoType].catalogue} catalogue…`;
+  // The list of this read: its total always; after the read's own lifetime, the time its order is from.
+  const order = payload?.browse?.order;
+  const orderFrom = order?.ids && payload && sourceOwnExpired(payload.browse) ? payload.browse.created_at : undefined;
+  const plural = (count: number, one: string, many: string) => `${count.toLocaleString('en')} ${count === 1 ? one : many}`;
 
   return (
     <section
@@ -570,8 +715,14 @@ export function ExplorerVideosPanel({
 
       {(payload || selectedVideos.size > 0) && (
           <div className="explorer-v2-video-selection-bar" aria-live="polite">
-            <span>{payload && <><strong>{formatCount(sourceOwnExpired(payload) ? videos.length : payload.pagination?.matched_count ?? videos.length, { compact: false })}</strong> {sourceOwnExpired(payload) ? 'visible videos' : 'videos'}</>}</span>
+            <span>{payload && (order
+              ? <><strong>{formatCount(order.total, { compact: false })}</strong> {order.total === 1 ? 'video' : 'videos'}
+                {orderFrom && <> · order from {formatTimestampLocal(orderFrom)}</>}</>
+              : <><strong>{formatCount(sourceOwnExpired(payload) ? videos.length : payload.pagination?.matched_count ?? videos.length, { compact: false })}</strong> {sourceOwnExpired(payload) || payload.pagination.matched_count === undefined ? 'loaded videos' : 'videos'}</>)}</span>
             <div className="explorer-v2-video-selection-actions">
+              {onRefreshOrder && order && <button type="button" className="explorer-secondary-button"
+                title="Read this list again: its order, count and values" disabled={state.kind !== 'ready' || isLoadingMore}
+                onClick={onRefreshOrder}>Refresh order</button>}
               <button
                 type="button"
                 className="explorer-secondary-button"
@@ -619,6 +770,16 @@ export function ExplorerVideosPanel({
       {payload && (
         <>
           {!sourceOwnExpired(payload) && <ScopeNotice payload={payload} />}
+          {order && !order.ids && <p role="status">{orderLimitText(order.total, order.limit)}</p>}
+          {leftResults > 0 && <p role="status">{plural(leftResults, 'video', 'videos')} of the loaded part no longer {leftResults === 1 ? 'matches' : 'match'} these
+            filters or {leftResults === 1 ? 'is' : 'are'} no longer available. Refresh order to update the list.</p>}
+          {departedShown > 0 && <p role="status">{plural(departedShown, 'shown video', 'shown videos')} no longer {departedShown === 1 ? 'matches' : 'match'} these
+            filters or {departedShown === 1 ? 'is' : 'are'} no longer available. {departedShown === 1 ? 'Its card stays' : 'Their cards stay'} with the last
+            values. Refresh order to update the list.</p>}
+          {refreshProblem && <p role="status">{refreshProblem}</p>}
+          {anchorMissing && <p role="status">The video you were viewing is no longer in these results. Showing the first page.</p>}
+          {onStartFromBeginning && <button type="button" className="explorer-secondary-button"
+            disabled={state.kind !== 'ready' || isLoadingMore} onClick={onStartFromBeginning}>Show from the beginning</button>}
           {expired && (
             <div className="explorer-v2-catalogue-load-boundary" role="status">
               <span>This browsing session expired. Loaded videos and selection are kept.</span>
@@ -633,11 +794,14 @@ export function ExplorerVideosPanel({
               </button>
             )}
           </div>
+          {/* One grid per read of the list: a new order never restores a card of the previous one. */}
           {videos.length > 0 ? (
             <VirtualVideoGrid
+              key={session?.sessionKey}
               ref={gridRef}
               videos={videos}
               density={density}
+              videoType={videoType}
               scopeKey={selectionScopeKey}
               inspectedVideoId={inspectedVideo?.video_id || undefined}
               onAnchorChange={onAnchorChange}
@@ -647,7 +811,10 @@ export function ExplorerVideosPanel({
                     key={video.video_id || video.title}
                     video={video}
                     growthAvailable={growthAvailable}
+                    density={density}
+                    form={videoCardForm(videoType)}
                     selected={selectedVideos.has(video.video_id?.trim() || '')}
+                    selecting={selectedVideos.size > 0}
                     onToggleSelected={toggleSelected}
                     onInspect={inspectVideo}
                   />
@@ -669,15 +836,18 @@ export function ExplorerVideosPanel({
           </div>
         </>
       )}
+      {inspectorNotice && <p role="status">{inspectorNotice}</p>}
       {inspectedVideo && (
-        <VideoInspector video={inspectedVideo}
+        <VideoInspector key={currentInspector.current ? session?.sessionKey : undefined} video={inspectedVideo}
           growth={growthAvailable ? (inspectedVideo as Partial<LibraryVideo>).view_growth : undefined}
           library={inspector && inspectorSession && channelId && session ? {
             gates: inspector.gates,
             opening: {
-              channelId, videoType, frozenRef: session.frozenRef, sessionKey: inspectorSession,
+              channelId, videoType,
+              ...(session.frozenRef ? { frozenRef: session.frozenRef, sessionKey: inspectorSession }
+                : { kind: 'query' as const, scope: { kind: 'channel' as const, id: channelId } }),
               checkedAt: typeof inspectedVideo.checked_at === 'string' ? inspectedVideo.checked_at : null,
-              active: inspectorSession === session.sessionKey && !expired,
+              active: (currentInspector.current || inspectorSession === session.sessionKey) && !expired,
               pending: session.pending, timeZone: inspector.timeZone,
             },
           } : undefined}

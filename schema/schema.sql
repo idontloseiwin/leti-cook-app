@@ -4617,7 +4617,7 @@ ALTER TABLE operator_private.schema_migrations ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE operator_private.schema_migrations FROM PUBLIC,anon,authenticated,authenticator,service_role,lic_reader;
 
 INSERT INTO operator_private.schema_state(singleton,baseline_id,initial_version,current_version)
-VALUES (true,'leti-cook-release-01',52,52);
+VALUES (true,'leti-cook-release-01',61,61);
 
 CREATE VIEW readable.schema_version WITH (security_barrier=true,security_invoker=false) AS
 SELECT baseline_id,current_version FROM operator_private.schema_state WHERE singleton;
@@ -5547,23 +5547,8 @@ WITH controls AS MATERIALIZED (
   AND initial_job.job_type='channel_initial_long_inventory' AND initial_job.initial_scope_version=1
   AND initial_job.status<>'completed') AS full_initial_pending
  FROM readable.channel_control control
-), facts AS (
- SELECT state.video_id,state.channel_id,coalesce(state.video_type,'unknown') AS video_type,
- state.paused_reason,state.next_due_at,state.lease_token,state.lease_expires_at,
- state.hydration_needed,state.metadata_due_at,state.consecutive_failures,
- state.typed_collection_status,
- CASE WHEN state.video_type IS NULL THEN 'identity_refresh'
-  WHEN state.video_type='stream' AND state.typed_stream_actual_end_at IS NULL THEN 'stream_lifecycle'
-  WHEN state.hydration_needed THEN 'hydrate'
-  WHEN state.availability_first_missing_at IS NOT NULL OR state.availability_resume_observed_at IS NOT NULL
-   OR state.metadata_due_at IS NULL OR state.metadata_due_at<=now() THEN 'metadata'
-  ELSE 'counters' END AS stored_collection_mode,
- coalesce(control.owner_permission='accepted' AND NOT control.is_hidden
-  AND control.control_epoch IS NOT NULL,false) AS control_allowed,
- coalesce(control.collection_mode='active',false) AS channel_active,
- coalesce(control.collection_mode IN('active','metadata_only'),false) AS recovery_channel_allowed,
- coalesce(control.typed_runtime_eligible,false) AS typed_channel_allowed,
- coalesce(control.full_initial_pending,false) AS full_initial_pending,
+), rows AS (
+ SELECT state.channel_id,state.video_type AS stored_type,
  CASE WHEN control.collection_mode='active'
   OR control.owner_permission IS DISTINCT FROM 'accepted'
   OR control.is_hidden IS DISTINCT FROM false OR control.control_epoch IS NULL THEN false ELSE
@@ -5580,16 +5565,59 @@ WITH controls AS MATERIALIZED (
  AND handoff_job.phase IN('hydrate_videos','verify')
  AND handoff_job.status IN('queued','running','completed','error')
  AND handoff_target.video_id=state.video_id AND handoff_target.video_type=state.video_type
- AND handoff_target.status IN('updated','skipped','unavailable','checked')) END AS initial_handoff,
- CASE WHEN state.video_type IN('short','stream') THEN coalesce(runtime.runtime_enabled,false)
-  ELSE true END AS runtime_enabled,
- CASE WHEN state.video_type IN('short','stream') THEN coalesce(playlist.runtime_enabled,false)
-  ELSE true END AS playlist_enabled
+ AND handoff_target.status IN('updated','skipped','unavailable','checked')) END AS handoff_evidence,
+ state.next_due_at,state.typed_collection_status,
+ state.paused_reason IS NULL AS unpaused,
+ state.next_due_at<=now() AND (state.lease_token IS NULL OR state.lease_expires_at<=now()) AS ready,
+ state.consecutive_failures>0 AS failing,
+ state.lease_token IS NOT NULL AND state.lease_expires_at>now() AS leased,
+ state.lease_token IS NOT NULL AND state.lease_expires_at<=now() AS lease_expired,
+ CASE WHEN state.video_type IS NULL THEN 'identity_refresh'
+  WHEN state.video_type='stream' AND state.typed_stream_actual_end_at IS NULL THEN 'stream_lifecycle'
+  WHEN state.hydration_needed THEN 'hydrate'
+  WHEN state.availability_first_missing_at IS NOT NULL OR state.availability_resume_observed_at IS NOT NULL
+   OR state.metadata_due_at IS NULL OR state.metadata_due_at<=now() THEN 'metadata'
+  ELSE 'counters' END AS stored_collection_mode
  FROM public.video_collection_state state
  LEFT JOIN controls control USING(channel_id)
- LEFT JOIN public.typed_video_collection_runtime runtime ON runtime.video_type=state.video_type
+), parts AS (
+ -- Videos of one channel, stored format and handoff answer share every flag
+ -- below; their row conditions are summed once.
+ SELECT channel_id,stored_type,coalesce(stored_type,'unknown') AS video_type,handoff_evidence,
+ count(*)::bigint AS videos,
+ count(*) FILTER(WHERE unpaused)::bigint AS unpaused_videos,
+ count(*) FILTER(WHERE unpaused AND ready)::bigint AS ready_videos,
+ count(*) FILTER(WHERE unpaused AND ready AND stored_collection_mode='hydrate')::bigint AS ready_hydrate,
+ count(*) FILTER(WHERE unpaused AND ready AND stored_collection_mode IN('metadata','identity_refresh','stream_lifecycle'))::bigint AS ready_metadata,
+ count(*) FILTER(WHERE unpaused AND ready AND stored_collection_mode='counters')::bigint AS ready_counters,
+ count(*) FILTER(WHERE failing)::bigint AS failing_videos,
+ count(*) FILTER(WHERE unpaused AND failing)::bigint AS unpaused_failing,
+ count(*) FILTER(WHERE leased)::bigint AS leased_videos,
+ count(*) FILTER(WHERE lease_expired)::bigint AS expired_videos,
+ count(*) FILTER(WHERE typed_collection_status='pending')::bigint AS pending_videos,
+ count(*) FILTER(WHERE typed_collection_status='hydrated')::bigint AS hydrated_videos,
+ count(*) FILTER(WHERE typed_collection_status='awaiting_completion')::bigint AS awaiting_videos,
+ count(*) FILTER(WHERE typed_collection_status='unavailable')::bigint AS unavailable_videos,
+ min(next_due_at) FILTER(WHERE unpaused AND ready) AS ready_oldest_at
+ FROM rows GROUP BY channel_id,stored_type,handoff_evidence
+), facts AS (
+ SELECT parts.*,
+ coalesce(control.owner_permission='accepted' AND NOT control.is_hidden
+  AND control.control_epoch IS NOT NULL,false) AS control_allowed,
+ coalesce(control.collection_mode='active',false) AS channel_active,
+ coalesce(control.collection_mode IN('active','metadata_only'),false) AS recovery_channel_allowed,
+ coalesce(control.typed_runtime_eligible,false) AS typed_channel_allowed,
+ coalesce(control.full_initial_pending,false) AS full_initial_pending,
+ parts.handoff_evidence AS initial_handoff,
+ CASE WHEN parts.stored_type IN('short','stream') THEN coalesce(runtime.runtime_enabled,false)
+  ELSE true END AS runtime_enabled,
+ CASE WHEN parts.stored_type IN('short','stream') THEN coalesce(playlist.runtime_enabled,false)
+  ELSE true END AS playlist_enabled
+ FROM parts
+ LEFT JOIN controls control USING(channel_id)
+ LEFT JOIN public.typed_video_collection_runtime runtime ON runtime.video_type=parts.stored_type
  LEFT JOIN public.channel_playlist_state playlist
-  ON playlist.channel_id=state.channel_id AND playlist.video_type=state.video_type
+  ON playlist.channel_id=parts.channel_id AND playlist.video_type=parts.stored_type
 ), eligible AS (
  SELECT facts.*,control_allowed AND (NOT full_initial_pending OR initial_handoff)
   AND CASE WHEN video_type IN('short','stream') THEN
@@ -5597,44 +5625,33 @@ WITH controls AS MATERIALIZED (
    WHEN video_type='unknown' THEN recovery_channel_allowed
    ELSE channel_active OR initial_handoff END AS channel_eligible,
  control_allowed AND (channel_active OR initial_handoff) AS legacy_channel_eligible,
- playlist_enabled OR initial_handoff AS effective_playlist_enabled
+ video_type IN('short','stream') AND NOT (playlist_enabled OR initial_handoff) AS identity_only
  FROM facts
-), candidates AS (
- SELECT eligible.*,channel_eligible AND paused_reason IS NULL AS candidate,
- CASE WHEN video_type IN('short','stream') AND NOT effective_playlist_enabled
-  THEN 'identity_refresh' ELSE stored_collection_mode END AS collection_mode
- FROM eligible
-), observed AS (
- SELECT candidates.*,candidate AND next_due_at<=now()
-  AND (lease_token IS NULL OR lease_expires_at<=now()) AS is_due,
- runtime_enabled AND legacy_channel_eligible AND paused_reason IS NULL AND next_due_at<=now()
-  AND (lease_token IS NULL OR lease_expires_at<=now()) AS legacy_is_due
- FROM candidates
 ), groups AS (
- SELECT video_type,grouping(video_type) AS overall,count(*)::bigint AS total,
- count(*) FILTER(WHERE is_due)::bigint AS due,
- count(*) FILTER(WHERE candidate AND consecutive_failures>0)::bigint AS failed,
- count(*) FILTER(WHERE NOT candidate AND consecutive_failures>0)::bigint AS excluded_failed,
- count(*) FILTER(WHERE NOT candidate)::bigint AS paused,
- count(*) FILTER(WHERE NOT channel_eligible)::bigint AS policy_paused,
- count(*) FILTER(WHERE NOT runtime_enabled)::bigint AS runtime_disabled,
- count(*) FILTER(WHERE NOT playlist_enabled)::bigint AS playlist_disabled,
- count(*) FILTER(WHERE lease_token IS NOT NULL AND lease_expires_at>now())::bigint AS leased,
- count(*) FILTER(WHERE lease_token IS NOT NULL AND lease_expires_at<=now())::bigint AS expired_leases,
- count(*) FILTER(WHERE is_due AND collection_mode='hydrate')::bigint AS hydration_due,
- count(*) FILTER(WHERE is_due AND collection_mode IN('metadata','identity_refresh','stream_lifecycle'))::bigint AS metadata_due,
- count(*) FILTER(WHERE is_due AND collection_mode='counters')::bigint AS counter_due,
- count(*) FILTER(WHERE typed_collection_status='pending')::bigint AS pending,
- count(*) FILTER(WHERE typed_collection_status='hydrated')::bigint AS hydrated,
- count(*) FILTER(WHERE typed_collection_status='awaiting_completion')::bigint AS awaiting_completion,
- count(*) FILTER(WHERE typed_collection_status='unavailable')::bigint AS unavailable,
- count(*) FILTER(WHERE video_type='unknown')::bigint AS identity_pending,
- min(next_due_at) FILTER(WHERE is_due) AS oldest_overdue_at,
- count(*) FILTER(WHERE NOT legacy_channel_eligible)::bigint AS legacy_policy_paused,
- count(*) FILTER(WHERE legacy_is_due)::bigint AS legacy_due,
- count(*) FILTER(WHERE legacy_channel_eligible AND consecutive_failures>0)::bigint AS legacy_failed,
- min(next_due_at) FILTER(WHERE legacy_is_due) AS legacy_oldest_overdue_at
- FROM observed GROUP BY GROUPING SETS ((video_type),())
+ SELECT video_type,grouping(video_type) AS overall,coalesce(sum(videos),0)::bigint AS total,
+ coalesce(sum(ready_videos) FILTER(WHERE channel_eligible),0)::bigint AS due,
+ coalesce(sum(unpaused_failing) FILTER(WHERE channel_eligible),0)::bigint AS failed,
+ coalesce(sum(failing_videos-CASE WHEN channel_eligible THEN unpaused_failing ELSE 0 END),0)::bigint AS excluded_failed,
+ coalesce(sum(videos-CASE WHEN channel_eligible THEN unpaused_videos ELSE 0 END),0)::bigint AS paused,
+ coalesce(sum(videos) FILTER(WHERE NOT channel_eligible),0)::bigint AS policy_paused,
+ coalesce(sum(videos) FILTER(WHERE NOT runtime_enabled),0)::bigint AS runtime_disabled,
+ coalesce(sum(videos) FILTER(WHERE NOT playlist_enabled),0)::bigint AS playlist_disabled,
+ coalesce(sum(leased_videos),0)::bigint AS leased,
+ coalesce(sum(expired_videos),0)::bigint AS expired_leases,
+ coalesce(sum(ready_hydrate) FILTER(WHERE channel_eligible AND NOT identity_only),0)::bigint AS hydration_due,
+ coalesce(sum(CASE WHEN identity_only THEN ready_videos ELSE ready_metadata END) FILTER(WHERE channel_eligible),0)::bigint AS metadata_due,
+ coalesce(sum(ready_counters) FILTER(WHERE channel_eligible AND NOT identity_only),0)::bigint AS counter_due,
+ coalesce(sum(pending_videos),0)::bigint AS pending,
+ coalesce(sum(hydrated_videos),0)::bigint AS hydrated,
+ coalesce(sum(awaiting_videos),0)::bigint AS awaiting_completion,
+ coalesce(sum(unavailable_videos),0)::bigint AS unavailable,
+ coalesce(sum(videos) FILTER(WHERE video_type='unknown'),0)::bigint AS identity_pending,
+ min(ready_oldest_at) FILTER(WHERE channel_eligible) AS oldest_overdue_at,
+ coalesce(sum(videos) FILTER(WHERE NOT legacy_channel_eligible),0)::bigint AS legacy_policy_paused,
+ coalesce(sum(ready_videos) FILTER(WHERE runtime_enabled AND legacy_channel_eligible),0)::bigint AS legacy_due,
+ coalesce(sum(failing_videos) FILTER(WHERE legacy_channel_eligible),0)::bigint AS legacy_failed,
+ min(ready_oldest_at) FILTER(WHERE runtime_enabled AND legacy_channel_eligible) AS legacy_oldest_overdue_at
+ FROM eligible GROUP BY GROUPING SETS ((video_type),())
 ), empty AS (
  SELECT jsonb_build_object('total',0,'due',0,'failed',0,'excluded_failed',0,'paused',0,
  'policy_paused',0,'runtime_disabled',0,'playlist_disabled',0,'leased',0,'expired_leases',0,
@@ -6916,3 +6933,435 @@ CREATE OR REPLACE VIEW readable.video_snapshots WITH (security_barrier=true, sec
    BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp() AS current) engagement
  WHERE isfinite(s.recorded_at)
  AND s.recorded_at BETWEEN statement_timestamp()-interval '696 hours' AND statement_timestamp();
+
+-- Personal rules outlive source evidence. Pending observations are consumed
+-- transactionally; a sequence number is an ordering hint, never a watermark.
+CREATE TABLE public.alert_rules (
+    id uuid PRIMARY KEY,
+    version integer NOT NULL DEFAULT 1 CHECK (version > 0),
+    definition jsonb NOT NULL CHECK (jsonb_typeof(definition) = 'object'),
+    scope_owner uuid,
+    scope_created_at timestamptz,
+    gap_count bigint NOT NULL DEFAULT 0,
+    last_gap_at timestamptz,
+    enabled boolean NOT NULL DEFAULT true,
+    started_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);
+ALTER TABLE public.alert_rules ADD COLUMN deleted_at timestamptz
+    CHECK (deleted_at IS NULL OR NOT enabled);
+CREATE INDEX alert_rules_deleted ON public.alert_rules(deleted_at,id) WHERE deleted_at IS NOT NULL;
+CREATE INDEX alert_rules_active ON public.alert_rules ((definition->>'event'))
+    WHERE enabled;
+
+CREATE TABLE public.alert_observations (
+    id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    rule_id uuid NOT NULL REFERENCES public.alert_rules ON DELETE CASCADE,
+    version integer NOT NULL,
+    event text NOT NULL,
+    subject text NOT NULL,
+    channel_id text NOT NULL REFERENCES public.channels ON DELETE CASCADE,
+    channel_ref uuid NOT NULL,
+    source_key text NOT NULL,
+    observed_at timestamptz NOT NULL,
+    available_from timestamptz NOT NULL,
+    rule_started_at timestamptz NOT NULL,
+    evidence_expires_at timestamptz NOT NULL,
+    definition jsonb NOT NULL,
+    video_type text,
+    published_at timestamptz,
+    duration text,
+    UNIQUE (rule_id, version, source_key)
+);
+ALTER TABLE public.alert_observations ADD COLUMN retry_at timestamptz;
+CREATE INDEX alert_observations_rule_ready ON public.alert_observations(rule_id,id) WHERE retry_at IS NULL;
+CREATE INDEX alert_observations_rule_due ON public.alert_observations(rule_id,retry_at,id) WHERE retry_at IS NOT NULL;
+CREATE INDEX alert_observations_ready ON public.alert_observations(id) WHERE retry_at IS NULL;
+CREATE INDEX alert_observations_retry ON public.alert_observations(retry_at,id) WHERE retry_at IS NOT NULL;
+CREATE INDEX alert_observations_rule_retry ON public.alert_observations(rule_id) WHERE retry_at IS NOT NULL;
+-- Existing observations keep an unknown enqueue time. Neither their source
+-- time nor the time of this migration is evidence of when they were queued.
+ALTER TABLE public.alert_observations ADD COLUMN enqueued_at timestamptz;
+ALTER TABLE public.alert_observations ALTER COLUMN enqueued_at SET DEFAULT statement_timestamp();
+CREATE INDEX alert_observations_enqueued ON public.alert_observations(enqueued_at);
+CREATE INDEX alert_observations_expiry ON public.alert_observations(evidence_expires_at);
+CREATE INDEX alert_observations_channel ON public.alert_observations(channel_id);
+ALTER TABLE public.alert_observations
+    ALTER COLUMN rule_id DROP NOT NULL, ALTER COLUMN version DROP NOT NULL,
+    ALTER COLUMN definition DROP NOT NULL, ADD COLUMN members jsonb,
+    ADD CONSTRAINT alert_observation_recipients CHECK (
+        (members IS NULL AND rule_id IS NOT NULL AND version IS NOT NULL AND definition IS NOT NULL)
+        OR (members IS NOT NULL AND jsonb_typeof(members)='object' AND members<>'{}'::jsonb
+            AND rule_id IS NULL AND version IS NULL AND definition IS NULL));
+CREATE INDEX alert_observations_members ON public.alert_observations USING gin(members) WHERE members IS NOT NULL;
+CREATE INDEX alert_observations_shared_ready ON public.alert_observations(id) WHERE members IS NOT NULL AND retry_at IS NULL;
+CREATE INDEX alert_observations_shared_due ON public.alert_observations(retry_at,id) WHERE members IS NOT NULL AND retry_at IS NOT NULL;
+
+CREATE TABLE public.alert_inbox (
+    id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    rule_id uuid NOT NULL REFERENCES public.alert_rules ON DELETE CASCADE,
+    version integer NOT NULL,
+    rule_name text NOT NULL,
+    event text NOT NULL,
+    direction text,
+    threshold bigint,
+    subject text NOT NULL,
+    channel_id text NOT NULL REFERENCES public.channels ON DELETE CASCADE,
+    channel_ref uuid NOT NULL,
+    video_type text,
+    source_key text NOT NULL,
+    observed_at timestamptz NOT NULL,
+    previous_at timestamptz,
+    previous_value bigint,
+    current_value bigint,
+    published_at timestamptz,
+    expires_at timestamptz NOT NULL,
+    is_read boolean NOT NULL DEFAULT false,
+    UNIQUE (rule_id, version, source_key)
+);
+CREATE UNIQUE INDEX alert_inbox_publication ON public.alert_inbox(rule_id,subject)
+    WHERE event='video.published';
+CREATE INDEX alert_inbox_expiry ON public.alert_inbox(expires_at);
+CREATE INDEX alert_inbox_channel ON public.alert_inbox(channel_id);
+
+-- A metadata edit can move a video into a duration filter between samples.
+ALTER TABLE public.videos ADD COLUMN alert_duration_since timestamptz;
+CREATE FUNCTION public.alert_duration_clock() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path TO 'pg_catalog', 'pg_temp'
+    AS $$
+BEGIN
+    NEW.alert_duration_since := clock_timestamp();
+    RETURN NEW;
+END;
+$$;
+CREATE TRIGGER alert_duration_clock BEFORE UPDATE OF duration ON public.videos
+FOR EACH ROW WHEN (OLD.duration IS DISTINCT FROM NEW.duration) EXECUTE FUNCTION public.alert_duration_clock();
+REVOKE ALL ON FUNCTION public.alert_duration_clock() FROM PUBLIC;
+
+ALTER TABLE public.folders ADD COLUMN alert_identity uuid NOT NULL DEFAULT gen_random_uuid();
+ALTER TABLE public.channel_labels ADD COLUMN alert_identity uuid NOT NULL DEFAULT gen_random_uuid();
+ALTER TABLE public.alert_rules ADD COLUMN restored_scope_since timestamptz;
+ALTER TABLE public.channel_collection_state ADD COLUMN alert_visible_since timestamptz;
+ALTER TABLE public.channel_collection_state ALTER COLUMN alert_visible_since SET DEFAULT clock_timestamp();
+CREATE FUNCTION public.alert_visibility_clock() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path TO 'pg_catalog', 'pg_temp'
+    AS $$
+BEGIN
+    NEW.alert_visible_since := clock_timestamp();
+    RETURN NEW;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.alert_visibility_clock() FROM PUBLIC;
+CREATE TRIGGER alert_visibility_clock BEFORE UPDATE OF is_hidden ON public.channel_collection_state
+    FOR EACH ROW WHEN (OLD.is_hidden IS DISTINCT FROM NEW.is_hidden)
+    EXECUTE FUNCTION public.alert_visibility_clock();
+ALTER TABLE public.channel_label_assignments ALTER COLUMN created_at SET DEFAULT clock_timestamp();
+
+-- A channel can leave a folder and rejoin it between consecutive measurements.
+ALTER TABLE public.channels ADD COLUMN alert_folder_since timestamptz;
+CREATE FUNCTION public.alert_folder_clock() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path TO 'pg_catalog', 'pg_temp'
+    AS $$
+BEGIN
+    NEW.alert_folder_since := clock_timestamp();
+    RETURN NEW;
+END;
+$$;
+CREATE TRIGGER alert_folder_clock BEFORE UPDATE OF folder_id ON public.channels
+    FOR EACH ROW WHEN (OLD.folder_id IS DISTINCT FROM NEW.folder_id)
+    EXECUTE FUNCTION public.alert_folder_clock();
+
+-- Queue only rules active when a confirmed source row is written. Reuse the
+-- native writer transaction and the protected identity view. A page fetch,
+-- queue retry or failure to reach YouTube cannot create source observations.
+CREATE FUNCTION public.capture_alert_observations() RETURNS trigger
+    LANGUAGE plpgsql
+    SET search_path TO 'pg_catalog', 'pg_temp'
+    AS $$
+DECLARE
+    delivery_projection text;
+    packet public.alert_observations[];
+    source_projection text := TG_ARGV[1];
+    membership_clock text := CASE WHEN TG_RELID='public.video_availability_events'::regclass
+                                  THEN 'f.scope_at' ELSE 'f.at' END;
+    retry_sources refcursor;
+    source_row jsonb;
+    unknown_sources bigint := 0;
+BEGIN
+    IF NOT EXISTS (SELECT FROM public.alert_rules r WHERE r.enabled
+        AND r.definition->>'event' = ANY(string_to_array(TG_ARGV[0], ','))) THEN
+        RETURN NULL;
+    END IF;
+    IF TG_RELID='public.video_snapshots'::regclass THEN
+        IF NOT EXISTS (SELECT FROM public.alert_rules r WHERE r.enabled
+            AND r.definition->>'event'=ANY(string_to_array(TG_ARGV[0],','))
+            AND (r.definition->'scope'->>'kind'<>'video' OR EXISTS (
+                SELECT FROM inserted s WHERE s.video_id=r.definition->'scope'->>'id'))) THEN
+            RETURN NULL;
+        END IF;
+    END IF;
+    -- Small recipient sets use the scalar queue. In high fan-out video
+    -- batches, store each measured value once with its frozen recipients.
+    delivery_projection := 'SELECT m.*,NULL::jsonb FROM matched m';
+    IF TG_RELID='public.video_snapshots'::regclass AND EXISTS (
+        SELECT FROM public.alert_rules r WHERE r.enabled
+          AND r.definition->>'event' IN ('video.views','video.likes','video.comments') OFFSET 4 LIMIT 1) THEN
+        delivery_projection := $pack$
+            SELECT m.*,NULL::jsonb FROM matched m WHERE event='video.published'
+            UNION ALL
+            SELECT NULL::uuid,NULL::integer,event,subject,channel_id,channel_ref,source_key,observed_at,
+                   min(available_from),min(rule_started_at),evidence_expires_at,NULL::jsonb,
+                   video_type,published_at,duration,
+                   jsonb_object_agg(rule_id::text,jsonb_build_object('version',version,'rule',definition,
+                       'started',rule_started_at,'since',available_from))
+            FROM matched WHERE event<>'video.published'
+            GROUP BY event,subject,channel_id,channel_ref,source_key,observed_at,
+                     evidence_expires_at,video_type,published_at,duration
+        $pack$;
+    END IF;
+    LOOP
+      BEGIN
+        FOR packet IN EXECUTE format($query$
+        WITH rules AS MATERIALIZED (
+            SELECT r.* FROM public.alert_rules r
+            WHERE r.enabled AND r.definition->>'event' = ANY($1)
+            ORDER BY r.id FOR KEY SHARE
+        ), facts AS MATERIALIZED (%s), matched(rule_id,version,event,subject,channel_id,channel_ref,
+            source_key,observed_at,available_from,rule_started_at,evidence_expires_at,definition,
+            video_type,published_at,duration) AS (
+        SELECT r.id,r.version,f.event,f.subject,c.channel_id,c.user_work_id,f.source_key,f.at,
+               boundary.since,
+               r.started_at,least(f.at + interval '696 hours',f.evidence_expires_at,
+                 CASE WHEN f.event='video.published' OR r.definition ? 'min_duration' OR r.definition ? 'max_duration'
+                      THEN f.metadata_expires_at END),r.definition,f.video_type,
+               CASE WHEN f.event='video.published' THEN f.published_at END,
+               CASE WHEN r.definition ? 'min_duration' OR r.definition ? 'max_duration' THEN f.duration END
+        FROM facts f JOIN public.channels c ON c.channel_id=f.channel_id
+        JOIN public.channel_collection_state control ON control.channel_id=c.channel_id
+         AND control.user_work_id=c.user_work_id AND NOT control.is_hidden
+        JOIN rules r ON r.definition->>'event'=f.event
+         AND r.started_at < f.at AND r.definition->>'video_type' IS NOT DISTINCT FROM f.video_type
+        LEFT JOIN public.folders folder ON r.definition->'scope'->>'kind'='folder'
+         AND folder.id=c.folder_id AND folder.alert_identity=r.scope_owner
+        LEFT JOIN public.channel_labels label ON r.definition->'scope'->>'kind'='label'
+         AND label.label_key=r.definition->'scope'->>'id' AND label.alert_identity=r.scope_owner
+        LEFT JOIN public.channel_label_assignments assignment ON assignment.channel_id=c.channel_id
+         AND r.definition->'scope'->>'kind'='label' AND assignment.label_key=r.definition->'scope'->>'id'
+        CROSS JOIN LATERAL (SELECT greatest(coalesce(c.added_at,
+                    greatest(r.started_at,statement_timestamp()-interval '696 hours')-interval '696 hours'),
+                        control.alert_visible_since,r.restored_scope_since,
+                        CASE WHEN r.definition->'scope'->>'kind'='folder' THEN c.alert_folder_since
+                        WHEN r.definition->'scope'->>'kind'='label' THEN assignment.created_at END,
+                        CASE WHEN r.definition ? 'min_duration' OR r.definition ? 'max_duration' THEN f.duration_since END) AS since) boundary
+        WHERE %s>=boundary.since AND isfinite(f.at) AND f.at BETWEEN statement_timestamp()-interval '696 hours' AND clock_timestamp()
+          -- Ineligible samples stay in source history for the next comparison.
+          AND CASE
+            WHEN f.event='video.published' THEN f.published_at>greatest(r.started_at,boundary.since)
+            WHEN f.measured_value IS NULL THEN true
+            WHEN NOT coalesce(pg_input_is_valid(r.definition->>'threshold','bigint'),false) THEN true
+            WHEN r.definition->>'direction'='up' THEN f.measured_value >= (r.definition->>'threshold')::bigint
+            WHEN r.definition->>'direction'='down' THEN f.measured_value <= (r.definition->>'threshold')::bigint
+            ELSE true END
+          AND CASE
+            WHEN NOT (r.definition ?| ARRAY['min_duration','max_duration']) THEN true
+            WHEN f.duration IS NULL THEN false
+            -- Unusual legacy spellings and damaged definitions stay with the
+            -- worker's full parser. Normal provider counters and ISO durations
+            -- are filtered here before freezing recipients or charging a gap.
+            WHEN octet_length(f.duration)<>length(f.duration) OR length(f.duration)>4300 THEN true
+            WHEN (r.definition ? 'min_duration' AND NOT pg_input_is_valid(r.definition->>'min_duration','bigint'))
+              OR (r.definition ? 'max_duration' AND NOT pg_input_is_valid(r.definition->>'max_duration','bigint')) THEN true
+            ELSE EXISTS (
+              SELECT FROM (SELECT upper(regexp_replace(f.duration,'^[[:space:]]+|[[:space:]]+$','','g')) AS value) t
+              CROSS JOIN LATERAL (SELECT regexp_match(t.value,
+                '^P(?:([0-9]+)D)?(?:T(?:([0-9]+)H)?(?:([0-9]+)M)?(?:([0-9]+)S)?)?$') AS parts LIMIT 1) parsed
+              CROSS JOIN LATERAL (SELECT CASE WHEN t.value ~ '^[0-9]+$' THEN t.value::numeric
+                WHEN parsed.parts IS NOT NULL AND t.value ~ '[0-9]' AND right(t.value,1)<>'T'
+                THEN coalesce(parts[1]::numeric,0)*86400+coalesce(parts[2]::numeric,0)*3600+
+                     coalesce(parts[3]::numeric,0)*60+coalesce(parts[4]::numeric,0) END AS seconds) duration
+              WHERE duration.seconds>=coalesce((r.definition->>'min_duration')::bigint,0)
+                AND (NOT (r.definition ? 'max_duration') OR duration.seconds<=(r.definition->>'max_duration')::bigint))
+            END
+          AND CASE r.definition->'scope'->>'kind'
+            WHEN 'channel' THEN c.channel_id=r.definition->'scope'->>'id' AND r.scope_owner=c.user_work_id
+            WHEN 'folder' THEN folder.id::text=r.definition->'scope'->>'id'
+            WHEN 'label' THEN label.label_key IS NOT NULL AND assignment.channel_id IS NOT NULL
+            WHEN 'video' THEN f.subject=r.definition->'scope'->>'id' AND r.scope_owner=c.user_work_id
+            ELSE false END
+        ), deliveries(rule_id,version,event,subject,channel_id,channel_ref,source_key,observed_at,
+            available_from,rule_started_at,evidence_expires_at,definition,video_type,published_at,duration,members) AS (
+            %s
+        )
+        -- Freeze each completed projection once, including candidates for other
+        -- rules in the same statement. No new snapshot is used to reconstruct
+        -- its scope if writing the queue fails. Bound each write and its retry.
+        SELECT array_agg(ROW(NULL::bigint,d.rule_id,d.version,d.event,d.subject,d.channel_id,d.channel_ref,
+            d.source_key,d.observed_at,d.available_from,d.rule_started_at,d.evidence_expires_at,d.definition,
+            d.video_type,d.published_at,d.duration,NULL::timestamptz,NULL::timestamptz,d.members)::public.alert_observations)
+        FROM (SELECT deliveries.*,(row_number() OVER ()-1)/256 AS page FROM deliveries) d GROUP BY d.page
+    $query$, source_projection, membership_clock, delivery_projection) USING string_to_array(TG_ARGV[0], ','),source_row
+    LOOP
+        BEGIN
+            INSERT INTO public.alert_observations(rule_id,version,event,subject,channel_id,channel_ref,
+                source_key,observed_at,available_from,rule_started_at,evidence_expires_at,definition,
+                video_type,published_at,duration,members)
+            SELECT d.rule_id,d.version,d.event,d.subject,d.channel_id,d.channel_ref,d.source_key,d.observed_at,
+                d.available_from,d.rule_started_at,d.evidence_expires_at,d.definition,
+                d.video_type,d.published_at,d.duration,d.members FROM unnest(packet) d
+            ON CONFLICT (rule_id,version,source_key) DO NOTHING;
+        EXCEPTION WHEN data_exception OR integrity_constraint_violation THEN
+            -- The entire packet rolled back. Count each lost rule-version/source
+            -- candidate once. A replay already queued or delivered is covered.
+            WITH attempts AS (
+                SELECT DISTINCT t.id,t.version,d.event,d.source_key,d.subject FROM unnest(packet) d
+                CROSS JOIN LATERAL (
+                    SELECT d.rule_id AS id,d.version WHERE d.rule_id IS NOT NULL
+                    UNION ALL SELECT key::uuid,(value->>'version')::integer FROM jsonb_each(d.members)
+                ) t
+            ), shared_receipts AS MATERIALIZED (
+                -- Check all rules for each queued source together. Looking
+                -- up its entire recipient list separately for every rule
+                -- would repeatedly scan the same backlog during an outage.
+                SELECT o.event,o.source_key,member.key AS target,member.value->>'version' AS version
+                FROM public.alert_observations o CROSS JOIN LATERAL jsonb_each(o.members) member
+                WHERE o.members IS NOT NULL AND o.source_key=ANY(ARRAY(SELECT d.source_key FROM unnest(packet) d))
+            ), lost AS (
+                SELECT a.id,count(*) AS n FROM attempts a
+                WHERE NOT EXISTS (SELECT FROM public.alert_observations o
+                    WHERE (o.rule_id,o.version,o.source_key,o.event)=(a.id,a.version,a.source_key,a.event))
+                  AND NOT EXISTS (SELECT FROM shared_receipts q WHERE (q.target,q.version,q.source_key,q.event)=
+                        (a.id::text,a.version::text,a.source_key,a.event))
+                  AND NOT EXISTS (SELECT FROM public.alert_inbox n WHERE (n.rule_id,n.version,n.source_key)=
+                        (a.id,a.version,a.source_key))
+                  AND (a.event<>'video.published' OR NOT EXISTS (SELECT FROM public.alert_inbox n
+                        WHERE n.event='video.published' AND n.rule_id=a.id AND n.subject=a.subject))
+                GROUP BY a.id
+            )
+            UPDATE public.alert_rules r SET gap_count=least(r.gap_count::numeric+lost.n,9223372036854775807)::bigint,last_gap_at=statement_timestamp()
+                FROM lost WHERE r.id=lost.id AND r.deleted_at IS NULL;
+        END;
+        END LOOP;
+      EXCEPTION WHEN data_exception OR integrity_constraint_violation THEN
+        -- A failed projection has no trustworthy recipients. Retry the native
+        -- transition rows individually so healthy neighbours still enqueue.
+        IF retry_sources IS NULL THEN
+            OPEN retry_sources FOR SELECT to_jsonb(s) FROM inserted s;
+            source_projection := replace(TG_ARGV[1], 'FROM inserted ',
+                format('FROM jsonb_populate_record(NULL::%s,$2) ',TG_RELID::regclass));
+        ELSE
+            unknown_sources := unknown_sources+1;
+        END IF;
+      END;
+      EXIT WHEN retry_sources IS NULL;
+      FETCH retry_sources INTO source_row;
+      EXIT WHEN NOT FOUND;
+    END LOOP;
+    IF retry_sources IS NOT NULL THEN CLOSE retry_sources; END IF;
+    IF unknown_sources>0 THEN
+        RAISE WARNING 'Alert capture could not identify recipients for % source row(s)',unknown_sources;
+    END IF;
+    RETURN NULL;
+END;
+$$;
+REVOKE ALL ON FUNCTION public.capture_alert_observations(), public.alert_folder_clock() FROM PUBLIC;
+
+CREATE TRIGGER alert_video_observations AFTER INSERT ON public.video_snapshots
+REFERENCING NEW TABLE AS inserted FOR EACH STATEMENT EXECUTE FUNCTION public.capture_alert_observations(
+'video.views,video.likes,video.comments,video.published',
+'WITH eligible AS MATERIALIZED (
+    SELECT batch.* FROM inserted batch WHERE EXISTS (
+        SELECT FROM public.video_inventory inv JOIN rules r ON r.definition->>''video_type''=inv.video_type
+        WHERE inv.video_id=batch.video_id AND inv.skeleton_since IS NULL
+          AND CASE r.definition->>''event''
+              WHEN ''video.views'' THEN batch.views IS NOT NULL
+              WHEN ''video.likes'' THEN batch.like_count IS NOT NULL
+              WHEN ''video.comments'' THEN batch.comment_count IS NOT NULL
+              WHEN ''video.published'' THEN true ELSE false END
+          AND CASE r.definition->''scope''->>''kind''
+              WHEN ''video'' THEN batch.video_id=r.definition->''scope''->>''id''
+              WHEN ''channel'' THEN inv.channel_id=r.definition->''scope''->>''id''
+              WHEN ''folder'' THEN EXISTS (SELECT FROM public.channels c WHERE c.channel_id=inv.channel_id
+                      AND c.folder_id::text=r.definition->''scope''->>''id'')
+              WHEN ''label'' THEN EXISTS (SELECT FROM public.channel_label_assignments l
+                      WHERE l.channel_id=inv.channel_id AND l.label_key=r.definition->''scope''->>''id'')
+              ELSE false END))
+ SELECT metric.event,s.video_id AS subject,v.channel_id,s.id::text AS source_key,metric.at,
+        h.video_type,v.published_at,v.duration,metric.measured_value,
+        vclock.alert_duration_since AS duration_since,
+        least(h.source_expires_at, v.availability_checked_at + interval ''696 hours'') AS evidence_expires_at,
+        v.metadata_checked_at + interval ''696 hours'' AS metadata_expires_at
+ FROM eligible s JOIN public.videos vclock ON vclock.video_id=s.video_id
+ JOIN LATERAL (SELECT v0.* FROM readable.videos v0 WHERE v0.video_id=s.video_id LIMIT 1) v ON true
+ JOIN LATERAL (SELECT h0.video_type,h0.source_expires_at FROM readable.hot_video_inventory h0
+    WHERE h0.video_id=s.video_id AND h0.channel_id=v.channel_id LIMIT 1) h ON true
+ CROSS JOIN LATERAL (VALUES
+   (''video.views'',s.recorded_at,s.views IS NOT NULL,s.views),
+   (''video.likes'',coalesce(s.engagement_observed_at,s.recorded_at),s.like_count IS NOT NULL,s.like_count),
+   (''video.comments'',coalesce(s.engagement_observed_at,s.recorded_at),s.comment_count IS NOT NULL,s.comment_count),
+   (''video.published'',s.recorded_at,v.published_at IS NOT NULL,NULL::bigint)
+ ) metric(event,at,present,measured_value)
+ WHERE metric.present AND v.availability_status=''public'' AND v.publication_status IS NULL
+   AND (v.published_at IS NULL OR v.published_at<=metric.at)
+   AND (metric.event<>''video.published'' OR NOT EXISTS (
+       SELECT FROM public.video_inventory_memberships m
+       JOIN public.channel_video_inventory_scans initial_scan ON initial_scan.scan_id=m.first_seen_scan_id
+       WHERE m.video_id=s.video_id AND m.channel_id=v.channel_id AND m.video_type=h.video_type
+       AND initial_scan.scan_kind=''initial_inventory''))
+   AND h.video_type IN (''long'',''short'')');
+
+CREATE TRIGGER alert_channel_observations AFTER INSERT ON public.channel_snapshots
+REFERENCING NEW TABLE AS inserted FOR EACH STATEMENT EXECUTE FUNCTION public.capture_alert_observations(
+'channel.subscribers',
+'SELECT ''channel.subscribers'' AS event,s.channel_id AS subject,s.channel_id,s.subscribers AS measured_value,
+        s.channel_id || '':'' || extract(epoch FROM s.recorded_at)::text AS source_key,s.recorded_at AS at,NULL::text AS video_type,
+        NULL::timestamptz AS published_at,NULL::text AS duration,NULL::timestamptz AS evidence_expires_at,
+        NULL::timestamptz AS duration_since,NULL::timestamptz AS metadata_expires_at
+ FROM inserted s WHERE s.source=''youtube_channel_metadata_refresh'' AND s.subscribers IS NOT NULL');
+
+CREATE TRIGGER alert_availability_observations AFTER INSERT ON public.video_availability_events
+REFERENCING NEW TABLE AS inserted FOR EACH STATEMENT EXECUTE FUNCTION public.capture_alert_observations(
+'video.unavailable,video.restored',
+'SELECT CASE s.event_type WHEN ''restored'' THEN ''video.restored'' ELSE ''video.unavailable'' END AS event,
+        s.video_id AS subject,s.channel_id,NULL::bigint AS measured_value,s.id::text AS source_key,greatest(s.observed_at,s.created_at) AS at,s.observed_at AS scope_at,i.video_type,
+        NULL::timestamptz AS published_at,NULL::text AS duration,
+        least(s.observed_at,proof.last_present_at) + interval ''696 hours'' AS evidence_expires_at,
+        NULL::timestamptz AS duration_since,NULL::timestamptz AS metadata_expires_at
+ FROM inserted s JOIN public.video_inventory i ON i.video_id=s.video_id AND i.channel_id=s.channel_id
+ JOIN LATERAL (SELECT m.last_present_at FROM public.video_inventory_memberships m
+   WHERE m.video_id=i.video_id AND m.channel_id=i.channel_id AND m.video_type=i.video_type
+   AND m.last_present_at<=statement_timestamp() ORDER BY m.last_present_at DESC NULLS LAST LIMIT 1) proof
+   ON proof.last_present_at IS NOT NULL
+ WHERE i.video_type IN (''long'',''short'') AND s.event_type IN (''unavailable_detected'',''restored'')
+   AND (s.event_type<>''restored'' OR s.to_status=''public'')');
+
+ALTER TABLE public.alert_rules ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.alert_observations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.alert_inbox ENABLE ROW LEVEL SECURITY;
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.alert_rules,public.alert_observations,public.alert_inbox TO service_role;
+GRANT USAGE ON SEQUENCE public.alert_observations_id_seq,public.alert_inbox_id_seq TO service_role;
+
+CREATE VIEW readable.alert_rules WITH (security_barrier=true) AS
+    SELECT r.id,r.version,r.definition,r.enabled,r.started_at,r.gap_count,r.last_gap_at,
+           CASE r.definition->'scope'->>'kind'
+             WHEN 'folder' THEN EXISTS (SELECT FROM public.folders f WHERE f.id::text=r.definition->'scope'->>'id'
+                                        AND f.alert_identity=r.scope_owner)
+             WHEN 'label' THEN EXISTS (SELECT FROM public.channel_labels l WHERE l.label_key=r.definition->'scope'->>'id'
+                                       AND l.alert_identity=r.scope_owner)
+             WHEN 'channel' THEN EXISTS (SELECT FROM public.channels c JOIN public.channel_collection_state control
+                 USING(channel_id,user_work_id) WHERE c.user_work_id=r.scope_owner
+                 AND c.channel_id=r.definition->'scope'->>'id' AND NOT control.is_hidden)
+             WHEN 'video' THEN EXISTS (SELECT FROM readable.hot_video_inventory h JOIN public.channels c USING(channel_id)
+                 JOIN public.channel_collection_state control USING(channel_id,user_work_id)
+                 WHERE h.video_id=r.definition->'scope'->>'id' AND c.user_work_id=r.scope_owner AND NOT control.is_hidden)
+             ELSE false
+           END AS source_available,
+           EXISTS (SELECT FROM public.alert_observations o WHERE o.retry_at IS NOT NULL AND (o.rule_id=r.id OR (o.members IS NOT NULL AND o.members ? r.id::text))) AS retry_pending, r.scope_owner
+    FROM public.alert_rules r WHERE r.deleted_at IS NULL;
+CREATE VIEW readable.alert_inbox WITH (security_barrier=true) AS
+    SELECT n.* FROM public.alert_inbox n JOIN readable.channel_user_work c
+      ON c.channel_id=n.channel_id AND c.user_work_id=n.channel_ref AND NOT c.is_hidden
+    JOIN public.alert_rules r ON r.id=n.rule_id AND r.deleted_at IS NULL
+    WHERE n.expires_at>statement_timestamp();
+GRANT SELECT ON readable.alert_rules,readable.alert_inbox TO lic_reader,service_role;

@@ -37,7 +37,7 @@ class InsertTests(unittest.TestCase):
   # Later steps append columns through both single and compound ALTERs.
   for alter in re.findall(r'ALTER TABLE public\.channels\b(.*?);',(ROOT/'schema/schema.sql').read_text(),re.S):
    lines+=re.findall(r'\bADD COLUMN\s+([^,;]+)',alter)
-  self.assertEqual([line.split()[0] for line in lines],[name for name,_ in writer.COLUMN_TYPES]);self.assertEqual(len(lines),47)
+  self.assertEqual([line.split()[0] for line in lines],[name for name,_ in writer.COLUMN_TYPES]);self.assertEqual(len(lines),48)
   self.assertEqual({line.split()[0] for line in lines if 'NOT NULL' in line},writer._NOT_NULL)
   actual={line.split()[0]:line.split(' DEFAULT ',1)[1].replace(' NOT NULL','') for line in lines if ' DEFAULT ' in line}
   self.assertEqual(actual,writer._DEFAULTS)
@@ -46,7 +46,7 @@ class InsertTests(unittest.TestCase):
   self.assertIn('row_number() OVER (ORDER BY a.attnum) AS position',writer._SCHEMA_PIN)
   self.assertIn('d.adnum=a.attnum',writer._SCHEMA_PIN)
   self.assertIn('a.attnum>0 AND NOT a.attisdropped',writer._SCHEMA_PIN)
-  self.assertEqual(writer._SCHEMA_PARAMETERS[0],list(range(1,48)))
+  self.assertEqual(writer._SCHEMA_PARAMETERS[0],list(range(1,49)))
  def test_omitted_uuid_captured_once_and_explicit_null_is_not_defaulted(self):
   omitted=render(writer._proposal_statement(('channel_id',)))
   explicit=render(writer._proposal_statement(('channel_id','initial_long_inventory_error_count')))

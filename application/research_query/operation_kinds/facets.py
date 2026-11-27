@@ -187,23 +187,50 @@ def bind(service, plan, cancelled, deadline):
         if field not in columns:
             raise QueryRejected('invalid_query', 'parameters.groups')
         sources[name] = columns[field]
-    counters, metadata = columns.get('video.views'), columns.get('video.title')
-    ids, values, expired_counters, expired_metadata = [], {name: [] for name in groups}, 0, 0
-    for encoded in session.rows:
-        row_id, cells = json.loads(encoded)
-        ids.append(row_id)
-        for name, index in sources.items():
-            state, value = cells[index][0], cells[index][1]
-            values[name].append(value if state == 'known' else None)
-        expired_counters += counters is not None and cells[counters][0] == 'expired'
-        expired_metadata += metadata is not None and cells[metadata][0] == 'expired'
+    cached = service.frozen.facet_values(session)
+    if cached is None:
+        counters, metadata = columns.get('video.views'), columns.get('video.title')
+        values, expired_counters, expired_metadata = {name: [] for name in groups}, 0, 0
+        for encoded in session.rows:
+            _, cells = json.loads(encoded)
+            for name, index in sources.items():
+                state, value = cells[index][:2]
+                values[name].append(value if state == 'known' else None)
+            expired_counters += counters is not None and cells[counters][0] == 'expired'
+            expired_metadata += metadata is not None and cells[metadata][0] == 'expired'
+    else:
+        fields, expired_counters, expired_metadata = json.loads(cached)
+        values = {name: fields[session.columns[index]] for name, index in sources.items()}
     if cancelled():  # A stopped caller gets the bare code; the operation checks its own deadline after the read.
         raise QueryRejected('query_budget_exceeded')
     instant = 'published' in sources and session.columns[sources['published']] == 'video.published_at'
-    return Binding({'facet_frozen_ids': ids, 'facet_frozen_instant': instant,
+    return Binding({'facet_frozen_ids': list(session.ids), 'facet_frozen_instant': instant,
                     'facet_frozen_expired_counters': expired_counters, 'facet_frozen_expired_metadata': expired_metadata,
                     **{'facet_frozen_' + name: values[name] for name in groups}},
                    valid_before=session.valid_before, finish=handle.require_current)
+
+
+class FrozenFacetValues:
+    """Capture only facet scalars from cells already shaped for a channel's Videos tab."""
+
+    def __init__(self, columns):
+        fields = {group.field for group in GROUPS.values()} | {"video.published_at"}
+        self.indices = [(field, i) for i, field in enumerate(columns) if field in fields]
+        self.columns = {field: [] for field, _ in self.indices}
+        self.counters = columns.index("video.views")
+        self.metadata = columns.index("video.title")
+        self.expired_counters = self.expired_metadata = 0
+
+    def add(self, cells):
+        for field, index in self.indices:
+            cell = cells[index]
+            self.columns[field].append(cell[1] if cell[0] == "known" else None)
+        self.expired_counters += cells[self.counters][0] == "expired"
+        self.expired_metadata += cells[self.metadata][0] == "expired"
+
+    def encode(self):
+        from ..validation import canonical
+        return canonical([self.columns, self.expired_counters, self.expired_metadata])
 
 
 def _count(value):

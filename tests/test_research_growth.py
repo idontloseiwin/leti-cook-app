@@ -203,6 +203,29 @@ class SqlTests(unittest.TestCase):
         self.assertIn("jsonb_build_object('observation_views_per_day_28d',details.observation_views_per_day_28d::text)", sql)
         self.assertNotIn('CROSS JOIN args g_args', self.compile(select=['video.id', 'observation.views_delta'])[0])
 
+    def test_channel_page_enriches_after_limit_only_for_display(self):
+        fields = {"select": ["video.id", growth.GAINED],
+                  "scope": {"kind": "channel", "id": "UC" + "a" * 22}}
+        page = {"size": 50, "growth_lifetime": "page"}
+        sql, _ = self.compile(**fields, page=page)
+        self.assertLess(sql.index("LIMIT %(limit)s"), sql.index("CROSS JOIN args g_args"))
+        self.assertIn("min(observation_growth_28d_expires_at) FROM details", sql)
+        for changes in ({"page": page, "where": {"field": growth.GAINED, "op": "gte", "value": "0"}},
+                        {"page": page, "coverage": {"mode": "available", "required_fields": [growth.GAINED]}},
+                        {"page": page, "order_by": [{"field": growth.GAINED, "direction": "desc"}]},
+                        {}, {"consistency": "frozen"}):
+            with self.subTest(changes=changes):
+                global_sql, _ = self.compile(**fields, **changes)
+                self.assertLess(global_sql.index("CROSS JOIN args g_args"), global_sql.index("page AS MATERIALIZED"))
+        plan = validate(canonical(query(**fields)), CONTEXT)
+        scoped = validate(canonical(query(**fields, page=page)), CONTEXT)
+        self.assertNotEqual(scoped.fingerprint, plan.fingerprint)
+        self.assertNotIn(b'growth_lifetime', plan.encoded)
+        with self.assertRaises(QueryRejected):
+            validate(canonical(query(**fields, page=page, consistency='frozen')), CONTEXT)
+        population, _ = compile_query(scoped, population=True)
+        self.assertIn("CROSS JOIN args g_args", population)
+
     def test_current_and_frozen_horizons(self):
         # The current page's maximum life is the literal in the shared statement.
         self.assertIn(f"evaluated_at+interval '{growth.CURRENT_RESULT_SECONDS} seconds'", _SOURCE)

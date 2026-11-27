@@ -134,6 +134,7 @@ class QueueHealthBoundaryTests(unittest.TestCase):
             reader(db)
             operation = db.calls[0]
             self.assertTrue(operation.read_only)
+            self.assertTrue(operation.disable_jit)
             self.assertEqual(operation.statement_timeout_ms, 5000)
             self.assertEqual(operation.lock_timeout_ms, 250)
             self.assertEqual(operation.total_timeout_ms, 8000)

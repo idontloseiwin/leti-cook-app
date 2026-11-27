@@ -7,6 +7,7 @@ import io
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -126,6 +127,42 @@ class BridgeTests(unittest.TestCase):
         self.assertNotIn('mcp-protocol-version', first)
         self.assertNotIn('origin', first)
         self.assertEqual(len(server.requests), 3)  # The broken line never left the bridge.
+
+    @unittest.skipUnless(shutil.which('node'), 'Claude Desktop bridge needs Node')
+    def test_packaged_desktop_bridge(self):
+        import zipfile
+        from io import BytesIO
+        application = MCP_ROOT.parents[1] / 'application'
+        sys.path.insert(0, str(application))
+        self.addCleanup(sys.path.remove, str(application))
+        from agent_setup import download
+
+        def answer(message, headers):
+            if message.get('id') == 4:
+                return json_answer({'code': 'agent_key_invalid_expired_or_revoked'}, 401)
+            if message.get('method') == 'tools/list':
+                return json_answer({'jsonrpc': '2.0', 'id': 3, 'result': {'tools': [{'name': 'find_sources'}]}})
+            return echo(message, headers)
+
+        endpoint = self.serve(answer)
+        _, bundle = download('claude-desktop', endpoint.base)
+        with tempfile.TemporaryDirectory() as tmp, zipfile.ZipFile(BytesIO(bundle)) as archive:
+            script = Path(archive.extract('server/bridge.cjs', tmp))
+            env = json.loads(archive.read('manifest.json'))['server']['mcp_config']['env']
+            messages = [{'jsonrpc': '2.0', 'method': 'initialize', 'id': 1, 'params': {'protocolVersion': '2025-03-26'}},
+                        {'jsonrpc': '2.0', 'method': 'notifications/initialized'},
+                        {'jsonrpc': '2.0', 'method': 'tools/list', 'id': 3}, {'jsonrpc': '2.0', 'method': 'ping', 'id': 4}]
+            run = subprocess.run([shutil.which('node'), str(script)], env={**os.environ, **env, 'LETI_AGENT_KEY': TOKEN},
+                                 input='\n'.join(map(json.dumps, messages)).encode(), capture_output=True, timeout=12)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        self.assertNotIn(TOKEN.encode(), run.stderr + run.stdout)
+        replies = [json.loads(line) for line in run.stdout.splitlines()]
+        self.assertEqual([reply['id'] for reply in replies], [1, 3, 4])
+        self.assertEqual(replies[1]['result']['tools'], [{'name': 'find_sources'}])
+        self.assertIn('revoked', replies[2]['error']['message'])
+        self.assertTrue(all(path == '/mcp' and headers['authorization'] == 'Bearer ' + TOKEN
+                            for path, headers, _ in endpoint.requests))
+        self.assertEqual(endpoint.requests[2][1]['mcp-protocol-version'], replies[0]['result']['protocolVersion'])
 
     def test_errors_are_closed_and_keep_the_request_id(self):
         cases = [

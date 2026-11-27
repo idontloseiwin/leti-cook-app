@@ -1,4 +1,4 @@
-"""Bounded operational audit retention under the existing WebSub maintainer.
+"""Bounded retention of discovery quota and repair records.
 
 No YouTube payload or source clock is renewed here. Pending obligations and
 their campaign debits remain. A compact closed campaign tombstone prevents a

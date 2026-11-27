@@ -217,7 +217,7 @@ export function parseResearchPage(value: unknown, filters: ResearchFilters): Res
             || BigInt(cell.value.replace('-', '').split('.')[0]) > 18446744073709551615n) return invalid();
       }
       if (field.endsWith('_at')) stamp(cell.value);
-      if (field === 'video.thumbnail_url' && cell.value !== `https://img.youtube.com/vi/${row.id}/mqdefault.jpg`) return invalid();
+      if (field === 'video.thumbnail_url' && cell.value !== `https://img.youtube.com/vi/${row.id}/hqdefault.jpg`) return invalid();
       if (field === 'channel.avatar_url' && (cell.value.length > 2048 || !httpsReference(cell.value))) return invalid();
     }
   }

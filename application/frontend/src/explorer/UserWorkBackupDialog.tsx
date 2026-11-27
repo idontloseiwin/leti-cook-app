@@ -170,7 +170,7 @@ export function UserWorkBackupDialog({ initialStatus, onClose, onStatus, onPrefe
     onCancel={(event) => { event.preventDefault(); if (!lock.current) onClose(); }}>
     <header><h2 id="user-work-backup-title">Backup and restore</h2>
       <button type="button" aria-label="Close backup dialog" disabled={busy} onClick={onClose}>×</button></header>
-    <p>A backup holds only what you entered: channel links, folders, labels, Saved selections, manual decisions and preferences. It holds no YouTube data; statistics, metadata and history are collected again after a restore.</p>
+    <p>A backup holds only what you entered: channel links, folders, labels, Saved selections, manual decisions, alert rules and preferences. It holds no YouTube data; statistics, metadata and history are collected again after a restore.</p>
     <section aria-label="Create user-work backup">
       <button type="button" disabled={busy} onClick={download}>Download backup</button>
     </section>
@@ -178,10 +178,10 @@ export function UserWorkBackupDialog({ initialStatus, onClose, onStatus, onPrefe
       <label>Choose a user-work backup
         <input type="file" accept="application/json,.json" disabled={busy} onChange={(event) => chooseFile(event.target.files?.[0])} />
       </label>
-      <p>Restore into a new installation with no channels, folders or labels yet, for example after moving to another server. It does not roll back an installation in use. Up to 16 MiB; the file is checked before any changes.</p>
+      <p>Restore into a new installation with no saved user work or alert rules yet, for example after moving to another server. It does not roll back an installation in use. Up to 16 MiB; the file is checked before any changes.</p>
       {preview && <div className="user-work-preview">
-        <dl>{Object.entries(preview.counts).map(([key, value]) => <div key={key}><dt>{key}</dt><dd>{value.toLocaleString('en')}</dd></div>)}</dl>
-        {!preview.can_restore && <p role="status">{preview.reason === 'workspace_not_empty' ? 'This installation already holds channels, folders or labels, so the backup cannot be restored here. Restore it into a new installation. Nothing was changed.' : 'This workspace cannot accept the backup. Use a clean installation.'}</p>}
+        <dl>{Object.entries(preview.counts).map(([key, value]) => <div key={key}><dt>{key === 'alert_rules' ? 'Alert rules' : key}</dt><dd>{value.toLocaleString('en')}</dd></div>)}</dl>
+        {!preview.can_restore && <p role="status">{preview.reason === 'workspace_not_empty' ? 'This installation already holds user work, so the backup cannot be restored here. Restore it into a new installation. Nothing was changed.' : 'This workspace cannot accept the backup. Use a clean installation.'}</p>}
         <button type="button" disabled={busy || !preview.can_restore} onClick={restore}>Restore user work</button>
       </div>}
     </section>

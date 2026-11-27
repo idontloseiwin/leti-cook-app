@@ -63,7 +63,7 @@ class Fixture:
             self.tables=[x['name'] for x in self.rows("SELECT n.nspname||'.'||c.relname AS name FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN('public','operator_private') AND c.relkind='r' ORDER BY 1")]
             require(1<=len(self.tables)<=100 and all(re.fullmatch('(public|operator_private)\\.[a-z_]+',x) for x in self.tables),'table_inventory')
             self.sequence_names=[x['name'] for x in self.rows("SELECT n.nspname||'.'||c.relname AS name FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname IN('public','operator_private') AND c.relkind='S' ORDER BY 1")]
-            require(len(self.sequence_names)==8,'sequence_inventory')
+            require(len(self.sequence_names)==10,'sequence_inventory')
             self.baseline=self.snapshot();self.sequence_baseline=self.sequences();self.catalog_baseline=self.catalog();self.now=self.scalar('SELECT clock_timestamp()')
             require(sum(len(json.loads(v)) for v in self.baseline.values())<100,'fresh_seed_bound')
             self.identity()

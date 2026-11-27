@@ -1197,7 +1197,7 @@ class HotRuntimeMiddleware:
             if denied:
                 return
             if message['type'] == 'http.response.start' and (scope.get('method') in ('GET', 'HEAD')
-                    or (scope.get('method') == 'POST' and path in {'/research/queries/execute','/research/operations/execute','/research/graphs/execute'})):
+                    or (scope.get('method') == 'POST' and path in {'/research/alerts/preview','/research/queries/execute','/research/operations/execute','/research/graphs/execute'})):
                 try:
                     require_hot_runtime_ready(operation='http')
                 except HotRuntimeUnavailable:

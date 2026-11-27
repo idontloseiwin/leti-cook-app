@@ -133,7 +133,8 @@ class BindTests(unittest.TestCase):
         result=self.invoke(args(),{'locked':True},item(),tracked(),{'id':ID,'owner':OWNER},{'present':True},channel_data={'invalid':True})
         self.assertEqual(result,dict(outcome='ready',id=str(ID),replayed=False,merged=True))
         writes=[(sql,params) for mode,sql,params in self.db.tx.calls if mode=='write']
-        self.assertEqual(len(writes),5)
+        self.assertEqual(len(writes),6)
+        self.assertIn('UPDATE public.alert_rules',writes[4][0]);self.assertEqual(writes[4][1],(OWNER,ID))
         self.assertIn('ON CONFLICT DO NOTHING',writes[0][0]);self.assertIn('revision=revision+1',writes[1][0])
         self.assertEqual(writes[2][1],(OWNER,ID));self.assertEqual(writes[3][1],(OWNER,ID))
         self.assertTrue(writes[-1][0].startswith('DELETE FROM public.user_channel_restore_items'))
@@ -240,7 +241,7 @@ class OwnershipTests(unittest.TestCase):
             if adopt:binding.adopt_restored_channel_user_work(db,ID)
             else:binding.merge_restored_channel_user_work(db,ID,OWNER)
             self.assertEqual(db.tx.calls[1][2][1],adopt)
-            writes=[row for row in db.tx.calls if row[0]=='write'];self.assertEqual(len(writes),2)
+            writes=[row for row in db.tx.calls if row[0]=='write'];self.assertEqual(len(writes),2 if adopt else 3)
             self.assertIn('restore_owner_ref=NULL',writes[0][1]);self.assertIn('restore_owner_ref=NULL',writes[1][1])
             self.assertEqual(db.ends,['commit'])
 

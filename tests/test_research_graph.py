@@ -75,6 +75,8 @@ class GraphContractTests(unittest.TestCase):
 # the same 120 synthetic rows as a fixed list and as current pages, in id order;
 # tests/research_graph_frozen_pg.py proves the same claims on PostgreSQL 17.
 from datetime import timedelta
+from time import monotonic
+from unittest.mock import patch
 from research_query.contracts import MAX_FROZEN_ROWS
 from research_query.cursor import CursorCodec
 from research_query.frozen import FrozenStore
@@ -297,7 +299,8 @@ class FrozenRunTests(unittest.TestCase):
         refused('cursor_context_changed',ref)
 
     def test_a_list_that_cannot_be_fixed_is_an_error_of_its_blocks_only(self):
-        with self.store.build_slot(),self.store.build_slot():
+        gate = dict(deadline=monotonic() + 2, cancelled=lambda: False)
+        with self.store.build_slot(**gate), self.store.build_slot(**gate), patch('research_query.frozen_service.FROZEN_BUILD_QUEUE_SECONDS', .03):
             result=self.run_study(study(run={'consistency':'frozen'}))
         self.assertEqual(result['status'],'partial')
         self.assertEqual(result['context']['consistency'],'sequential_current_reads')
@@ -312,6 +315,25 @@ class FrozenRunTests(unittest.TestCase):
                          {('query_budget_exceeded','consistency','rows')}) # the bound it reached
         self.assertEqual(self.repo.reads,1)  # One attempt for both blocks.
         self.assertEqual(result['nodes']['live']['state'],'ready')
+
+    def test_queued_frozen_build_respects_the_canvas_deadline_and_cancellation(self):
+        body = canonical(study(run={'consistency':'frozen'}))
+        gate = dict(deadline=monotonic() + 3, cancelled=lambda: False)
+        stopped = False
+        def cancel_when_queued():
+            nonlocal stopped
+            stopped = stopped or bool(self.store._builds._waiting)
+            return stopped
+        with self.store.build_slot(**gate), self.store.build_slot(**gate):
+            with patch('research_query.graph_service.GRAPH_SECONDS', .12), self.assertRaises(QueryRejected) as caught:
+                self.service.execute_graph(body)
+            self.assertEqual(caught.exception.payload(), {'code':'query_budget_exceeded','path':None,'limit':'time'})
+            with self.assertRaises(QueryRejected) as caught:
+                self.service.execute_graph(body, cancelled=cancel_when_queued)
+            self.assertTrue(stopped)
+            self.assertEqual(caught.exception.payload(), {'code':'query_budget_exceeded','path':None})
+        self.assertEqual(self.repo.reads, 0)
+        self.assertEqual(self.store.usage()['sessions'], 0)
 
     def test_a_list_lost_before_the_answer_refuses_the_run(self):
         ref=self.library()['context']['frozen_ref']

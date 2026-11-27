@@ -61,6 +61,16 @@ export const LIBRARY_ERROR_TEXT = {
   preparing: 'Preparing stored catalogue…',
 } as const;
 
+/**
+ * A list past the server's ordered-list limit (`page.order` without IDs), in plain words: it is shown page by
+ * page in its order, never cut, but not held as one list.
+ */
+export function orderLimitText(total: number, limit: number): string {
+  return `This list has ${total.toLocaleString('en')} videos, more than the ${limit.toLocaleString('en')} that Library can keep in one ordered list. `
+    + 'Videos still load in this order as you scroll, but a video whose counters change meanwhile can move between pages, '
+    + 'and the whole list cannot be selected at once. Narrow the filters to keep the complete list.';
+}
+
 type Row = Record<LibraryErrorSurface, LibraryErrorAction>;
 const row = (
   videos_first: LibraryErrorAction, videos_more: LibraryErrorAction, select_all: LibraryErrorAction,

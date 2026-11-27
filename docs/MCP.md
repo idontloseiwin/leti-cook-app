@@ -8,8 +8,8 @@ connects to it and queries the stored library using the same backend as
 Library and Research Workshop. The program either signs in and you click
 **Allow** in the browser, or it uses an agent key. A separate skill is not
 required: the tools describe their arguments and discover the installation's
-current fields and operations. Claude Desktop starts local programs only and
-connects through the included bridge.
+current fields and operations. Claude Desktop chat can connect locally through the
+installable extension or the Python bridge.
 
 The MCP endpoint supports read-only operations. It does not collect new YouTube data, spend
 YouTube quota, change settings, add channels, save studies or modify collections.
@@ -18,22 +18,37 @@ to a particular folder. Data access still follows the installation's freshness,
 format, collection-field and analytics permissions. Agent keys support current
 reads only: creating or using a frozen list is refused by the backend, including
 Canvas runs and Inspector/facet references. All agent keys together share at most
-one heavy read slot. With the normal two-slot read admission, the other slot is
-available to the owner; a smaller database pool cannot provide that reservation.
+one heavy read slot. With the default database pool, two further research reads
+can run for the owner. Smaller pools reduce the shared capacity.
 
 ## Sign in with Allow
 
-This is the recommended way: nothing is copied except the address. In the
-workspace, open **Agents** in the sidebar. Under **Connect an agent**, keep
-**Sign in with Allow**, choose the program and copy its settings. For Claude Code:
+Open **Agents** in the sidebar, choose your program under **Connect an agent**,
+and select **Sign in with Allow**. Use the address shown for your installation.
+
+- **Claude Code and Codex:** select **Download research project**, extract the ZIP to a new
+  folder and open that folder in your agent. If its command line is installed, you can
+  double-click the included Windows or macOS shortcut to launch the agent there.
+  In Claude Code approve the project server, then use `/mcp` to authenticate.
+  In Codex trust the project and authenticate the server. You can use this project
+  with an existing SSH tunnel. For all-project setup, expand **Manual setup**.
+- **Codex desktop, all projects:** select **Copy MCP address** under **Manual setup**. In Codex, open **Settings →
+  MCP servers → Add server**, name it `leti-cook`, choose **Streamable HTTP**,
+  and paste the address. Save, select **Restart**, then **Authenticate**.
+- **Cursor:** select **Open in Cursor**, confirm the installation in Cursor,
+  then sign in. If your browser cannot open Cursor, expand **Manual setup**
+  for its configuration.
+- **VS Code:** select **Open in VS Code**, review the server and choose Install. Follow the sign-in prompt.
+
+For Claude Code, copy the command shown for your installation:
 
 ```bash
 claude mcp add --transport http --scope user leti-cook http://127.0.0.1:8002/mcp
 ```
 
-Then type `/mcp` in Claude Code, choose `leti-cook` and **Authenticate**. Codex
-uses `codex mcp login leti-cook` after its settings entry; Cursor and VS Code
-offer to sign in themselves. The program opens this installation's **Allow**
+Then type `/mcp` in Claude Code, choose `leti-cook` and **Authenticate**.
+Codex CLI users can find their settings under **Manual setup** and run
+`codex mcp login leti-cook`. The program opens this installation's **Allow**
 page in your browser. Sign in first if the installation uses a password; the
 page opens again afterwards. It shows the name the program gave itself and the
 full return address: a port on this computer or the program's own address. Choose
@@ -126,8 +141,14 @@ no server stream.
 
 ### Claude Desktop
 
-Claude Desktop starts local (stdio) programs only, and the bridge cannot sign
-in: it uses a key. Save the key alone in a text
+For the desktop chat, choose **Download Claude extension** in Agents. Open the downloaded
+`.mcpb` with Claude Desktop, confirm Install and paste an agent key in the extension’s
+private **Agent key** field. If the file does not open directly, use **Settings →
+Desktop app → Extensions → Advanced settings → Install Extension**. Claude runs the
+extension with its built-in Node.js runtime. The download contains the local MCP
+address and no key. Revoke the key in Leti Cook to end access.
+
+For manual stdio setup with the included Python bridge, save the key alone in a text
 file outside the repository and shared folders, readable only by your account
 (Linux/macOS: `chmod 600`; Windows: restrict its permissions to your account and
 administrators). Copy `integrations/mcp/server.py` and `client.py` from the

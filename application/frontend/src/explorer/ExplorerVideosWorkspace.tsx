@@ -56,9 +56,12 @@ export function ExplorerVideosWorkspace({
       isLoadingMore={browse.isLoadingMore} loadMoreError={browse.loadMoreError}
       loadMoreErrorDirection={browse.loadMoreErrorDirection} expired={browse.expired}
       onLoadMore={browse.onLoadMore} onLoadPrevious={browse.onLoadPrevious}
+      anchorMissing={browse.anchorMissing} onStartFromBeginning={browse.startsBelowTop ? browse.onStartFromBeginning : undefined}
+      onRefreshOrder={blockedMessage ? undefined : browse.onRefreshOrder}
+      departedShown={browse.departedShown} refreshProblem={browse.refreshProblem} leftResults={browse.leftResults}
       onReload={onRetryCatalogue} onAnchorChange={browse.onAnchorChange} restoreAnchor={browse.restoreAnchor}
       onCollectMatching={blockedMessage ? undefined : browse.collectMatching}
-      session={browse.frozenRef && browse.sessionKey ? { frozenRef: browse.frozenRef, sessionKey: browse.sessionKey, pending: browse.pending } : undefined}
+      session={browse.sessionKey ? { frozenRef: browse.frozenRef, sessionKey: browse.sessionKey, pending: browse.pending } : undefined}
       inspector={inspector} preparing={browse.preparing}
       workshop={blockedMessage ? undefined : workshop}
       onAddToCollection={(ids) => { setCollectionMessage(''); setCollectionIds([...ids]); }} />

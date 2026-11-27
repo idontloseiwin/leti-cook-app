@@ -49,7 +49,12 @@ class ContentTests(unittest.TestCase):
         self.assertEqual(len(self.methods['read_methods']), 38)
         self.assertEqual(len(self.methods['control_methods']), 61)
         self.assertEqual(self.methods['counts']['read_by_api'], {'analytics': 3, 'data': 29, 'reporting': 6})
-        self.assertEqual(self.fields['counts']['fields'], 1617 + self.fields['counts']['doc_only_fields'])
+        entries = [entry for method in self.fields['methods'].values()
+                   for group in method['parts'].values() for entry in group.values()]
+        self.assertEqual(sum(entry['reference_status'] != 'reference_only' for entry in entries), 1644)
+        self.assertEqual(self.fields['counts']['fields'], len(entries))
+        self.assertEqual(self.fields['counts']['doc_only_fields'],
+                         sum(e['reference_status'] == 'reference_only' for e in entries))
 
     def test_every_read_method_is_get_with_a_sourced_or_explicit_quota(self):
         for method_id, method in self.methods['read_methods'].items():
@@ -66,8 +71,7 @@ class ContentTests(unittest.TestCase):
             parameters = method['parameters']
             with self.subTest(method=method_id):
                 self.assertNotIn('key', parameters)
-                # Exceptions: Discovery-only methods, and playlistImages.list whose part list the
-                # reference does not confirm (02 inventory 3.3); the planner refuses both (no part list).
+                # The planner requires a confirmed part list for Data API reads.
                 if method['api'] == 'data' and method['parts'] and method_id not in UNCONFIRMED_PARTS:
                     self.assertEqual(sorted(parameters['part'].get('allowed', [])), sorted(method['parts']))
                 pagination = method['pagination']
@@ -111,7 +115,7 @@ class ContentTests(unittest.TestCase):
         names = {entry['normalizer'] for method in self.fields['methods'].values()
                  for entries in method['parts'].values() for entry in entries.values() if 'normalizer' in entry}
         self.assertEqual(names, {'youtube_source_fields.youtube_counter_integer', 'youtube_source_fields.parse_dt',
-                                 'youtube_source_fields.youtube_duration_seconds'})
+                                 'youtube_source_fields.youtube_duration_seconds', 'youtube_source_fields.youtube_unsigned_long'})
         for name in names:
             module, symbol = name.split('.')
             self.assertTrue(callable(getattr(importlib.import_module(module), symbol, None)), name)

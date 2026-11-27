@@ -14,8 +14,8 @@ from hot_storage import utc_instant
 FORMAT = 'leti-cook-user-work'
 # Format 2 lists the preset Monetized label when it is kept, under its own name;
 # format 1 files, from before it could be renamed or deleted, imply it unchanged.
-VERSION = 5
-READ_VERSIONS = (1, 2, 5)
+VERSION = 6
+READ_VERSIONS = (1, 2, 5, 6)
 MAX_BYTES = 16 * 1024 * 1024
 LIMITS = {'folders': 1000, 'labels': 1000, 'channels': 10000, 'collections': 1000,
           'reviews': 1000, 'views': 1000, 'members': 100000, 'history': 10000, 'assignments': 100000}
@@ -221,11 +221,37 @@ def _check_raw_totals(work):
         raise UserWorkError('user_work_limit_exceeded')
 
 
+def normalize_alert_rules(items, channel_ids, folder_ids, label_keys):
+    from alerts import AlertRule
+    result = []
+    for row in rows(items, 100):
+        exact(row, ('definition', 'enabled', 'source_ref'))
+        if type(row['enabled']) is not bool:
+            raise UserWorkError()
+        rule = AlertRule.model_validate(row['definition'])
+        scope, ref = rule.scope, row['source_ref']
+        if ref is not None:
+            if scope.kind in ('channel', 'video'):
+                matched = isinstance(ref, str) and ref in channel_ids
+            else:
+                matched = ref == scope.id and ref in (folder_ids if scope.kind == 'folder' else label_keys)
+            if not matched:
+                raise UserWorkError('missing_user_work_reference')
+        result.append({'definition': rule.model_dump(mode='json', exclude_none=True),
+                       'enabled': row['enabled'], 'source_ref': ref})
+    return result
+
+
 def _normalize(document):
     exact(document, ('format', 'version', 'created_at', 'user_work', 'browser_preferences'))
     if document['format'] != FORMAT or type(document['version']) is not int or document['version'] not in READ_VERSIONS:
         raise UserWorkError('unsupported_user_work_backup')
-    work = exact(document['user_work'], ('folders', 'labels', 'channels', 'collections', 'reviews', 'queries', 'field_preferences') if document['version'] == 5 else ('folders', 'labels', 'channels', 'collections', 'reviews'))
+    fields = ('folders', 'labels', 'channels', 'collections', 'reviews')
+    if document['version'] >= 5:
+        fields += ('queries', 'field_preferences')
+    if document['version'] >= 6:
+        fields += ('alert_rules',)
+    work = exact(document['user_work'], fields)
     work = {**work, 'queries': work.get('queries', [])}
     _check_raw_totals(work)
     result = {key: [] for key in work}
@@ -234,7 +260,7 @@ def _normalize(document):
     except FieldPolicyError: raise UserWorkError('unsupported_field_preferences') from None
     for row in rows(work['folders'], LIMITS['folders']):
         exact(row, ('id', 'name', 'created_at'))
-        result['folders'].append({'id': uid(row['id']), 'name': saved_name(row['name']), 'created_at': stamp(row['created_at'])})
+        result['folders'].append({'id': uid(row['id']), 'name': saved_name(row['name']), 'created_at': stamp(row['created_at'], nullable=True)})
     for row in rows(work['labels'], LIMITS['labels'] + 1):
         exact(row, ('label_key', 'name', 'label_type', 'created_at'))
         key = label_key(row['label_key'])
@@ -278,6 +304,7 @@ def _normalize(document):
     folder_ids = {r['id'] for r in result['folders']}
     labels = {r['label_key'] for r in result['labels']}
     channel_ids = {r['id'] for r in result['channels']}
+    result['alert_rules'] = normalize_alert_rules(work.get('alert_rules', []), channel_ids, folder_ids, labels)
     owned = [m for c in result['collections'] for m in c['members']] + result['reviews']
     if any(row.get('channel_ref') not in channel_ids for row in owned if 'channel_ref' in row):
         raise UserWorkError('missing_user_work_reference')
@@ -508,6 +535,7 @@ def build_backup(snapshot, browser_preferences=None, *, now=None):
         'user_work': {'folders': folders, 'labels': [{k: r[k] for k in ('label_key', 'name', 'label_type', 'created_at')}
                          for r in snapshot['labels']],
             'channels': list(channels.values()), 'collections': collections, 'queries': queries,
+            'alert_rules': snapshot.get('alert_rules', []),
             'field_preferences': snapshot.get('field_preferences', __import__('research_field_policy').defaults()),
             'reviews': [owner({**{k: r[k] for k in REVIEW_FIELDS if k != 'history'},
                          'history': [{k: h[k] for k in HISTORY_FIELDS} for h in r['history']]}, r) for r in snapshot['reviews']]},

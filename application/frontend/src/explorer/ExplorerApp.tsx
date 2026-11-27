@@ -7,6 +7,7 @@ import {
   Bookmark,
   ChevronRight,
   Clock3,
+  Bell,
   Bot,
   Folder,
   Home,
@@ -63,7 +64,7 @@ import { ExplorerRecentVideos } from './ExplorerRecentVideos';
 import { useVisibleSummary, type SummaryState } from './useVisibleSummary';
 import { homeSummaryIncomplete, systemSummaryIncomplete } from './summaryRecovery';
 import { formatRelativeTime, homeSyncPresentation, systemPresentation } from './homeStatus';
-import { createSidebarReader } from './sidebarReads';
+import { createSidebarReader, organizationWrite } from './sidebarReads';
 import {
   loadExplorerBookmarks,
   saveExplorerBookmarks,
@@ -116,6 +117,8 @@ import {
 import { readExplorerDestination, savedViewUrl, SAVED_VIEWS_PATH, RESEARCH_WORKSHOP_PATH, type SavedView } from './savedViews';
 import { newWorkshopEntry, writeWorkshopHistory, type WorkshopHandoff } from './workshopHandoff';
 
+const AlertsPage = lazy(() => import('./AlertsPage'));
+const ChannelSearchPage = lazy(() => import('./ChannelSearchPage'));
 const ChannelTrashControls = lazy(() => import('./ChannelTrashControls').then((module) => ({ default: module.ChannelTrashControls })));
 const UserWorkBackupEntry = lazy(() => import('./UserWorkBackupDialog').then((module) => ({ default: module.UserWorkBackupEntry })));
 const SavedPage = lazy(() => import('./SavedPage').then((module) => ({ default: module.SavedPage })));
@@ -404,8 +407,13 @@ export function ExplorerApp({
     setBookmarkedChannelIds((current) => toggleExplorerBookmark(current, channelId));
   }, []);
 
+  const refreshOrganization = () => {
+    sidebarReader.changedLocally();
+    return sidebarReader.load();
+  };
+
   const assignFolder = useCallback(async (channelId: string, folderId: string) => {
-    await assignExplorerChannelFolder(channelId, folderId);
+    await organizationWrite(() => assignExplorerChannelFolder(channelId, folderId), refreshOrganization);
     sidebarReader.changedLocally();
     setSidebarState((current) => {
       if (current.kind !== 'ready') return current;
@@ -424,7 +432,7 @@ export function ExplorerApp({
   }, []);
 
   const createFolder = useCallback(async (name: string) => {
-    const folder = await createExplorerFolder(name);
+    const folder = await organizationWrite(() => createExplorerFolder(name), refreshOrganization);
     if (!folder.id) throw new Error('The created folder did not return an id.');
     sidebarReader.changedLocally();
     setSidebarState((current) => {
@@ -441,7 +449,7 @@ export function ExplorerApp({
   }, []);
 
   const createLabel = useCallback(async (name: string) => {
-    const label = await createExplorerLabel(name);
+    const label = await organizationWrite(() => createExplorerLabel(name), refreshOrganization);
     sidebarReader.changedLocally();
     setSidebarState((current) => {
       if (current.kind !== 'ready') return current;
@@ -464,7 +472,7 @@ export function ExplorerApp({
     labelKey: string,
     enabled: boolean,
   ) => {
-    await assignExplorerChannelLabel(channelId, labelKey, enabled);
+    await organizationWrite(() => assignExplorerChannelLabel(channelId, labelKey, enabled), refreshOrganization);
     sidebarReader.changedLocally();
     setSidebarState((current) => {
       if (current.kind !== 'ready') return current;
@@ -797,6 +805,12 @@ export function ExplorerApp({
             <Library size={17} aria-hidden="true" />
             <span>Library</span>
           </button>
+          <a href={rootPath + '/channel-search'} title="Find channels" data-label="Find channels"
+            aria-current={destination.kind === 'channel-search' ? 'page' : undefined}
+            onClick={(event) => {
+              if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+              event.preventDefault(); navigateSaved(rootPath + '/channel-search');
+            }}><Search size={17} aria-hidden="true" /><span>Find channels</span></a>
           <a href={rootPath + '/research'} title="Research workshop" data-label="Research workshop"
             aria-current={destination.kind === 'research' ? 'page' : undefined}
             onClick={(event) => {
@@ -835,6 +849,10 @@ export function ExplorerApp({
             <RadioTower size={17} aria-hidden="true" />
             <span>Telemetry</span>
           </a>
+          <a href={explorerOperationalPath('alerts')} title="Alerts" data-label="Alerts"
+            aria-current={destination.kind === 'alerts' ? 'page' : undefined}
+            onClick={event=>{if(event.button===0 && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey){
+              event.preventDefault(); showOperationalPage('alerts');}}}><Bell size={17} aria-hidden="true"/><span>Alerts</span></a>
           <a
             href={explorerOperationalPath('agents')}
             aria-current={destination.kind === 'agents' ? 'page' : undefined}
@@ -883,7 +901,7 @@ export function ExplorerApp({
           onOpenChannel={selectChannel}
         />
         <ExplorerToolBoundary name="Folders and labels">
-          <FolderLabelManager folders={folders} labels={labels} onChanged={() => void loadSidebar()} />
+          <FolderLabelManager folders={folders} labels={labels} listState={sidebarState.kind} onChanged={refreshOrganization} />
         </ExplorerToolBoundary>
         {userWorkEnabled && <>
           <ExplorerToolBoundary name="User-work backup">
@@ -1012,7 +1030,7 @@ export function ExplorerApp({
               onRetry={() => void loadSidebar()}
             />
           )}
-          {sidebarState.kind === 'ready' && visibleChannelCount > 0 && (
+          {libraryOpen && sidebarState.kind === 'ready' && visibleChannelCount > 0 && (
             <div className="explorer-channel-groups">
               {sidebarGroups.map((group) => (
                 <ExplorerFolderGroup
@@ -1051,7 +1069,7 @@ export function ExplorerApp({
               ))}
             </div>
           )}
-          {sidebarState.kind === 'ready' && visibleChannelCount > 0 && (
+          {libraryOpen && sidebarState.kind === 'ready' && visibleChannelCount > 0 && (
             <div className="explorer-mobile-channel-browser">
               {!normalizedSearch && sidebarSort.metric !== 'added_at' && (
                 <div className="explorer-mobile-folder-tabs" aria-label="Channel folders">
@@ -1119,13 +1137,17 @@ export function ExplorerApp({
         id="explorer-main" tabIndex={-1}
       >
         <RuntimeNotices onChange={runtimeChanged} />
-        {destination.kind === 'research' ? (
+        {destination.kind === 'channel-search' ? (
+          pageBoundary('Find channels', <Suspense fallback={<LoadingState label="Loading channel search…" />}><ChannelSearchPage onAdd={handleAddChannel} onOpen={selectChannel} /></Suspense>)
+        ) : destination.kind === 'research' ? (
           pageBoundary('Research workshop', <Suspense fallback={<LoadingState label="Loading research workshop…" />}><ResearchWorkshopPage channels={channels.flatMap(c => c.channel_id ? [{ id: c.channel_id, name: channelChoiceName(c) }] : [])} labels={labelChoices} folders={folderChoices} apiAvailable={runtimeApiAvailable}
             handoffFor={(entry) => workshopHandoff.current?.entry === entry ? workshopHandoff.current.handoff : undefined} onLeave={leaveWorkshop} /></Suspense>)
         ) : destination.kind === 'health' ? (
           pageBoundary('Health', <Suspense fallback={<LoadingState label="Loading Health…" />}><HealthPage /></Suspense>)
         ) : destination.kind === 'telemetry' ? (
           pageBoundary('Telemetry', <Suspense fallback={<LoadingState label="Loading Telemetry…" />}><TelemetryPage /></Suspense>)
+        ) : destination.kind === 'alerts' ? (
+          pageBoundary('Alerts', <Suspense fallback={<LoadingState label="Loading alerts…" />}><AlertsPage /></Suspense>)
         ) : destination.kind === 'agents' ? (
           pageBoundary('Agents', <Suspense fallback={<LoadingState label="Loading Agents…" />}><AgentsPage /></Suspense>)
         ) : destination.kind === 'saved' ? (

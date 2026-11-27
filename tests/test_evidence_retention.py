@@ -196,12 +196,19 @@ class EvidenceCleanupTests(unittest.TestCase):
         for name,spec in _TARGETS.items():
             if not spec.immutable:continue
             with self.subTest(target=name):
-                clock=f"coalesce(t.{spec.clock},'-infinity'::timestamptz)"
+                if name == 'alert_observations':
+                    clock = 't.evidence_expires_at'
+                elif name == 'alert_inbox':
+                    clock = 't.expires_at'
+                else:
+                    clock = f"coalesce(t.{spec.clock},'-infinity'::timestamptz)"
                 expired,from_now,past_now=_page(spec).split(' UNION ALL ')
-                self.assertIn(clock+"<%(cutoff)s::timestamptz AND (%(after_at)s::timestamptz IS NULL OR",expired)
-                self.assertIn(clock+">%(now)s::timestamptz AND (%(after_at)s::timestamptz IS NULL OR %(after_at)s::timestamptz<=%(now)s::timestamptz) ORDER BY",from_now)
+                floor = "<=%(now)s::timestamptz" if spec.expires else "<%(cutoff)s::timestamptz"
+                upper = "%(now)s::timestamptz+interval '696 hours'" if spec.expires else "%(now)s::timestamptz"
+                self.assertIn(clock+floor+" AND (%(after_at)s::timestamptz IS NULL OR",expired)
+                self.assertIn(clock+">"+upper+" AND (%(after_at)s::timestamptz IS NULL OR %(after_at)s::timestamptz<="+upper+") ORDER BY",from_now)
                 self.assertNotIn(cursor,from_now)
-                self.assertIn(" AND %(after_at)s::timestamptz>%(now)s::timestamptz AND ("+clock,past_now)
+                self.assertIn(" AND %(after_at)s::timestamptz>"+upper+" AND ("+clock,past_now)
                 self.assertIn(")>"+cursor+" ORDER BY",past_now)
                 self.assertNotIn(clock+">%(now)s",past_now)
 

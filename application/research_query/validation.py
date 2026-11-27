@@ -402,7 +402,10 @@ def validate(raw: bytes, context: AccessContext) -> ValidatedQuery:
         elif "field" not in node:
             stack.extend(node.get("all", node.get("any", [node.get("not")])))
     encoded = canonical(obj)
-    identity = {**obj, "page": {"size": obj["page"]["size"]}}
+    # Position, the ordered ID list and its slices belong to one query: a slice
+    # continues the list its first page returned.
+    identity = {**obj, "page": {key: value for key, value in obj["page"].items()
+                                if key not in {"after", "anchor_id", "order", "ids"}}}
     shape_hash = hashlib.sha256(canonical({"scope": request.scope.kind,
         "source":source.id, "type": request.video_types, "fields": sorted(fields), "where": shape,
         "sort": obj["order_by"]})).hexdigest()

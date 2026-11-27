@@ -1,5 +1,5 @@
 {
- "content_sha256": "de47e37401425ee9dfb92f5f89250f896d6cb7f66a4c33ccf08f74f552a4208a",
+ "content_sha256": "cd33652a6893aa7663c6d1baa4c45ab56602c3660e6204a74ffd4de92fd6cbb5",
  "fields": {
   "youtube.channels.list": {
    "brandingSettings.channel.country": {
@@ -1530,7 +1530,7 @@
     "value": "no"
    },
    "ui_supported": {
-    "value": "no"
+    "value": "partial"
    }
   },
   "youtube.subscriptions.list": {

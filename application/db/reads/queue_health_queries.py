@@ -11,7 +11,8 @@ from ..base.sql_values import application_value
 
 
 def _read_value(database, operation, statement):
-    with database.transaction(Operation(operation, read_only=True,
+    # Queue summaries read every state row; JIT compilation would cost more than the read.
+    with database.transaction(Operation(operation, read_only=True, disable_jit=True,
             statement_timeout_ms=5000, lock_timeout_ms=250, total_timeout_ms=8000)) as tx:
         row = application_value(tx.fetch_one(statement))
     if not isinstance(row, Mapping) or set(row) != {"value"}:

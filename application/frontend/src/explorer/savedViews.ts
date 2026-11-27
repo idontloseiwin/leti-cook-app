@@ -8,9 +8,10 @@ import { TIME_ZONE_PATTERN } from './timeZones';
 import { recognizeLibraryView, savedLibraryVideoType, type LibraryOpenTarget } from './libraryData/savedLibrary.ts';
 
 export const SAVED_VIEWS_PATH = `${EXPLORER_V3_ROOT}/saved`;
-export type ExplorerDestination = { kind: 'home' | 'research' } | { kind: ExplorerOperationalPage } | { kind: 'saved'; tab?: 'collections'; collectionId?: string; error?: string } | { kind: 'channel'; channelId: string };
+export type ExplorerDestination = { kind: 'home' | 'research' | 'channel-search' } | { kind: ExplorerOperationalPage } | { kind: 'saved'; tab?: 'collections'; collectionId?: string; error?: string } | { kind: 'channel'; channelId: string };
 export function readExplorerDestination(pathname: string, search = ''): ExplorerDestination {
   if (pathname.replace(/\/$/, '') === `${EXPLORER_V3_ROOT}/research`) return { kind: 'research' };
+  if (pathname.replace(/\/$/, '') === `${EXPLORER_V3_ROOT}/channel-search`) return { kind: 'channel-search' };
   const operationalPage = parseExplorerOperationalPath(pathname);
   if (operationalPage) return { kind: operationalPage };
   if (pathname.startsWith(`${SAVED_VIEWS_PATH}/collections/`)) {

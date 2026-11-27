@@ -2,12 +2,12 @@ import {
   forwardRef, useCallback, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState,
   type ReactNode,
 } from 'react';
-import type { ChannelExplorerVideo } from '../types';
+import type { ChannelExplorerVideo, VideoType } from '../types';
 import { reportDiscoveryRendered } from '../discoveryJournal';
 import type { CatalogueDensity } from './cataloguePreferences';
 import {
-  buildVideoGridLayout, gridAnchorAt, resolvedGridColumns, videoAnchorScrollTop,
-  visibleAnchorOffset, visibleVideoRows, type VideoGridAnchor,
+  buildVideoGridLayout, estimatedVideoRowHeight, gridAnchorAt, resolvedGridColumns, videoAnchorScrollTop,
+  videoCardForm, visibleAnchorOffset, visibleVideoRows, type VideoGridAnchor,
 } from './videoGridGeometry';
 
 export type VideoGridFocusTarget = { videoId: string; trigger: 'thumbnail' | 'title' | 'selection' | 'youtube' | 'remove' };
@@ -39,13 +39,15 @@ function stickyTopInset(): number {
 export const VirtualVideoGrid = forwardRef<VirtualVideoGridHandle, {
   videos: ChannelExplorerVideo[];
   density: CatalogueDensity;
+  /** The type every card shares (the Videos tab): `data-video-type`, Shorts columns and rows; a collection has none. */
+  videoType?: VideoType;
   scopeKey: string;
   inspectedVideoId?: string;
   onAnchorChange?: (anchor: VideoGridAnchor) => void;
   restoreAnchor?: VideoGridRestoreAnchor;
   renderCard: (video: ChannelExplorerVideo) => ReactNode;
 }>(function VirtualVideoGrid({
-  videos, density, scopeKey, inspectedVideoId, onAnchorChange, restoreAnchor, renderCard,
+  videos, density, videoType, scopeKey, inspectedVideoId, onAnchorChange, restoreAnchor, renderCard,
 }, ref) {
   const gridRef = useRef<HTMLDivElement>(null);
   const heights = useRef(new Map<string, number>());
@@ -62,7 +64,8 @@ export const VirtualVideoGrid = forwardRef<VirtualVideoGridHandle, {
   const previousIds = useRef<readonly string[]>([]);
   const [focusedVideoId, setFocusedVideoId] = useState<string | undefined>();
   const [revision, setRevision] = useState(0);
-  const [geometry, setGeometry] = useState({ columns: 1, width: 0, gap: 15, estimate: 350, density });
+  const form = videoCardForm(videoType);
+  const [geometry, setGeometry] = useState({ columns: 1, width: 0, gap: 15, estimate: 350, density, form });
   const [viewport, setViewport] = useState({ top: 0, height: 900 });
   const ids = useMemo(() => videos.map((video) => video.video_id || ''), [videos]);
   const layout = useMemo(() => buildVideoGridLayout(
@@ -179,12 +182,13 @@ export const VirtualVideoGrid = forwardRef<VirtualVideoGridHandle, {
       const width = grid.clientWidth;
       const columns = resolvedGridColumns(style.gridTemplateColumns);
       const gap = Number.parseFloat(style.columnGap) || 0;
-      if (width !== geometry.width || columns !== geometry.columns || density !== geometry.density || gap !== geometry.gap) {
+      if (width !== geometry.width || columns !== geometry.columns || density !== geometry.density || form !== geometry.form
+        || gap !== geometry.gap) {
         pendingRestore.current ??= anchorRef.current;
         pendingFocus.current ??= focusedTarget.current;
         heights.current.clear();
         const cardWidth = (width - gap * (columns - 1)) / columns;
-        setGeometry({ columns, width, gap, estimate: cardWidth * 9 / 16 + (density === 'compact' ? 116 : 132), density });
+        setGeometry({ columns, width, gap, estimate: estimatedVideoRowHeight(cardWidth, density, form), density, form });
         return true;
       }
       let changed = false;
@@ -254,6 +258,7 @@ export const VirtualVideoGrid = forwardRef<VirtualVideoGridHandle, {
       ref={gridRef}
       className="explorer-v2-video-grid is-virtual"
       data-density={density}
+      data-video-type={videoType}
       style={{ height: layout.height }}
       onFocusCapture={(event) => {
         const card = (event.target as HTMLElement).closest<HTMLElement>('[data-video-id]');

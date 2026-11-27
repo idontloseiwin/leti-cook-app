@@ -52,4 +52,12 @@ class ReviewPresentationTests(unittest.TestCase):
   self.assertIn(reads._REVIEW_STATUS,reads._HAS)
   self.assertNotIn("candidate",reads._GET)
   self.assertNotIn("candidate",reads._LIST)
+ def test_list_and_case_reads_look_up_evidence_per_case(self):
+  # Joining the views directly lets the planner resolve the whole catalogue
+  # before it meets the few cases; each case looks up its own video instead.
+  for statement in (reads._GET,reads._LIST):
+   self.assertIn("inventory.video_id=c.video_id OFFSET 0",statement)
+   self.assertIn("resolution.video_id=c.video_id OFFSET 0",statement)
+   self.assertNotIn("LEFT JOIN readable.video_inventory i ON",statement)
+   self.assertNotIn("LEFT JOIN readable.video_inventory_type_resolution r ON",statement)
 if __name__=='__main__':unittest.main()

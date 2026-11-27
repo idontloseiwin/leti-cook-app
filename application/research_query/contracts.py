@@ -25,6 +25,12 @@ MAX_CURSOR_CHARS = 16 * 1024  # Includes a full 1000-code-point Unicode sort key
 # A frozen result holds every matching row; larger results are refused, never
 # truncated. 20,000 videos of one channel fit with room to spare.
 MAX_FROZEN_ROWS = 50_000
+# The ordered ID list of a current channel list (page.order = "ids"): every
+# matching video once, in the page's own order, as 11-character IDs joined
+# without a separator (2.2 MB at the limit; a 128,000-video channel is 1.4 MB).
+# Beyond it the count is still given and the list is withheld, never cut.
+MAX_ORDER_IDS = 200_000
+VIDEO_ID_CHARS = 11
 # Catalogue filter time zone: UTC or an IANA Area/Location.
 TIME_ZONE_PATTERN = r"(?:UTC|[A-Za-z]+(?:/[A-Za-z0-9_+-]+){1,2})"
 
@@ -152,17 +158,26 @@ class Projection(WireModel):
 
 class PageRequest(WireModel):
     size: Annotated[StrictInt, Field(ge=1, le=200)] = 50
+    # Display-only growth may use the lifetime of this channel page.
+    growth_lifetime: Literal["page"] | None = None
     # A current continuation, or a frozen next/previous cursor.
     after: Annotated[StrictStr, Field(min_length=1, max_length=MAX_CURSOR_CHARS)] | None = None
-    # Frozen results only, without `after`: the first page returned is the one
-    # that contains this row. Not part of the query fingerprint.
+    # A new frozen list can open at its containing page. A current channel page
+    # with page-scoped growth starts at this row, or at the beginning if it no longer matches.
     anchor_id: Annotated[StrictStr, Field(pattern=r"^(?:[A-Za-z0-9_-]{11}|UC[A-Za-z0-9_-]{22})$")] | None = None
+    # A current channel page: "ids" adds the ordered ID list of every matching
+    # video (PageResult.order), read in the same statement as the page.
+    order: Literal["ids"] | None = None
+    # A current channel page of exactly these videos of that list, in this
+    # order; one that no longer matches or is no longer admitted is absent.
+    ids: Annotated[list[VideoId], Field(min_length=1, max_length=200)] | None = None
 
     @model_serializer(mode="wrap")
-    def omit_absent_anchor(self, handler):
+    def omit_absent_options(self, handler):
         result = handler(self)
-        if self.anchor_id is None:
-            result.pop("anchor_id", None)
+        for key in ("growth_lifetime", "anchor_id", "order", "ids"):
+            if getattr(self, key) is None:
+                result.pop(key, None)
         return result
 
 
@@ -209,14 +224,26 @@ class QueryRequest(WireModel):
         return self
 
     @model_validator(mode='after')
-    def frozen_anchor(self):
+    def page_options(self):
+        if self.page.growth_lifetime and (self.consistency != 'current' or self.scope.kind != 'channel'
+                                          or self.source.id == CHANNEL_SOURCE_ID):
+            raise ValueError('page_growth_requires_current_channel_videos')
         anchor = self.page.anchor_id
         if anchor is not None:
-            if self.consistency != 'frozen' or self.page.after is not None:
-                raise ValueError('anchor_requires_new_frozen_result')
+            if self.page.after is not None or (self.consistency != 'frozen' and self.page.growth_lifetime != 'page'):
+                raise ValueError('anchor_requires_new_frozen_or_channel_page')
             pattern = r'UC[A-Za-z0-9_-]{22}' if self.source.id == CHANNEL_SOURCE_ID else r'[A-Za-z0-9_-]{11}'
             if re.fullmatch(pattern, anchor) is None:
                 raise ValueError('anchor_source_identity_mismatch')
+        order, ids = self.page.order, self.page.ids
+        if order is not None or ids is not None:
+            if self.consistency != 'current' or self.scope.kind != 'channel' or self.source.id == CHANNEL_SOURCE_ID:
+                raise ValueError('page_order_requires_current_channel_videos')
+            # A list page is a first page (at most at an anchor); a slice is neither.
+            if self.page.after is not None or (ids is not None and (order is not None or anchor is not None)):
+                raise ValueError('page_order_options_conflict')
+            if ids is not None and (len(ids) > self.page.size or len(set(ids)) != len(ids)):
+                raise ValueError('page_ids_invalid')
         return self
 
     @model_serializer(mode='wrap')
@@ -405,6 +432,26 @@ class Context(WireModel):
         return result
 
 
+class OrderResult(WireModel):
+    """The ordered ID list of a current list page (page.order = "ids").
+
+    total_count: every matching video, also beyond the limit. ids: those
+    videos' 11-character IDs joined in the page's order (equal values by
+    video ID, unknown values last), or null when total_count > limit."""
+    total_count: Annotated[StrictInt, Field(ge=0)]
+    ids: Annotated[StrictStr, Field(max_length=MAX_ORDER_IDS * VIDEO_ID_CHARS,
+                                    pattern=r"^(?:[A-Za-z0-9_-]{11})*$")] | None
+    limit: Annotated[StrictInt, Field(ge=1, le=MAX_ORDER_IDS)]
+
+    @model_validator(mode="after")
+    def complete_or_withheld(self):
+        if (self.ids is None) != (self.total_count > self.limit):
+            raise ValueError("order_withheld_within_limit" if self.ids is None else "order_beyond_limit")
+        if self.ids is not None and len(self.ids) != self.total_count * VIDEO_ID_CHARS:
+            raise ValueError("order_incomplete")
+        return self
+
+
 class PageResult(WireModel):
     has_more: StrictBool
     next_cursor: Annotated[StrictStr, Field(min_length=1, max_length=MAX_CURSOR_CHARS)] | None
@@ -413,6 +460,8 @@ class PageResult(WireModel):
     start_index: Annotated[StrictInt, Field(ge=0, le=MAX_FROZEN_ROWS)] | None = None
     total_count: Annotated[StrictInt, Field(ge=0, le=MAX_FROZEN_ROWS)] | None = None
     anchor_id: Annotated[StrictStr, Field(pattern=r"^(?:[A-Za-z0-9_-]{11}|UC[A-Za-z0-9_-]{22})$")] | None = None
+    # Current pages that asked for it (page.order = "ids") only.
+    order: OrderResult | None = None
 
     @model_validator(mode="after")
     def cursor_matches_continuation(self):
@@ -424,6 +473,8 @@ class PageResult(WireModel):
         elif (self.total_count is None or self.start_index > self.total_count
               or (self.previous_cursor is None) != (self.start_index == 0)):
             raise ValueError("frozen_page_position_mismatch")
+        elif self.order is not None:
+            raise ValueError("order_without_current_page")
         return self
 
     @model_serializer(mode="wrap")
@@ -432,6 +483,8 @@ class PageResult(WireModel):
         if self.start_index is None:
             for key in ("previous_cursor", "start_index", "total_count", "anchor_id"):
                 result.pop(key, None)
+        if self.order is None:
+            result.pop("order", None)
         return result
 
 

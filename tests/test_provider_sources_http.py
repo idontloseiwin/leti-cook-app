@@ -185,10 +185,104 @@ class SourcesHttpTests(SourcesHttpCase):
     def test_every_route_needs_the_owner_session(self):
         self.owner.mode = 'password'
         for method, path in (('get', '/sources/registry'), ('get', '/sources/acquisitions/status'),
-                             ('post', '/sources/acquisitions/preview'), ('post', '/sources/acquisitions/execute')):
+                             ('post', '/sources/acquisitions/preview'), ('post', '/sources/acquisitions/execute'),
+                             ('post', '/sources/channel-search/preview'), ('post', '/sources/channel-search/execute')):
             with self.subTest(path=path):
                 self.assertEqual(getattr(self.client, method)(path, **({'json': {}} if method == 'post' else {})).status_code, 401)
         self.assertEqual(self.calls, [])
+
+    def test_channel_search_uses_preview_confirmation_and_owner_guard(self):
+        spec = {'mode': 'channel', 'q': 'synthetic', 'stats': False}
+        preview = self.client.post('/sources/channel-search/preview', json=spec)
+        self.assertEqual(preview.status_code, 200)
+        ticket = preview.json()
+        data = {'action_id': ticket['action_id'], 'confirmed_cost': ticket['max_cost']}
+        url = '/sources/channel-search/execute'
+        self.assertEqual(self.client.post(url, json=data).status_code, 403)
+        response = self.client.post(url, json={**data, 'confirmed_cost': {}}, headers={'X-Saved-Work': '1'})
+        self.assertEqual(response.status_code, 409)
+        self.assertFalse(self.calls)
+        self.pages = [Response({'kind': 'youtube#searchListResponse', 'items': []})]
+        completed = self.client.post(url, json=data, headers={'X-Saved-Work': '1'})
+        self.assertEqual(completed.status_code, 200)
+        self.assertEqual(completed.json()['hits'], [])
+        self.assertEqual(completed.json()['steps']['search_queries']['sent'], 1)
+        self.assertEqual(self.client.post(url, json=data, headers={'X-Saved-Work': '1'}).status_code, 200)
+        self.assertEqual(len(self.calls), 1)
+
+    def test_finder_empty_page_can_load_next_after_confirmation(self):
+        actions = '/sources/channel-search/'
+        spec = {'mode': 'topic', 'q': 'synthetic', 'stats': True}
+        ticket = self.client.post(actions + 'preview', json=spec).json()
+        self.assertEqual(ticket['max_cost'], {'search_queries': 1, 'general': 1, 'video_batch_get_stats': 1})
+
+        def confirm(ticket):
+            response = self.client.post(actions + 'execute', headers={'X-Saved-Work': '1'},
+                                        json={'action_id': ticket['action_id'], 'confirmed_cost': ticket['max_cost']})
+            self.assertEqual(response.status_code, 200)
+            return response.json()
+
+        video_id, channel_id = 'a' * 11, 'UC' + 'b' * 22
+        self.pages = [
+            Response({'kind': 'youtube#searchListResponse', 'items': [], 'nextPageToken': 'NEXT'}),
+            Response({'kind': 'youtube#searchListResponse', 'items': [
+                {'kind': 'youtube#searchResult', 'id': {'kind': 'youtube#video', 'videoId': video_id},
+                 'snippet': {'channelId': channel_id, 'title': 'Synthetic'}}]}),
+            Response({'kind': 'youtube#channelListResponse', 'items': [{'id': channel_id, 'snippet': {'title': 'Album'}}]}),
+            Response({'kind': 'youtube#batchGetStatsResponse', 'items': [{'id': video_id, 'statistics': {'viewCount': '5'}}]}),
+        ]
+        empty = confirm(ticket)
+        self.assertEqual((empty['hits'], set(empty['steps']), empty['search_step']['cost']),
+                         ([], {'search_queries'}, {'search_queries': 1}))
+        self.assertTrue(empty['more'])
+        self.assertFalse(empty['retry'])
+        again = confirm(ticket)
+        self.assertTrue(again['more'])
+        more = self.client.post(actions + 'preview', json={'parent': ticket['action_id'], 'action': 'more'}).json()
+        self.assertEqual(more['max_cost'], ticket['max_cost'])
+        self.assertEqual(len(self.calls), 1)
+        result = confirm(more)
+        self.assertEqual(([x['id'] for x in result['hits']], result['views'], result['more']), ([video_id], {video_id: 5}, False))
+        self.assertEqual(self.calls[1][1]['params']['pageToken'], 'NEXT')
+        self.assertEqual([step['cost'] for step in result['steps'].values()],
+                         [{'search_queries': 1}, {'general': 1}, {'video_batch_get_stats': 1}])
+        self.assertEqual(len(self.calls), 4)
+
+    def test_finder_stops_a_seventeen_page_cycle_on_its_first_repeat(self):
+        spec = {'mode': 'channel', 'q': 'synthetic', 'stats': False}
+        for index in range(18):
+            token = str(index % 17)
+            self.pages = [Response({'kind': 'youtube#searchListResponse', 'items': [], 'nextPageToken': token})]
+            ticket = self.client.post('/sources/channel-search/preview', json=spec).json()
+            data = {'action_id': ticket['action_id'], 'confirmed_cost': ticket['max_cost']}
+            page = self.client.post('/sources/channel-search/execute', json=data, headers={'X-Saved-Work': '1'}).json()
+            self.assertEqual(page['more'], index < 17)
+            self.assertEqual(page['search_step']['cost'], {'search_queries': 1})
+            spec = {'parent': ticket['action_id'], 'action': 'more'}
+        self.assertEqual((len(self.calls), page['search_step']['stop']), (18, 'response_invalid'))
+        self.assertEqual(self.client.post('/sources/channel-search/preview', json=spec).status_code, 409)
+        self.assertEqual(len(self.calls), 18)
+
+    def test_search_acquisition_empty_intermediate_page_and_budget(self):
+        fixture = load('youtube.search.list', 'mixed_two_pages')
+        doc = fixture['request']
+        first, next_page = [p['body'] for p in fixture['responses']]
+        self.pages = [Response({**first, 'items': []}), Response(next_page)]
+        result = self.execute(request=doc).json()
+        self.assertEqual((result['completeness'], result['cost'], len(result['rows'])),
+                         ('complete', {'search_queries': 2}, len(next_page['items'])))
+        self.assertEqual([p[1]['params'].get('pageToken') for p in self.calls], [None, first['nextPageToken']])
+        doc['budget'] = {'max_requests': 1, 'max_units': {'search_queries': 1}}
+        self.pages = [Response({**first, 'items': [], 'nextPageToken': t}) for t in ('A', 'B', 'A')]
+        cursor = None
+        for index in range(3):
+            page = self.execute(request=doc, continuation=cursor).json()
+            self.assertEqual((page['requests_sent'], page['cost'], page['rows']), (1, {'search_queries': 1}, []))
+            cursor = page['continuation']
+            if index < 2:
+                self.assertEqual(page['stop_reason'], 'budget_requests')
+                self.assertTrue(cursor)
+        self.assertEqual((page['stop_reason'], page['notes'], cursor), ('response_invalid', ['repeated_page_token'], None))
 
     def test_registry_projection_is_safe(self):
         answer = self.client.get('/sources/registry')

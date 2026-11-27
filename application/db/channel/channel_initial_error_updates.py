@@ -35,6 +35,7 @@ COLUMN_TYPES = (
     ('count_reconcile_token','uuid'),('count_reconcile_previous','bigint'),('count_reconcile_current','bigint'),
     ('count_reconcile_source_checked_at','timestamptz'),('count_reconcile_observed_at','timestamptz'),
     ('count_reconcile_epoch','bigint'),('count_reconcile_settled_token','uuid'),
+    ('alert_folder_since','timestamptz'),
 )
 _TYPES = dict(COLUMN_TYPES)
 _STATUS = 'initial_long_inventory_status'

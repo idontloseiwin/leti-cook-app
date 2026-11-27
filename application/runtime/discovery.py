@@ -1,7 +1,61 @@
 """Composition of discovery inside the existing collector, never a second writer."""
 from functools import partial
 from uuid import uuid4
+import logging
+import threading
 import time
+
+
+class DiscoveryMaintenance:
+    '''One backend owner for discovery bookkeeping, with optional hub work on the same thread.'''
+
+    def __init__(self, database, *, ready, websub=None, clock=time.monotonic):
+        from db.retention.discovery_operational_retention import clean
+        self.cleanup = partial(clean, database)
+        self.ready, self.websub, self.clock = ready, websub, clock
+        self.next_cleanup = 0.0
+        self.last_cleanup_error = None
+        self._stop = threading.Event()
+        self._thread = None
+
+    def step(self):
+        if self.clock() >= self.next_cleanup:
+            try:
+                self.ready()
+            except Exception:
+                self.next_cleanup = self.clock() + 60
+            else:
+                try:
+                    self.cleanup()
+                except Exception as error:
+                    code = type(error).__name__
+                    if self.last_cleanup_error != code:
+                        logging.getLogger(__name__).warning('Discovery maintenance failed (%s)', code)
+                    self.last_cleanup_error = code
+                    self.next_cleanup = self.clock() + 60
+                else:
+                    self.last_cleanup_error = None
+                    self.next_cleanup = self.clock() + 3600
+        wait = max(0.0, self.next_cleanup - self.clock())
+        if self.websub is not None and not self._stop.is_set():
+            wait = min(wait, self.websub.step())
+        return wait
+
+    def start(self):
+        if self._thread is not None:
+            raise RuntimeError('discovery_maintenance_already_started')
+
+        def run():
+            while not self._stop.is_set():
+                self._stop.wait(self.step())
+
+        self._thread = threading.Thread(target=run, name='discovery-maintenance', daemon=True)
+        self._thread.start()
+
+    def close(self):
+        self._stop.set()
+        if self._thread is not None:
+            self._thread.join(timeout=12)
 
 
 def discovery_budget(context):

@@ -34,9 +34,16 @@ _CASE_PRESENTATION = """
  CROSS JOIN LATERAL (SELECT c.decision_unblocked AND
  (presentation.review_status='needs_review' OR c.decision_type IS NOT NULL)
  AND presentation.review_status<>'channel_conflict' AS can_decide) permission"""
-_CASE_FROM = """ FROM readable.video_type_review_cases c
- LEFT JOIN readable.video_inventory i ON i.video_id=c.video_id
- LEFT JOIN readable.video_inventory_type_resolution r ON r.video_id=c.video_id"""+_CASE_PRESENTATION
+# Each case asks the protected views for its own video only. OFFSET 0 retains the
+# correlation: without it the planner resolves every catalogue video's inventory
+# and type before joining the handful of cases (seconds on a large library, for
+# any number of cases, even none).
+_CASE_EVIDENCE = """
+ LEFT JOIN LATERAL (SELECT inventory.* FROM readable.video_inventory inventory
+ WHERE inventory.video_id=c.video_id OFFSET 0) i ON true
+ LEFT JOIN LATERAL (SELECT resolution.* FROM readable.video_inventory_type_resolution resolution
+ WHERE resolution.video_id=c.video_id OFFSET 0) r ON true"""
+_CASE_FROM = " FROM readable.video_type_review_cases c"+_CASE_EVIDENCE+_CASE_PRESENTATION
 CASE_JSON="""jsonb_build_object('case_id',c.case_id,'source_detached_at',c.source_detached_at,
  'video_id',c.video_id,'channel_id',c.channel_id,'canonical_type',case when c.video_id is null then null when c.state='resolved' then c.decision_type else i.video_type end,
  'observed_types',coalesce(r.present_membership_types,ARRAY[]::text[]),
@@ -66,16 +73,11 @@ _HISTORY="""SELECT jsonb_build_object('revision',h.revision,'previous_type',
  AND (%(before_revision)s::bigint IS NULL OR h.revision<%(before_revision)s::bigint)
  ORDER BY h.revision DESC LIMIT %(page_limit)s::integer"""
 # The summary starts from the small durable case inventory, then asks the same
-# protected views for each exact case/video. OFFSET 0 retains the correlation:
-# without it the planner can resolve every catalogue video's type before joining
-# the handful of cases. User-work fields are identities here, never evidence.
+# protected views for each exact case/video (_CASE_EVIDENCE). User-work fields
+# are identities here, never evidence.
 _HAS_FROM = """ FROM readable.video_type_user_work candidate
  CROSS JOIN LATERAL (SELECT current_case.* FROM readable.video_type_review_cases current_case
- WHERE current_case.case_id=candidate.case_id OFFSET 0) c
- LEFT JOIN LATERAL (SELECT inventory.* FROM readable.video_inventory inventory
- WHERE inventory.video_id=c.video_id OFFSET 0) i ON true
- LEFT JOIN LATERAL (SELECT resolution.* FROM readable.video_inventory_type_resolution resolution
- WHERE resolution.video_id=c.video_id OFFSET 0) r ON true"""+_CASE_PRESENTATION
+ WHERE current_case.case_id=candidate.case_id OFFSET 0) c"""+_CASE_EVIDENCE+_CASE_PRESENTATION
 _HAS="SELECT EXISTS(SELECT 1"+_HAS_FROM+" WHERE presentation.review_status IN('needs_review','channel_conflict') LIMIT 1) AS value"
 _HIDDEN = """WITH args AS (SELECT %s::text AS channel_id,%s::text AS after_id,%s::integer AS size),
  page AS MATERIALIZED(SELECT i.video_id,i.channel_id FROM readable.retained_video_identities i CROSS JOIN args

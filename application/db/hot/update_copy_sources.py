@@ -169,7 +169,7 @@ _UNPROVED = """EXISTS(SELECT 1 FROM public.video_inventory i WHERE i.video_type 
 _INDEXED_SOURCES = frozenset({
     'video_like_observation', 'video_comment_observation', 'video_engagement_report', 'video_counters', 'video_metadata', 'video_availability',
     'channel_profile', 'channel_country', 'channel_count_reconcile', 'snapshot_engagement', 'video_snapshots', 'channel_snapshots',
-    'typed_video_collection_receipts', 'availability_events',
+    'typed_video_collection_receipts', 'availability_events', 'alert_observations', 'alert_inbox',
     'availability_incidents_restored', 'sync_runs', 'quota_attempts',
     'category_reference',
     'inventory_publication', 'queue_publication', 'queue_stream_end', 'review_evidence',

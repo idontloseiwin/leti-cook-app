@@ -270,6 +270,37 @@ class _Database:
         yield self.tx
 
 
+class DiscoveryMaintenanceTests(unittest.TestCase):
+    def test_cleanup_is_independent_of_websub_and_retries(self):
+        from runtime.discovery import DiscoveryMaintenance
+        from unittest.mock import Mock
+        clock = Mock(return_value=100.0)
+        ready = Mock(side_effect=[RuntimeError(), None, None, None])
+        websub_worker = Mock()
+        websub_worker.step.return_value = 5
+        owner = DiscoveryMaintenance(None, ready=ready, websub=websub_worker, clock=clock)
+        owner.cleanup = Mock(side_effect=[RuntimeError(), None, None])
+        self.assertEqual(owner.step(), 5)
+        owner.cleanup.assert_not_called()
+        clock.return_value += 60
+        with self.assertLogs('runtime.discovery', level='WARNING'):
+            self.assertEqual(owner.step(), 5)
+        self.assertEqual(owner.last_cleanup_error, 'RuntimeError')
+        clock.return_value += 59
+        self.assertEqual(owner.step(), 1)
+        self.assertEqual(owner.cleanup.call_count, 1)
+        clock.return_value += 1
+        self.assertEqual(owner.step(), 5)
+        self.assertIsNone(owner.last_cleanup_error)
+        self.assertEqual(websub_worker.step.call_count, 4)
+        owner.websub = None
+        clock.return_value += 3599
+        self.assertEqual(owner.step(), 1)
+        clock.return_value += 1
+        self.assertEqual(owner.step(), 3600)
+        self.assertEqual(owner.cleanup.call_count, 3)
+
+
 class ServiceTests(unittest.TestCase):
     def test_one_request_per_step_with_derived_capability(self):
         row = dict(channel_id=CHANNEL, generation=3, callback_base='https://h.example.com/lc', mode='subscribe', attempts=1)

@@ -76,7 +76,7 @@ if [[ "$mode" == large-home ]]; then
   exit 0
 fi
 
-for suite in research_query_pg research_frozen_pg research_growth_pg research_aggregate_pg research_inspector_pg research_overview_pg research_home_pg research_channels_pg research_fields_pg research_graph_pg research_graph_frozen_pg research_saved_pg research_edges_pg research_mcp_pg websub_pg first_of_type_pg provider_sources_pg library_wire_fixtures_pg reader_role_http_pg update_copy_lifecycle_pg channel_profile_status_pg quota_split_pg streams_off_pg discovery_admission_pg discovery_control_pg discovery_executor_pg discovery_heads_pg; do
+for suite in research_query_pg research_frozen_pg research_growth_pg research_aggregate_pg research_inspector_pg research_overview_pg research_home_pg research_channels_pg research_fields_pg research_graph_pg research_graph_frozen_pg research_saved_pg research_edges_pg research_mcp_pg websub_pg first_of_type_pg provider_sources_pg library_wire_fixtures_pg reader_role_http_pg update_copy_lifecycle_pg channel_profile_status_pg quota_split_pg streams_off_pg discovery_admission_pg discovery_control_pg discovery_executor_pg discovery_heads_pg alerts_pg; do
   run_suite "$suite"
 done
 printf '%s\n' '{"stage":"research_query_postgres","status":"pass"}'

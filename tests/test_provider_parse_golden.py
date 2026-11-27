@@ -11,6 +11,7 @@ import unittest
 
 from provider_sources_support import FIXTURES, canonical, cases, load, run_case
 
+from provider_sources.continuation import ContinuationCodec  # noqa: E402
 from provider_sources.registry import load_registry  # noqa: E402
 
 from youtube_source_fields import parse_dt, youtube_duration_seconds  # noqa: E402
@@ -232,6 +233,50 @@ class PublicFamilyTests(unittest.TestCase):
         by_id = rows_of('youtube.comments.list', 'by_id')
         self.assertEqual(by_id['entities']['UgxSyntheticMissing0099'], 'omitted')
         self.assertEqual(cell(by_id['rows'][0], 'snippet.parentId')['absence'], 'absent_means_not_applicable')
+
+    def test_search_cycle_longer_than_recent_history_survives_confirmed_continuations(self):
+        fixture = load('youtube.search.list', 'mixed_two_pages')
+        fixture['request']['budget'] = {'max_requests': 1, 'max_units': {'search_queries': 1}}
+        empty = {**fixture['responses'][0]['body'], 'items': []}
+        codec, cursor = ContinuationCodec(), None
+        for page in range(100):
+            token = str(page % 33).zfill(2) + '\u96ea' * 745 + 'X' * 1301
+            fixture['responses'] = [{'status': 200, 'body': {**empty, 'nextPageToken': token}}]
+            _, result, sender = run_case(fixture, codec=codec, continuation=cursor)
+            self.assertEqual((len(sender.calls), dict(result.cost)), (1, {'search_queries': 1}))
+            cursor = result.continuation
+            if cursor is None:
+                self.assertGreaterEqual(page, 33)
+                self.assertEqual((result.stop_reason, result.notes), ('response_invalid', ('repeated_page_token',)))
+                break
+            self.assertEqual(result.stop_reason, 'budget_requests')
+        else:
+            self.fail('a repeated search cycle kept returning a continuation')
+
+    def test_search_resumes_large_escaped_tokens_accepted_by_previous_cursor(self):
+        from provider_sources_support import NOW, plan_for
+
+        fixture = load('youtube.search.list', 'mixed_two_pages')
+        fixture['request']['budget'] = {'max_requests': 1, 'max_units': {'search_queries': 1}}
+        plan = plan_for(fixture['request'])
+        codec = ContinuationCodec()
+        # Each token has 2048 characters and fits the encoded cursor limit.
+        # The Chinese glyph uses three UTF-8 bytes. The control byte is JSON escaped.
+        for special in ('\u96ea', '\x01'):
+            with self.subTest(special=repr(special)):
+                token = 'A' + special * 745 + 'Z' * 1302
+                cursor_without_history = codec.encode(
+                    fingerprint=plan.fingerprint, context=plan.context, now=NOW,
+                    position={'page': 9, 'token': token, 'chain': 'a' * 64})
+                fixture['responses'] = [{'status': 200, 'body': {'kind': 'youtube#searchListResponse',
+                                         'items': [], 'nextPageToken': token[::-1]}}]
+                _, page, sent = run_case(fixture, codec=codec, continuation=cursor_without_history)
+                self.assertEqual(sent.calls[0]['pageToken'], token)
+                self.assertIsNotNone(page.continuation)
+                fixture['responses'][0]['body'].pop('nextPageToken')
+                _, last, sent = run_case(fixture, codec=codec, continuation=page.continuation)
+                self.assertEqual(sent.calls[0]['pageToken'], token[::-1])
+                self.assertIsNone(last.continuation)
 
     def test_search_hits_have_kinds_and_are_not_exhaustive(self):
         value = rows_of('youtube.search.list', 'mixed_two_pages')

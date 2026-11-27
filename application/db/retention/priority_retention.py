@@ -23,7 +23,7 @@ _ORDER = ('video_description', 'video_paid_promotion', 'video_like_observation',
           'channel_profile', 'channel_country', 'channel_count_reconcile', 'operator_jobs', 'operator_job_targets',
           'playlist_state', 'inventory_receipts', 'inventory_scans',
           'snapshot_engagement', 'video_snapshots', 'channel_snapshots', 'typed_video_collection_receipts',
-          'availability_events', 'availability_incidents', 'review_evidence',
+          'availability_events', 'availability_incidents', 'review_evidence', 'alert_observations', 'alert_inbox',
           'memberships', 'inventory', 'sync_runs', 'quota_attempts',
           'deleted_saved_objects', 'category_reference', 'deleted_channels')
 

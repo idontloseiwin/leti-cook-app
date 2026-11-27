@@ -49,6 +49,7 @@ class Transaction:
         if 'jsonb_typeof(%s::jsonb)' in statement:
             value=params[0].obj if params[0] is not None else None
             return {'kind':'object' if isinstance(value,dict) else 'null','bytes':100}
+        if 'pg_try_advisory_xact_lock' in statement:return {'available':True}
         if statement==restore._EMPTY:return {'empty':self.empty}
         if 'jsonb_object_agg' in statement:return {'value':self.tombs}
         if "label_key='monetized'" in statement:return {'present':True}

@@ -96,7 +96,7 @@ class GraphPostgres(unittest.TestCase):
         conflict=deepcopy(body);conflict['conditions']['graph']['notes']='A stale edit'
         with self.assertRaises(SavedWorkError):service.rename(identity,conflict)
         self.assertEqual(service.get(identity)['view']['conditions']['graph']['notes'],edited['graph']['notes'])
-        backup=build_backup(export_snapshot(self.db))['backup'];self.assertEqual(backup['version'],5)
+        backup=build_backup(export_snapshot(self.db))['backup'];self.assertEqual(backup['version'],6)
         backup=decode_backup(encode_backup(backup));kept=next(q for q in backup['user_work']['queries'] if q['id']==identity)
         self.assertEqual(kept['conditions'],edited);self.assertNotIn('result',kept['conditions']['graph'])
         # Restore is intentionally allowed only into an empty installation.

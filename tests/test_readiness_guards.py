@@ -62,7 +62,7 @@ class ReadinessGuards(unittest.TestCase):
  def test_no_permissive_schema_or_unknown_processing_hooks(self):
   sql=g.READINESS_SQL
   self.assertNotIn("obj_description",sql);self.assertNotIn("schema_migrations",sql)
-  self.assertIn('(SELECT count(*) FROM functions)=15',sql);self.assertIn('(SELECT count(*) FROM triggers)=36',sql)
+  self.assertIn('(SELECT count(*) FROM functions)=19',sql);self.assertIn('(SELECT count(*) FROM triggers)=42',sql)
   self.assertIn("n.nspname IN ('public','operator_private')",sql);self.assertIn('NOT t.tgisinternal',sql)
   for field in ('proowner','proargnames','proconfig','prosrc','prosecdef','prolang','provolatile','proretset','proparallel','is_grantable','tgattr','tgenabled','tgtype','tgqual','tgfoid','tgargs','tgconstraint','tgoldtable','tgnewtable','procost','prorows','prosupport','provariadic'):self.assertIn(field,sql)
   self.assertNotIn('schema_migrations ',sql);self.assertNotIn('FROM operator_private.schema_migrations',sql)

@@ -28,7 +28,8 @@ export function displayResearchCell(cell: ResearchCell | undefined, field: Resea
 export function VideoImage({ row, field = 'video.thumbnail_url' }: { row: ResearchRow; field?: ResearchField }) {
   const cell = row.cells[field];
   const url = cell?.state === 'known' && typeof cell.value === 'string' && safeImage(cell.value) ? cell.value : undefined;
-  return url ? <img src={url} alt="" loading="lazy" referrerPolicy="no-referrer" onError={event => { event.currentTarget.hidden = true; }} /> : <span className="research-no-image">No image</span>;
+  // A video image (4:3, bars above and below a 16:9 picture) is cropped to 16:9; a channel image is shown whole.
+  return url ? <img className={field === 'video.thumbnail_url' ? 'research-video-image' : undefined} src={url} alt="" loading="lazy" referrerPolicy="no-referrer" onError={event => { event.currentTarget.hidden = true; }} /> : <span className="research-no-image">No image</span>;
 }
 export function SourceDetails({ row, page }: { row: ResearchRow; page: ResearchPage }) {
   const cell = row.cells['video.type'], type = cell ? page.provenance[cell.provenance_ref] : undefined;

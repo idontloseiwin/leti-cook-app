@@ -33,7 +33,7 @@ class SavedQueryTests(unittest.TestCase):
         with self.assertRaises(ValueError):from_query(q)
     def test_version_three_roundtrip_and_old_backup_inputs(self):
         legacy=normalize_backup(document())
-        self.assertEqual(legacy['version'],5)
+        self.assertEqual(legacy['version'],6)
         self.assertEqual(legacy['user_work']['queries'],[])
         _,definition=from_query(query())
         view=dict(id='c0000000-0000-4000-8000-000000000001',name='My query',revision=1,

@@ -73,7 +73,7 @@ class GuardIntegrationTests(unittest.IsolatedAsyncioTestCase):
                 response = await client.post("/user-work/restore/preview", content=json.dumps(document),
                                              headers={"Content-Type": "application/json", "X-Saved-Work": "1"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["backup"], {**document, "format": "leti-cook-user-work", "version": 5, "user_work": {**document["user_work"], "queries": [], "field_preferences":__import__("research_field_policy").defaults()}})
+        self.assertEqual(response.json()["backup"], {**document, "format": "leti-cook-user-work", "version": 6, "user_work": {**document["user_work"], "alert_rules": [], "queries": [], "field_preferences":__import__("research_field_policy").defaults()}})
         self.assertEqual(rendered_on_loop, [False])
 
 

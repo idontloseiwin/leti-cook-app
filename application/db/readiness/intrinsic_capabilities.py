@@ -1,4 +1,4 @@
-"""Strict final-schema catalog contract: fifteen intrinsic hooks, thirty-six triggers.
+"""Strict final-schema catalog contract: nineteen intrinsic hooks and forty-two triggers.
 
 No stored workflow calls, source data reads, writes or permissive old-schema mode.
 Runtime verifies the delivered integrity definitions; the fresh installer
@@ -8,6 +8,10 @@ from .capability_facts import require_boolean_facts
 
 READINESS_SQL = r"""
 WITH expected_functions(signature,body_md5,security_definer,search_path,service_execute) AS (VALUES
+('public.alert_duration_clock()','e54d6f1a50d490bcb2ad39d8b013f3ef',false,'search_path=pg_catalog, pg_temp',false),
+('public.alert_visibility_clock()','ee4d0e897b43641386622c7938395082',false,'search_path=pg_catalog, pg_temp',false),
+('public.alert_folder_clock()','6a5d202db18417491edce0ea6d719d72',false,'search_path=pg_catalog, pg_temp',false),
+('public.capture_alert_observations()','f905357f9f669ae925658ad468199b0f',false,'search_path=pg_catalog, pg_temp',false),
 ('operator_private.serialize_user_work_bytes()','fe0c903983423110523eb920d246fcca',true,'search_path=pg_catalog, public, pg_temp',false),
 ('operator_private.check_user_work_bytes()','4780a63b1d8376858f42608603cb2a9e',true,'search_path=pg_catalog, public, pg_temp',false),
 ('public.bind_channel_user_work_owner()','fad6ef72f002d88375084c6ca04f2bab',true,'search_path=pg_catalog, public, pg_temp',true),
@@ -58,7 +62,13 @@ WITH expected_functions(signature,body_md5,security_definer,search_path,service_
 ('public.video_inventory','video_inventory_search_queue','public.queue_video_search_projection()',29,ARRAY[]::text[],false),
 ('public.video_inventory_memberships','video_membership_search_queue','public.queue_video_search_projection()',29,ARRAY[]::text[],false),
 ('public.video_type_review_cases','video_review_search_queue','public.queue_video_search_projection()',29,ARRAY[]::text[],false),
-('public.videos','videos_search_queue','public.queue_video_search_projection()',29,ARRAY['video_id','channel_id','title','published_at','metadata_checked_at','duration','publication_status']::text[],false)), roles AS (
+('public.videos','videos_search_queue','public.queue_video_search_projection()',29,ARRAY['video_id','channel_id','title','published_at','metadata_checked_at','duration','publication_status']::text[],false)), expected_alert_triggers(table_name,trigger_name,signature,type_bits,columns,nargs,args_md5,new_table,when_expression) AS (VALUES
+('public.videos','alert_duration_clock','public.alert_duration_clock()',19,ARRAY['duration']::text[],0,'d41d8cd98f00b204e9800998ecf8427e',NULL,'old.durationisdistinctfromnew.duration'),
+('public.channels','alert_folder_clock','public.alert_folder_clock()',19,ARRAY['folder_id']::text[],0,'d41d8cd98f00b204e9800998ecf8427e',NULL,'old.folder_idisdistinctfromnew.folder_id'),
+('public.channel_collection_state','alert_visibility_clock','public.alert_visibility_clock()',19,ARRAY['is_hidden']::text[],0,'d41d8cd98f00b204e9800998ecf8427e',NULL,'old.is_hiddenisdistinctfromnew.is_hidden'),
+('public.video_snapshots','alert_video_observations','public.capture_alert_observations()',4,ARRAY[]::text[],2,'90ac35d9150081de9c638a9edb3af860','inserted',NULL),
+('public.channel_snapshots','alert_channel_observations','public.capture_alert_observations()',4,ARRAY[]::text[],2,'7c0a12b32ae2c2ad1e4eb9f6460b31fd','inserted',NULL),
+('public.video_availability_events','alert_availability_observations','public.capture_alert_observations()',4,ARRAY[]::text[],2,'613011175a60ea5f580ec32a85c39cf3','inserted',NULL)), roles AS (
  SELECT (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='postgres') AS owner_oid,
  (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='service_role') AS service_oid,
  (SELECT count(*)=3 FROM pg_catalog.pg_roles WHERE rolname IN ('anon','authenticated','service_role'))
@@ -76,7 +86,7 @@ WITH expected_functions(signature,body_md5,security_definer,search_path,service_
  WHERE n.nspname IN ('public','operator_private') AND NOT t.tgisinternal
 )
 SELECT coalesce(roles.valid,false) AS roles_valid,
- ((SELECT count(*) FROM functions)=15 AND NOT EXISTS(
+ ((SELECT count(*) FROM functions)=19 AND NOT EXISTS(
   SELECT 1 FROM expected_functions expected LEFT JOIN functions p ON p.signature=expected.signature
   WHERE p.oid IS NULL OR p.proowner IS DISTINCT FROM roles.owner_oid
    OR p.prokind<>'f' OR p.prorettype<>'trigger'::regtype OR p.proretset OR p.pronargs<>0
@@ -95,7 +105,7 @@ SELECT coalesce(roles.valid,false) AS roles_valid,
     WHERE acl.grantee<>roles.owner_oid AND (acl.grantee IS DISTINCT FROM roles.service_oid
      OR NOT expected.service_execute OR acl.privilege_type<>'EXECUTE' OR acl.is_grantable))
  )) AS functions_valid,
- ((SELECT count(*) FROM triggers)=36 AND NOT EXISTS(
+ ((SELECT count(*) FROM triggers)=42 AND NOT EXISTS(
   SELECT 1 FROM expected_triggers expected LEFT JOIN triggers t ON t.table_name=expected.table_name
    AND t.tgname=expected.trigger_name
   LEFT JOIN pg_catalog.pg_constraint constraint_hook ON constraint_hook.oid=t.tgconstraint
@@ -115,6 +125,22 @@ SELECT coalesce(roles.valid,false) AS roles_valid,
    OR ARRAY(SELECT a.attname::text FROM unnest(t.tgattr::smallint[]) WITH ORDINALITY cols(num,ord)
     JOIN pg_catalog.pg_attribute a ON a.attrelid=t.tgrelid AND a.attnum=cols.num
     WHERE NOT a.attisdropped ORDER BY cols.ord) IS DISTINCT FROM expected.columns
+ ) AND NOT EXISTS(
+  SELECT 1 FROM expected_alert_triggers expected LEFT JOIN triggers t ON t.table_name=expected.table_name
+   AND t.tgname=expected.trigger_name
+  WHERE t.oid IS NULL OR t.tgenabled<>'O' OR t.tgparentid<>0 OR t.tgconstraint<>0
+   OR t.tgdeferrable OR t.tginitdeferred
+   OR t.tgfoid IS DISTINCT FROM (SELECT f.oid FROM functions f WHERE f.signature=expected.signature)
+   OR t.tgtype<>expected.type_bits OR t.tgnargs<>expected.nargs OR md5(t.tgargs)<>expected.args_md5
+   OR t.tgoldtable IS NOT NULL OR t.tgnewtable::text IS DISTINCT FROM expected.new_table
+   OR ARRAY(SELECT a.attname::text FROM unnest(t.tgattr::smallint[]) WITH ORDINALITY cols(num,ord)
+    JOIN pg_catalog.pg_attribute a ON a.attrelid=t.tgrelid AND a.attnum=cols.num
+    WHERE NOT a.attisdropped ORDER BY cols.ord) IS DISTINCT FROM expected.columns
+   OR (t.tgqual IS NULL) IS DISTINCT FROM (expected.when_expression IS NULL)
+   OR (expected.when_expression IS NOT NULL AND
+       regexp_replace(lower(substring(pg_catalog.pg_get_triggerdef(t.oid,false)
+         FROM ' WHEN \((.*)\) EXECUTE (?:FUNCTION|PROCEDURE) ')), '[()[:space:]]','','g')
+       IS DISTINCT FROM expected.when_expression)
  )) AS triggers_valid
 FROM roles
 """

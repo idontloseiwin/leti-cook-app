@@ -45,10 +45,12 @@
   background: #101f26;
 }
 
+/* The 4:3 image keeps the frame's 16:9 size; cover crops its bars above and below. */
 .explorer-app.is-updated .explorer-v2-video-thumbnail > img {
   display: block;
   width: 100%;
   height: 100%;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
 }
 
@@ -122,28 +124,6 @@
   display: flex;
   align-items: center;
   gap: 7px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--explorer-muted);
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.explorer-app.is-updated .explorer-v2-video-checkbox input {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  accent-color: var(--explorer-mint);
-}
-
-.explorer-app.is-updated .explorer-v2-video-checkbox input:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
 }
 
 .explorer-app.is-updated .explorer-v2-video-drawer-close {
@@ -506,12 +486,71 @@
   box-shadow: none;
 }
 
+/*
+ * Columns as on YouTube: as many as fit at the card's minimum width, the rest shared equally. Large: 320 px
+ * with 8 px gaps; Compact: 224 px with 4 px, 160 px while the grid is at most 479 px wide. CSS owns the
+ * columns; VirtualVideoGrid only reads the resolved tracks (resolvedGridColumns). auto-fill, not auto-fit:
+ * the rows are placed absolutely, so the grid has no items of its own and must keep its empty tracks.
+ */
 .explorer-app.is-updated .explorer-v2-video-grid {
+  --vc-col: 320px;
+  --vc-gap: 8px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--vc-col), 100%), 1fr));
+  gap: var(--vc-gap);
   min-width: 0;
 }
+
+.explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {
+  --vc-col: 224px;
+  --vc-gap: 4px;
+}
+
+@container explorer-v2-videos (max-width: 479px) {
+  .explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {
+    --vc-col: 160px;
+  }
+}
+
+/*
+ * Shorts (data-video-type="short"), as on the YouTube home page: 2n − 1 Shorts where the Long grid of the
+ * same density fits n columns, at least 2, edge to edge (gap 0). The grid draws no Long tracks to count, so
+ * each count starts at the width where the Long grid gains its n-th column, n × min + (n − 1) × gap
+ * (Large 320 + 8; Compact 160 + 4 up to 479 px, then 224 + 4), here up to a 3,840 px grid.
+ * VirtualVideoGrid still only reads the resolved tracks.
+ */
+.explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"] {
+  --vc-gap: 0px;
+  --vc-shorts: 2;
+  grid-template-columns: repeat(var(--vc-shorts), minmax(0, 1fr));
+}
+
+@container explorer-v2-videos (min-width: 648px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 3; } }
+@container explorer-v2-videos (min-width: 976px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 5; } }
+@container explorer-v2-videos (min-width: 1304px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 7; } }
+@container explorer-v2-videos (min-width: 1632px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 9; } }
+@container explorer-v2-videos (min-width: 1960px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 11; } }
+@container explorer-v2-videos (min-width: 2288px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 13; } }
+@container explorer-v2-videos (min-width: 2616px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 15; } }
+@container explorer-v2-videos (min-width: 2944px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 17; } }
+@container explorer-v2-videos (min-width: 3272px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 19; } }
+@container explorer-v2-videos (min-width: 3600px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="large"] { --vc-shorts: 21; } }
+
+@container explorer-v2-videos (min-width: 324px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 3; } }
+@container explorer-v2-videos (min-width: 680px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 5; } }
+@container explorer-v2-videos (min-width: 908px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 7; } }
+@container explorer-v2-videos (min-width: 1136px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 9; } }
+@container explorer-v2-videos (min-width: 1364px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 11; } }
+@container explorer-v2-videos (min-width: 1592px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 13; } }
+@container explorer-v2-videos (min-width: 1820px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 15; } }
+@container explorer-v2-videos (min-width: 2048px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 17; } }
+@container explorer-v2-videos (min-width: 2276px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 19; } }
+@container explorer-v2-videos (min-width: 2504px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 21; } }
+@container explorer-v2-videos (min-width: 2732px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 23; } }
+@container explorer-v2-videos (min-width: 2960px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 25; } }
+@container explorer-v2-videos (min-width: 3188px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 27; } }
+@container explorer-v2-videos (min-width: 3416px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 29; } }
+@container explorer-v2-videos (min-width: 3644px) { .explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"][data-density="compact"] { --vc-shorts: 31; } }
 
 /* Only viewport rows exist in the DOM; the ordinary CSS grid owns columns. */
 .explorer-app.is-updated .explorer-v2-video-grid.is-virtual {
@@ -560,213 +599,469 @@
   padding: 12px 0;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card {
+/*
+ * Video card, Long form, dark theme. The app has no light theme yet; the --vc-* colours below are
+ * the one place a theme would change. Every row has a fixed height and the title always takes two
+ * lines, so all cards of a grid are equally tall (VirtualVideoGrid estimates rows from the same
+ * sizes: estimatedVideoRowHeight).
+ */
+.explorer-app.is-updated .explorer-v2-video-grid {
+  --vc-bg: #0b0e12;
+  --vc-surface: #141a21;
+  --vc-border: #26303b;
+  --vc-text: #edf2f7;
+  --vc-muted: #9ba8b5;
+  --vc-thumb: #1a2129;
+  --vc-accent: #6fb1ff;
+  --vc-on-accent: #0b0e12;
+  --vc-selected: #12233d;
+  --vc-up: #62d99c;
+  --vc-up-bg: #11291d;
+  --vc-down: #ff8f94;
+  --vc-down-bg: #35171b;
+  --vc-flat: #a9b4c0;
+  --vc-flat-bg: #1d242c;
+  --vc-warn: #f3c56b;
+  --vc-badge-bg: rgba(12, 14, 17, 0.88);
+  --vc-check-bg: rgba(12, 14, 17, 0.72);
+  --vc-badge-text: #ffffff;
+  --vc-font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+  --vc-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.explorer-app.is-updated .video-card {
+  --vc-pad: 8px;
   position: relative;
   display: flex;
   min-width: 0;
   flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--explorer-line-soft);
-  border-radius: 12px;
-  background: #0d151b;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+  padding: var(--vc-pad);
+  border-radius: 16px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1px transparent;
+  color: var(--vc-text);
+  font-family: var(--vc-font);
+  font-variant-numeric: tabular-nums;
   transition:
-    border-color 140ms ease,
-    background-color 140ms ease,
-    transform 140ms ease;
+    background-color 160ms var(--vc-ease),
+    box-shadow 160ms var(--vc-ease),
+    transform 160ms var(--vc-ease);
 }
 
-.explorer-app.is-updated .explorer-v2-video-card:hover {
-  border-color: #304654;
-  background: #0f1920;
+.explorer-app.is-updated .video-card.is-compact {
+  --vc-pad: 6px;
+}
+
+/* In the dark theme a surface and a border replace the shadow. */
+.explorer-app.is-updated .video-card:hover {
+  background: var(--vc-surface);
+  box-shadow: inset 0 0 0 1px var(--vc-border);
   transform: translateY(-1px);
 }
 
-.explorer-app.is-updated .explorer-v2-video-card.is-selected {
-  border-color: rgba(98, 211, 173, 0.68);
-  background: #10201f;
-  box-shadow: 0 0 0 1px rgba(98, 211, 173, 0.14);
+.explorer-app.is-updated .video-card.is-selected {
+  background: var(--vc-selected);
+  box-shadow: inset 0 0 0 1.5px var(--vc-accent);
+  transform: none;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-media {
+.explorer-app.is-updated .video-card-media {
   position: relative;
-  min-width: 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--vc-thumb);
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-thumbnail-button {
-  display: block;
-  width: 100%;
+/* The card's own buttons drop the app's button look: border, fill, size and hover. */
+.explorer-app.is-updated .video-card .video-card-thumbnail,
+.explorer-app.is-updated .video-card .video-card-title {
+  min-height: 0;
   padding: 0;
-  overflow: hidden;
   border: 0;
-  border-radius: 0;
   background: transparent;
+  box-shadow: none;
   color: inherit;
   cursor: pointer;
+  transition: none;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card .explorer-v2-video-thumbnail {
-  width: 100%;
-  min-width: 0;
-  height: auto;
-  border: 0;
-  border-radius: 0;
-  background: #111d24;
-}
-
-.explorer-app.is-updated .explorer-v2-video-card .explorer-v2-video-duration {
-  right: 7px;
-  bottom: 7px;
-  padding: 3px 6px;
-  border-radius: 5px;
-  background: rgba(4, 7, 9, 0.88);
-  font-size: 10px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-card .explorer-v2-video-checkbox {
-  position: absolute;
-  z-index: 2;
-  top: 9px;
-  left: 9px;
-  display: grid;
-  width: 27px;
-  height: 27px;
-  place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.38);
-  border-radius: 7px;
-  background: rgba(5, 9, 12, 0.72);
-  backdrop-filter: blur(4px);
-}
-
-.explorer-app.is-updated .explorer-v2-video-card .explorer-v2-video-checkbox input {
-  width: 16px;
-  height: 16px;
-  min-height: 0;
-  margin: 0;
-  cursor: pointer;
-  accent-color: var(--explorer-mint);
-}
-
-.explorer-app.is-updated .explorer-v2-video-card-body {
-  display: grid;
-  flex: 1;
-  gap: 7px;
-  padding: 11px 13px 12px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-card-title {
-  display: block;
-  min-width: 0;
-  min-height: 2.7em;
-  padding: 0;
+.explorer-app.is-updated .video-card .video-card-thumbnail:hover:not(:disabled),
+.explorer-app.is-updated .video-card .video-card-title:hover:not(:disabled) {
   border: 0;
   background: transparent;
-  color: var(--explorer-text);
-  cursor: pointer;
-  font: inherit;
+}
+
+.explorer-app.is-updated .video-card .video-card-thumbnail {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+/* The 480x360 thumbnail is 4:3 with black bars above and below the 16:9 picture: cover crops exactly the bars. */
+.explorer-app.is-updated .video-card-thumbnail img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* A failed image hides itself; the placeholder beneath it shows. */
+.explorer-app.is-updated .video-card-thumbnail img[hidden] {
+  display: none;
+}
+
+.explorer-app.is-updated .video-card-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--vc-muted);
+}
+
+.explorer-app.is-updated .video-card-placeholder svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* Badge on the thumbnail, as on YouTube: 12/18, weight 500, 1 × 4 padding, radius 4, 6 from the edge. */
+.explorer-app.is-updated .video-card-badge {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  max-width: calc(100% - 12px);
+  overflow: hidden;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--vc-badge-bg);
+  color: var(--vc-badge-text);
+  font: 500 12px/18px var(--vc-font);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.explorer-app.is-updated .video-card .video-card-title {
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin-top: 8px;
+  border-radius: 4px;
+  font: 500 16px/22px var(--vc-font);
+  letter-spacing: normal;
   text-align: left;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-title strong {
+.explorer-app.is-updated .video-card.is-compact .video-card-title {
+  height: 36px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.explorer-app.is-updated .video-card-title > span {
   display: -webkit-box;
   overflow: hidden;
-  font-size: 13px;
-  font-weight: 760;
-  line-height: 1.35;
   overflow-wrap: anywhere;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-thumbnail-button:focus-visible,
-.explorer-app.is-updated .explorer-v2-video-card-title:focus-visible,
-.explorer-app.is-updated .explorer-v2-video-card-meta a:focus-visible {
-  outline: 2px solid var(--explorer-blue);
-  outline-offset: -2px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-card-meta {
+.explorer-app.is-updated .video-card-row {
   display: flex;
   min-width: 0;
+  height: 24px;
   align-items: center;
-  justify-content: space-between;
-  gap: 9px;
-  color: var(--explorer-faint);
-  font-size: 10px;
+  gap: 8px;
+  margin-top: 6px;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-meta > span {
+.explorer-app.is-updated .video-card-views {
+  display: inline-flex;
+  min-width: 0;
+  flex: none;
+  align-items: baseline;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.explorer-app.is-updated .video-card-views b {
+  color: var(--vc-text);
+  font: 600 18px/24px var(--vc-font);
+  letter-spacing: -0.01em;
+}
+
+.explorer-app.is-updated .video-card.is-compact .video-card-views b {
+  font-size: 16px;
+}
+
+.explorer-app.is-updated .video-card-views i,
+.explorer-app.is-updated .video-card-state {
+  color: var(--vc-muted);
+  font: 400 12px/16px var(--vc-font);
+  white-space: nowrap;
+}
+
+.explorer-app.is-updated .video-card-state {
+  font-weight: 500;
+}
+
+.explorer-app.is-updated .video-card-state.is-warning {
+  color: var(--vc-warn);
+}
+
+/* Growth: 12/20, weight 500, 0 × 6 padding, radius 6; the colour means only the sign. */
+.explorer-app.is-updated .video-card-growth {
+  display: inline-block;
+  min-width: 0;
+  height: 20px;
   overflow: hidden;
+  padding: 0 6px;
+  border-radius: 6px;
+  font: 500 12px/20px var(--vc-font);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-meta a {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 4px;
-  color: #74bde8;
-  text-decoration: none;
+.explorer-app.is-updated .video-card-growth.is-up {
+  background: var(--vc-up-bg);
+  color: var(--vc-up);
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-meta a:hover {
-  color: #a6daf7;
+.explorer-app.is-updated .video-card-growth.is-down {
+  background: var(--vc-down-bg);
+  color: var(--vc-down);
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-views {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
+.explorer-app.is-updated .video-card-growth.is-flat {
+  background: var(--vc-flat-bg);
+  color: var(--vc-flat);
+}
+
+.explorer-app.is-updated .video-card-meta {
   gap: 10px;
-  margin-top: 2px;
-  padding-top: 9px;
-  border-top: 1px solid var(--explorer-line-soft);
-  font-variant-numeric: tabular-nums;
-}
-
-.explorer-app.is-updated .explorer-v2-video-card-total-views strong {
-  color: var(--explorer-text);
-  font-size: 13px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-card-total-views {
-  color: var(--explorer-faint);
-  font-size: 10px;
-  line-height: 1.35;
+  color: var(--vc-muted);
+  font: 400 12px/16px var(--vc-font);
   white-space: nowrap;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-growth {
+.explorer-app.is-updated .video-card-date {
   min-width: 0;
-  justify-self: end;
-  color: var(--explorer-faint);
-  font-size: 10.5px;
-  font-weight: 720;
-  line-height: 1.35;
-  text-align: right;
-  text-wrap: balance;
+  overflow: hidden;
+  color: var(--vc-muted);
+  font: 400 12px/16px var(--vc-font);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-growth.is-positive {
-  color: var(--explorer-mint);
+/* Compact: "views · date", as on YouTube. */
+.explorer-app.is-updated .video-card-views + .video-card-date::before {
+  content: "\00b7\00a0";
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-growth.is-observed {
-  color: #72a7ff;
+.explorer-app.is-updated .video-card-stat {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-growth.is-correction {
-  color: #ff8a7a;
+.explorer-app.is-updated .video-card-stat svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-growth.is-neutral {
-  color: var(--explorer-muted);
+/* "Open on YouTube": a 14 px icon in a 24 × 24 target, at the end of the last row of every card. */
+.explorer-app.is-updated .video-card .video-card-youtube {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  place-items: center;
+  margin-right: -4px;
+  margin-left: auto;
+  border-radius: 6px;
+  color: var(--vc-muted);
+  transition:
+    color 120ms var(--vc-ease),
+    background-color 120ms var(--vc-ease);
 }
 
-.explorer-app.is-updated .explorer-v2-video-card-growth.is-muted {
-  color: var(--explorer-faint);
-  font-weight: 600;
+.explorer-app.is-updated .video-card .video-card-youtube:hover {
+  background: var(--vc-flat-bg);
+  color: var(--vc-text);
+}
+
+.explorer-app.is-updated .video-card-youtube svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Checkbox: a 20 px square in a 28 × 28 target, 4 px inside the thumbnail's top left corner. */
+.explorer-app.is-updated .video-card-check {
+  position: absolute;
+  z-index: 1;
+  top: calc(var(--vc-pad) + 4px);
+  left: calc(var(--vc-pad) + 4px);
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms var(--vc-ease);
+}
+
+.explorer-app.is-updated .video-card .video-card-check input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.explorer-app.is-updated .video-card .video-card-check input:disabled {
+  cursor: not-allowed;
+}
+
+.explorer-app.is-updated .video-card-check > span {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 6px;
+  background: var(--vc-check-bg);
+  box-shadow: inset 0 0 0 1.5px var(--vc-badge-text);
+  color: transparent;
+  pointer-events: none;
+  transition:
+    background-color 120ms var(--vc-ease),
+    box-shadow 120ms var(--vc-ease);
+}
+
+.explorer-app.is-updated .video-card-check svg {
+  width: 14px;
+  height: 14px;
+}
+
+.explorer-app.is-updated .video-card-check input:checked + span {
+  background: var(--vc-accent);
+  box-shadow: none;
+  color: var(--vc-on-accent);
+}
+
+.explorer-app.is-updated .video-card-check input:disabled + span {
+  opacity: 0.45;
+}
+
+.explorer-app.is-updated .video-card:hover .video-card-check,
+.explorer-app.is-updated .video-card:focus-within .video-card-check,
+.explorer-app.is-updated .video-card.is-selected .video-card-check,
+.explorer-app.is-updated .video-card.is-selecting .video-card-check {
+  opacity: 1;
+}
+
+/* Without hover (touch screens) the checkbox is always visible. */
+@media (hover: none) {
+  .explorer-app.is-updated .video-card-check {
+    opacity: 1;
+  }
+}
+
+.explorer-app.is-updated .video-card .video-card-thumbnail:focus-visible {
+  outline: 2px solid var(--vc-accent);
+  outline-offset: -2px;
+  box-shadow: none;
+}
+
+.explorer-app.is-updated .video-card .video-card-title:focus-visible,
+.explorer-app.is-updated .video-card .video-card-youtube:focus-visible {
+  outline: 2px solid var(--vc-accent);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.explorer-app.is-updated .video-card .video-card-check input:focus-visible + span {
+  outline: 2px solid var(--vc-accent);
+  outline-offset: 2px;
+}
+
+.explorer-app.is-updated .video-card.is-unavailable .video-card-title,
+.explorer-app.is-updated .video-card.is-unavailable .video-card-views b {
+  color: var(--vc-muted);
+}
+
+/*
+ * Shorts form (the Videos tab's Shorts grid; collections keep Long). The frame is 2:3. YouTube's 480 × 360
+ * thumbnail of an upright video is pillarboxed: the picture is its middle 202.5 × 360 (9:16), black bars at
+ * the sides. The image is scaled so that this 9:16 middle spans the frame's width (480 / 202.5 = 64/27 of it)
+ * and centred both ways: the frame shows the middle 202.5 × 303.75 of the thumbnail, the bars stay outside,
+ * and a thumbnail without bars gets a tighter centre crop. The image itself is only scaled.
+ * Large: title 14/20 in 40; views; growth; likes and comments (a 20 px row); date and the link.
+ * Compact: title 13/18 in 36; views and the link; growth. The estimated text heights are 162 px for large cards and 104 px for compact cards.
+ */
+.explorer-app.is-updated .video-card.is-shorts .video-card-media {
+  aspect-ratio: 2 / 3;
+}
+
+/* No display here: a failed image still hides itself (img[hidden]) and uncovers the placeholder. */
+.explorer-app.is-updated .video-card.is-shorts .video-card-thumbnail img {
+  inset: 50% auto auto 50%;
+  width: calc(100% * 64 / 27);
+  max-width: none;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  transform: translate(-50%, -50%);
+}
+
+.explorer-app.is-updated .video-card.is-shorts.is-large .video-card-title {
+  height: 40px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.explorer-app.is-updated .video-card.is-shorts .video-card-views b {
+  font-size: 16px;
+}
+
+.explorer-app.is-updated .video-card-row.is-small {
+  height: 20px;
+  margin-top: 4px;
+}
+
+/* A narrow Short gives way in its views: the state word ends in "…" (its hover text stays), the link keeps its place. */
+.explorer-app.is-updated .video-card.is-shorts .video-card-views {
+  flex: 0 1 auto;
+  overflow: hidden;
+}
+
+.explorer-app.is-updated .video-card.is-shorts .video-card-state {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .explorer-app.is-updated .video-card,
+  .explorer-app.is-updated .video-card * {
+    transition: none;
+  }
+
+  .explorer-app.is-updated .video-card:hover {
+    transform: none;
+  }
 }
 
 .explorer-app.is-updated .explorer-v2-video-selection-bar {
@@ -798,18 +1093,6 @@
   font-size: 9px;
 }
 
-@container explorer-v2-videos (max-width: 980px) {
-  .explorer-app.is-updated .explorer-v2-video-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@container explorer-v2-videos (max-width: 620px) {
-  .explorer-app.is-updated .explorer-v2-video-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 1040px) {
   .explorer-app.is-updated .explorer-v2-filter-toolbar .explorer-v2-filter-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -836,8 +1119,7 @@
 }
 
 @media (max-width: 560px) {
-  .explorer-app.is-updated .explorer-v2-filter-toolbar .explorer-v2-filter-grid,
-  .explorer-app.is-updated .explorer-v2-video-grid {
+  .explorer-app.is-updated .explorer-v2-filter-toolbar .explorer-v2-filter-grid {
     grid-template-columns: 1fr;
   }
 
@@ -921,53 +1203,6 @@
 .explorer-app.is-updated .catalogue-density-toggle button:focus-visible {
   outline: 2px solid var(--explorer-blue);
   outline-offset: 1px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] .explorer-v2-video-card {
-  border-radius: 9px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] .explorer-v2-video-card-body {
-  padding: 9px 10px 10px;
-  gap: 6px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] .explorer-v2-video-card-title strong {
-  font-size: 12px;
-}
-
-.explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] .explorer-v2-video-card-views {
-  gap: 7px;
-  padding-top: 7px;
-}
-
-@container explorer-v2-videos (min-width: 1060px) {
-  .explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@container explorer-v2-videos (min-width: 1400px) {
-  .explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-}
-
-@container explorer-v2-videos (max-width: 760px) {
-  .explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@container explorer-v2-videos (max-width: 480px) {
-  .explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {
-    grid-template-columns: 1fr;
-  }
 }
 
 @container explorer-v2-workspace (max-width: 760px) {

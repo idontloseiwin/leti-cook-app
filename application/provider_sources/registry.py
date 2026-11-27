@@ -118,6 +118,7 @@ class Method:
     row_unit: str
     row_path: str | None
     envelope_kind: str | None
+    envelope_kind_aliases: tuple[str, ...]
     parts: tuple[str, ...]
     exactly_one_of: tuple[str, ...]
     parameters: Mapping[str, Parameter]
@@ -233,6 +234,7 @@ def _method(method_id, entry, fields, states):
                               pagination.get("default")),
         id_batch_param=batch.get("param"), id_batch_max=batch.get("max_ids"),
         row_unit=entry["row_unit"], row_path=entry.get("row_path"), envelope_kind=entry.get("envelope_kind"),
+        envelope_kind_aliases=tuple(entry.get("envelope_kind_aliases", ())),
         parts=tuple(entry["parts"]), exactly_one_of=tuple((entry.get("filters") or {}).get("exactly_one_of", ())),
         parameters=MappingProxyType({name: _parameter(name, value, auth)
                                      for name, value in entry["parameters"].items()}),

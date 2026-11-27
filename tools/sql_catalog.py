@@ -179,9 +179,10 @@ def build() -> tuple[list[Relation], list[Function], list[str]]:
         elif match := re.match(r"GRANT ALL ON FUNCTION (\w+)\.(\w+)\((.*)\) TO (\w+);", statement, re.S):
             key = f"{match.group(1)}.{match.group(2)}({','.join(arg_type(a) for a in split_args(match.group(3)))})"
             functions[key].grants.add(match.group(4))
-        elif match := re.fullmatch(r"GRANT ([A-Z, ]+) ON (?:TABLE )?((?:\w+\.\w+)(?:\s*,\s*\w+\.\w+)*) TO (\w+);", statement.strip()):
+        elif match := re.fullmatch(r"GRANT ([A-Z, ]+) ON (?:TABLE )?((?:\w+\.\w+)(?:\s*,\s*\w+\.\w+)*) TO (\w+(?:\s*,\s*\w+)*);", statement.strip()):
             for name in re.split(r"\s*,\s*", match.group(2)):
-                relations[name].grants[match.group(3)] = match.group(1).replace(' ', '').lower()
+                for role in re.split(r"\s*,\s*", match.group(3)):
+                    relations[name].grants[role] = match.group(1).replace(' ', '').lower()
         elif match := re.match(r"(ALTER TABLE|CREATE (?:UNIQUE )?INDEX \w+ ON) (?:ONLY )?(\w+)\.(\w+)", statement):
             others.append((f"table {match.group(3)}", statement))
         elif statement.startswith(("DO ", "SELECT ", "INSERT ")):

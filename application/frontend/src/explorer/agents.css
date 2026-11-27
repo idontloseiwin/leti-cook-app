@@ -17,15 +17,18 @@
   min-width: 0; padding: 18px 20px; border: 1px solid var(--explorer-line-soft); border-radius: 10px; background: var(--explorer-surface);
 }
 .agents-workspace .agents-new-key { border-color: var(--explorer-mint); }
-.explorer-app .agents-workspace button {
+.explorer-app .agents-workspace :is(button, .agents-install) {
   min-height: 34px; padding: 7px 11px; display: inline-flex; align-items: center; gap: 7px;
   border: 1px solid var(--explorer-line); border-radius: 8px; background: var(--explorer-card); color: var(--explorer-text);
   font: inherit; font-size: 12px; cursor: pointer;
 }
-.explorer-app .agents-workspace button:hover:not(:disabled) { border-color: var(--explorer-mint); }
+.explorer-app .agents-workspace :is(button:hover:not(:disabled), .agents-install:hover) { border-color: var(--explorer-mint); }
 .explorer-app .agents-workspace button:disabled { opacity: .45; cursor: default; }
 .explorer-app .agents-workspace button.is-danger { border-color: var(--explorer-red); color: var(--explorer-red); }
-.agents-workspace :is(button, input):focus-visible { outline: 2px solid var(--explorer-mint); outline-offset: 3px; }
+.agents-workspace :is(button, input, a, summary):focus-visible { outline: 2px solid var(--explorer-mint); outline-offset: 3px; }
+.agents-workspace :is(.agents-install, .agents-quick-action, .agents-manual) { margin-top: 12px; }
+.agents-workspace .agents-install { text-decoration: none; }
+.agents-workspace .agents-manual summary { width: fit-content; cursor: pointer; }
 .agents-workspace .agents-note { margin: 10px 0 0; color: var(--explorer-muted); font-size: 12px; }
 .agents-workspace .agents-actions .agents-note, .agents-workspace td .agents-note { margin: 0; }
 .agents-workspace .agents-warning { margin: 0 0 12px; color: var(--explorer-amber); font-size: 12px; }

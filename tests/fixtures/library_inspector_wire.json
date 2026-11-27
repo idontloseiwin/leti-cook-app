@@ -99,7 +99,7 @@
        "expires_at": "2026-11-28T09:44:06.687750Z"
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/L0000000020/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/L0000000020/hqdefault.jpg",
        "state": "known",
        "observed_at": "2026-10-30T10:44:06.687750Z",
        "expires_at": "2026-11-28T10:44:06.687750Z"
@@ -3003,7 +3003,7 @@
        "expires_at": "2026-11-28T09:44:06.687750Z"
       },
       "video.thumbnail_url": {
-       "value": "https://img.youtube.com/vi/H0000000001/mqdefault.jpg",
+       "value": "https://img.youtube.com/vi/H0000000001/hqdefault.jpg",
        "state": "known",
        "observed_at": "2026-10-30T10:44:06.687750Z",
        "expires_at": "2026-11-28T10:44:06.687750Z"

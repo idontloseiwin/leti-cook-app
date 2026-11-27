@@ -55,6 +55,20 @@ def create_agents_router():
         except (OSError, KeyError):
             return _refused('agent_store_unavailable', 503)
 
+    @router.get('/agent-setup/{client}', include_in_schema=False)
+    async def agent_setup(client: str, request: Request):
+        from agent_setup import download
+        if not _owner(request):
+            return _refused('owner_access_required', 403)
+        try:
+            name, body = await run_in_threadpool(download, client, configured_origin())
+        except KeyError:
+            return _refused('unknown_agent_program', 404)
+        except ValueError:
+            return _refused('local_installation_address_required', 409)
+        return Response(body, media_type='application/octet-stream', headers={
+            **NO_STORE, 'Content-Disposition': f'attachment; filename="{name}"', 'X-Content-Type-Options': 'nosniff'})
+
     @router.get('/agent-keys')
     async def list_agent_keys(request: Request):
         def action():

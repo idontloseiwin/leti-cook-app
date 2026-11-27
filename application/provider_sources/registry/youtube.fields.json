@@ -13,37 +13,37 @@
   "row_identity": "row identity; a missing requested row is 'omitted', not deleted",
   "secret": "credential-like content: never log, store or display"
  },
- "content_sha256": "827000c6ccf45e1e9212a2e90e21cfbed1cdeb288eefcb8903fd1c63e8698b0b",
+ "content_sha256": "1eb424748705198106c8d43cf60ccefe327f584200324084a66f724e98dec8ed",
  "counts": {
   "by_method": {
-   "youtube.activities.list": 93,
+   "youtube.activities.list": 96,
    "youtube.captions.download": 0,
    "youtube.captions.list": 20,
    "youtube.channelSections.list": 20,
-   "youtube.channels.list": 127,
+   "youtube.channels.list": 130,
    "youtube.commentThreads.list": 54,
    "youtube.comments.list": 27,
    "youtube.i18nLanguages.list": 9,
    "youtube.i18nRegions.list": 9,
-   "youtube.liveBroadcasts.list": 83,
+   "youtube.liveBroadcasts.list": 86,
    "youtube.liveChatMessages.list": 138,
    "youtube.liveChatModerators.list": 17,
    "youtube.liveStreams.list": 35,
    "youtube.members.list": 23,
    "youtube.membershipsLevels.list": 9,
    "youtube.playlistImages.list": 11,
-   "youtube.playlistItems.list": 55,
-   "youtube.playlists.list": 52,
-   "youtube.search.list": 46,
-   "youtube.subscriptions.list": 74,
+   "youtube.playlistItems.list": 58,
+   "youtube.playlists.list": 55,
+   "youtube.search.list": 49,
+   "youtube.subscriptions.list": 80,
    "youtube.superChatEvents.list": 26,
    "youtube.thirdPartyLinks.list": 16,
    "youtube.videoAbuseReportReasons.list": 10,
    "youtube.videoCategories.list": 15,
    "youtube.videoTrainability.get": 4,
-   "youtube.videos.batchGetStats": 14,
+   "youtube.videos.batchGetStats": 15,
    "youtube.videos.getRating": 6,
-   "youtube.videos.list": 209,
+   "youtube.videos.list": 212,
    "youtube.youtube.v3.liveChat.messages.stream": 138,
    "youtubeAnalytics.groupItems.list": 26,
    "youtubeAnalytics.groups.list": 28,
@@ -55,8 +55,8 @@
    "youtubereporting.media.download": 180,
    "youtubereporting.reportTypes.list": 5
   },
-  "doc_only_fields": 4,
-  "fields": 1621
+  "doc_only_fields": 5,
+  "fields": 1649
  },
  "exposure_vocabulary": {
   "default": "returned when its part is requested and no field list is given",
@@ -66,7 +66,7 @@
  "kind": "lic-provider-fields",
  "methods": {
   "youtube.activities.list": {
-   "field_count": 93,
+   "field_count": 96,
    "parts": {
     "_envelope": {
      "etag": {
@@ -1667,6 +1667,60 @@
       "sensitive": false,
       "value_kind": "integer"
      },
+     "snippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.height",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.url",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "snippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.width",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
      "snippet.thumbnails.standard.height": {
       "absence": "absent_unknown",
       "deprecated": false,
@@ -2647,7 +2701,7 @@
    "row_unit": "channel_section"
   },
   "youtube.channels.list": {
-   "field_count": 127,
+   "field_count": 130,
    "parts": {
     "_envelope": {
      "etag": {
@@ -4645,6 +4699,63 @@
       "response_path": "items[].snippet.thumbnails.qhd.width",
       "roles": [],
       "sensitive": false,
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.height",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "note": "may be empty for new channels for up to one day",
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.url",
+      "roles": [
+       "url_reference"
+      ],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "snippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.width",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
       "value_kind": "integer"
      },
      "snippet.thumbnails.standard.height": {
@@ -7169,7 +7280,7 @@
    "row_unit": "region"
   },
   "youtube.liveBroadcasts.list": {
-   "field_count": 83,
+   "field_count": 86,
    "parts": {
     "_envelope": {
      "etag": {
@@ -8439,6 +8550,60 @@
       "response_path": "items[].snippet.thumbnails.qhd.width",
       "roles": [],
       "sensitive": false,
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.height",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.url",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "snippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.width",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
       "value_kind": "integer"
      },
      "snippet.thumbnails.standard.height": {
@@ -13564,7 +13729,7 @@
    "row_unit": "playlist_image"
   },
   "youtube.playlistItems.list": {
-   "field_count": 55,
+   "field_count": 58,
    "parts": {
     "_envelope": {
      "etag": {
@@ -14404,6 +14569,60 @@
       "sensitive": false,
       "value_kind": "integer"
      },
+     "snippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.height",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.url",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "snippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.width",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
      "snippet.thumbnails.standard.height": {
       "absence": "absent_unknown",
       "deprecated": false,
@@ -14589,7 +14808,7 @@
    "row_unit": "playlist_item"
   },
   "youtube.playlists.list": {
-   "field_count": 52,
+   "field_count": 55,
    "parts": {
     "_envelope": {
      "etag": {
@@ -15392,6 +15611,60 @@
       "sensitive": false,
       "value_kind": "integer"
      },
+     "snippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.height",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.url",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "snippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.width",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
      "snippet.thumbnails.standard.height": {
       "absence": "absent_unknown",
       "deprecated": false,
@@ -15571,7 +15844,7 @@
    "row_unit": "playlist"
   },
   "youtube.search.list": {
-   "field_count": 46,
+   "field_count": 49,
    "parts": {
     "_envelope": {
      "etag": {
@@ -16302,6 +16575,60 @@
       "sensitive": false,
       "value_kind": "integer"
      },
+     "snippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.height",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.url",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "snippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.width",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
      "snippet.thumbnails.standard.height": {
       "absence": "absent_unknown",
       "deprecated": false,
@@ -16427,7 +16754,7 @@
    "row_unit": "search_hit"
   },
   "youtube.subscriptions.list": {
-   "field_count": 74,
+   "field_count": 80,
    "parts": {
     "_envelope": {
      "etag": {
@@ -17230,6 +17557,66 @@
       "sensitive": false,
       "value_kind": "integer"
      },
+     "snippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": true,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.height",
+      "roles": [
+       "personal_data"
+      ],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "personal_data": true,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.url",
+      "roles": [
+       "personal_data"
+      ],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "snippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": true,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.width",
+      "roles": [
+       "personal_data"
+      ],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
      "snippet.thumbnails.standard.height": {
       "absence": "absent_unknown",
       "deprecated": false,
@@ -17745,6 +18132,66 @@
        "personal_data"
       ],
       "sensitive": false,
+      "value_kind": "integer"
+     },
+     "subscriberSnippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": true,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].subscriberSnippet.thumbnails.shortsAspectRatio.height",
+      "roles": [
+       "personal_data"
+      ],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "subscriberSnippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "personal_data": true,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].subscriberSnippet.thumbnails.shortsAspectRatio.url",
+      "roles": [
+       "personal_data"
+      ],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "subscriberSnippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": true,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].subscriberSnippet.thumbnails.shortsAspectRatio.width",
+      "roles": [
+       "personal_data"
+      ],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
       "value_kind": "integer"
      },
      "subscriberSnippet.thumbnails.standard.height": {
@@ -19324,7 +19771,7 @@
    "row_unit": "video_trainability"
   },
   "youtube.videos.batchGetStats": {
-   "field_count": 14,
+   "field_count": 15,
    "parts": {
     "_envelope": {
      "etag": {
@@ -19512,6 +19959,28 @@
       "sensitive": false,
       "source": "https://developers.google.com/youtube/v3/docs/videos/batchGetStats",
       "value_kind": "duration_format_unverified"
+     },
+     "contentDetails.durationMillis": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": null,
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint64",
+      "json_type": "string",
+      "map": false,
+      "normalizer": "youtube_source_fields.youtube_unsigned_long",
+      "note": "Unsigned milliseconds, documented by the method reference.",
+      "personal_data": false,
+      "reference_status": "reference_only",
+      "repeated": false,
+      "response_path": "items[].contentDetails.durationMillis",
+      "roles": [
+       "measure:duration_milliseconds"
+      ],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/videos/batchGetStats",
+      "value_kind": "uint64_milliseconds"
      }
     },
     "id": {
@@ -19769,7 +20238,7 @@
    "row_unit": "video_rating"
   },
   "youtube.videos.list": {
-   "field_count": 209,
+   "field_count": 212,
    "parts": {
     "_envelope": {
      "etag": {
@@ -23765,6 +24234,60 @@
       "response_path": "items[].snippet.thumbnails.qhd.width",
       "roles": [],
       "sensitive": false,
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.height": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.height",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "integer"
+     },
+     "snippet.thumbnails.shortsAspectRatio.url": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": null,
+      "json_type": "string",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.url",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
+      "value_kind": "string"
+     },
+     "snippet.thumbnails.shortsAspectRatio.width": {
+      "absence": "absent_unknown",
+      "deprecated": false,
+      "discovery_revision": "20261124",
+      "enum": [],
+      "exposure": "on_request",
+      "format": "uint32",
+      "json_type": "integer",
+      "map": false,
+      "personal_data": false,
+      "reference_status": "reference_pattern_match",
+      "repeated": false,
+      "response_path": "items[].snippet.thumbnails.shortsAspectRatio.width",
+      "roles": [],
+      "sensitive": false,
+      "source": "https://developers.google.com/youtube/data/reference/rest/v3/thumbnails",
       "value_kind": "integer"
      },
      "snippet.thumbnails.standard.height": {
@@ -33034,7 +33557,7 @@
   "url": "https://developers.google.com/youtube/v3/determine_quota_cost"
  },
  "registry_format": 1,
- "registry_revision": 5,
+ "registry_revision": 6,
  "value_kind_vocabulary": {
   "base64_bytes": "base64 encoded bytes",
   "boolean_string": "'true' or 'false' as a string",
@@ -33043,6 +33566,7 @@
   "int64_decimal_string": "signed integer in a JSON string; counters must still be >= 0",
   "iso8601_duration": "ISO 8601 duration like PT4M13S",
   "rfc3339_datetime": "RFC 3339 timestamp with offset",
-  "uint64_decimal_string": "non-negative integer in a JSON string"
+  "uint64_decimal_string": "non-negative integer in a JSON string",
+  "uint64_milliseconds": "duration in milliseconds as an unsigned integer or ASCII decimal string"
  }
 }

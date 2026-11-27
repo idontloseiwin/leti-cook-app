@@ -8,7 +8,7 @@ schema, run `python3 tools/sql_catalog.py --write`; a unit test fails while
 this file is out of date or a SQL/Python contract pins a stale function
 source. See [Contributing](../CONTRIBUTING.md#changing-the-schema) for schema changes.
 
-51 tables, 49 views and 15 functions (13 in `public`, 2 in `operator_private`; 9 run as `SECURITY DEFINER`). The backend uses `service_role` for collection and writes, and `lic_reader` for HTTP reads through admitted views and user-work tables; `PUBLIC` cannot execute any function.
+54 tables, 51 views and 19 functions (17 in `public`, 2 in `operator_private`; 9 run as `SECURITY DEFINER`). The backend uses `service_role` for collection and writes, and `lic_reader` for HTTP reads through admitted views and user-work tables; `PUBLIC` cannot execute any function.
 
 Columns in the function tables:
 
@@ -28,6 +28,9 @@ Columns in the function tables:
 | `operator_private.schema_migrations` | 4 | on | nothing | nothing |
 | `operator_private.schema_state` | 4 | on | nothing | nothing |
 | `operator_private.user_work_bytes_pending` | 1 | on | nothing | nothing |
+| `public.alert_inbox` | 20 | on | select, insert, update, delete | nothing |
+| `public.alert_observations` | 17 | on | select, insert, update, delete | nothing |
+| `public.alert_rules` | 9 | on | select, insert, update, delete | nothing |
 | `public.channel_collection_state` | 7 | on | select | nothing |
 | `public.channel_discovery_queue_control` | 4 | on | select, insert, delete, update | nothing |
 | `public.channel_label_assignments` | 3 | on | select, insert, delete, update | select |
@@ -88,6 +91,8 @@ Columns in the function tables:
 | `public.open_video_availability` | invoker | select | nothing |
 | `public.video_inventory_type_resolution` | owner | select | nothing |
 | `public.video_type_automatic_candidates` | owner | select | nothing |
+| `readable.alert_inbox` | owner | select | select |
+| `readable.alert_rules` | owner | select | select |
 | `readable.canonical_inventory_counts` | owner | select | select |
 | `readable.channel_control` | owner | select | select |
 | `readable.channel_discovery_health` | owner | select | select |
@@ -100,17 +105,17 @@ Columns in the function tables:
 | `readable.channels` | owner | select | select |
 | `readable.channels_with_control` | owner | select | select |
 | `readable.hot_video_inventory` | owner | select | select |
-| `readable.library_format_coverage` | owner | nothing | nothing |
-| `readable.library_manual_list_check` | owner | nothing | nothing |
+| `readable.library_format_coverage` | owner | select | select |
+| `readable.library_manual_list_check` | owner | select | select |
 | `readable.open_video_availability` | owner | select | select |
 | `readable.operator_jobs` | owner | select | select |
-| `readable.provider_quota_control` | owner | nothing | nothing |
+| `readable.provider_quota_control` | owner | select | select |
 | `readable.published_inventory_counts` | owner | select | select |
 | `readable.quota_attempts` | owner | select | select |
-| `readable.research_field_storage` | owner | nothing | nothing |
-| `readable.research_preferences` | owner | nothing | nothing |
+| `readable.research_field_storage` | owner | select | select |
+| `readable.research_preferences` | owner | select | select |
 | `readable.retained_video_identities` | owner | select | select |
-| `readable.schema_version` | owner | nothing | nothing |
+| `readable.schema_version` | owner | select | select |
 | `readable.sync_runs` | owner | select | select |
 | `readable.typed_video_collection_health` | owner | select | select |
 | `readable.video_collection_health` | owner | select | select |
@@ -118,7 +123,7 @@ Columns in the function tables:
 | `readable.video_inventory` | owner | select | select |
 | `readable.video_inventory_memberships` | owner | select | select |
 | `readable.video_inventory_type_resolution` | owner | select | select |
-| `readable.video_optional_metadata` | owner | nothing | nothing |
+| `readable.video_optional_metadata` | owner | select | select |
 | `readable.video_publication_times` | owner | nothing | select |
 | `readable.video_search_projection` | owner | nothing | select |
 | `readable.video_search_projection_types` | owner | nothing | select |
@@ -133,7 +138,11 @@ Columns in the function tables:
 
 | Function | Result | Language | Runs as | Backend may call | Pinned by | Referenced by SQL | Named in Python |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| `alert_duration_clock()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger alert_duration_clock on videos` |  |
+| `alert_folder_clock()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger alert_folder_clock on channels` |  |
+| `alert_visibility_clock()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger alert_visibility_clock on channel_collection_state` |  |
 | `bind_channel_user_work_owner()` | `trigger` | plpgsql | definer, volatile | yes | `db.readiness.intrinsic_capabilities` | `trigger review_case_channel_owner on video_type_review_cases`, `trigger saved_member_channel_owner on saved_collection_members` |  |
+| `capture_alert_observations()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger alert_availability_observations on video_availability_events`, `trigger alert_channel_observations on channel_snapshots`, `trigger alert_video_observations on video_snapshots` |  |
 | `enforce_user_work_backup_limits()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger user_work_backup_limits on channel_label_assignments`, `trigger user_work_backup_limits on channel_labels`, `trigger user_work_backup_limits on channels`, `trigger user_work_backup_limits on folders` +3 |  |
 | `enforce_video_inventory_membership_scan()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger video_inventory_membership_scan_guard on video_inventory_memberships` |  |
 | `guard_channel_user_work_identity()` | `trigger` | plpgsql | invoker, volatile | no | `db.readiness.intrinsic_capabilities` | `trigger channels_user_work_identity_immutable on channels` |  |

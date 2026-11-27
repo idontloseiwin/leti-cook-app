@@ -144,26 +144,32 @@ _PLAN_FORGET = """DELETE FROM public.websub_subscriptions
 _NEXT = """SELECT channel_id,generation,callback_base,state,attempts,requested_at FROM public.websub_subscriptions
  WHERE (state IN ('pending','denied','unsubscribing') AND next_try_at<=clock_timestamp() AND attempts<%(max)s)
     OR (state='verified' AND renew_at<=clock_timestamp())
- ORDER BY CASE state WHEN 'unsubscribing' THEN 0 WHEN 'verified' THEN 1 WHEN 'pending' THEN 2 ELSE 3 END,
+ ORDER BY CASE state WHEN 'unsubscribing' THEN 0 WHEN 'verified' THEN 1 ELSE 2 END,
   coalesce(renew_at,next_try_at),channel_id LIMIT 1"""
 _HUB = """SELECT failures_in_row,breaker_open,ramp_stage,
  greatest(0,coalesce(extract(epoch FROM hold_until-clock_timestamp()),0))::float AS hold_seconds,
  extract(epoch FROM clock_timestamp()-updated_at)::float AS idle_seconds
  FROM public.websub_hub_state WHERE singleton FOR UPDATE"""
-_RAMP_COUNTS = """SELECT count(*) FILTER (WHERE requested_at IS NOT NULL)::integer AS sent,
+_RAMP_COUNTS = """SELECT count(*) FILTER (WHERE state IN ('pending','verified') AND requested_at IS NOT NULL)::integer AS sent,
  count(*) FILTER (WHERE state='verified')::integer AS verified FROM public.websub_subscriptions"""
 _REASK = """SELECT channel_id,generation,callback_base,state,attempts,requested_at FROM public.websub_subscriptions
  WHERE state='pending' AND requested_at IS NOT NULL AND next_try_at<=clock_timestamp() AND attempts<%(max)s
  ORDER BY next_try_at,channel_id LIMIT 1"""
-_RESERVE = """UPDATE public.websub_subscriptions SET attempts=attempts+1,requested_at=coalesce(requested_at,clock_timestamp()),
+_RESERVE = """UPDATE public.websub_subscriptions SET attempts=attempts+1,
+ state=CASE WHEN state='denied' THEN 'pending' ELSE state END,
+ generation=CASE WHEN state='denied' THEN generation+1 ELSE generation END,
+ requested_at=CASE WHEN state='denied' THEN clock_timestamp() ELSE coalesce(requested_at,clock_timestamp()) END,
+ verified_at=CASE WHEN state='denied' THEN NULL ELSE verified_at END,
+ lease_seconds=CASE WHEN state='denied' THEN NULL ELSE lease_seconds END,
  next_try_at=clock_timestamp()+make_interval(secs=>%(wait)s),
  renew_at=CASE WHEN state='verified' THEN clock_timestamp()+make_interval(secs=>%(wait)s) ELSE renew_at END,
  last_outcome='sending',updated_at=clock_timestamp()
- WHERE channel_id=%(channel)s AND generation=%(generation)s AND state=%(state)s"""
+ WHERE channel_id=%(channel)s AND generation=%(generation)s AND state=%(state)s
+ RETURNING generation,state,requested_at,attempts"""
 _SETTLE_FAILED = """UPDATE public.websub_subscriptions SET last_outcome=%(outcome)s,
  next_try_at=clock_timestamp()+make_interval(secs=>%(wait)s),
  renew_at=CASE WHEN state='verified' THEN clock_timestamp()+make_interval(secs=>%(wait)s) ELSE renew_at END,
- updated_at=clock_timestamp() WHERE channel_id=%(channel)s AND generation=%(generation)s"""
+ updated_at=clock_timestamp() WHERE channel_id=%(channel)s AND generation=%(generation)s AND last_outcome='sending'"""
 _SETTLE_SENT = """UPDATE public.websub_subscriptions SET last_outcome=%(outcome)s,updated_at=clock_timestamp()
  WHERE channel_id=%(channel)s AND generation=%(generation)s AND last_outcome='sending'"""
 _HUB_UPDATE = """UPDATE public.websub_hub_state SET failures_in_row=%(failures)s,breaker_open=%(breaker)s,
@@ -214,7 +220,8 @@ class WebSubManagerRepository(WebSubRepository):
             row = tx.fetch_one(_NEXT, dict(max=MAX_ATTEMPTS))
             if row is None:
                 return None, Admission(False, 'idle')
-            if ramp < len(RAMP) and row['state'] == 'pending' and row['requested_at'] is None:
+            starts_subscription = row['state'] == 'denied' or (row['state'] == 'pending' and row['requested_at'] is None)
+            if ramp < len(RAMP) and starts_subscription:
                 counts = tx.fetch_one(_RAMP_COUNTS)
                 sent_needed, verified_needed = RAMP[ramp]
                 if counts['sent'] >= sent_needed:
@@ -228,11 +235,14 @@ class WebSubManagerRepository(WebSubRepository):
                         if row is None:
                             return None, Admission(False, 'ramp_wait', wait=30.0)
             mode = 'unsubscribe' if row['state'] == 'unsubscribing' else 'subscribe'
-            if tx.execute(_RESERVE, dict(wait=RETRY_AFTER_NO_VERIFICATION, channel=row['channel_id'],
-                                         generation=row['generation'], state=row['state'])) != 1:
+            # An explicit denial closes that callback. Only a committed new generation
+            # may receive confirmation, including if the process restarts before sending.
+            reserved = tx.returning_one(_RESERVE, dict(wait=RETRY_AFTER_NO_VERIFICATION, channel=row['channel_id'],
+                                                       generation=row['generation'], state=row['state']))
+            if reserved is None:
                 return None, Admission(False, 'raced', wait=1.0)
             tx.execute(_JOURNAL, _journal_row('hub_request', 'sending', channel=row['channel_id'], mode=mode))
-            return dict(row, mode=mode, attempts=row['attempts'] + 1), Admission(True, 'send')
+            return dict(row, mode=mode, **reserved), Admission(True, 'send')
 
     def settle(self, row, result):
         """Persist one Hub answer: journal, the channel's next time and the Hub-wide hold/breaker."""
@@ -263,10 +273,7 @@ class WebSubManagerRepository(WebSubRepository):
 
     def clean(self, days=JOURNAL_DAYS):
         with self.database.transaction(_op('websub_clean', statement_ms=20000, total_ms=30000)) as tx:
-            count=tx.execute(_CLEAN_JOURNAL, (days,)) + tx.execute(_CLEAN_EVENTS, (days,))
-            from .retention.discovery_operational_retention import clean_in_transaction
-            extra=clean_in_transaction(tx,limit=200,days=days)
-            return count+sum(extra.values())
+            return tx.execute(_CLEAN_JOURNAL, (days,)) + tx.execute(_CLEAN_EVENTS, (days,))
 
 
 # ---------------------------------------------------------------- events until the discovery runtime is enabled

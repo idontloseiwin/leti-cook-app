@@ -22,7 +22,11 @@ import * as conditions from '../application/frontend/src/explorer/libraryData/co
 import * as catalogue from '../application/frontend/src/explorer/catalogueQuery.ts';
 import * as presets from '../application/frontend/src/explorer/libraryData/presets.ts';
 import { libraryGates } from '../application/frontend/src/explorer/libraryData/capabilities.ts';
+import * as refresh from '../application/frontend/src/explorer/catalogueRefresh.ts';
 import { reactHookHost, flush } from './react_hook_host.mjs';
+
+// The background update of loaded cards has its own test (test_library_videos_refresh.mjs); here it stays idle.
+const idleRefresh = { now: () => Date.now(), monotonic: () => performance.now(), visible: () => true, watch: () => () => {}, after: () => () => {} };
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
 const clone = (value) => structuredClone(value);
@@ -95,7 +99,7 @@ function compiled(file, imports = {}) {
   const card = first.videos[0];
   assert.equal(card.video_id, raw.id);
   assert.equal(card.title, raw.cells['video.title'].value);
-  assert.equal(card.thumbnail_url, `https://img.youtube.com/vi/${raw.id}/mqdefault.jpg`);
+  assert.equal(card.thumbnail_url, `https://img.youtube.com/vi/${raw.id}/hqdefault.jpg`);
   assert.equal(card.published_at, raw.cells['video.published_at'].value);
   assert.equal(card.duration, Number(raw.cells['video.duration_seconds'].value), 'duration in seconds');
   assert.equal(card.views, raw.cells['video.views'].value, 'counters stay decimal strings');
@@ -148,7 +152,7 @@ function compiled(file, imports = {}) {
 {
   contract(() => page('long_first_anchor', (r) => { r.extra = 1; }), /unknown key/);
   contract(() => page('long_first_anchor', (r) => { r.context.time_zone = 'UTC'; }), /time zone/);
-  contract(() => page('long_first_anchor', (r) => { r.context.consistency = 'current'; }), /frozen/);
+  contract(() => page('long_first_anchor', (r) => { r.context.consistency = 'current'; }), /consistency/);
   contract(() => page('long_first_anchor', (r) => { r.columns = [...r.columns].reverse(); }), /requested fields/);
   contract(() => page('long_first_anchor', (r) => { r.rows[1] = clone(r.rows[0]); }), /repeated/);
   contract(() => page('long_first_anchor', (r) => { r.rows[0].cells['video.views'].extra = 1; }), /unknown key/);
@@ -369,13 +373,19 @@ function compiled(file, imports = {}) {
   assert.deepEqual(handoff.selectedIdsHandoff(request, [{ id: 'gLhuge00000', type: 'short' }], origin), { refused: 'nothing_selected', count: 1 });
   const ids = videos.parseFrozenIds(example('long_frozen_ids').response, first);
   assert.equal(handoff.isWholeFrozenList(new Set(ids), ids), true, 'after Select all matching the selection is the whole list');
+  // Library's list position, its ordered ID list and its slices never travel into the study.
+  for (const page of [{ size: 4, growth_lifetime: 'page', order: 'ids', anchor_id: ids[3] }, { size: 4, growth_lifetime: 'page', ids: ids.slice(0, 4) }]) {
+    assert.deepEqual(handoff.selectionHandoff({ ...request, consistency: 'current', page }, frozen, origin).query.page, { size: 4 });
+    assert.deepEqual(handoff.selectedIdsHandoff({ ...request, consistency: 'current', page }, [{ id: ids[0], type: 'long' }], origin).query.page, { size: 4 });
+  }
   // The panel's buttons: "Open in research workshop" and "Send selected to workshop" replace Compare / Send to Canvas.
   const panel = read('../application/frontend/src/explorer/ExplorerVideos.tsx');
   assert.match(panel, />Open in research workshop</);
   assert.match(panel, />Send selected to workshop</);
   assert.doesNotMatch(panel, /Send to Canvas|>Compare /);
   const section = read('../application/frontend/src/explorer/LibraryVideosSection.tsx');
-  assert.match(section, /isWholeFrozenList\(new Set\(selected\.map\(\(item\) => item\.id\)\), browse\.frozenIds\)\) return openWhole\(\)/);
+  // The whole list selected goes only as the fixed list checked against the selection (useCatalogueBrowse freezeForWorkshop).
+  assert.match(section, /const chosen = new Set\(selected\.map\(\(item\) => item\.id\)\);\s+if \(browse\.listIds && isWholeFrozenList\(chosen, browse\.listIds\)\) return openWhole\(chosen\);/);
   assert.match(section, /settings|handoffRefusalText/);
   console.log('Workshop hand-off: the executed query and frozen list; selected ids up to 1,000; whole-list selection.');
 }
@@ -406,17 +416,23 @@ function compiled(file, imports = {}) {
   const sharedFormat = compiled('../format.ts');
   const format = compiled('format.ts', { '../format': sharedFormat, '../format.ts': sharedFormat });
   const icons = new Proxy({}, { get: () => () => null });
-  const module = compiled('ExplorerVideos.tsx', {
+  const panelImports = {
     react: React, 'react/jsx-runtime': jsxRuntime, 'lucide-react': icons,
     '../sourceLifetimeReact': { useSourceExpiry: () => {} }, '../sourceLifetime.ts': lifetime,
-    './format': format, './videoGrowth': compiled('videoGrowth.ts'), './localTime': { formatDateLocal: (value) => value ?? 'Unknown' },
+    './format': format, './videoGrowth': compiled('videoGrowth.ts'),
+    './localTime': { formatDateLocal: (value) => value ?? 'Unknown', formatExactLocal: (value) => value ?? 'Not recorded', formatTimestampLocal: (value) => `at ${value}` },
+    './videoCardFormat': await import('../application/frontend/src/explorer/videoCardFormat.ts'),
+    './videoPresentation': { safeVideoThumbnailUrl: (value) => value || undefined },
+    './libraryData/videos.ts': videos,
     './ModuleState': { ErrorState: ({ title }) => React.createElement('p', null, title), LoadingState: ({ label }) => React.createElement('p', { role: 'status' }, label) },
     './resourceState': { resourcePayload: (state) => (state.kind === 'ready' || state.kind === 'updating' ? state.payload : state.previous) },
-    './VirtualVideoGrid': { VirtualVideoGrid: ({ videos: rows, renderCard }) => React.createElement('div', null, rows.map(renderCard)) },
+    './VirtualVideoGrid': { VirtualVideoGrid: ({ videos: rows, renderCard, videoType }) => React.createElement('div', { 'data-video-type': videoType }, rows.map(renderCard)) },
+    './videoGridGeometry': await import('../application/frontend/src/explorer/videoGridGeometry.ts'),
     './catalogueSelection': { addSelectedRecords: (current, records) => new Map([...current, ...records.map((row) => [row.video_id, row])]) },
     './VideoThumbnail': { VideoThumbnail: () => null, videoTitle: (video) => video.title || 'Title not reported' },
     './VideoInspector': { VideoInspector: () => null }, './libraryData/errors.ts': await import('../application/frontend/src/explorer/libraryData/errors.ts'),
-  });
+  };
+  const module = compiled('ExplorerVideos.tsx', panelImports);
   assert.equal(module.LOAD_AHEAD_MARGIN, '2400px 0px', 'the next page loads about three screens ahead');
   // Without source clocks (plain): the render does not depend on today's date.
   const payload = plain(page('long_first_anchor', (r) => {
@@ -426,6 +442,136 @@ function compiled(file, imports = {}) {
   const render = (props) => renderToStaticMarkup(React.createElement(module.ExplorerVideosPanel, {
     state: { kind: 'ready', scopeKey: 's', payload }, channelId: payload.channel.channel_id, growthAvailable: true,
     selectionScopeKey: 's', onRetry() {}, hasMore: true, hasPrevious: true, ...props }));
+  // Open a real card, renew the live query, then remove it. Read the newly rendered
+  // Inspector props and its React key to verify the previous panels cannot be reused.
+  {
+    const host = reactHookHost();
+    const panel = compiled('ExplorerVideos.tsx', { ...panelImports, react: { ...host.React, memo: value => value } });
+    const elements = element => !React.isValidElement(element) ? [] :
+      [element, ...React.Children.toArray(element.props.children).flatMap(elements)];
+    const find = type => elements(host.current).find(element => element.type === type);
+    const props = (key, rows) => ({
+      state: { kind: 'ready', scopeKey: 's', payload: { ...payload, browse: { consistency: 'current' }, videos: rows } },
+      selectionScopeKey: 's', channelId: payload.channel.channel_id, onRetry() {}, growthAvailable: true,
+      session: { sessionKey: key, pending: false }, inspector: { gates: {}, timeZone: 'UTC' },
+    });
+    const video = payload.videos[0], other = payload.videos[1];
+    globalThis.window = new EventTarget();
+    host.mount(panel.ExplorerVideosPanel, props('read1', [video]));
+    const grid = find(panelImports['./VirtualVideoGrid'].VirtualVideoGrid);
+    grid.props.renderCard(video).props.onInspect(video, 'title');
+    const inspector = () => find(panelImports['./VideoInspector'].VideoInspector);
+    const originalKey = inspector().key;
+    assert.equal(inspector().props.library.opening.active, true);
+    host.update(props('read2', [{ ...video, title: 'Refreshed title' }]));
+    assert.notEqual(inspector().key, originalKey);
+    assert.equal(inspector().props.library.opening.active, true);
+    assert.equal(inspector().props.video.title, 'Refreshed title');
+    host.update(props('read3', [other]));
+    assert.equal(inspector(), undefined);
+    assert.match(renderToStaticMarkup(host.current), /no longer in these results/);
+    host.unmount();
+    delete globalThis.window;
+  }
+  // Time alone never closes the Inspector or refuses to open it: a card whose values' lifetimes have ended
+  // opens like any other, and stays open while its card is replaced by later reads of the same list.
+  {
+    const host = reactHookHost();
+    const panel = compiled('ExplorerVideos.tsx', { ...panelImports, react: { ...host.React, memo: value => value } });
+    const elements = element => !React.isValidElement(element) ? [] :
+      [element, ...React.Children.toArray(element.props.children).flatMap(elements)];
+    const find = type => elements(host.current).find(element => element.type === type);
+    const inspector = () => find(panelImports['./VideoInspector'].VideoInspector);
+    const ended = page('long_first_anchor');
+    const future = Date.parse('2027-01-01T00:00:00Z');
+    const rows = videos.shownCatalogueVideos(ended, future, 0);
+    assert.ok(rows.every((video) => lifetime.sourceExpired(video, future)), 'every lifetime of these rows has ended');
+    const props = (shown) => ({
+      state: { kind: 'ready', scopeKey: 's', payload: { ...payload, browse: { consistency: 'current' }, videos: shown } },
+      selectionScopeKey: 's', channelId: payload.channel.channel_id, onRetry() {}, growthAvailable: true,
+      session: { sessionKey: 'read1', pending: false }, inspector: { gates: {}, timeZone: 'UTC' },
+    });
+    globalThis.window = new EventTarget();
+    const realNow = Date.now;
+    Date.now = () => future;
+    try {
+      host.mount(panel.ExplorerVideosPanel, props(rows));
+      const grid = find(panelImports['./VirtualVideoGrid'].VirtualVideoGrid);
+      assert.equal(grid.props.videos.length, 4, 'the grid gets every loaded card');
+      grid.props.renderCard(rows[0]).props.onInspect(rows[0], 'title');
+      assert.equal(inspector().props.video.video_id, rows[0].video_id, 'the Inspector opens for a card that needs refresh');
+      const key = inspector().key;
+      // A later read of the same list replaced the card (new values): the same Inspector, not a new one.
+      host.update(props([{ ...rows[0], views: '7000' }, ...rows.slice(1)]));
+      assert.equal(inspector().key, key);
+      assert.equal(inspector().props.video.views, '7000');
+      assert.equal(inspector().props.library.opening.active, true);
+    } finally { Date.now = realNow; }
+    host.unmount();
+    delete globalThis.window;
+    assert.doesNotMatch(read('../application/frontend/src/explorer/ExplorerVideos.tsx'), /useSourceExpiry\(inspectedVideo|freshSourceRows/,
+      'no timer closes the Inspector and no filter drops loaded cards');
+  }
+  // Another sort of the same matched set: the Inspector stays on its video while it is in the new list,
+  // even before its card loads there; one grid per read of the list.
+  {
+    const host = reactHookHost();
+    const panel = compiled('ExplorerVideos.tsx', { ...panelImports, react: { ...host.React, memo: value => value } });
+    // The rendered elements as written: React.Children.toArray would re-key them (".$" + key), and the grid's own key is checked here.
+    const children = (value) => (Array.isArray(value) ? value.flatMap(children) : [value]);
+    const elements = element => !React.isValidElement(element) ? [] :
+      [element, ...children(element.props.children).flatMap(elements)];
+    const find = type => elements(host.current).find(element => element.type === type);
+    const grid = () => find(panelImports['./VirtualVideoGrid'].VirtualVideoGrid);
+    const inspector = () => find(panelImports['./VideoInspector'].VideoInspector);
+    const props = (key, rows, listIds) => ({
+      state: { kind: 'ready', scopeKey: 's', payload: { ...payload, videos: rows,
+        browse: { consistency: 'current', order: { ids: listIds, total: listIds.length, limit: 200000 } } } },
+      selectionScopeKey: 's', channelId: payload.channel.channel_id, onRetry() {}, growthAvailable: true,
+      session: { sessionKey: key, pending: false }, inspector: { gates: {}, timeZone: 'UTC' },
+    });
+    const video = payload.videos[0], other = payload.videos[1];
+    globalThis.window = new EventTarget();
+    host.mount(panel.ExplorerVideosPanel, props('sorted1', [video], [video.video_id, other.video_id]));
+    grid().props.renderCard(video).props.onInspect(video, 'thumbnail');
+    assert.equal(grid().key, 'sorted1');
+    assert.equal(inspector().props.video.video_id, video.video_id);
+    host.update(props('sorted2', [other], [other.video_id, video.video_id]));
+    assert.equal(inspector().props.video.video_id, video.video_id, 'still in the list: kept open');
+    assert.equal(grid().key, 'sorted2', 'a new grid for the new order');
+    host.update(props('filtered', [other], [other.video_id]));
+    assert.equal(inspector(), undefined);
+    assert.match(renderToStaticMarkup(host.current), /no longer in these results/);
+    host.unmount();
+    delete globalThis.window;
+  }
+  // The list: its total, Refresh order, and plain words for what is left out.
+  {
+    const listed = { ...payload, browse: { ...payload.browse, consistency: 'current', order: { ids: [], total: 12408, limit: 200000 } } };
+    const text = render({ state: { kind: 'ready', scopeKey: 's', payload: listed }, onRefreshOrder() {}, leftResults: 2, departedShown: 1,
+      refreshProblem: refresh.refreshProblemText({ last: { now: 0, monotonic: 0 }, lastFull: { now: 0, monotonic: 0 }, started: { now: 0, monotonic: 0 }, failures: 1, paused: false }) });
+    assert.match(text, /<strong>12,408<\/strong> videos/);
+    assert.match(text, />Refresh order</);
+    assert.match(text, /2 videos of the loaded part no longer match these filters or are no longer available\./);
+    assert.match(text, /1 shown video no longer matches these\s+filters or is no longer available\. Its card stays with the last\s+values\. Refresh order to update the list\./);
+    assert.match(text, /could not be updated in the background\. The cards keep their last values; the next attempt is in 5 minutes\./);
+    assert.doesNotMatch(text, /(is|are) hidden/, 'no card is hidden by time');
+    const past = { ...payload, browse: { ...payload.browse, consistency: 'current', order: { ids: null, total: 250000, limit: 200000 } } };
+    const pastText = render({ state: { kind: 'ready', scopeKey: 's', payload: past } });
+    assert.match(pastText, /<strong>250,000<\/strong> videos/);
+    assert.match(pastText, /more than the 200,000 that Library can keep in one ordered list/);
+    assert.doesNotMatch(render({}), /Refresh order|ordered list/, 'a fixed list has neither');
+    // Rows whose lifetimes have all ended are still drawn: every card, with "—" and Needs refresh for the ended values.
+    const ended = page('long_first_anchor');
+    assert.ok(ended.videos.every((video) => lifetime.sourceExpired(video, Date.parse('2027-01-01T00:00:00Z'))), 'the fixture rows end in November 2026');
+    const endedRows = videos.shownCatalogueVideos(ended, Date.parse('2027-01-01T00:00:00Z'), 0);
+    const kept = render({ state: { kind: 'ready', scopeKey: 's', payload: { ...listed, videos: endedRows } }, onRefreshOrder() {} });
+    assert.equal(kept.match(/data-video-id=/g).length, 4, 'every loaded card is drawn');
+    assert.equal(kept.match(/>Needs refresh</g).length, 4, 'each with its views marked');
+    assert.match(kept, /Data is out of date\. New numbers appear after the next refresh\./);
+    assert.doesNotMatch(kept, /No stored videos match|(is|are) hidden/);
+    assert.match(render({ state: { kind: 'ready', scopeKey: 's', payload: { ...listed, videos: [] } } }), /No stored videos match the applied filters\./);
+  }
   const idle = render({});
   assert.match(idle, />Load more videos</);
   assert.match(idle, />Load previous videos</);
@@ -440,7 +586,95 @@ function compiled(file, imports = {}) {
   const severalText = render({ state: { kind: 'ready', scopeKey: 's', payload: several } });
   assert.match(severalText, /3 video rows were withheld\./);
   assert.match(severalText, /1 other row excluded \(future_reason\)\./);
-  assert.match(idle, /title="Needs refresh"><strong>—<\/strong> total views/);
+  // The card (Long form): an expired value is "—" with its word, never 0.
+  assert.match(idle, /<span class="video-card-views" title="Data is out of date\. New numbers appear after the next refresh\."><b>—<\/b><em class="video-card-state is-warning">Needs refresh<\/em><\/span>/);
+  assert.match(idle, /aria-label="Video: Growth gLlatemeta0\. Views: needs refresh\./, 'the spoken summary names the state');
+  assert.doesNotMatch(idle, /total views|Thumbnail unavailable|explorer-v2-video-card/, 'the compact card omits placeholder text and uses current video-card markup');
+  // Counts as YouTube writes them (cut: 1,392 → 1.3K) with the exact value on hover; likes and comments from the
+  // stored row: the Videos session already selects them (no YouTube request, no quota).
+  assert.ok(['video.likes', 'video.comments'].every((field) => wire.LIBRARY_SELECT.includes(field)));
+  const card = (html, id) => html.match(new RegExp(`<article class="video-card[^"]*" aria-label="[^"]*" data-video-id="${id}">.*?</article>`, 's'))?.[0] ?? '';
+  const second = card(idle, 'gLbg0800000');
+  assert.match(second, /^<article class="video-card is-long is-large" aria-label="Video: Growth gLbg0800000\. 1\.3 thousand views/);
+  assert.match(second, /<span class="video-card-views" title="1,392 views"><b>1\.3K<\/b><i>views<\/i><\/span>/);
+  assert.match(second, /<span class="video-card-stat" title="34 likes">/);
+  assert.match(second, /<span class="video-card-stat" title="3 comments">/);
+  assert.match(second, /<span class="video-card-badge">10:00<\/span>/, 'the duration on the thumbnail');
+  const zeroLength = plain(page('long_first_anchor', (r) => { r.rows[1].cells['video.duration_seconds'].value = '0'; }));
+  assert.match(card(render({ state: { kind: 'ready', scopeKey: 's', payload: zeroLength } }), 'gLbg0800000'), /<span class="video-card-badge">—<\/span>/,
+    'a length YouTube reports as 0 (live or upcoming) is "—", not 0:00');
+  assert.match(second, /<span class="video-card-date" title="Published 2026-10-01T06:48:15\.221465Z">\d+(?:min|h|d|w|mo|y) ago<\/span>/,
+    'a relative date, the exact time on hover');
+  assert.match(second, /<span class="video-card-growth is-(?:up|down|flat)" title="[^"]*">[^<]+<\/span>/);
+  assert.match(second, /<img src="https:\/\/img\.youtube\.com\/vi\/gLbg0800000\/hqdefault\.jpg" alt="" loading="lazy"/);
+  // Focus targets in Tab order (thumbnail, title, checkbox, link); the Inspector triggers and the link stay.
+  assert.deepEqual([...second.matchAll(/data-grid-focus="([a-z]+)"/g)].map((match) => match[1]), ['thumbnail', 'title', 'selection', 'youtube']);
+  assert.deepEqual([...second.matchAll(/data-inspector-trigger="([a-z]+)"/g)].map((match) => match[1]), ['thumbnail', 'title']);
+  assert.match(second, /href="https:\/\/www\.youtube\.com\/watch\?v=gLbg0800000"[^>]*title="Open on YouTube"/);
+  // Compact: views · date in the first row, growth and the link in the second; no likes or comments.
+  const compact = card(render({ density: 'compact' }), 'gLbg0800000');
+  assert.match(compact, /^<article class="video-card is-long is-compact"/);
+  assert.match(compact, /<div class="video-card-row"><span class="video-card-views"[^>]*>.*?<\/span><span class="video-card-date"/);
+  assert.match(compact, /<div class="video-card-row"><span class="video-card-growth[^>]*>[^<]+<\/span><a class="video-card-youtube"/);
+  assert.doesNotMatch(compact, /video-card-stat/);
+  // Without growth (refused, or a collection) the card has no growth chip; the rows keep their height in CSS.
+  assert.doesNotMatch(render({ growthAvailable: false }), /video-card-growth/);
+  // Shorts (the Shorts tab): the grid gets the type; the 2:3 form with the views alone under the title, then
+  // growth; Large adds likes and comments, then the date with the link; Compact keeps views with the link, then
+  // growth. The thumbnail is the same 480x360 image (the CSS frame crops it); over it only the duration.
+  {
+    const shortsPayload = plain(page('short_first', (r) => {
+      Object.assign(r.rows[0].cells['video.views'], { state: 'expired', value: null });
+      Object.assign(r.rows[2].cells['video.views'], { state: 'unavailable', value: null });
+      Object.assign(r.rows[3].cells['video.likes'], { state: 'unavailable', value: null });
+    }));
+    const shorts = (props) => render({ state: { kind: 'ready', scopeKey: 's', payload: shortsPayload },
+      channelId: shortsPayload.channel.channel_id, videoType: 'short', ...props });
+    const rows = (html) => [...html.matchAll(/<div class="(video-card-row[^"]*)">(.*?)<\/div>/g)].map((match) => [match[1], match[2]]);
+    const large = shorts({});
+    assert.match(large, /<div data-video-type="short"><article class="video-card is-shorts is-large"/, 'the grid knows its type');
+    assert.match(render({}), /<div data-video-type="long"><article class="video-card is-long is-large"/);
+    const short = card(large, 'gSbg0100000');
+    assert.match(short, /^<article class="video-card is-shorts is-large" aria-label="Short: Growth gSbg0100000\. 312 views, up 196 over ~1\.2 days\. 10 minutes\./);
+    assert.match(short, /<div class="video-card-media"><button type="button" class="video-card-thumbnail"[^>]*><span class="video-card-placeholder">.*?<\/span>(<img [^>]*>)<\/button><span class="video-card-badge">10:00<\/span><\/div>/,
+      'over the frame only the duration; the checkbox sits outside the image');
+    assert.match(short, /<img src="https:\/\/img\.youtube\.com\/vi\/gSbg0100000\/hqdefault\.jpg" alt=""/);
+    const largeRows = rows(short);
+    assert.deepEqual(largeRows.map(([name]) => name), ['video-card-row', 'video-card-row', 'video-card-row is-small video-card-meta', 'video-card-row video-card-meta']);
+    assert.match(largeRows[0][1], /^<span class="video-card-views" title="312 views"><b>312<\/b><i>views<\/i><\/span>$/, 'the views alone');
+    assert.match(largeRows[1][1], /^<span class="video-card-growth is-up" title="\+196 views over ~1\.2 days">\+196 · 1d<\/span>$/, 'growth with its actual days');
+    assert.match(largeRows[2][1], /^<span class="video-card-stat" title="YouTube no longer returns this value\.">.*?<span class="explorer-sr-only"> likes: unavailable<\/span><\/span><span class="video-card-stat" title="0 comments">/);
+    assert.match(largeRows[3][1], /^<span class="video-card-date" title="Published 2026-10-29T05:37:15\.221465Z">\d+(?:min|h|d|w|mo|y) ago<\/span><a class="video-card-youtube" href="https:\/\/www\.youtube\.com\/watch\?v=gSbg0100000"[^>]*title="Open on YouTube"/);
+    assert.deepEqual([...short.matchAll(/data-grid-focus="([a-z]+)"/g)].map((match) => match[1]), ['thumbnail', 'title', 'selection', 'youtube']);
+    assert.deepEqual([...short.matchAll(/data-inspector-trigger="([a-z]+)"/g)].map((match) => match[1]), ['thumbnail', 'title']);
+    // Value states: "—" and the state word stay in the views row (the growth row keeps its own status), never 0.
+    const expired = card(large, 'gSbg0000000');
+    assert.match(expired, /aria-label="Short: Growth gSbg0000000\. Views: needs refresh\./);
+    assert.match(rows(expired)[0][1], /^<span class="video-card-views" title="Data is out of date\. New numbers appear after the next refresh\."><b>—<\/b><em class="video-card-state is-warning">Needs refresh<\/em><\/span>$/);
+    assert.match(rows(expired)[1][1], /^<span class="video-card-growth is-flat" title="Tracking started today \([^)]+\)">Tracking started today<\/span>$/);
+    const gone = card(large, 'gSwaitone00');
+    assert.match(gone, /^<article class="video-card is-shorts is-large is-unavailable"/, 'an unavailable Short is dimmed');
+    assert.doesNotMatch(gone, /<img /, 'and shows the placeholder');
+    assert.match(rows(gone)[0][1], /<b>—<\/b><em class="video-card-state">Unavailable<\/em>/);
+    for (const html of [short, expired, gone]) assert.equal(rows(html).length, 4, 'every Large Short has the same four rows');
+    // Compact: views and the link, then growth; no date, likes or comments (the title's hover has the date).
+    const compactShorts = shorts({ density: 'compact' });
+    const small = card(compactShorts, 'gSbg0100000');
+    assert.match(small, /^<article class="video-card is-shorts is-compact"/);
+    assert.match(small, /title="Growth gSbg0100000 · Published 2026-10-29T05:37:15\.221465Z"/);
+    assert.deepEqual(rows(small).map(([name]) => name), ['video-card-row', 'video-card-row']);
+    assert.match(rows(small)[0][1], /^<span class="video-card-views" title="312 views">.*?<\/span><a class="video-card-youtube"/);
+    assert.match(rows(small)[1][1], /^<span class="video-card-growth is-up"[^>]*>\+196 · 1d<\/span>$/);
+    assert.doesNotMatch(small, /video-card-stat|video-card-date/);
+    assert.deepEqual([...small.matchAll(/data-grid-focus="([a-z]+)"/g)].map((match) => match[1]), ['thumbnail', 'title', 'selection', 'youtube'], 'Tab order kept');
+    assert.match(rows(card(compactShorts, 'gSbg0000000'))[0][1], /<b>—<\/b><em class="video-card-state is-warning">Needs refresh<\/em><\/span><a class="video-card-youtube"/);
+    // Without growth the growth row stays (empty): the height does not change.
+    assert.deepEqual(rows(card(shorts({ growthAvailable: false }), 'gSbg0100000'))[1], ['video-card-row', '']);
+    assert.deepEqual(rows(card(shorts({ growthAvailable: false, density: 'compact' }), 'gSbg0100000'))[1], ['video-card-row', '']);
+    // Streams keep the Long form.
+    assert.match(render({ videoType: 'stream' }), /<div data-video-type="stream"><article class="video-card is-long is-large"/);
+    console.log('Shorts cards: 2:3 form, views under the title, rows per density, value states, Tab order; streams stay Long.');
+  }
   assert.doesNotMatch(idle, /Open in research workshop/, 'the hand-off needs the workshop prop');
   const withWorkshop = render({ workshop: { openSelection: () => undefined, sendSelected: () => undefined } });
   assert.match(withWorkshop, /Open in research workshop/);
@@ -491,6 +725,29 @@ function compiled(file, imports = {}) {
   assert.equal(geometry.visibleAnchorOffset({ videoId: ids[7], offsetPx: 823 }, ids,
     geometry.buildVideoGridLayout(ids, 3, 1200, 15, new Map()), 900, 120), 136, 'a card taller than the room starts below the bars');
   assert.equal(geometry.visibleAnchorOffset({ videoId: 'missing0000', offsetPx: 823 }, ids, layout, 900, 120), 823);
+  // Until a row is measured it is placed from the card's own sizes: 2 × padding + the 16:9 thumbnail + the text block.
+  assert.equal(geometry.estimatedVideoRowHeight(360, 'large'), 16 + 344 * 9 / 16 + 112);
+  assert.equal(geometry.estimatedVideoRowHeight(178, 'compact'), 12 + 166 * 9 / 16 + 104);
+  // Shorts: the 2:3 thumbnail (3/2 of its width) and the Shorts text block (Large 8 + 40 + 30 + 30 + 24 + 30 = 162,
+  // Compact 104): 463 px for a Large Short of a 1440 px grid, as the mockup measured.
+  assert.equal(geometry.estimatedVideoRowHeight(1440 / 7, 'large', 'shorts'), 16 + (1440 / 7 - 16) * 3 / 2 + 162);
+  assert.equal(Math.round(geometry.estimatedVideoRowHeight(1440 / 7, 'large', 'shorts')), 463);
+  assert.equal(geometry.estimatedVideoRowHeight(131, 'compact', 'shorts'), 12 + 119 * 3 / 2 + 104);
+  assert.equal(geometry.estimatedVideoRowHeight(360, 'large', 'long'), geometry.estimatedVideoRowHeight(360, 'large'));
+  assert.deepEqual(['long', 'short', 'stream', undefined].map(geometry.videoCardForm), ['long', 'shorts', 'long', 'long'],
+    'only the Shorts grid has the Shorts form; a grid without a type (a collection) keeps Long');
+  // The real grid names its type for the CSS (Shorts columns); a collection grid names none.
+  {
+    const realGrid = compiled('VirtualVideoGrid.tsx', { react: React, 'react/jsx-runtime': jsxRuntime,
+      '../discoveryJournal': { reportDiscoveryRendered() {} }, './videoGridGeometry': geometry });
+    const draw = (props) => renderToStaticMarkup(React.createElement(realGrid.VirtualVideoGrid, {
+      videos: payload.videos.slice(0, 3), density: 'large', scopeKey: 's',
+      renderCard: (video) => React.createElement('article', { key: video.video_id, 'data-video-id': video.video_id }), ...props }));
+    assert.match(draw({ videoType: 'short' }), /^<div class="explorer-v2-video-grid is-virtual" data-density="large" data-video-type="short" style="height:/);
+    assert.match(draw({ videoType: 'short', density: 'compact' }), /^<div class="explorer-v2-video-grid is-virtual" data-density="compact" data-video-type="short"/);
+    assert.match(draw({ videoType: 'long' }), /data-video-type="long"/);
+    assert.match(draw({}), /^<div class="explorer-v2-video-grid is-virtual" data-density="large" style="height:/, 'no type: the Long form');
+  }
   // The jump showed the card whole, then the next restore undid it. In this case the remembered card
   // (sort "Views gained") was the 11th of the last page (5,750..5,760, 3 columns); the previous page (50 cards)
   // arrived above it and moved every card two places, and the grid restored the first card of the top row.
@@ -535,6 +792,8 @@ function compiled(file, imports = {}) {
   assert.match(gridSource, /else settling\.current = null;/, 'a move by the user ends the settling');
   assert.match(gridSource, /rect\.top <= top \+ 1 && rect\.bottom > 0/, 'only bars held at the top count as covering it');
   assert.doesNotMatch(gridSource, /pendingWhole/);
+  assert.match(gridSource, /estimate: estimatedVideoRowHeight\(cardWidth, density, form\)/, 'the estimate follows the card and its form');
+  assert.match(gridSource, /density !== geometry\.density \|\| form !== geometry\.form/, 'a new type re-estimates and drops measured rows');
   // The browser never scrolls the catalogue by itself, and the grid's height and row tops apply at
   // once even under the reduced-motion rule (0.01 ms transitions for every element), so pages load only as the
   // user reaches the boundary: End at the list top loads one page, not 7 in 0.55 s.
@@ -543,6 +802,68 @@ function compiled(file, imports = {}) {
   assert.ok(videosCss.includes('.explorer-app.is-updated .explorer-v2-video-grid.is-virtual,\n.explorer-app.is-updated .explorer-v2-video-virtual-row {\n  transition: none;\n}'),
     'the virtual grid is never animated');
   assert.ok(read('../application/frontend/src/explorer/redesign.css').includes('transition-duration: 0.01ms !important;'), 'the reduced-motion rule this guards against');
+  // Columns owned by CSS (the grid reads the resolved tracks): as many as fit at the minimum
+  // width with its gap, the rest shared. auto-fill keeps the tracks of a grid whose rows are placed absolutely.
+  assert.ok(videosCss.includes('.explorer-app.is-updated .explorer-v2-video-grid {\n  --vc-col: 320px;\n  --vc-gap: 8px;\n  display: grid;\n'
+    + '  grid-template-columns: repeat(auto-fill, minmax(min(var(--vc-col), 100%), 1fr));\n  gap: var(--vc-gap);'), 'Large: 320 px, gap 8');
+  assert.ok(videosCss.includes('.explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {\n  --vc-col: 224px;\n  --vc-gap: 4px;\n}'),
+    'Compact: 224 px, gap 4');
+  assert.ok(videosCss.includes('@container explorer-v2-videos (max-width: 479px) {\n  .explorer-app.is-updated .explorer-v2-video-grid[data-density="compact"] {\n    --vc-col: 160px;'),
+    'Compact: 160 px up to a 479 px grid');
+  assert.doesNotMatch(videosCss, /explorer-v2-video-grid[^{]*\{\s*grid-template-columns: (?:repeat\(\d|1fr)/, 'no fixed column counts left');
+  const fit = (width, min, gap) => Math.max(1, Math.floor((width + gap) / (min + gap)));
+  // Common content widths → Long Large and Long Compact columns.
+  for (const [width, large, compact] of [[360, 1, 2], [768, 2, 3], [1280, 3, 5], [1440, 4, 6], [1920, 5, 8], [2560, 7, 11]]) {
+    assert.equal(fit(width, 320, 8), large, `Large at ${width} px`);
+    assert.equal(fit(width, width <= 479 ? 160 : 224, 4), compact, `Compact at ${width} px`);
+  }
+  // One more column fits from n × min + (n − 1) × gap.
+  for (const [min, gap, from] of [[320, 8, [648, 976, 1304, 1632, 1960, 2288, 2616]], [224, 4, [452, 680, 908, 1136, 1364, 1592, 1820, 2048, 2276, 2504]]]) {
+    from.forEach((width, index) => { assert.equal(fit(width, min, gap), index + 2); assert.equal(fit(width - 1, min, gap), index + 1); });
+  }
+  // Shorts: 2n − 1 columns where the Long grid of the same density fits n, at least 2, edge to edge (gap 0).
+  // The container queries are evaluated at every grid width from 160 to 3,840 px against the Long rule above.
+  const shortsGrid = '.explorer-app.is-updated .explorer-v2-video-grid[data-video-type="short"] {\n  --vc-gap: 0px;\n  --vc-shorts: 2;\n'
+    + '  grid-template-columns: repeat(var(--vc-shorts), minmax(0, 1fr));\n}';
+  assert.ok(videosCss.includes(shortsGrid), 'Shorts: no gap, at least 2 columns, the count from the container queries');
+  assert.ok(videosCss.indexOf(shortsGrid) > videosCss.indexOf('[data-density="compact"] {\n  --vc-col: 224px;\n  --vc-gap: 4px;\n}'),
+    'the Shorts gap comes after the Compact one (same specificity)');
+  const shortsQueries = { large: [], compact: [] };
+  for (const [, from, density, count] of videosCss.matchAll(/@container explorer-v2-videos \(min-width: (\d+)px\) \{ \.explorer-app\.is-updated \.explorer-v2-video-grid\[data-video-type="short"\]\[data-density="(large|compact)"\] \{ --vc-shorts: (\d+); \} \}/g)) {
+    shortsQueries[density].push([Number(from), Number(count)]);
+  }
+  assert.deepEqual(shortsQueries.large.map(([from]) => from), [648, 976, 1304, 1632, 1960, 2288, 2616, 2944, 3272, 3600], 'Large: where Long gains a column');
+  assert.deepEqual(shortsQueries.compact.map(([from]) => from), [324, 680, 908, 1136, 1364, 1592, 1820, 2048, 2276, 2504, 2732, 2960, 3188, 3416, 3644],
+    'Compact: 324 (160 px columns up to 479), then where Long gains a column');
+  // Ascending, so the widest matching query is the last one and wins (equal specificity).
+  const shortsColumns = (width, density) => shortsQueries[density].filter(([from]) => width >= from).at(-1)?.[1] ?? 2;
+  for (let width = 160; width <= 3840; width += 1) {
+    assert.equal(shortsColumns(width, 'large'), Math.max(2, 2 * fit(width, 320, 8) - 1), `Shorts Large at ${width} px`);
+    assert.equal(shortsColumns(width, 'compact'), Math.max(2, 2 * fit(width, width <= 479 ? 160 : 224, 4) - 1), `Shorts Compact at ${width} px`);
+  }
+  // The README's columns table.
+  for (const [width, large, compact] of [[360, 2, 3], [768, 3, 5], [1280, 5, 9], [1440, 7, 11], [1920, 9, 15], [2560, 13, 21]]) {
+    assert.equal(shortsColumns(width, 'large'), large, `Shorts Large at ${width} px`);
+    assert.equal(shortsColumns(width, 'compact'), compact, `Shorts Compact at ${width} px`);
+  }
+  // The Shorts card: a 2:3 frame over the 9:16 middle of the 480x360 thumbnail (the image only scaled and
+  // centred), so the pillarbox bars of an upright video (138.75 px each side) stay outside; its text block's sizes.
+  assert.ok(videosCss.includes('.explorer-app.is-updated .video-card.is-shorts .video-card-media {\n  aspect-ratio: 2 / 3;\n}'), 'Shorts: a 2:3 frame');
+  const shortsImage = '.explorer-app.is-updated .video-card.is-shorts .video-card-thumbnail img {\n  inset: 50% auto auto 50%;\n'
+    + '  width: calc(100% * 64 / 27);\n  max-width: none;\n  height: auto;\n  aspect-ratio: 4 / 3;\n  object-fit: cover;\n  transform: translate(-50%, -50%);\n}';
+  assert.ok(videosCss.includes(shortsImage), 'the image scaled to 64/27 of the frame width and centred both ways');
+  assert.doesNotMatch(shortsImage, /display/, 'a failed image still hides itself (img[hidden]) over the placeholder');
+  {
+    const [, times, over] = shortsImage.match(/width: calc\(100% \* (\d+) \/ (\d+)\);/).map(Number);
+    const visibleWidth = 480 * over / times; // thumbnail px across the frame
+    assert.equal(visibleWidth, 360 * 9 / 16, 'the frame spans exactly the 9:16 middle of the thumbnail');
+    assert.equal(visibleWidth * 3 / 2, 303.75, 'and 303.75 of its 360 px down, centred');
+    assert.ok((480 - visibleWidth) / 2 >= 138, 'pillarbox bars (measured 138 px a side) fall outside the frame');
+  }
+  assert.ok(videosCss.includes('.explorer-app.is-updated .video-card-thumbnail img {\n  position: absolute;\n  inset: 0;\n  display: block;\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}'),
+    'Long and every 16:9 frame keep the plain cover crop');
+  assert.ok(videosCss.includes('.explorer-app.is-updated .video-card.is-shorts.is-large .video-card-title {\n  height: 40px;\n  font-size: 14px;\n  line-height: 20px;\n}'));
+  assert.ok(videosCss.includes('.explorer-app.is-updated .video-card-row.is-small {\n  height: 20px;\n  margin-top: 4px;\n}'));
   console.log('Grid: (no Load button while loading, 2400 px ahead), freshness notice and "—", workshop button, type texts.');
   console.log('Focus kept on Select all matching; new cards guard a resting pointer; the jump shows the anchor whole and keeps it whole; no self-scroll.');
 }
@@ -641,20 +962,21 @@ function compiled(file, imports = {}) {
     const host = reactHookHost();
     const calls = [];
     const browse = compiled('useCatalogueBrowse.ts', {
-      react: host.React, '../sourceLifetimeReact': { useSourceExpiry() {} },
-      '../sourceLifetime.ts': { freshSourceRows: (rows) => rows, sourceContainer: (value) => value },
+      react: host.React, './catalogueRefresh.ts': refresh,
+      '../sourceLifetime.ts': { sourceContainer: (value) => value },
       './catalogueBrowse': compiled('catalogueBrowse.ts'), './catalogueQuery': { catalogueUsesGrowthFilters: () => false },
       './format': { videoNoun: (count) => (count === 1 ? 'video' : 'videos') }, './libraryData/wire.ts': wire,
       './libraryData/savedLibrary.ts': { planLibraryOpen: async () => ({ status: 'run', note: '',
         translation: { status: 'translated', query: { where: null } }, request: { page: { size: 50 }, select: [] } }) },
       './libraryData/errors.ts': errors,
       './libraryData/videos.ts': { libraryFrozenFields: () => [], libraryGrowthFields: () => [], parseLibraryPage: (raw) => raw,
-        mergeLibraryPages: (current, next) => ({ ...next, videos: [...current.videos, ...next.videos] }),
-        parseFrozenIds: () => [], selectionRecords: () => new Map() },
+        shownCatalogueVideos: (p) => p.videos, nextCatalogueExpiry: () => Infinity, mergeLibraryPages: (current, next) => ({ ...next, videos: [...current.videos, ...next.videos] }),
+        listHasMore: videos.listHasMore, listSlice: videos.listSlice, mergeLibrarySlice: videos.mergeLibrarySlice,
+        selectionRecords: () => new Map() },
     });
     const inputs = { channelId: 'UC' + 'a'.repeat(22), videoType: 'long', conditions: catalogue.createInitialCatalogueConditions(), timeZone: 'UTC',
       scopeKey: 'scope', selectionScopeKey: 'selection', enabled: true, gates: null, growthAllowed: false, onGrowthUnavailable() {},
-      onAnnouncement() {}, translate: async () => { throw new Error('planLibraryOpen is replaced'); },
+      refreshEnvironment: idleRefresh, onAnnouncement() {}, translate: async () => { throw new Error('planLibraryOpen is replaced'); },
       request: (path, body, signal) => new Promise((resolve, reject) => calls.push({ path, body, signal, resolve, reject })) };
     host.mount(browse.useCatalogueBrowse, inputs);
     await flush();
@@ -687,52 +1009,408 @@ function compiled(file, imports = {}) {
   console.log('after a failed next page, a successful retry clears the error and automatic loading resumes (500, 503, 429, offline, 422).');
 }
 
-// 13. "Select all matching" refused for size, time or a turned-off field says so in plain words, keeps the
-// selection and never shows "HTTP 422". The real hook, driven offline.
+// Current pages carry their own clock and one forward cursor. Changes to
+// counters between reads can move a video across the keyset boundary.
+{
+  const { request, response } = example('long_first_anchor');
+  request.consistency = 'current';
+  request.page = { size: response.rows.length };
+  response.context.consistency = 'current';
+  delete response.context.frozen_ref;
+  response.page = { has_more: true, next_cursor: 'next-page' };
+  const parse = () => videos.parseLibraryPage(response, { request, channelId: request.scope.id });
+  const first = parse();
+  request.page.anchor_id = first.videos[0].video_id;
+  assert.equal(parse().browse.anchor_video_id, request.page.anchor_id);
+  request.page.anchor_id = 'Missing0000';
+  assert.equal(parse().browse.anchor_video_id, null, 'ordinary first page after a missing anchor');
+  delete request.page.anchor_id;
+  assert.equal(first.browse.total_count, undefined);
+  assert.equal(first.browse.frozen_ref, undefined);
+  request.page.after = 'next-page';
+  response.page = { has_more: false, next_cursor: null };
+  const last = parse();
+  assert.equal(videos.mergeLibraryPages(first, last, 'next').videos.length, first.videos.length);
+  // A second continuation of an earlier immutable page owns its own ID index.
+  const forkPage = id => ({ ...first, videos: [{ ...first.videos[0], video_id: id }] });
+  const a = videos.mergeLibraryPages(first, forkPage('freshA00000'), 'next');
+  const ab = videos.mergeLibraryPages(a, forkPage('freshB00000'), 'next');
+  const ac = videos.mergeLibraryPages(a, forkPage('freshC00000'), 'next');
+  assert.ok(!a.videos.some(v => v.video_id === 'freshB00000'));
+  assert.equal(videos.mergeLibraryPages(ac, forkPage('freshB00000'), 'next').videos.length, ab.videos.length + 1);
+  // Wall and monotonic deadlines stay independent when earlier pages remain on screen.
+  const now = Date.now(), mono = performance.now();
+  const timed = (id, ttl) => lifetime.captureSourceLifetime({ ...forkPage(id),
+    source_read_at: new Date(now).toISOString(), source_expires_at: new Date(now + ttl).toISOString(),
+    videos: [{ video_id: id }] }, undefined, mono);
+  // Time alone removes no loaded row: both stay when the earlier page's lifetime has passed on either clock.
+  const mixed = videos.mergeLibraryPages(timed('freshA00000', 2000), timed('freshB00000', 9000), 'next');
+  assert.equal(videos.shownCatalogueVideos(mixed, now, mono), mixed.videos);
+  for (const [wall, monotonic] of [[now + 2500, mono], [now, mono + 2500], [now + 86_400_000, mono + 86_400_000]]) {
+    assert.deepEqual(videos.shownCatalogueVideos(mixed, wall, monotonic).map(v => v.video_id), ['freshA00000', 'freshB00000']);
+  }
+  contract(() => videos.pageIdentity(first), /fixed list/);
+  response.context.frozen_ref = 'unexpected';
+  contract(parse);
+  delete response.context.frozen_ref;
+  response.page.has_more = true;
+  contract(parse, /continuation/);
+}
+
+// 13. "Select all matching" takes the whole list without a read; past the list limit it says so in plain
+// words. "Open in research workshop" refused for size, time or a turned-off field says so in plain words,
+// never "HTTP 422". The real hook, driven offline.
 {
   const errors = await import('../application/frontend/src/explorer/libraryData/errors.ts');
   class ApiError extends Error { constructor(message, status, code, limit) { super(message); this.name = 'ExplorerApiError'; this.status = status; this.code = code; if (limit) this.limit = limit; } }
   const future = new Date(Date.now() + 600_000).toISOString();
-  const first = { videos: [{ video_id: 'v0000000000' }], browse: { session_key: 's1', frozen_ref: 'ref0', expires_at: future,
-    next_cursor: 'after-50', previous_cursor: null, start_index: 0, total_count: 5761 } };
+  const listIds = Array.from({ length: 5761 }, (_, i) => 'v' + String(i).padStart(10, '0'));
+  const first = (order) => ({ videos: [{ video_id: listIds[0] }], browse: { consistency: 'current', session_key: 's1', expires_at: future,
+    next_cursor: 'after-50', previous_cursor: null, start_index: 0, end_index: 1, left_results: 0, query_fingerprint: 'q', order } });
   const http422 = 'The request was not accepted (HTTP 422).';
-  for (const [failure, text] of [
-    [new ApiError(http422, 422, 'query_budget_exceeded'), 'This selection is too large to browse at once. Narrow the filters.'],
-    [new ApiError(http422, 422, 'query_budget_exceeded', 'time'), 'This selection took too long to prepare. Narrow the filters or try again.'],
-    [new ApiError(http422, 422, 'field_disabled'), 'A field in these filters is turned off in Collection fields. Remove that condition or turn the field on.'],
-  ]) {
+  const mount = (calls) => {
     const host = reactHookHost();
-    const calls = [];
     const browse = compiled('useCatalogueBrowse.ts', {
-      react: host.React, '../sourceLifetimeReact': { useSourceExpiry() {} },
-      '../sourceLifetime.ts': { freshSourceRows: (rows) => rows, sourceContainer: (value) => value },
+      react: host.React, './catalogueRefresh.ts': refresh,
+      '../sourceLifetime.ts': { sourceContainer: (value) => value },
       './catalogueBrowse': compiled('catalogueBrowse.ts'), './catalogueQuery': { catalogueUsesGrowthFilters: () => false },
       './format': { videoNoun: (count) => (count === 1 ? 'video' : 'videos') }, './libraryData/wire.ts': wire,
       './libraryData/savedLibrary.ts': { planLibraryOpen: async () => ({ status: 'run', note: '',
         translation: { status: 'translated', query: { where: null } }, request: { page: { size: 50 }, select: [] } }) },
       './libraryData/errors.ts': errors,
       './libraryData/videos.ts': { libraryFrozenFields: () => [], libraryGrowthFields: () => [], parseLibraryPage: (raw) => raw,
-        mergeLibraryPages: (current, next) => ({ ...next, videos: [...current.videos, ...next.videos] }),
-        parseFrozenIds: () => [], selectionRecords: () => new Map() },
+        shownCatalogueVideos: (p) => p.videos, nextCatalogueExpiry: () => Infinity, mergeLibraryPages: (current, next) => ({ ...next, videos: [...current.videos, ...next.videos] }),
+        listHasMore: videos.listHasMore, listSlice: videos.listSlice, mergeLibrarySlice: videos.mergeLibrarySlice,
+        selectionRecords: videos.selectionRecords },
     });
     host.mount(browse.useCatalogueBrowse, { channelId: 'UC' + 'a'.repeat(22), videoType: 'long',
       conditions: catalogue.createInitialCatalogueConditions(), timeZone: 'UTC', scopeKey: 'scope', selectionScopeKey: 'selection',
-      enabled: true, gates: null, growthAllowed: false, onGrowthUnavailable() {}, onAnnouncement() {},
+      enabled: true, gates: null, growthAllowed: false, onGrowthUnavailable() {}, onAnnouncement() {}, refreshEnvironment: idleRefresh,
       translate: async () => { throw new Error('planLibraryOpen is replaced'); },
       request: (path, body, signal) => new Promise((resolve, reject) => calls.push({ path, body, signal, resolve, reject })) });
+    return host;
+  };
+  {
+    const calls = [], host = mount(calls);
     await flush();
-    calls[0].resolve(first); await flush();
-    const selecting = host.current.collectMatching(new AbortController().signal, () => {});
-    await flush();
-    assert.equal(calls[1].path, wire.ROUTES.frozenIds);
-    calls[1].reject(failure);
-    await assert.rejects(selecting, (error) => error.message === text && !/HTTP 422/.test(error.message), `${failure.code}:${failure.limit}`);
-    assert.equal(host.current.frozenIds, undefined, 'the existing selection is not replaced');
+    calls[0].resolve(first({ ids: listIds, total: listIds.length, limit: 200000 })); await flush();
+    const progress = [];
+    const records = await host.current.collectMatching(new AbortController().signal, (value) => progress.push(value));
+    assert.deepEqual(records.map((row) => row.video_id), listIds, 'every video of the list, in its order');
+    assert.equal(calls.length, 1, 'no further read');
+    assert.deepEqual(progress, [{ received: 5761, total: 5761 }]);
+    assert.deepEqual(host.current.listIds, listIds);
     host.unmount();
   }
-  console.log('Select all matching refused for size, time or a turned-off field shows plain words, not HTTP 422.');
+  {
+    const calls = [], host = mount(calls);
+    await flush();
+    calls[0].resolve(first({ ids: null, total: 250000, limit: 200000 })); await flush();
+    await assert.rejects(host.current.collectMatching(new AbortController().signal, () => {}),
+      (error) => /This list has 250,000 videos, more than the 200,000/.test(error.message) && /Existing selection is kept\./.test(error.message));
+    assert.equal(calls.length, 1);
+    assert.equal(host.current.listIds, undefined);
+    host.unmount();
+  }
+  for (const [failure, text] of [
+    [new ApiError(http422, 422, 'query_budget_exceeded'), 'This selection is too large to browse at once. Narrow the filters.'],
+    [new ApiError(http422, 422, 'query_budget_exceeded', 'time'), 'This selection took too long to prepare. Narrow the filters or try again.'],
+    [new ApiError(http422, 422, 'field_disabled'), 'A field in these filters is turned off in Collection fields. Remove that condition or turn the field on.'],
+  ]) {
+    const calls = [], host = mount(calls);
+    await flush();
+    calls[0].resolve(first({ ids: listIds, total: listIds.length, limit: 200000 })); await flush();
+    const opening = host.current.freezeForWorkshop();
+    await flush();
+    assert.equal(calls[0].body.consistency, 'current');
+    assert.equal(calls[1].path, wire.ROUTES.execute);
+    assert.equal(calls[1].body.consistency, 'frozen');
+    assert.deepEqual(calls[1].body.page, { size: 50 }, 'the fixed list has no list or slice options');
+    calls[1].reject(failure);
+    await assert.rejects(opening, (error) => errors.libraryErrorState(error, 'select_all').message === text
+      && !/HTTP 422/.test(errors.libraryErrorState(error, 'select_all').message), `${failure.code}:${failure.limit}`);
+    host.unmount();
+  }
+  console.log('Select all matching takes the whole list without a read; past the limit and workshop refusals are plain words.');
 }
 
+
+// One list per query (the real hook, driven offline). Its first page brings the ordered IDs; later pages are
+// slices of them; a sort change opens the new list at its top; Reload and Refresh order of the same list open at
+// the remembered card with everything above it reachable; time alone never reads the list again.
+{
+  const host = reactHookHost();
+  const ids = Array.from({ length: 1001 }, (_, i) => 'v' + String(i).padStart(10, '0'));
+  const calls = [];
+  const browse = compiled('useCatalogueBrowse.ts', {
+    react: host.React, './catalogueRefresh.ts': refresh,
+    '../sourceLifetime.ts': lifetime,
+    './catalogueBrowse': compiled('catalogueBrowse.ts'), './catalogueQuery': { catalogueUsesGrowthFilters: () => false },
+    './format': { videoNoun: () => 'videos' }, './libraryData/wire.ts': wire,
+    './libraryData/savedLibrary.ts': { planLibraryOpen: async () => ({ status: 'run', translation: { query: {} }, request: { page: { size: 50 } } }) },
+    './libraryData/errors.ts': await import('../application/frontend/src/explorer/libraryData/errors.ts'),
+    './libraryData/videos.ts': { libraryFrozenFields: () => [], libraryGrowthFields: () => [], parseLibraryPage: raw => raw,
+      shownCatalogueVideos: videos.shownCatalogueVideos, nextCatalogueExpiry: videos.nextCatalogueExpiry,
+      expiringCatalogueIds: videos.expiringCatalogueIds, refreshLibraryRows: videos.refreshLibraryRows,
+      selectionRecords: videos.selectionRecords, mergeLibraryPages: videos.mergeLibraryPages,
+      listHasMore: videos.listHasMore, listSlice: videos.listSlice, mergeLibrarySlice: videos.mergeLibrarySlice,
+      listPosition: videos.listPosition, parseFrozenIds: (raw) => raw.ids },
+  });
+  const initial = { channelId: 'UC' + 'a'.repeat(22), videoType: 'long', scopeKey: 'views-desc\nreload:0', listKey: 'views-desc',
+    selectionScopeKey: 'channel-A', enabled: true, gates: null, growthAllowed: false, onAnnouncement() {}, onGrowthUnavailable() {},
+    refreshEnvironment: idleRefresh,
+    request: (path, body) => new Promise((resolve, reject) => calls.push({ path, body, resolve, reject })) };
+  host.mount(browse.useCatalogueBrowse, initial);
+  await flush();
+  const until = new Date(Date.now() + 600_000).toISOString();
+  const order = (list = ids) => ({ ids: list, total: list.length, limit: 200000 });
+  // What parseLibraryPage returns for a list page (from `start`) or a slice (`list` undefined).
+  const reply = (session, rows, { list, start = 0, more = false } = {}) => ({
+    contract_version: 1, video_type: 'long', channel: { channel_id: initial.channelId }, growth: false, columns: ['video.id'], time_zone: 'UTC',
+    videos: rows.map((id) => ({ video_id: id, video_type: 'long' })),
+    browse: { consistency: 'current', session_key: session, query_fingerprint: 'same-query', created_at: until, expires_at: until,
+      start_index: start, end_index: start + rows.length, previous_cursor: null, next_cursor: more ? 'cursor' : null,
+      anchor_video_id: null, left_results: 0, ...(list ? { order: order(list) } : {}) },
+    pagination: { matched_count: list?.length, offset: start, returned_count: rows.length, has_more_in_scan: more },
+    coverage: { complete: true },
+  });
+  assert.deepEqual(calls[0].body.page, { size: 50, growth_lifetime: 'page', order: 'ids' }, 'a new list starts at its top');
+  calls[0].resolve(reply('read1', ids.slice(0, 50), { list: ids, more: true })); await flush();
+  assert.equal(host.current.order.total, 1001);
+  assert.equal(host.current.hasMore, true);
+  assert.equal(host.current.hasPrevious, false);
+  assert.equal(host.current.startsBelowTop, false);
+  host.current.onLoadMore(); await flush();
+  assert.deepEqual(calls[1].body.page, { size: 50, growth_lifetime: 'page', ids: ids.slice(50, 100) }, 'the next slice of the list');
+  // A video of the slice left the results meanwhile: counted, never replaced, and the list goes on after it.
+  calls[1].resolve(reply('slice', ids.slice(50, 100).filter((id) => id !== ids[60]))); await flush();
+  assert.equal(host.current.state.payload.videos.length, 99);
+  assert.equal(host.current.leftResults, 1);
+  host.current.onLoadMore(); await flush();
+  assert.deepEqual(calls[2].body.page.ids, ids.slice(100, 150));
+  calls[2].resolve(reply('slice', ids.slice(100, 150))); await flush();
+  assert.equal(host.current.state.payload.videos.length, 149);
+  assert.equal(host.current.sessionKey, 'read1', 'slices belong to the read of the list');
+  // Select all matching: the whole list without a read.
+  const selected = await host.current.collectMatching(new AbortController().signal, () => {});
+  assert.deepEqual(selected.map((row) => row.video_id), ids);
+  assert.equal(calls.length, 3);
+  // Time alone never reads the list again, and the loaded cards stay (their background update: test_library_videos_refresh.mjs).
+  assert.equal(calls.length, 3);
+  assert.equal(host.current.state.payload.videos.length, 149, 'loaded cards stay');
+  // Reload of the same list opens at the remembered card; everything above it is reachable.
+  const visibleId = ids[177];
+  host.current.onAnchorChange({ videoId: visibleId, offsetPx: 17 });
+  host.update({ ...initial, scopeKey: 'views-desc\nreload:1' }); await flush();
+  assert.deepEqual(calls[3].body.page, { size: 50, growth_lifetime: 'page', order: 'ids', anchor_id: visibleId });
+  const resumed = reply('read2', ids.slice(177, 227), { list: ids, start: 177, more: true });
+  resumed.browse.anchor_video_id = visibleId;
+  calls[3].resolve(resumed); await flush();
+  assert.equal(host.current.restoreAnchor.videoId, visibleId);
+  assert.equal(host.current.startsBelowTop, true);
+  assert.equal(host.current.hasPrevious, true);
+  host.current.onLoadPrevious(); await flush();
+  assert.deepEqual(calls[4].body.page.ids, ids.slice(127, 177), 'the slice above the remembered card');
+  calls[4].resolve(reply('slice', ids.slice(127, 177))); await flush();
+  assert.equal(host.current.state.payload.browse.start_index, 127);
+  assert.equal(host.current.state.payload.videos[0].video_id, ids[127]);
+  // A sort change (same matched set, same selection) opens the new list at its top, never at the remembered card.
+  host.current.onAnchorChange({ videoId: ids[150], offsetPx: 0 });
+  const reversed = [...ids].reverse();
+  host.update({ ...initial, scopeKey: 'views-asc\nreload:1', listKey: 'views-asc' }); await flush();
+  assert.equal(host.current.state.kind, 'loading');
+  assert.deepEqual(calls[5].body.page, { size: 50, growth_lifetime: 'page', order: 'ids' }, 'no anchor after a sort change');
+  calls[5].resolve(reply('read3', reversed.slice(0, 50), { list: reversed, more: true })); await flush();
+  assert.equal(host.current.restoreAnchor, undefined);
+  assert.equal(host.current.anchorMissing, false);
+  assert.equal(host.current.state.payload.videos[0].video_id, reversed[0]);
+  // Refresh order keeps the remembered card of this list; Show from the beginning is a plain reset.
+  host.current.onAnchorChange({ videoId: reversed[60], offsetPx: 0 });
+  host.current.onRefreshOrder(); await flush();
+  assert.equal(host.current.state.kind, 'updating', 'the loaded cards stay while the list is read again');
+  assert.equal(calls[6].body.page.anchor_id, reversed[60]);
+  calls[6].resolve(reply('read4', reversed.slice(0, 50), { list: reversed, more: true })); await flush();
+  assert.equal(host.current.anchorMissing, true, 'the remembered card is gone: the top, said so');
+  host.current.onStartFromBeginning(); await flush();
+  assert.equal(calls[7].body.page.anchor_id, undefined);
+  calls[7].resolve(reply('read5', reversed.slice(0, 50), { list: reversed, more: true })); await flush();
+  assert.equal(host.current.anchorMissing, false);
+  // Remembered at the list's very top: reading it again starts at the top, so videos that arrived above are in view.
+  host.current.onAnchorChange({ videoId: reversed[0], offsetPx: 0 });
+  host.current.onRefreshOrder(); await flush();
+  assert.equal(calls[8].body.page.anchor_id, undefined);
+  const newest = ['vNEW0000000', ...reversed];
+  calls[8].resolve(reply('read6', newest.slice(0, 50), { list: newest, more: true })); await flush();
+  assert.equal(host.current.state.payload.videos[0].video_id, 'vNEW0000000');
+  // "Open in research workshop" fixes the same query without list options.
+  const fixedList = { ...reply('fixed', []), browse: { consistency: 'frozen', session_key: 'fixed', frozen_ref: 'reference', total_count: 1002,
+    expires_at: until, query_fingerprint: 'same-query' } };
+  const opening = host.current.freezeForWorkshop(); await flush();
+  assert.deepEqual([calls[9].body.consistency, calls[9].body.page], ['frozen', { size: 50 }]);
+  calls[9].resolve(fixedList);
+  assert.equal((await opening).browse.frozen_ref, 'reference');
+  assert.equal(calls.length, 10, 'no ID export without a selection to check');
+  // "Send selected" of the whole list: the fixed list goes only when it holds exactly the selected videos.
+  const sending = host.current.freezeForWorkshop(new Set(newest)); await flush();
+  calls[10].resolve(fixedList); await flush();
+  assert.deepEqual([calls[11].path, calls[11].body], [wire.ROUTES.frozenIds, { version: 1, frozen_ref: 'reference' }]);
+  calls[11].resolve({ ids: [...newest].reverse() });
+  assert.equal((await sending).browse.frozen_ref, 'reference', 'the same videos in another order are the selection');
+  const changed = host.current.freezeForWorkshop(new Set(newest)); await flush();
+  calls[12].resolve(fixedList); await flush();
+  calls[13].resolve({ ids: [...newest.slice(1), 'vLATE000000'] });
+  await assert.rejects(changed, (error) => error.message === browse.selectionChangedText(1002, 1002)
+    && /Nothing was sent\./.test(error.message));
+  // Another channel: a busy slice keeps the cards; withdrawn access removes them.
+  host.update({ ...initial, scopeKey: 'channel-B\nreload:1', listKey: 'channel-B', selectionScopeKey: 'channel-B' });
+  await flush();
+  const permitted = reply('read7', [visibleId], { list: [visibleId, ids[1]], more: true });
+  permitted.videos[0].title = 'Visible while permitted';
+  calls[14].resolve(permitted); await flush();
+  host.current.onLoadMore(); await flush();
+  assert.deepEqual(calls[15].body.page.ids, [ids[1]]);
+  calls[15].reject(Object.assign(new Error('Busy'), { code: 'query_busy', status: 503 })); await flush();
+  assert.equal(host.current.state.payload.videos[0].title, permitted.videos[0].title);
+  assert.ok(host.current.loadMoreError);
+  host.current.onLoadMore(); await flush();
+  calls[16].reject(Object.assign(new Error('Permission withdrawn'), { status: 403 })); await flush();
+  assert.equal(host.current.state.kind, 'error');
+  assert.equal(host.current.state.previous, undefined);
+  assert.equal(host.current.executed, undefined);
+  assert.equal(host.current.sessionKey, undefined);
+  assert.ok(host.current.accessRevision > 0);
+  host.unmount();
+  console.log('One list: slices, nothing restarts by time, Reload at the remembered card, a sort change at the top.');
+}
+
+// Past the ordered-list limit (no IDs): pages continue by cursor, and after the cursor's lifetime from the last loaded
+// card with the same page size (the size is part of the query; the next cursor continues it). Reload at a remembered
+// card offers the way back to the top.
+{
+  const host = reactHookHost();
+  const calls = [];
+  const browse = compiled('useCatalogueBrowse.ts', {
+    react: host.React, './catalogueRefresh.ts': refresh, '../sourceLifetime.ts': lifetime,
+    './catalogueBrowse': compiled('catalogueBrowse.ts'), './catalogueQuery': { catalogueUsesGrowthFilters: () => false },
+    './format': { videoNoun: () => 'videos' }, './libraryData/wire.ts': wire,
+    './libraryData/savedLibrary.ts': { planLibraryOpen: async () => ({ status: 'run', translation: { query: {} }, request: { page: { size: 50 } } }) },
+    './libraryData/errors.ts': await import('../application/frontend/src/explorer/libraryData/errors.ts'),
+    './libraryData/videos.ts': { libraryFrozenFields: () => [], libraryGrowthFields: () => [], parseLibraryPage: raw => raw,
+      shownCatalogueVideos: videos.shownCatalogueVideos, nextCatalogueExpiry: videos.nextCatalogueExpiry,
+      expiringCatalogueIds: videos.expiringCatalogueIds, refreshLibraryRows: videos.refreshLibraryRows,
+      selectionRecords: videos.selectionRecords, mergeLibraryPages: videos.mergeLibraryPages,
+      listHasMore: videos.listHasMore, listSlice: videos.listSlice, mergeLibrarySlice: videos.mergeLibrarySlice,
+      listPosition: videos.listPosition, parseFrozenIds: (raw) => raw.ids },
+  });
+  const ids = Array.from({ length: 200 }, (_, i) => 'w' + String(i).padStart(10, '0'));
+  const initial = { channelId: 'UC' + 'a'.repeat(22), videoType: 'long', scopeKey: 'big\nreload:0', listKey: 'big',
+    selectionScopeKey: 'big', enabled: true, gates: null, growthAllowed: false, onAnnouncement() {}, onGrowthUnavailable() {},
+    refreshEnvironment: idleRefresh,
+    request: (path, body) => new Promise((resolve, reject) => calls.push({ path, body, resolve, reject })) };
+  host.mount(browse.useCatalogueBrowse, initial);
+  await flush();
+  const live = new Date(Date.now() + 600_000).toISOString(), gone = new Date(Date.now() - 1000).toISOString();
+  const reply = (rows, { cursor = null, expires = live, anchor = null, listed = false } = {}) => ({
+    contract_version: 1, video_type: 'long', channel: { channel_id: initial.channelId }, growth: false, columns: ['video.id'], time_zone: 'UTC',
+    videos: rows.map((id) => ({ video_id: id, video_type: 'long' })),
+    browse: { consistency: 'current', session_key: 'big-read', query_fingerprint: 'same-query', created_at: live, expires_at: expires,
+      start_index: 0, end_index: rows.length, previous_cursor: null, next_cursor: cursor, anchor_video_id: anchor, left_results: 0,
+      ...(listed ? { order: { ids: null, total: 250000, limit: 200000 } } : {}) },
+    pagination: { matched_count: listed ? 250000 : undefined, offset: 0, returned_count: rows.length, has_more_in_scan: Boolean(cursor) },
+    coverage: { complete: true },
+  });
+  calls[0].resolve(reply(ids.slice(0, 50), { cursor: 'c1', expires: gone, listed: true })); await flush();
+  assert.deepEqual([host.current.order.total, host.current.listIds, host.current.hasMore, host.current.hasPrevious, host.current.startsBelowTop],
+    [250000, undefined, true, false, false]);
+  // The cursor's lifetime has passed: the next page starts at the last loaded card, with the same size.
+  host.current.onLoadMore(); await flush();
+  assert.deepEqual(calls[1].body.page, { size: 50, growth_lifetime: 'page', anchor_id: ids[49] });
+  const resumed = reply(ids.slice(49, 99), { cursor: 'c2', anchor: ids[49] });
+  calls[1].resolve(resumed); await flush();
+  assert.deepEqual(host.current.state.payload.videos.map((video) => video.video_id), ids.slice(0, 99), 'the card itself is not repeated');
+  assert.equal(host.current.state.payload.pagination.matched_count, 250000);
+  assert.equal(host.current.loadMoreError, undefined);
+  // ... and its cursor continues the same query.
+  host.current.onLoadMore(); await flush();
+  assert.deepEqual(calls[2].body.page, { size: 50, growth_lifetime: 'page', after: 'c2' });
+  calls[2].resolve(reply(ids.slice(99, 149), { cursor: 'c3' })); await flush();
+  assert.equal(host.current.state.payload.videos.length, 149);
+  // Reload at a remembered card: nothing above it can load by slices, so "Show from the beginning" is offered.
+  host.current.onAnchorChange({ videoId: ids[120], offsetPx: 0 });
+  host.update({ ...initial, scopeKey: 'big\nreload:1' }); await flush();
+  assert.equal(calls[3].body.page.anchor_id, ids[120]);
+  calls[3].resolve(reply(ids.slice(120, 170), { cursor: 'c4', anchor: ids[120], listed: true })); await flush();
+  assert.deepEqual([host.current.startsBelowTop, host.current.hasPrevious], [true, false]);
+  host.current.onStartFromBeginning(); await flush();
+  assert.equal(calls[4].body.page.anchor_id, undefined);
+  calls[4].resolve(reply(ids.slice(0, 50), { cursor: 'c5', listed: true })); await flush();
+  assert.equal(host.current.startsBelowTop, false);
+  // At the very top of such a list, reading it again starts at the top too.
+  host.current.onAnchorChange({ videoId: ids[0], offsetPx: 0 });
+  host.current.onRefreshOrder(); await flush();
+  assert.equal(calls[5].body.page.anchor_id, undefined);
+  host.unmount();
+  console.log('Past the limit: cursor pages, resumption at the last card with the same size, the way back to the top.');
+}
+
+// One ordered list on the wire (real rows of the fixture as current replies): the first page is the list's
+// slice at its first row, slices are the requested videos in their order, nothing repeats or is skipped.
+{
+  const ids = example('long_frozen_ids').response.ids;
+  const current = (name, page, mutate) => {
+    const { request, response } = example(name);
+    request.consistency = 'current';
+    request.page = page;
+    response.context.consistency = 'current';
+    delete response.context.frozen_ref;
+    mutate?.(response, request);
+    return { request, response };
+  };
+  const parse = ({ request, response }) => videos.parseLibraryPage(response, { request, channelId: request.scope.id });
+  const order = { total_count: ids.length, ids: ids.join(''), limit: 200000 };
+  const first = current('long_first_anchor', { size: 4, growth_lifetime: 'page', order: 'ids', anchor_id: example('long_first_anchor').response.rows[0].id },
+    (response) => { response.page = { has_more: true, next_cursor: 'next-page', order: clone(order) }; });
+  const a = parse(first);
+  assert.deepEqual([a.browse.start_index, a.browse.end_index, a.browse.order.total, a.pagination.matched_count], [4, 8, 37, 37]);
+  assert.deepEqual([videos.listHasMore(a, 'next'), videos.listHasMore(a, 'previous')], [true, true]);
+  assert.deepEqual(videos.listSlice(a, 'next', 4), ids.slice(8, 12));
+  assert.deepEqual(videos.listSlice(a, 'previous', 4), ids.slice(0, 4));
+  assert.equal(videos.listPosition(a.browse.order, ids[20]), 20);
+  assert.equal(videos.listPosition(a.browse.order, 'zzzzzzzzzzz'), -1);
+  const broken = (change) => { const value = clone(first); change(value); return () => parse(value); };
+  contract(broken((v) => { delete v.request.page.anchor_id; }), /not a slice/);
+  contract(broken((v) => { v.response.page.order.ids = [...ids].reverse().join(''); }), /not a slice/);
+  contract(broken((v) => { v.response.page.order.ids = [...ids.slice(0, 36), ids[0]].join(''); }), /repeated/);
+  contract(broken((v) => { v.response.page.order.total_count = 36; }), /every video once/);
+  contract(broken((v) => { v.response.page.order = { total_count: 37, ids: null, limit: 200000 }; }), /withheld/);
+  contract(broken((v) => { delete v.response.page.order; }), /missing key/);
+  contract(broken((v) => { v.response.page.has_more = false; v.response.page.next_cursor = null; }), /not a slice/);
+  const withheld = clone(first);
+  withheld.response.page.order = { total_count: 250000, ids: null, limit: 200000 };
+  const past = parse(withheld);
+  assert.deepEqual([past.browse.order.ids, past.pagination.matched_count, videos.listHasMore(past, 'previous')], [null, 250000, false]);
+  // Slices: the frozen next and previous pages' rows, as current replies of exactly those IDs.
+  const nextIds = ids.slice(8, 12), previousIds = ids.slice(0, 4);
+  const slice = (name, wanted) => current(name, { size: 4, growth_lifetime: 'page', ids: wanted },
+    (response) => { response.page = { has_more: false, next_cursor: null }; });
+  const b = videos.mergeLibrarySlice(a, parse(slice('long_next', nextIds)), 'next', nextIds);
+  const c = videos.mergeLibrarySlice(b, parse(slice('long_previous', previousIds)), 'previous', previousIds);
+  assert.deepEqual(c.videos.map((video) => video.video_id), ids.slice(0, 12), 'nothing skipped or repeated');
+  assert.deepEqual([c.browse.start_index, c.browse.end_index, c.browse.left_results, c.pagination.matched_count], [0, 12, 0, 37]);
+  const gap = slice('long_next', nextIds);
+  gap.response.rows.splice(1, 1);
+  const d = videos.mergeLibrarySlice(a, parse(gap), 'next', nextIds);
+  assert.deepEqual([d.videos.length, d.browse.end_index, d.browse.left_results], [7, 12, 1], 'a video that left is counted, not replaced');
+  assert.deepEqual(videos.listSlice(d, 'next', 4), ids.slice(12, 16));
+  const swapped = slice('long_next', nextIds);
+  swapped.response.rows.reverse();
+  contract(() => parse(swapped), /requested videos/);
+  const foreign = slice('long_next', ids.slice(20, 24));
+  contract(() => parse(foreign), /requested videos/);
+  contract(() => videos.mergeLibrarySlice(a, parse(slice('long_next', nextIds)), 'previous', nextIds), /next slice/);
+  contract(() => videos.mergeLibrarySlice(c, parse(slice('long_next', nextIds)), 'next', nextIds), /next slice/);
+  console.log('Ordered list on the wire: slice of its list, strict IDs, slices in order, gaps counted.');
+}
 
 // An expired first-loading report coexists with fresh stored videos. Both Library
 // sections must hand the current sample to their display components.
@@ -749,13 +1427,15 @@ function compiled(file, imports = {}) {
     has: () => true, get: (target, key) => target[key] ?? {},
   });
   const { LibraryVideosSection } = compiled('LibraryVideosSection.tsx', importsFor({
+    './AlertEditor': { WatchSelection: () => 'Watch selection' },
     './ExplorerVideosWorkspace': { ExplorerVideosWorkspace: ({ rawState }) => String(rawState.payload.videos.length) + ' cards' },
   }));
   const grid = renderToStaticMarkup(React.createElement(LibraryVideosSection, { context: shell, videos: {
-    visibleRawState: { kind: 'ready', payload: { videos: cards } }, browse: { translated: {} },
+    visibleRawState: { kind: 'ready', payload: { videos: cards } }, visibleFacetState: { kind: 'idle' }, browse: { translated: {} },
     conditions: {}, applied: {}, growthSortAvailable: true,
   } }));
   assert.match(grid, /75 cards/);
+  assert.match(grid, /Watch selection/);
   const { OverviewPanel } = compiled('ExplorerPanels.tsx', importsFor({
     '../sourceLifetime': lifetime, './resourceState': { resourcePayload: state => state.payload },
     './ChannelFingerprint': { ChannelFingerprint: ({ payload }) => String(payload.sample.matched_video_count) + ' matched' },
@@ -800,4 +1480,35 @@ console.log('Library Videos passed.');
   assert.equal(calls[0].url,'/channels/'+props.channelId+'/explorer/list-check/short');
   assert.equal(calls[0].init.headers['X-Saved-Work'],'1');
   assert.equal(JSON.parse(calls[0].init.body).previous,null);
+}
+
+{
+  const defaults = { name:'Views', event:'video.views', direction:'up', threshold:'100', scope:{kind:'channel',id:'UC'+'a'.repeat(22)} };
+  const mod = (react, requestJson) => compiled('AlertEditor.tsx', {
+    './alerts.css': {}, react, 'react/jsx-runtime':jsxRuntime, './api': {requestJson},
+    '../sourceLifetime':lifetime, '../sourceLifetimeReact': {useSourceExpiry:()=>{}},
+  });
+  const {WatchSelection}=mod(React,()=>assert.fail('opening Library must not create a rule'));
+  const watch = scope => renderToStaticMarkup(React.createElement(WatchSelection, {query:{scope,video_types:['short']}}));
+  for (const scope of [{kind:'library'},{kind:'saved',id:'view'}]) {
+    assert.match(watch(scope),/<button[^>]*disabled/);
+  }
+  for (const kind of ['channel','folder','label']) {
+    assert.doesNotMatch(watch({kind,id:'fixture'}),/disabled/);
+  }
+  for (const formats of [['short'],['long','short'],[]]) {
+    const host=reactHookHost(), sent=[];
+    const {Editor}=mod(host.React, async (url,_,init)=>{
+      if (url.endsWith('/capabilities')) return {formats};
+      assert.ok(url.endsWith('/rules')); sent.push(JSON.parse(init.body).rule);
+      return {};
+    });
+    const props={initial:defaults,onClose:()=>{},onSaved:()=>{}};
+    host.mount(()=>Editor(props));
+    await flush();
+    await host.current.props.onSubmit({preventDefault() {}});
+    await flush();
+    assert.deepEqual(sent.map(rule=>rule.video_type),formats.slice(0,1));
+    host.unmount();
+  }
 }

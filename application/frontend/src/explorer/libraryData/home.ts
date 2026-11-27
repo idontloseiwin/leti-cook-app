@@ -61,7 +61,7 @@ export type HomePaceMedian = {
 
 type Key = { published_at: string; tied: string[] };
 const KEY_PREFIX = 'home-key-v1:';
-const THUMBNAIL = (id: string) => `https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+const THUMBNAIL = (id: string) => `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
 
 function windowHours(period: ExplorerRecentWindow): number {
   const hours = HOME_WINDOW_HOURS[period];

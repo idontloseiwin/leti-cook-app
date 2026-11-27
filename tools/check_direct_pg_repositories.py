@@ -40,7 +40,7 @@ TITLE = "Probe O'Brien; SELECT 'ÐšÐ¸Ñ—Ð²'"
 VIDEOS = ("aaaaaaaaaaa", "bbbbbbbbbbb", "ccccccccccc", "ddddddddddd", "eeeeeeeeeee")
 BIGINT = 9007199254740993
 # The top-level keys of the real export snapshot (db/user_work/user_work_read_queries._EXPORT_DOCUMENT).
-BACKUP_SNAPSHOT_KEYS = frozenset({"field_preferences", "folders", "labels", "channels", "assignments", "saved_objects",
+BACKUP_SNAPSHOT_KEYS = frozenset({"field_preferences", "alert_rules", "folders", "labels", "channels", "assignments", "saved_objects",
                                   "members", "pending", "reviews"})
 CASES = {
     "user_work": "Folders and labels; Saved view JSON and collection receipts; export conversion, trash restore and pending import.",

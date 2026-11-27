@@ -13,7 +13,7 @@ import re
 import httpx
 
 PROTOCOL_VERSIONS = ('2025-11-25', '2025-06-18', '2025-03-26')
-SERVER_INFO = {'name': 'Leti Cook', 'version': '0.2.0'}
+SERVER_INFO = {'name': 'Leti Cook', 'version': '0.3.0'}
 MAX_REQUEST = 64 * 1024
 MAX_RESPONSE = 2 * 1024 * 1024
 CALL_SECONDS = 35

@@ -33,7 +33,19 @@ export function parseAgentKeyList(value: unknown): AgentKeyList {
       || !Number.isSafeInteger(body.max_keys)) {
     throw new Error('Unexpected agent key response.');
   }
-  return { keys: body.keys.map(parseKey), mcpUrl: body.mcp_url, maxKeys: body.max_keys as number };
+  const endpoint = new URL(body.mcp_url);
+  if (endpoint.username || endpoint.password || endpoint.href !== endpoint.origin + '/mcp') {
+    throw new Error('Unexpected agent key response.');
+  }
+  return { keys: body.keys.map(parseKey), mcpUrl: endpoint.href, maxKeys: body.max_keys as number };
+}
+
+// The parsed endpoint is an ASCII URL. Cursor handles authorization after installation.
+export function cursorInstallUrl(mcpUrl: string): string {
+  const link = new URL('cursor://anysphere.cursor-deeplink/mcp/install');
+  link.searchParams.set('name', 'leti-cook');
+  link.searchParams.set('config', btoa(JSON.stringify({ url: mcpUrl })));
+  return link.href;
 }
 
 // A program the owner allowed on the Allow page; it holds its own tokens.

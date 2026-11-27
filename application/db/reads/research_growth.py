@@ -59,7 +59,12 @@ def metadata_horizon(plan):
 
 
 def joins(plan):
-    return JOINS.replace('{points_until}', points_until(plan)).replace('{metadata_horizon}', metadata_horizon(plan))
+    # A channel catalogue consumes both the evidence and several derived fields
+    # of every row. Keep PostgreSQL from inlining the same expressions into
+    # each of those outputs. Small current pages keep their ordinary planner.
+    fence = " OFFSET 0" if frozen(plan) and plan.request.scope.kind == "channel" else ""
+    return (JOINS.replace("{growth_fence}", fence).replace("{points_until}", points_until(plan))
+            .replace("{metadata_horizon}", metadata_horizon(plan)))
 
 
 # Requires normalized n (video_type, identity_clock, checked_at, metadata_checked_at,
@@ -71,7 +76,7 @@ CROSS JOIN LATERAL (SELECT
  AND n.checked_at>=g_args.evaluated_at-%(growth_window)s::interval AND n.checked_at<=g_args.evaluated_at
  AND n.metadata_checked_at>{metadata_horizon}-%(window)s::interval
  AND n.metadata_checked_at<=g_args.evaluated_at,false) AS fresh,
- {points_until}-%(window)s::interval AS points_from) g_in
+ {points_until}-%(window)s::interval AS points_from{growth_fence}) g_in
 LEFT JOIN LATERAL (
  SELECT s.recorded_at,s.views,s.views_definition_epoch,s.source_expires_at
  FROM readable.video_snapshots s WHERE g_in.in_scope AND g_in.fresh AND n.views IS NOT NULL
@@ -98,14 +103,14 @@ CROSS JOIN LATERAL (SELECT
  CASE WHEN g_full.recorded_at IS NOT NULL THEN g_full.source_expires_at ELSE g_first.source_expires_at END AS expires_at,
  g_end.recorded_at-%(growth_window)s::interval AS window_start,
  CASE WHEN g_in.in_scope AND g_in.fresh THEN n.checked_at END AS end_at,
- CASE WHEN g_in.in_scope AND g_in.fresh THEN n.views END AS end_views) g_start
+ CASE WHEN g_in.in_scope AND g_in.fresh THEN n.views END AS end_views{growth_fence}) g_start
 CROSS JOIN LATERAL (SELECT
  coalesce(g_start.at<=g_start.window_start+%(growth_late_start)s::interval,false) AS ready_window,
  coalesce(g_end.recorded_at-g_start.at>=%(growth_partial_minimum)s::interval,false) AS partial_window,
  CASE WHEN g_start.epoch IS NULL OR g_end.views_definition_epoch IS NULL THEN 'unknown_definition'
  WHEN g_start.epoch<>g_end.views_definition_epoch THEN 'incompatible_definition' END AS epoch_problem,
  coalesce((g_start.at AT TIME ZONE %(growth_time_zone)s::text)::date
- =(g_args.evaluated_at AT TIME ZONE %(growth_time_zone)s::text)::date,false) AS started_today) g_test
+ =(g_args.evaluated_at AT TIME ZONE %(growth_time_zone)s::text)::date,false) AS started_today{growth_fence}) g_test
 CROSS JOIN LATERAL (SELECT CASE
  WHEN NOT g_in.in_scope THEN 'video_not_in_scope'
  WHEN NOT g_in.fresh THEN 'current_data_stale'
@@ -115,18 +120,18 @@ CROSS JOIN LATERAL (SELECT CASE
  WHEN g_test.ready_window THEN NULL
  WHEN g_test.partial_window THEN 'full_window_history_unavailable'
  WHEN g_test.started_today THEN 'tracking_started_today'
- ELSE 'waiting_for_next_snapshot' END AS reason) g_reason
+ ELSE 'waiting_for_next_snapshot' END AS reason{growth_fence}) g_reason
 CROSS JOIN LATERAL (SELECT CASE
  WHEN g_reason.reason IS NULL THEN 'ready'
  WHEN g_reason.reason='full_window_history_unavailable' THEN 'partial'
  WHEN g_reason.reason='tracking_started_today' THEN 'started_today'
  WHEN g_reason.reason='waiting_for_next_snapshot' THEN 'waiting_next_snapshot'
- ELSE 'unavailable' END AS status) g_status
+ ELSE 'unavailable' END AS status{growth_fence}) g_status
 CROSS JOIN LATERAL (SELECT
  CASE WHEN g_status.status<>'unavailable' THEN floor(extract(epoch FROM g_end.recorded_at-g_start.at)) END AS interval_seconds,
  CASE WHEN g_status.status IN('ready','partial') THEN g_end.views::numeric-g_start.views::numeric END AS delta,
  CASE WHEN g_status.status IN('ready','partial')
- THEN abs(g_end.views::numeric-g_start.views::numeric)*8640000 END AS scaled) g_value
+ THEN abs(g_end.views::numeric-g_start.views::numeric)*8640000 END AS scaled{growth_fence}) g_value
 CROSS JOIN LATERAL (SELECT
  CASE WHEN g_value.delta IS NOT NULL THEN trim_scale(0.01*sign(g_value.delta)*(div(g_value.scaled,g_value.interval_seconds)
  +CASE WHEN 2*mod(g_value.scaled,g_value.interval_seconds)>g_value.interval_seconds
@@ -160,6 +165,19 @@ FIELDS = (
  'from_definition_epoch',g_start.epoch,'to_definition_epoch',g_end.views_definition_epoch,
  'time_zone',%(growth_time_zone)s::text) AS observation_growth_28d_evidence""",
 )
+
+
+def split_columns(population_names):
+    """Partition the SQL projection between the population and its output page."""
+    population, page = [], []
+    for expression in FIELDS:
+        name = expression.rsplit(' AS ', 1)[1]
+        if name in population_names:
+            population.append(expression)
+        else:
+            page.append(expression)
+    return population, page
+
 
 # Only the points' own retention ends this result; the horizon keeps them past its life.
 DEADLINES = ('g_start.expires_at', 'g_end.source_expires_at')

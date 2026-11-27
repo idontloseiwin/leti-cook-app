@@ -16,12 +16,15 @@ import anyio
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from provider_sources.channel_search import ChannelSearch
+from provider_sources.errors import PlanRejected
 from provider_sources.service import ServiceRefused
 from provider_sources.wire import MAX_BODY_BYTES
 from saved_work import SavedWorkError, validate_mutation_headers, validate_read_headers
 
 
-def create_provider_sources_router(service):
+def create_provider_sources_router(service, library_states=None):
+    search = ChannelSearch(service, library_states)
     def authorize_owner(request: Request):
         if (getattr(request.state, "installation_access", False) is not True
                 or not callable(getattr(request.state, "owner_access_recheck", None))):
@@ -75,8 +78,32 @@ def create_provider_sources_router(service):
         except ServiceRefused as error:
             return refused(error)
 
+    @router.post("/channel-search/preview")
+    async def search_preview(request: Request):
+        try:
+            validate_read_headers(request.headers, request.url.scheme)
+            raw = await body(request)
+            owner = request.state.owner_access_recheck()
+            if owner is None:
+                raise ServiceRefused("policy_denied", 403)
+            result = await anyio.to_thread.run_sync(lambda: search.preview(raw, owner))
+            return answer(result)
+        except SavedWorkError:
+            return refused(ServiceRefused("cross_origin", 403))
+        except PlanRejected as error:
+            return refused(ServiceRefused(error.code, 422))
+        except ServiceRefused as error:
+            return refused(error)
+
+    @router.post("/channel-search/execute")
+    async def search_execute(request: Request):
+        return await paid_action(request, finding=True)
+
     @router.post("/acquisitions/execute")
     async def execute(request: Request):
+        return await paid_action(request, finding=False)
+
+    async def paid_action(request, *, finding):
         cancelled = Event()
         monitor = None
         try:
@@ -85,7 +112,9 @@ def create_provider_sources_router(service):
             except SavedWorkError:
                 raise ServiceRefused("write_guard", 403) from None
             raw = await body(request)
-            recheck(request)
+            owner = request.state.owner_access_recheck()
+            if owner is None:
+                raise ServiceRefused("policy_denied", 403)
 
             async def watch_disconnect():
                 # The body is read, so the next message can only be the disconnect. Wait for it:
@@ -101,9 +130,14 @@ def create_provider_sources_router(service):
                     return
 
             monitor = asyncio.create_task(watch_disconnect())
-            result = await anyio.to_thread.run_sync(lambda: service.execute(raw, cancelled=cancelled))
+            if finding:
+                result = await anyio.to_thread.run_sync(lambda: search.execute(raw, owner, cancelled, request.state.owner_access_recheck))
+            else:
+                result = await anyio.to_thread.run_sync(lambda: service.execute(raw, cancelled=cancelled))
             recheck(request)   # owner access revoked meanwhile: the values are not handed out
             return answer(result)
+        except PlanRejected as error:
+            return refused(ServiceRefused(error.code, 422))
         except ServiceRefused as error:
             return refused(error)
         finally:

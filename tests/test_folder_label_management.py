@@ -108,7 +108,7 @@ def label(key, name, kind):
 class BackupFormatTests(unittest.TestCase):
     def test_format_1_implies_the_preset_label_unchanged(self):
         result = normalize_backup(backup(1, [label(CUSTOM, 'Fav', 'custom')], ['monetized', CUSTOM]))
-        self.assertEqual(result['version'], 5)
+        self.assertEqual(result['version'], 6)
         self.assertEqual({(r['label_key'], r['name']) for r in result['user_work']['labels']},
                          {(CUSTOM, 'Fav'), ('monetized', 'Monetized')})
         with self.assertRaises(UserWorkError):

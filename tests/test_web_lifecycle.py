@@ -223,6 +223,22 @@ class WebLifespanTests(unittest.TestCase):
                 self.assertNotIn('recorder.start', events)
             self.assertIn('runtime.close', events)
 
+    def test_discovery_maintenance_has_one_owner_with_and_without_websub(self):
+        for configured in (None, ('https://hooks.example.com', object())):
+            with self.subTest(configured=bool(configured)), self.application() as (app, events), \
+                 patch('websub_service.configured_websub', return_value=configured), \
+                 patch('websub_service.WebSubService') as hub, \
+                 patch('runtime.discovery.DiscoveryMaintenance') as owner:
+                with TestClient(app):
+                    owner.assert_called_once()
+                    arguments = owner.call_args.kwargs
+                    self.assertEqual(arguments['ready'], app.state.hot_runtime.require_collection_ready)
+                    self.assertIs(arguments['websub'], hub.return_value if configured else None)
+                    self.assertEqual(hub.call_count, int(bool(configured)))
+                    owner.return_value.start.assert_called_once_with()
+                    owner.return_value.close.assert_not_called()
+                owner.return_value.close.assert_called_once_with()
+
     def test_without_setup_no_collection_supervisor_is_created(self):
         with self.application() as (app, events):
             with TestClient(app):

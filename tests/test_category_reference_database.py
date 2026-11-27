@@ -181,7 +181,7 @@ class CategoryReferenceDatabaseTests(unittest.TestCase):
             CleanupPage.parse("video_snapshots", value, 100)
 
     def test_registered_target_dispatches_once_and_cycle_visits_all_registered_targets(self):
-        self.assertEqual(len(TARGET_FUNCTIONS), 31)
+        self.assertEqual(len(TARGET_FUNCTIONS), 33)
         self.assertEqual(TARGET_FUNCTIONS[TARGET], "cleanup_hot_category_reference")
         self.cleanup_header()
         self.queue(Result(rows=()))

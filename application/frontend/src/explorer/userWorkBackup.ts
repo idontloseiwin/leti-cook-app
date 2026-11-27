@@ -52,16 +52,55 @@ export function parseUserWorkPreferences(value: unknown) {
     collapsed_folder_ids: unique(rows(row.collapsed_folder_ids, 500).map(folderKey), (id) => id),
   };
 }
+function portableAlert(value: unknown, channels: Set<string>, folders: Set<string>, labels: Set<string>) {
+  const row = object(value, ['definition', 'enabled', 'source_ref']);
+  const definition = object(row.definition, ['name', 'scope', 'event'], ['video_type', 'direction', 'threshold', 'min_duration', 'max_duration']);
+  const def = Object.fromEntries(Object.entries(definition).filter(([,v]) => v !== null));
+  if (typeof row.enabled !== 'boolean' || typeof def.name !== 'string' || !/[^\p{White_Space}]/u.test(def.name) ||
+      [...def.name].length > 100 || /[\u0000-\u001f]/.test(def.name)) return fail();
+  const scope = object(def.scope, ['kind','id'], ['include_descendants']);
+  const id = scope.id;
+  if (typeof id !== 'string' || id.trim() !== id || (scope.kind !== 'folder' && scope.include_descendants !== undefined)) return fail();
+  const source_ref = row.source_ref;
+  if (scope.kind === 'channel' || scope.kind === 'video') {
+    if (!(scope.kind === 'channel' ? channelPattern : videoPattern).test(id)) return fail();
+    if (source_ref !== null && (typeof source_ref !== 'string' || !channels.has(source_ref))) return fail();
+  } else if (scope.kind === 'folder' || scope.kind === 'label') {
+    if (scope.kind === 'folder') {
+      if (!uuidPattern.test(id) || id !== id.toLowerCase() || (scope.include_descendants !== undefined && scope.include_descendants !== false)) return fail();
+    } else if (id !== 'monetized' && !/^custom:[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(id)) return fail();
+    if (source_ref !== null && (source_ref !== id || !(scope.kind === 'folder' ? folders : labels).has(id))) return fail();
+  } else return fail();
+  if (typeof def.event !== 'string') return fail();
+  const counter = ['channel.subscribers','video.views','video.likes','video.comments'].includes(def.event);
+  if (!counter && !['video.published','video.unavailable','video.restored'].includes(def.event)) return fail();
+  if (counter) {
+    if (def.direction !== 'up' && def.direction !== 'down' || typeof def.threshold !== 'string' ||
+        !/^(0|[1-9][0-9]{0,18})$/.test(def.threshold) || BigInt(def.threshold) > 9223372036854775807n) return fail();
+  } else if (def.direction !== undefined || def.threshold !== undefined) return fail();
+  const duration = def.min_duration !== undefined || def.max_duration !== undefined;
+  if (def.event === 'channel.subscribers') {
+    if (scope.kind === 'video' || def.video_type !== undefined || duration) return fail();
+  } else if (def.video_type !== 'long' && def.video_type !== 'short') return fail();
+  if (duration && (def.event === 'video.restored' || def.event === 'video.unavailable')) return fail();
+  if (def.min_duration !== undefined) count(def.min_duration);
+  if (def.max_duration !== undefined) count(def.max_duration);
+  if (Number(def.min_duration) > Number(def.max_duration)) return fail();
+  return { definition: def, enabled: row.enabled, source_ref };
+}
 /** Closed projection; even a forged file cannot add arbitrary API fields to a download. */
 export function parseUserWorkBackup(value: unknown) {
   const root = object(value, ['format', 'version', 'created_at', 'user_work', 'browser_preferences']);
   // Format 2 lists the preset Monetized label when it was kept; format 1 implies it.
-  if (root.format !== 'leti-cook-user-work' || (root.version !== 1 && root.version !== 2 && root.version !== 5)) return fail('Unsupported backup format or version.');
-  const version = root.version as 1 | 2 | 5;
-  const work = object(root.user_work, version === 5 ? ['folders','labels','channels','collections','reviews','queries','field_preferences'] : ['folders', 'labels', 'channels', 'collections', 'reviews']);
+  if (root.format !== 'leti-cook-user-work' || (root.version !== 1 && root.version !== 2 && root.version !== 5 && root.version !== 6)) return fail('Unsupported backup format or version.');
+  const version = root.version as 1 | 2 | 5 | 6;
+  const fields = ['folders','labels','channels','collections','reviews'];
+  if (version >= 5) fields.push('queries', 'field_preferences');
+  if (version === 6) fields.push('alert_rules');
+  const work = object(root.user_work, fields);
   const folders = unique(rows(work.folders, 1000).map((value) => {
     const row = object(value, ['id', 'name', 'created_at']);
-    return { id: uuid(row.id), name: text(row.name, 120), created_at: savedTimestamp(row.created_at) };
+    return { id: uuid(row.id), name: text(row.name, 120), created_at: row.created_at === null ? null : savedTimestamp(row.created_at) };
   }), (row) => row.id);
   const labels = unique(rows(work.labels, 1001).map((value) => {
     const row = object(value, ['label_key', 'name', 'label_type', 'created_at']);
@@ -110,7 +149,7 @@ export function parseUserWorkBackup(value: unknown) {
         return { video_id: videoId(member.video_id), added_at: savedTimestamp(member.added_at), ...owner(member) };
       }), (row) => row.video_id) };
   }), (row) => row.id);
-  const queries = version === 5 ? unique(rows(work.queries,1000).map(value => {
+  const queries = version >= 5 ? unique(rows(work.queries,1000).map(value => {
     const view = object(value,['id','name','conditions','revision','created_at','updated_at']);
     const conditions = normalizeSavedConditions(view.conditions);
     if (conditions.version === 1 || conditions.version !== 4 && conditions.query.scope.kind === 'channel') return fail();
@@ -134,8 +173,10 @@ export function parseUserWorkBackup(value: unknown) {
       }), ...owner(row) };
   }), (row) => row.case_id);
   if ([...collections.flatMap((row) => row.members), ...reviews].some((row) => 'channel_ref' in row && !channelRefs.has(row.channel_ref as string))) return fail('The backup refers to a missing channel.');
+  const folderRefs = new Set(folders.map(row => row.id)), labelRefs = new Set(labels.map(row => row.label_key));
+  const alert_rules = version === 6 ? rows(work.alert_rules, 100).map(rule => portableAlert(rule, channelRefs, folderRefs, labelRefs)) : [];
   return { format: 'leti-cook-user-work' as const, version, created_at: savedTimestamp(root.created_at),
-    user_work: { folders, labels, channels, collections, reviews, ...(version === 5 ? { queries } : {}), ...(version === 5 ? { field_preferences:parseFieldPreferences(work.field_preferences) } : {}) }, browser_preferences: parseUserWorkPreferences(root.browser_preferences) };
+    user_work: { folders, labels, channels, collections, reviews, ...(version === 6 ? { alert_rules } : {}), ...(version >= 5 ? { queries } : {}), ...(version >= 5 ? { field_preferences:parseFieldPreferences(work.field_preferences) } : {}) }, browser_preferences: parseUserWorkPreferences(root.browser_preferences) };
 }
 export type UserWorkBackup = ReturnType<typeof parseUserWorkBackup>;
 export async function readUserWorkFile(file: Pick<File, 'size' | 'text'>): Promise<UserWorkBackup> {
@@ -262,9 +303,9 @@ export function applyScopedUserWorkPreferences(value: unknown, status: UserWorkS
 }
 export function parseUserWorkPreview(value: unknown) {
   const row = object(value, ['counts', 'can_restore'], ['reason', 'backup']);
-  const totals = object(row.counts, ['folders', 'labels', 'channels', 'collections', 'reviews'], ['queries']);
+  const totals = object(row.counts, ['folders', 'labels', 'channels', 'collections', 'reviews'], ['queries', 'alert_rules']);
   if (typeof row.can_restore !== 'boolean') return fail();
-  return { counts: { folders: count(totals.folders), labels: count(totals.labels), channels: count(totals.channels), collections: count(totals.collections), reviews: count(totals.reviews), ...(totals.queries === undefined ? {} : { queries:count(totals.queries) }) },
+  return { counts: { folders: count(totals.folders), labels: count(totals.labels), channels: count(totals.channels), collections: count(totals.collections), reviews: count(totals.reviews), ...(totals.queries === undefined ? {} : { queries:count(totals.queries) }), ...(totals.alert_rules === undefined ? {} : { alert_rules:count(totals.alert_rules) }) },
     can_restore: row.can_restore, reason: row.reason === undefined || row.reason === null ? undefined : text(row.reason, 240),
     backup: row.backup === undefined ? undefined : parseUserWorkBackup(row.backup) };
 }

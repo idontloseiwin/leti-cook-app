@@ -506,8 +506,10 @@ quota and WebSub journals retain their existing purposes.
 - Manual additions: 20 per minute and 300 per 24 hours. Restarting does not reset
   these limits. Reconnecting restored channels does not use these counters.
 - Manual channel statistics refresh: six hours after the last completed refresh.
-- User-work backup: up to 16 MiB. Your work is kept below 15 MiB, so that it
-  always fits.
+- A user-work backup can hold up to 16 MiB. The database checks a 15 MiB
+  budget for channels, folders, labels, saved selections and manual decisions.
+  The remaining space covers up to 100 alert definitions, browser preferences,
+  field choices and restore fingerprints.
 - Sign-in: five wrong passwords in a row, then a wait before each further try
   that doubles from 1 second up to 5 minutes. A browser that signed in during
   the last 30 days has its own count; see [Security](../SECURITY.md#access).

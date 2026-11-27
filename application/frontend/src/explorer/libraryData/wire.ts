@@ -111,8 +111,12 @@ export type LibraryQueryRequest = {
   order_by: SortItem[];
   time: { mode: 'current'; timezone: string };
   coverage: { mode: 'available'; required_fields: string[] };
-  consistency: 'frozen';
-  page: { size: number; anchor_id?: string; after?: string };
+  consistency: 'frozen' | 'current';
+  /**
+   * `order: 'ids'`: the first page of a current list also returns the ordered IDs of every matching video;
+   * `ids`: a later page of exactly these videos of that list, in this order.
+   */
+  page: { size: number; growth_lifetime?: 'page'; anchor_id?: string; after?: string; order?: 'ids'; ids?: string[] };
 };
 
 /** True when a condition tree reads a field evaluated in `time.timezone`. */

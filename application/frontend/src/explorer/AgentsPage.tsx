@@ -3,7 +3,7 @@ import { Bot, Check, Copy, Eye, EyeOff, KeyRound, Link2, Plus, RefreshCw, Trash2
 import { ExplorerApiError, ExplorerNetworkError, isAbortError, requestJson } from './api';
 import { copyText } from './clipboard';
 import {
-  AGENT_CLIENTS, KEY_CREATE_TEXT, LIST_NOT_READ, clientSettings, daysLeft, keyCreateOutcomeUnknown, keyDate, keyErrorMessage,
+  AGENT_CLIENTS, KEY_CREATE_TEXT, LIST_NOT_READ, clientSettings, cursorInstallUrl, daysLeft, keyCreateOutcomeUnknown, keyDate, keyErrorMessage,
   maskedSecret, parseAgentConnections, parseAgentKeyList, parseCreatedAgentKey, signInSettings, validKeyDays, validKeyName,
   type AgentClient, type AgentConnection, type AgentKeyList, type CreatedAgentKey,
 } from './agentsModel';
@@ -60,12 +60,24 @@ type Mode = 'signin' | 'key';
 function Connect({ list, created, shown, mode, onMode }: {
   list: AgentKeyList; created?: CreatedAgentKey; shown: boolean; mode: Mode; onMode: (mode: Mode) => void;
 }) {
-  const [client, setClient] = useState<AgentClient>('Claude Code');
+  const [client, setClient] = useState<AgentClient>('Codex');
   const signIn = signInSettings(client, list.mcpUrl);
   const keyed = clientSettings(client, list.mcpUrl, created?.secret);
   const useKey = mode === 'key' || signIn === null;
   const real = useKey || signIn === null ? keyed : signIn;
   const visible = useKey && created && !shown ? clientSettings(client, list.mcpUrl, maskedSecret(created.secret)) : real;
+  const local = ['127.0.0.1', 'localhost', '[::1]'].includes(new URL(list.mcpUrl).hostname);
+  const project = client === 'Codex' || client === 'Claude Code';
+  const desktop = client === 'Claude Desktop';
+  const quickSetup = desktop ? local : !useKey && (!project || local);
+  const settings = <>
+    <p className="agents-note">{real.where}</p>
+    <pre className="agents-settings" aria-label={client + ' settings'}>{visible.text}</pre>
+    <div className="agents-actions">
+      <CopyButton text={real.text} label={useKey && created ? 'Copy with key' : 'Copy'} />
+      {useKey && !created && <span className="agents-note">Create a key below to fill it in, or replace YOUR_KEY yourself.</span>}
+    </div>
+  </>;
   return <section className="agents-section" aria-labelledby="agents-connect-heading">
     <div className="agents-section-heading"><h2 id="agents-connect-heading">Connect an agent</h2><span>{list.mcpUrl}</span></div>
     <div className="agents-tabs" role="tablist" aria-label="Agent program">
@@ -78,15 +90,31 @@ function Connect({ list, created, shown, mode, onMode }: {
       <button type="button" role="radio" aria-checked={useKey}
         className={useKey ? 'is-active' : undefined} onClick={() => onMode('key')}>With a key</button>
     </div>
-    {!useKey && <p className="agents-note">Recommended: nothing to copy except the address. The program opens this
-      installation in your browser and you click Allow; it keeps its own access, which you can revoke below.</p>}
-    {signIn === null && <p className="agents-note">Claude Desktop starts a local bridge that cannot sign in: it uses a key file.</p>}
-    <p className="agents-note">{real.where}</p>
-    <pre className="agents-settings" aria-label={client + ' settings'}>{visible.text}</pre>
-    <div className="agents-actions">
-      <CopyButton text={real.text} label={useKey && created ? 'Copy with key' : 'Copy'} />
-      {useKey && !created && <span className="agents-note">Create a key below to fill it in, or replace YOUR_KEY yourself.</span>}
-    </div>
+    {quickSetup && (client === 'Cursor' || client === 'VS Code') && <>
+      <a className="agents-install" href={client === 'Cursor' ? cursorInstallUrl(list.mcpUrl)
+        : 'vscode:mcp/install?' + encodeURIComponent(JSON.stringify({ name: 'leti-cook', type: 'http', url: list.mcpUrl }))}>
+        Open in {client}</a>
+      <p className="agents-note">Confirm the installation in {client}, then sign in and choose Allow read access.</p>
+    </>}
+    {quickSetup && desktop && <>
+      <a className="agents-install" href="/agent-setup/claude-desktop" download="leti-cook.mcpb">Download Claude extension</a>
+      <p className="agents-note">Open the download in Claude Desktop, choose Install and paste your Leti Cook agent key.
+        If your browser only saves the file, choose Install Extension in Claude Desktop’s advanced extension settings.</p>
+    </>}
+    {quickSetup && project && <>
+      <a className="agents-install" href={client === 'Codex' ? '/agent-setup/codex' : '/agent-setup/claude-code'}
+        download>Download research project</a>
+      <p className="agents-note">Extract the ZIP and open the Leti Cook folder in {client}. If its command line is installed,
+        you can use the included Windows or macOS launcher. {client === 'Codex' ? 'Trust the project and authenticate leti-cook.' :
+          'Approve the project server, then select leti-cook → Authenticate in /mcp.'} Choose Allow read access in your browser.</p>
+    </>}
+    {quickSetup ? <details className="agents-manual" key={client}><summary>Manual setup</summary>
+      {client === 'Codex' && <>
+        <div className="agents-quick-action"><CopyButton text={list.mcpUrl} label="Copy MCP address" /></div>
+        <p className="agents-note">For all your projects, open Settings → MCP servers → Add server.
+          Name it leti-cook, choose Streamable HTTP and paste the address. Save, select Restart, then Authenticate.</p>
+      </>}
+      {settings}</details> : settings}
     <p className="agents-note">This address works where this page opens: on this computer, or through the SSH tunnel you use
       for it. claude.ai, ChatGPT and Claude Desktop connectors run in the provider's cloud and cannot reach it.</p>
   </section>;

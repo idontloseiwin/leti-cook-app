@@ -20,7 +20,7 @@ export type WorkshopHandoff = {
   kind: 'selection' | 'selected_ids';
   origin: HandoffOrigin;
   // Exactly what Library executed for its first page: scope bound to the channel id,
-  // consistency 'current', without page.after / page.anchor_id.
+  // consistency 'current', without page.after / page.anchor_id / page.order / page.ids.
   query: SavedQuery;
   // 'selection' only, while Library holds a live frozen list.
   frozen?: FixedListReference;
@@ -61,7 +61,11 @@ function studyQuery(raw: unknown, origin: HandoffOrigin): SavedQuery | HandoffRe
   const source = record(raw);
   if (!source) return unsupported();
   const query = structuredClone(source), page = record(query.page), scope = record(query.scope);
-  if (page) { delete page.after; delete page.anchor_id; if (!Object.keys(page).length) delete query.page; }
+  if (page) {
+    // Library's list position, its ordered ID list and its slices are not part of the study.
+    for (const key of ['after', 'anchor_id', 'growth_lifetime', 'order', 'ids']) delete page[key];
+    if (!Object.keys(page).length) delete query.page;
+  }
   query.consistency = 'current';
   if (record(query.source)?.id !== videoSource || !scope || scope.kind !== 'channel' || scope.id !== origin.channel_id
     || !Array.isArray(query.video_types) || query.video_types.length !== 1 || query.video_types[0] !== origin.format) return unsupported();

@@ -56,6 +56,7 @@ export default defineConfig(() => {
     server: {
       port: 5173,
       proxy: {
+        '/sources': backend,
         '/add-channel': backend,
         '/folders': backend,
         '/sidebar-data': backend,

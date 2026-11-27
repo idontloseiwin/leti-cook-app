@@ -12,17 +12,18 @@ import { videoNoun } from './format';
 
 /**
  * One collection member of any type: an available Long, Short or Stream is
- * the Library card; an unavailable one names its one reason (11 reasons)
- * and can still be selected and removed.
+ * the Library card in its Long form and Large density (one grid mixes the
+ * types, so every card has the same height); an unavailable one names its
+ * one reason (11 reasons) and can still be selected and removed.
  */
-export function CollectionMemberCard({ member, selected, removeDisabled, onToggleSelected, onInspect, onRemove }: {
-  member: CollectionMember; selected: boolean; removeDisabled: boolean;
+export function CollectionMemberCard({ member, selected, selecting = false, removeDisabled, onToggleSelected, onInspect, onRemove }: {
+  member: CollectionMember; selected: boolean; selecting?: boolean; removeDisabled: boolean;
   onToggleSelected: (video: ChannelExplorerVideo, checked: boolean) => void;
   onInspect: (video: ChannelExplorerVideo, trigger: 'thumbnail' | 'title') => void;
   onRemove: (videoId: string) => void;
 }) {
-  if (member.status === 'available') return <VideoCard video={member.video} growthAvailable={false}
-    selected={selected} onToggleSelected={onToggleSelected} onInspect={onInspect} />;
+  if (member.status === 'available') return <VideoCard video={member.video} growthAvailable={false} density="large"
+    selected={selected} selecting={selecting} onToggleSelected={onToggleSelected} onInspect={onInspect} />;
   return <article className="explorer-v2-video-card collection-unavailable-member" data-video-id={member.video_id}>
     <label><input type="checkbox" data-grid-focus="selection" checked={selected} onChange={(event) => onToggleSelected({ video_id: member.video_id }, event.target.checked)} /> {member.reason === 'api_paused' ? 'Select saved video' : 'Select unavailable video'}</label>
     <h2>{member.reason === 'api_paused' ? 'Saved video' : 'Video unavailable'}</h2><code>{member.video_id}</code><p>{COLLECTION_SOURCE_REASONS[member.reason]} The video ID stays saved.</p>
@@ -137,7 +138,7 @@ export function SavedCollectionDetail({ id, navigation, onNavigate }: { id: stri
       {page.collection.member_count === 0 && <div className="saved-views-empty"><h2>This collection is empty</h2><p>Select videos in a channel to add them.</p></div>}
       <VirtualVideoGrid ref={grid} videos={gridVideos} density="large" scopeKey={`collection:${id}`} inspectedVideoId={inspected?.video_id}
         renderCard={(video) => <CollectionMemberCard key={video.video_id} member={members.get(video.video_id!)!} selected={selected.has(video.video_id!)}
-          removeDisabled={busy || mustReload} onToggleSelected={toggle} onInspect={inspect}
+          selecting={selected.size > 0} removeDisabled={busy || mustReload} onToggleSelected={toggle} onInspect={inspect}
           onRemove={(videoId) => setRemoval({ ids: [videoId], collection: page.collection })} />} />
       {page.next_cursor && <button type="button" disabled={busy || mustReload} onClick={() => void load(page.next_cursor!)}>{busy ? 'Loading…' : 'Load more members'}</button>}
     </>}

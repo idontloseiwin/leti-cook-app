@@ -1,0 +1,14 @@
+.channel-finder {max-width: 80rem; margin: 0 auto; padding: clamp(1rem, 3vw, 3rem); color: var(--text, #e8eef3);}
+.channel-finder h1 {font-size: clamp(1.8rem, 4vw, 3rem); margin: 0 0 1.5rem;}
+.finder-form {display: flex; flex-wrap: wrap; align-items: end; gap: .8rem 1rem; margin: 1rem 0;}
+.finder-form label {display: grid; gap: .4rem; font-size: .87rem;}
+.finder-form .finder-check {display: flex; align-items: center; padding: .55rem 0;}
+.channel-finder button, .finder-form input, .finder-form select {background: #101820; color: inherit; border: 1px solid #354754; border-radius: .45rem; padding: .55rem .75rem;}
+.channel-finder button {cursor: pointer;} .channel-finder button:disabled {opacity: .6; cursor: default;}
+.channel-finder details {margin: 1rem 0; padding: .75rem 0; border-block: 1px solid #354754;}
+.channel-finder a {color: #83d7e6;} .channel-finder li {overflow-wrap: anywhere;}
+.finder-cards {list-style: none; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));}
+.finder-cards > li {background: #111820; border: 1px solid #30414c; border-radius: .6rem; padding: 1rem;}
+.finder-cards img {float: right; object-fit: contain; width: 5rem; max-height: 4rem; margin: 0 0 .5rem .5rem;}
+.finder-preview {display: inline-block; vertical-align: middle; max-width: 6rem; max-height: 4rem; margin-inline: .6rem;}
+.finder-cards h3 {margin: 0;} .finder-cards p {font-size: .9rem;}

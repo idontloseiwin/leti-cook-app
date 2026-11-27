@@ -149,6 +149,101 @@ class WebSubPostgres(unittest.TestCase):
         self.assertEqual((again['channel_id'], again['attempts']), (row['channel_id'], 2))
         self.assertEqual(self.scalar("SELECT count(*) FROM public.websub_subscriptions WHERE requested_at IS NOT NULL"), 1)
 
+    def test_denied_retry_rotates_the_callback_and_accepts_delivery(self):
+        import hmac
+        from starlette.applications import Starlette
+        from starlette.testclient import TestClient
+        from test_websub import FEED, KEY
+        from web.websub import WebSubIngressMiddleware
+
+        manager = WebSubManagerRepository(self.db)
+        manager.plan(BASE)
+        first, admission = manager.reserve()
+        self.assertTrue(admission.allowed)
+        channel = first['channel_id']
+        self.admin.execute('DELETE FROM public.websub_subscriptions WHERE channel_id<>%s', (channel,))
+        app = WebSubIngressMiddleware(Starlette(), base=BASE, key=lambda: KEY, repository=manager, wake=lambda: None)
+
+        def path(row):
+            return '/websub/' + channel + '/' + websub.capability_token(KEY, channel, row['generation'])
+
+        def confirmation(client, row, mode):
+            return client.get(path(row), params={'hub.mode': mode, 'hub.topic': websub.topic_url(channel),
+                                                  'hub.challenge': 'confirmed', 'hub.lease_seconds': '3600'})
+
+        with TestClient(app, base_url='http://hooks.example.com') as client:
+            self.assertEqual(confirmation(client, first, 'denied').status_code, 200)
+            # A late response to the outgoing request must preserve the callback's 24-hour wait.
+            manager.settle(first, websub.HubResult('http_500', 500, None, 0.1))
+            self.assertTrue(self.scalar("""SELECT next_try_at>clock_timestamp()+interval '23 hours'
+                FROM public.websub_subscriptions WHERE channel_id=%s""", channel))
+            self.assertEqual(confirmation(client, first, 'subscribe').status_code, 404)
+            self.assertEqual(manager.reserve()[1].reason, 'idle')
+            self.admin.execute('UPDATE public.websub_subscriptions SET next_try_at=clock_timestamp() WHERE channel_id=%s',
+                               (channel,))
+            retry, admission = WebSubManagerRepository(self.db).reserve()
+            self.assertTrue(admission.allowed)
+            self.assertEqual((retry['channel_id'], retry['state'], retry['attempts'], retry['generation']),
+                             (channel, 'pending', 2, first['generation'] + 1))
+            self.assertEqual(confirmation(client, first, 'denied').status_code, 404)
+            self.assertEqual(confirmation(client, first, 'subscribe').status_code, 404)
+            manager.settle(retry, websub.HubResult('accepted', 202, None, 0.1))
+            reply = confirmation(client, retry, 'subscribe')
+            self.assertEqual((reply.status_code, reply.text), (200, 'confirmed'))
+            self.assertEqual(manager.subscription(channel)['state'], 'verified')
+            body = FEED.format(ch=channel, vid='zz000000061').encode()
+            secret = websub.signing_secret(KEY, channel, retry['generation']).encode()
+            headers = {'X-Hub-Signature': 'sha256=' + hmac.digest(secret, body, 'sha256').hex()}
+            self.assertEqual(client.post(path(retry), content=body, headers=headers).status_code, 204)
+            self.assertEqual(self.scalar('SELECT count(*) FROM public.websub_events WHERE channel_id=%s', channel), 1)
+
+    def test_initial_ramp_replaces_denied_probe_and_bounds_due_retries(self):
+        manager = WebSubManagerRepository(self.db)
+        manager.plan(BASE)
+        self.assertGreaterEqual(len(self.eligible), 3)
+        self.admin.execute('UPDATE public.websub_hub_state SET ramp_stage=0')
+        first, _ = manager.reserve()
+        manager.verification(first['channel_id'], first['generation'], 'denied', None, outcome='denied')
+        second, admission = WebSubManagerRepository(self.db).reserve()
+        self.assertTrue(admission.allowed)
+        self.assertNotEqual(second['channel_id'], first['channel_id'])
+        # The first channel becomes due while the replacement still awaits confirmation.
+        self.admin.execute("""UPDATE public.websub_subscriptions SET next_try_at=clock_timestamp()-interval '1 day'
+            WHERE channel_id=%s""", (first['channel_id'],))
+        self.assertEqual(manager.reserve()[1].reason, 'ramp_wait')
+        self.assertEqual(self.scalar('SELECT ramp_stage FROM public.websub_hub_state'), 0)
+        self.assertEqual(manager.verification(second['channel_id'], second['generation'], 'subscribe',
+                                              3600, outcome='verified'), 'verified')
+        retry, admission = manager.reserve()
+        self.assertTrue(admission.allowed)
+        self.assertEqual(retry['channel_id'], first['channel_id'])
+        manager.verification(retry['channel_id'], retry['generation'], 'denied', None, outcome='denied')
+        third, admission = manager.reserve()
+        self.assertTrue(admission.allowed)
+        self.assertNotIn(third['channel_id'], {first['channel_id'], second['channel_id']})
+        self.assertEqual(self.scalar('SELECT ramp_stage FROM public.websub_hub_state'), 1)
+
+    def test_repeated_denials_keep_the_attempt_limit_across_generations(self):
+        manager = WebSubManagerRepository(self.db)
+        manager.plan(BASE)
+        self.admin.execute("""UPDATE public.websub_subscriptions SET next_try_at=clock_timestamp()+interval '2 days'
+            WHERE channel_id<>%s""", (self.channel,))
+        for attempt in range(1, MAX_ATTEMPTS + 1):
+            row, admission = manager.reserve()
+            self.assertTrue(admission.allowed)
+            self.assertEqual((row['channel_id'], row['attempts'], row['generation']), (self.channel, attempt, attempt))
+            manager.verification(self.channel, row['generation'], 'denied', None, outcome='denied')
+            self.admin.execute('UPDATE public.websub_subscriptions SET next_try_at=clock_timestamp() WHERE channel_id=%s',
+                               (self.channel,))
+        manager.plan(BASE)
+        self.assertEqual(WebSubManagerRepository(self.db).reserve()[1].reason, 'idle')
+        self.admin.execute("""UPDATE public.websub_subscriptions SET updated_at=clock_timestamp()-interval '25 hours'
+            WHERE channel_id=%s""", (self.channel,))
+        manager.plan(BASE)
+        row, admission = manager.reserve()
+        self.assertTrue(admission.allowed)
+        self.assertEqual((row['channel_id'], row['attempts'], row['generation']), (self.channel, 1, MAX_ATTEMPTS + 1))
+
     def test_03_no_answer_is_not_resent_at_once(self):
         manager = WebSubManagerRepository(self.db)
         manager.plan(BASE)

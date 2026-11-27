@@ -13,7 +13,8 @@ def create_lifespan(*, core, cache, YOUTUBE_QUOTA_ATTEMPT_RECORDER):
     async def app_lifespan(app):
         import support_journal
         await run_in_threadpool(support_journal.initialize)
-        runtime = owner_lock = onboarding = maintenance = reference_store = provider = projection = websub = None
+        alerts = None
+        runtime = owner_lock = onboarding = maintenance = reference_store = provider = projection = discovery_maintenance = None
         # Health and Home do not count the time before this start.
         from collection_state import note_server_started
         note_server_started()
@@ -68,14 +69,23 @@ def create_lifespan(*, core, cache, YOUTUBE_QUOTA_ATTEMPT_RECORDER):
                                                        ready=runtime.require_collection_ready)
                 app.state.research_projection = projection
                 projection.start()
+                from alert_worker import AlertWorker
+                from db.user_work.alerts import AlertsRepository
+                alerts = AlertWorker(AlertsRepository(core.database), runtime.require_collection_ready)
+                app.state.alert_worker = alerts
+                alerts.start()
                 from websub_service import configured_websub, WebSubService
+                from runtime.discovery import DiscoveryMaintenance
                 configured = configured_websub(os.environ)
+                websub = None
                 if configured is not None:
                     from db.websub import WebSubManagerRepository, WebSubEventRepository
                     websub = WebSubService(WebSubManagerRepository(core.database), WebSubEventRepository(core.database),
                                            base=configured[0], key=configured[1], ready=runtime.require_collection_ready)
                     app.state.websub = websub
-                    websub.start()
+                discovery_maintenance = DiscoveryMaintenance(core.database, ready=runtime.require_collection_ready,
+                                                             websub=websub)
+                discovery_maintenance.start()
                 if os.getenv('LIC_SETUP_DIRECTORY'):
                     from self_hosted_configuration import ConfigurationStore
                     from self_hosted_onboarding import SetupManager, install_manager
@@ -116,9 +126,11 @@ def create_lifespan(*, core, cache, YOUTUBE_QUOTA_ATTEMPT_RECORDER):
                         if runtime is not None:
                             from hot_runtime import remove_local_runtime
                             try:
-                                if websub is not None:
-                                    await run_in_threadpool(websub.close)
+                                if discovery_maintenance is not None:
+                                    await run_in_threadpool(discovery_maintenance.close)
                                     app.state.websub = None
+                                if alerts is not None:
+                                    await run_in_threadpool(alerts.close)
                                 if projection is not None:
                                     await run_in_threadpool(projection.close)
                                     app.state.research_projection = None

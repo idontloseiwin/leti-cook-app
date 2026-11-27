@@ -424,6 +424,12 @@ const v1 = (filters = {}, facets = {}) => catalogue.normalizeCatalogueConditions
     const member = available(type, index), html = renderToStaticMarkup(card(member));
     assert.match(html, new RegExp(`data-card="${type}"`), type);
     assert.equal(card(member).props.video, member.video, 'the Library card gets the member video of its type');
+    // One mixed grid: every type in the Long card at Large density (equal heights), without growth.
+    assert.equal(card(member).props.density, 'large', type);
+    assert.equal(card(member).props.form, undefined, `${type}: no Shorts form in a collection, the Long card for every type`);
+    assert.equal(card(member).props.growthAvailable, false, type);
+    assert.equal(page.CollectionMemberCard({ member, selected: false, selecting: true, removeDisabled: false, onInspect() {},
+      onToggleSelected() {}, onRemove() {} }).props.selecting, true, 'a selection keeps every checkbox visible');
   }
   for (const reason of [...reasons, 'api_paused']) {
     const member = collections.parseCollectionMember({ video_id: 'unavailabl1', added_at: at, status: 'unavailable', reason, channel_id: null, video: null, source_expires_at: null });
@@ -441,6 +447,9 @@ const v1 = (filters = {}, facets = {}) => catalogue.normalizeCatalogueConditions
   const detail = read('../application/frontend/src/explorer/SavedCollectionDetail.tsx');
   assert.match(detail, /\{inspected && <VideoInspector video=\{inspected\} onClose=\{closeInspector\} onRestoreFocus=\{restoreInspector\} \/>\}/);
   assert.doesNotMatch(detail, /staticDetails=|launchContext=|history=\{|growth=\{/);
+  assert.match(detail, /selecting=\{selected\.size > 0\}/, 'the grid knows when a selection is open');
+  assert.match(detail, /<VirtualVideoGrid ref=\{grid\} videos=\{gridVideos\} density="large"/, 'the grid estimates Large Long cards');
+  assert.doesNotMatch(detail, /videoType=|form=/, 'the collection grid has no video type, so no Shorts columns or rows');
   console.log('Collections: Long, Shorts and Streams members as Library cards, 11 reasons, removal by ID, base Inspector.');
 }
 console.log('Saved in Library passed.');

@@ -1,0 +1,18 @@
+{
+  "configured": true,
+  "public_host": "hooks.example.com",
+  "summary": {
+    "subscriptions": {
+      "pending": 1
+    },
+    "expiring_24h": 0,
+    "last_delivery_at": "2026-10-22T10:00:00Z",
+    "deliveries_24h": 1,
+    "events_24h": {},
+    "events_pending": 0,
+    "hub_requests_24h": {},
+    "hold_until": null,
+    "breaker_open": false,
+    "ramp_stage": 0
+  }
+}

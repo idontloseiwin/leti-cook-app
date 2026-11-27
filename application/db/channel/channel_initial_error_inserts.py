@@ -34,6 +34,7 @@ COLUMN_TYPES = (
     ('count_reconcile_token','uuid'),('count_reconcile_previous','bigint'),('count_reconcile_current','bigint'),
     ('count_reconcile_source_checked_at','timestamptz'),('count_reconcile_observed_at','timestamptz'),
     ('count_reconcile_epoch','bigint'),('count_reconcile_settled_token','uuid'),
+    ('alert_folder_since','timestamptz'),
 )
 _DEFAULTS = {'deep_bypass':'false','deep_inventory_status':"'idle'::text",'is_hidden':'false',
  'channel_metadata_error_count':'0','initial_long_inventory_error_count':'0',
@@ -47,7 +48,7 @@ _SCHEMA_PIN = """WITH expected(position,name,kind,not_null,default_expression) A
  FROM pg_catalog.pg_attribute a LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum
  WHERE a.attrelid='public.channels'::regclass AND a.attnum>0 AND NOT a.attisdropped
 ), relation_guard AS (SELECT count(*) FROM public.channels WHERE false)
-SELECT (SELECT count(*) FROM actual)=47
+SELECT (SELECT count(*) FROM actual)=48
  AND EXISTS(SELECT 1 FROM pg_catalog.pg_class WHERE oid='public.channels'::regclass
   AND relkind='r' AND relrowsecurity AND pg_catalog.pg_get_userbyid(relowner)='postgres')
  AND NOT EXISTS(SELECT 1 FROM expected e LEFT JOIN actual a ON a.position=e.position

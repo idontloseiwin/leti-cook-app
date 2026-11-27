@@ -114,12 +114,14 @@ class VideoResponseObservabilityTests(unittest.TestCase):
                 self.assertEqual(item["endpoint"], "videos:batchGetStats")
                 self.assertEqual(self.transport.call_count, 1)
 
-    def test_batch_normalized_explicit_failed_identity_is_still_explicit(self):
+    def test_batch_malformed_failed_identity_marks_the_response_invalid(self):
         payload = {"items": [], "summary": {"requestedVideoCount": 1,
             "succeededVideoCount": 0, "failedVideoCount": 1, "failedVideoIds": [" " + FIRST + " "]}}
-        result = self.fetch("batch", payload, ids=(FIRST,))
-        self.assertEqual(result["summary"]["failed_ids"], [FIRST])
-        self.assertEqual([e["reason"] for e in self.items()], ["explicit_failed_id"])
+        with self.assertRaises(batch.YouTubeBatchStatsError) as refused:
+            self.fetch("batch", payload, ids=(FIRST,))
+        self.assertEqual(refused.exception.code, "invalid_failed_ids_shape")
+        self.assertEqual(self.manifests()[0]["status"], "invalid")
+        self.assertNotIn("explicit_failed_id", [item["reason"] for item in self.items()])
 
     def test_batch_returned_identity_observation_matches_existing_normalization(self):
         for identity, returned in ((FIRST, " " + FIRST + " "), ("12345678901", 12345678901)):

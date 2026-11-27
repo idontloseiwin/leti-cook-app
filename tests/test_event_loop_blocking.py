@@ -32,7 +32,7 @@ def route_handlers(path):
 
 def document(channels=(),collections=()):
     return {'format':FORMAT,'version':VERSION,'created_at':'2026-09-25T00:00:00+00:00',
-            'user_work':{'folders':[],'labels':[],'channels':list(channels),'collections':list(collections),'reviews':[],'queries':[],'field_preferences':__import__('research_field_policy').defaults()},
+            'user_work':{'folders':[],'labels':[],'channels':list(channels),'collections':list(collections),'reviews':[],'queries':[],'alert_rules':[],'field_preferences':__import__('research_field_policy').defaults()},
             'browser_preferences':{'catalogue_density':'large','bookmarked_channel_refs':[],'collapsed_folder_ids':[]}}
 
 class Repository:

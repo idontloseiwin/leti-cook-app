@@ -11,7 +11,7 @@
 .explorer-app.is-updated .saved-view-actions, .explorer-app.is-updated .saved-view-rename { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .explorer-app.is-updated .saved-view-rename { flex-basis: 100%; }
 .explorer-app.is-updated .saved-view-rename input { flex: 1 1 240px; }
-.explorer-app.is-updated .saved-views-v2 :is(button, input):not(:where(.explorer-v2-video-card *, .explorer-v2-video-drawer *)),
+.explorer-app.is-updated .saved-views-v2 :is(button, input):not(:where(.video-card *, .explorer-v2-video-card *, .explorer-v2-video-drawer *)),
 .explorer-app.is-updated .collection-unavailable-member button,
 .explorer-app.is-updated .catalogue-save-view, .explorer-app.is-updated .saved-work-dialog button, .explorer-app.is-updated .saved-work-dialog input {
   border: 1px solid #2c414e; border-radius: 8px; background: #101a21; color: #dbe8ef; font: inherit; font-size: 13px; padding: 9px 12px;
@@ -46,7 +46,7 @@
 .explorer-app.is-updated .saved-collection-detail { max-width: 1560px; container-name: explorer-v2-videos; container-type: inline-size; }
 .explorer-app.is-updated .collection-back { margin-top: 16px; }
 .explorer-app.is-updated .collection-member-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 18px; font-size: 13px; }
-.explorer-app.is-updated .collection-unavailable-member { box-sizing: border-box; min-height: 280px; padding: 20px; display: flex; flex-direction: column; gap: 12px; color: #8ca3b3; }
+.explorer-app.is-updated .collection-unavailable-member { position: relative; box-sizing: border-box; min-width: 0; min-height: 280px; overflow: hidden; padding: 20px; border: 1px solid var(--explorer-line-soft); display: flex; flex-direction: column; gap: 12px; color: #8ca3b3; }
 .explorer-app.is-updated .collection-unavailable-member h2 { color: #dbe8ef; font-size: 17px; margin: 16px 0 0; }
 .explorer-app.is-updated .collection-unavailable-member label { display: flex; align-items: center; gap: 8px; font-size: 12px; }
 .explorer-app.is-updated .collection-unavailable-member p { font-size: 13px; line-height: 1.5; }

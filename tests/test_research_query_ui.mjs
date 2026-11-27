@@ -31,7 +31,7 @@ const values = {
  'video.tags':[],'video.topic_urls':['https://en.wikipedia.org/wiki/Film'],'video.category_id':'22',
  'video.audio_language':'en','video.metadata_language':'','video.caption_available':false,
  'video.scheduled_start_at':evaluated,'video.actual_end_at':evaluated,
- 'video.thumbnail_url':'https://img.youtube.com/vi/abcdefghijk/mqdefault.jpg','channel.title':'Straße',
+ 'video.thumbnail_url':'https://img.youtube.com/vi/abcdefghijk/hqdefault.jpg','channel.title':'Straße',
  'channel.avatar_url':'https://yt3.ggpht.com/example','channel.subscribers':'42','channel.views':'53',
  'channel.video_count':'2','channel.country_code':'UA','channel.created_at':evaluated,
  // Calculated and local-date fields: Library hands them to the workshop.

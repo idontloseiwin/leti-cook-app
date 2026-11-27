@@ -36,6 +36,10 @@ _REVIEW_EXPIRED="(t.evidence_expires_at IS NULL OR NOT isfinite(t.evidence_expir
 
 
 _TARGETS=MappingProxyType({
+ **{table: Evidence(table,field,"lpad(t.id::text,20,'0')","t.id=(%(row)s::jsonb->>'id')::bigint",
+                    'NULL::text', _REVIEW_EXPIRED.replace('t.evidence_expires_at','t.'+field),
+                    immutable=True,expires=True)
+    for table,field in (('alert_observations','evidence_expires_at'),('alert_inbox','expires_at'))},
  'video_snapshots':Evidence('video_snapshots','recorded_at',"lpad(t.id::text,20,'0')","t.id=(%(row)s::jsonb->>'id')::bigint",'t.video_id',_expired('t.recorded_at'),True),
  'snapshot_engagement':Evidence('video_snapshots','engagement_observed_at',"lpad(t.id::text,20,'0')",
     "t.id=(%(row)s::jsonb->>'id')::bigint",'t.video_id',
@@ -76,7 +80,10 @@ def _cursor(tx,value,target):
 def _page(spec):
     # Every interpolated fragment comes exclusively from the immutable six-item
     # catalog above. Targets/cursors/times are parameters, never identifiers.
-    clock=f"coalesce(t.{spec.clock},'-infinity'::timestamptz)"
+    # Alert expiry clocks are required. Filtering on the column lets both
+    # the expired and future branches seek directly in the expiry index.
+    clock = f"t.{spec.clock}" if spec.table in ('alert_observations','alert_inbox') else (
+        f"coalesce(t.{spec.clock},'-infinity'::timestamptz)")
     base=f"SELECT to_jsonb(t) AS row_data,{clock} AS work_at,{spec.key} AS work_key,{spec.video} AS video_id FROM public.{spec.table} t WHERE ({spec.payload}) AND "
     cursor=f"(%(after_at)s::timestamptz IS NULL OR ({clock},{spec.key})>(%(after_at)s::timestamptz,%(after_key)s::text))"
     order=f" ORDER BY {clock},{spec.key} LIMIT %(limit)s::integer"
@@ -86,10 +93,12 @@ def _page(spec):
         # itself. The parameter-only conditions exclude each other, so one
         # branch runs and it never walks the index from the cursor through
         # every current row up to now.
-        future=('('+base+clock+'>%(now)s::timestamptz AND (%(after_at)s::timestamptz IS NULL OR %(after_at)s::timestamptz<=%(now)s::timestamptz)'+order+')'
-                ' UNION ALL ('+base+'%(after_at)s::timestamptz>%(now)s::timestamptz AND '
+        maximum = "%(now)s::timestamptz+interval '696 hours'" if spec.expires else '%(now)s::timestamptz'
+        expired = '<=%(now)s::timestamptz' if spec.expires else '<%(cutoff)s::timestamptz'
+        future=('('+base+clock+'>'+maximum+' AND (%(after_at)s::timestamptz IS NULL OR %(after_at)s::timestamptz<='+maximum+')'+order+')'
+                ' UNION ALL ('+base+'%(after_at)s::timestamptz>'+maximum+' AND '
                 f'({clock},{spec.key})>(%(after_at)s::timestamptz,%(after_key)s::text)'+order+')')
-        source='('+base+clock+'<%(cutoff)s::timestamptz AND '+cursor+order+') UNION ALL '+future
+        source='('+base+clock+expired+' AND '+cursor+order+') UNION ALL '+future
     else:source=base+cursor+order
     source_at="work_at-interval '696 hours'" if spec.expires else 'work_at'
     boundary='work_at<=%(now)s::timestamptz' if spec.expires else 'work_at<%(cutoff)s::timestamptz'
@@ -141,6 +150,8 @@ def _mutate(tx,spec,target,row,cutoff,at):
 
 # Native primary keys only; casts apply to parameters, never indexed columns.
 _REFERENCE_KEYS={
+ 'alert_observations':(('id','bigint'),),
+ 'alert_inbox':(('id','bigint'),),
  'video_snapshots':(('id','bigint'),),
  'snapshot_engagement':(('id','bigint'),),
  'channel_snapshots':(('channel_id','text'),('recorded_at','timestamptz')),
@@ -203,7 +214,17 @@ def _immutable_page(tx,spec,rows,cutoff):
     deferred=[row for index,row in enumerate(candidates) if index not in owned]
     if not locked:return 0,deferred
     at=tx.fetch_one("SELECT to_jsonb(clock_timestamp())#>>'{}' AS at")['at']
-    return tx.execute(_batch_delete(spec),dict(rows=Jsonb([row['value'] for row in locked]),cutoff=cutoff,now=at)),deferred
+    params = dict(rows=Jsonb([row['value'] for row in locked]),cutoff=cutoff,now=at)
+    deletion = _batch_delete(spec)
+    if spec.table == 'alert_observations':
+        removed = tx.returning_all(deletion + ''' RETURNING CASE WHEN t.members IS NULL THEN ARRAY[t.rule_id::text]
+            ELSE ARRAY(SELECT jsonb_object_keys(t.members)) END AS targets''',params,max_rows=len(locked))
+        tx.execute("""UPDATE public.alert_rules r SET gap_count=r.gap_count+c.lost,last_gap_at=statement_timestamp()
+                      FROM (SELECT rule_id,count(*) AS lost FROM unnest(%s::text[]) AS ids(rule_id)
+                            GROUP BY rule_id) c WHERE r.id::text=c.rule_id AND r.deleted_at IS NULL""",
+                   ([target for row in removed for target in row['targets']],))
+        return len(removed),deferred
+    return tx.execute(deletion,params),deferred
 
 
 def _reference(target,candidate):

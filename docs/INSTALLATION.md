@@ -86,6 +86,11 @@ quota or large-channel confirmation shown there.
 Open **Library → Add channel** and paste a channel link, handle, channel ID or
 video link. Loading runs in the background. Large channels may need confirmation.
 
+**Find channels** shows the maximum cost before each search page. YouTube may
+return an empty page with more results available. Choose **Load next page** to
+continue. An empty page uses one Search call and makes no requests for channel
+profiles or video statistics.
+
 Open a channel to explore its [Library](DATA.md#channel-library). Its
 **Videos**, **Shorts** and **Streams** tabs each have an **Overview** and a
 **Videos** grid with filters, selection, Save view and the Inspector.
@@ -155,8 +160,11 @@ websub_callback_url = https://hooks.example.com/leti-cook
 
 and run `manage.py restart`. The Health page shows subscriptions, the last
 notification and what notifications did. Subscriptions are requested one at a
-time with pauses YouTube asks for; the first run starts with one channel, then
-ten, then the rest. Removing the setting and restarting stops new requests;
+time with the pauses YouTube requests. The first run starts with one channel,
+then ten, then the rest as confirmations arrive. If YouTube explicitly denies
+a subscription, another channel can take its place. The denied channel can be
+requested again after 24 hours with a fresh callback address. Removing the
+setting and restarting stops new requests;
 existing subscriptions expire on their own within about 10 days.
 
 ## Updating an installation
@@ -219,12 +227,12 @@ refuses the 0.2.0 package during its checks, before it stops anything, with
 containers stay as they were. Pulling the repository or rerunning `install.sh`
 does not update it either.
 
-To keep your work, move it to a new 0.2.0 installation:
+To keep your work, move it to a new 0.3.0 installation:
 
 1. In the 0.1.0 installation, open **Backup and restore** and download a
-   user-work backup. Version 0.1.0 writes backup format 2; version 0.2.0 reads
+   user-work backup. Version 0.1.0 writes backup format 2; version 0.3.0 reads
    it.
-2. [Install](#install) version 0.2.0 into a new folder. The folder of the 0.1.0
+2. [Install](#install) version 0.3.0 into a new folder. The folder of the 0.1.0
    installation cannot be reused, and the installer suggests the next free port.
 3. Restore the backup into the new, empty workspace as described in
    [Moving to a new installation](#moving-to-a-new-installation), then use
@@ -251,7 +259,9 @@ one, both spend its daily quota.
 Complete access setup and the preparation, continue without starter channels,
 and restore the backup into the empty workspace. Use **Reconnect all** to
 collect current YouTube data again. Verify your work there before removing the
-old installation.
+old installation. Format 6 includes your alert rules and their pause settings.
+Restored rules start a new observation period. A rule whose source is missing
+stays visible in Alerts. The importer also reads formats 1, 2 and 5.
 
 The backup does not transfer account credentials, the API key, configuration or
 YouTube statistics history. See [Data and backups](DATA.md).

@@ -67,8 +67,6 @@ class WebSubService:
                  hub=websub.HUB_URL, pace=PACE_SECONDS, monotonic=time.monotonic):
         self.manager, self.events, self.base, self.key = manager, events, base, key
         self.ready, self.request, self.hub, self.pace, self.monotonic = ready, request, hub, pace, monotonic
-        self._stop = threading.Event()
-        self._thread = None
         self._next_plan = self._next_clean = 0.0
         self.last_error = None
         self.stopped_reason = None
@@ -103,22 +101,3 @@ class WebSubService:
             return RETRY_SECONDS
         self.last_error = None
         return self.pace
-
-    def start(self):
-        if self._thread is not None:
-            raise RuntimeError('websub_service_running')
-
-        def run():
-            while not self._stop.is_set():
-                self._stop.wait(self.step())
-
-        self._thread = threading.Thread(target=run, name='websub', daemon=True)
-        self._thread.start()
-
-    def close(self):
-        self._stop.set()
-        if self._thread is not None:
-            # Shutdown is not held for a slow Hub answer: the request in flight
-            # was recorded before sending and is re-asked only if never verified.
-            self._thread.join(timeout=5)
-            self._thread = None

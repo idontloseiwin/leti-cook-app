@@ -149,7 +149,9 @@ function hooks() {
     render() {
       cursor = 0; tree = component();
       for (const node of nodes(tree)) if (node.props?.ref && !node.props.ref.current) {
-        node.props.ref.current = {getBoundingClientRect: () => ({top: 0}), scrollIntoView() {}};
+        node.props.ref.current = node.type === 'dialog'
+          ? {open: false, showModal() { this.open = true; }, close() { this.open = false; }}
+          : {getBoundingClientRect: () => ({top: 0}), scrollIntoView() {}};
       }
       pending.splice(0).forEach(fn => fn()); return tree;
     },
@@ -382,6 +384,170 @@ const homeStub = loaders => ({HOME_PACE_HELP: 'pace help', ...loaders,
   }
 }
 
+// A 200 status alone does not acknowledge an edit. Exercise the manager and its actual API and sidebar reader.
+{
+  const contracts = await import('../application/frontend/src/explorer/contracts.ts');
+  const serverText = await import('../application/frontend/src/serverText.ts');
+  const sidebar = await import('../application/frontend/src/explorer/sidebarReads.ts');
+  const calls = [], time = clock(), headers = new Headers();
+  let mode = 'broken', folders = [{id: 'sample', name: 'Before'}], shown = structuredClone(folders), listState = 'ready', failReads = false;
+  const route = async (path, init) => {
+    calls.push([init.method ?? 'GET', path]);
+    if (['/sidebar-data', '/sidebar-user-data'].includes(path)) {
+      if (failReads) throw new TypeError('offline');
+      return Response.json({folders, labels: [], channels: []});
+    }
+    if (mode === 'refused') return new Response('bad gateway body', {status: 409});
+    if (mode === 'empty') return new Response(null, {status: 204});
+    if (mode === 'wrong') return Response.json({id: 'another-id', name: 'After'});
+    if (mode === 'stale') return Response.json(path.startsWith('/folders') ? {id: 'sample', name: 'Before'}
+      : {label_key: 'sample', name: 'Before', label_type: 'custom'});
+    if (mode === 'normalized') return Response.json(path.startsWith('/folders') ? {id: 'sample', name: 'A  B'}
+      : {label_key: 'sample', name: 'A B', label_type: 'custom'});
+    if (mode === 'during-body') return {ok: true, status: 200, headers, json: () =>
+      new Promise((_, reject) => init.signal.addEventListener('abort', () => reject(new TypeError('terminated')), {once:true}))};
+    if (mode === 'lost') return {ok: true, status: 200, headers, json: async () => { throw new TypeError('terminated'); }};
+    const name = JSON.parse(init.body).name;
+    folders = [{id: 'sample', name}];
+    return mode === 'valid' ? Response.json(folders[0]) : new Response('{"id":', {status: 200});
+  };
+  const api = compile('../application/frontend/src/explorer/api.ts',
+    {'../sourceLifetime.ts': lifetime, '../serverText.ts': serverText, './contracts': contracts,
+      '../discoveryJournal': {observeDiscoveryResponse() {}}}, {window: time, fetch: route});
+  const reader = sidebar.createSidebarReader({read: () => api.loadExplorerSidebar(), fallback: () => api.loadExplorerUserSidebar(),
+    show: payload => { shown = payload.folders; listState = 'ready'; }, fail: () => { shown = []; listState = 'error'; }});
+  const host = hooks();
+  const manager = compile('../application/frontend/src/explorer/FolderLabelManager.tsx',
+    {react: host.api, 'react/jsx-runtime': {jsx, jsxs: jsx}, './api': api, './sidebarReads': sidebar});
+  const current = () => nodes(host.render());
+  const button = (label) => current().find(n => n.type === 'button' &&
+    (n.props['aria-label'] === label || n.props.children === label));
+  host.mount(() => manager.FolderLabelManager({folders: shown, labels: [], listState, onChanged() { reader.changedLocally(); return reader.load(); }}));
+  button('Folders and labels').props.onClick();
+  button('Rename Before').props.onClick();
+  current().find(n => n.type === 'input').props.onChange({target: {value: 'After'}});
+  current().find(n => n.type === 'form').props.onSubmit({preventDefault() {}});
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(calls, [['PATCH', '/folders/sample'], ['GET', '/sidebar-data']]);
+  assert.equal(shown[0].name, 'After', 'the committed change comes back from the server');
+  assert.match(current().find(n => n.props?.role === 'status').props.children, /could not be confirmed/);
+  assert.ok(button('Rename After'), 'the draft closes and the dialog shows the actual saved name');
+  failReads = true; calls.length = 0;
+  button('Rename After').props.onClick();
+  current().find(n => n.type === 'input').props.onChange({target: {value: 'Third'}});
+  current().find(n => n.type === 'form').props.onSubmit({preventDefault() {}});
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(calls, [['PATCH', '/folders/sample'], ['GET','/sidebar-data'], ['GET','/sidebar-user-data']]);
+  assert.ok(current().some(n => n.props?.children === 'Folders and labels are unavailable.'));
+  assert.ok(!current().some(n => ['No folders yet.', 'No labels yet.'].includes(n.props?.children)));
+  assert.match(current().find(n => n.props?.role === 'status').props.children, /could not be reloaded/);
+  failReads = false;
+  button('Reload folders and labels').props.onClick();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(calls.slice(3), [['GET', '/sidebar-data']], 'manual recovery never submits the edit again');
+  assert.ok(button('Rename Third'));
+  host.stop();
+
+  mode = 'lost'; await assert.rejects(api.requestJson('/x'), api.ExplorerNetworkError);
+  mode = 'empty'; await assert.rejects(api.deleteExplorerLabel('sample'), {name: 'UnreadableAnswer'});
+  mode = 'wrong'; await assert.rejects(api.renameExplorerFolder('sample', 'After'), contracts.ExplorerContractError);
+  mode = 'stale';
+  await assert.rejects(api.renameExplorerFolder('sample', 'After'), contracts.ExplorerContractError);
+  await assert.rejects(api.renameExplorerLabel('sample', 'After'), contracts.ExplorerContractError);
+  mode = 'normalized';
+  await api.renameExplorerFolder('sample', ' A  B ');
+  await api.renameExplorerLabel('sample', ' A\u0085\u001e B ');
+  mode = 'lost';
+  await assert.rejects(sidebar.organizationWrite(() => api.deleteExplorerLabel('sample'), async () => false),
+    /could not be reloaded.*Reload Library/);
+  mode = 'refused'; let refreshed = 0;
+  await assert.rejects(sidebar.organizationWrite(() => api.deleteExplorerFolder('sample'), async () => { refreshed++; }), {status: 409});
+  assert.equal(refreshed, 0, 'a known refusal keeps its HTTP status even with an unreadable error body');
+  mode = 'during-body';
+  const controller = new AbortController();
+  const cancelled = sidebar.organizationWrite(() => api.renameExplorerLabel('sample', 'Name', controller.signal), async () => { refreshed++; });
+  await flush(); controller.abort(); await assert.rejects(cancelled, {name: 'AbortError'});
+  assert.equal(refreshed, 0, 'caller cancellation stays cancellation');
+  const timeout = api.renameExplorerLabel('sample', 'Name');
+  await flush(); await time.advance(120_000); await assert.rejects(timeout, {code: 'client_timeout'});
+  assert.equal(time.size, 0);
+  mode = 'valid'; await api.renameExplorerFolder('sample', 'Valid');
+}
+
+// An empty search page can carry a paid continuation; a later empty terminal page confirms no results.
+{
+  const host = hooks(), paid = [], cost = {search_queries: 1, general: 1, video_batch_get_stats: 1};
+  let result;
+  const finder = compile('../application/frontend/src/explorer/ChannelSearchPage.tsx', {
+    react: host.api, 'react/jsx-runtime': {jsx, jsxs: jsx}, './channelSearch.css': {}, '../components/YouTubeAttribution': {},
+    './api': {requestJson: async (path) => {
+      if (path.endsWith('/status')) return {};
+      paid.push(path.split('/').at(-1));
+      return path.endsWith('/preview') ? {action_id: String(paid.length), max_cost: cost} : result;
+    }},
+  }, {window: {setTimeout() {}, clearTimeout() {}, addEventListener() {}, removeEventListener() {}}});
+  host.mount(() => finder.default({}));
+  const elements = () => nodes(host.render());
+  const text = () => elements().map(n => Array.isArray(n.props?.children)
+    ? n.props.children.filter(v => typeof v === 'string').join('') : n.props?.children).filter(v => typeof v === 'string').join(' ');
+  const page = (stop, more) => ({valid_for_ms: 10000, hits: [], profiles: {}, library: {}, views: {}, steps: {},
+    search_step: {cost: {}, rejected: 0, stop}, more, retry: false});
+  const first = () => elements().find(n => n.type === 'form').props.onSubmit({preventDefault() {}});
+  result = page('budget_requests', true); first(); await flush();
+  assert.match(text(), /This page has no results. Another page is available/);
+  assert.doesNotMatch(text(), /did not return a usable page/);
+  const next = elements().find(n => n.type === 'button' && n.props.children[0] === 'Load next page');
+  assert.match(next.props.children.join(''), /up to 1 Search/);
+  assert.deepEqual(paid, ['preview', 'execute'], 'no automatic request for the next page');
+  result = page(null, false); next.props.onClick(); await flush();
+  assert.match(text(), /YouTube returned no results/);
+  assert.doesNotMatch(text(), /Another page is available|did not return a usable page/);
+  result = page('quota_exhausted', false); first(); await flush();
+  assert.match(text(), /quota exhausted/); assert.match(text(), /did not return a usable page/);
+  host.stop();
+}
+
+// Losing the receipt after a paid first search must keep the original action across a reload.
+{
+  const storage = new Map(), sent = [], quotes = [], cost = {search_queries: 1, general: 1, video_batch_get_stats: 1};
+  const browser = {setTimeout() {}, clearTimeout() {}, addEventListener() {}, removeEventListener() {},
+    sessionStorage: {getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k,v), removeItem: k => storage.delete(k)}};
+  let failure = true;
+  function loadFinder() {
+    const host = hooks();
+    const finder = compile('../application/frontend/src/explorer/ChannelSearchPage.tsx', {
+      react: host.api, 'react/jsx-runtime': {jsx, jsxs: jsx}, './channelSearch.css': {}, '../components/YouTubeAttribution': {},
+      './api': {requestJson: async (path, signal, options) => {
+        if (path.endsWith('/status')) return {};
+        const body = JSON.parse(options.body);
+        if (path.endsWith('/preview')) {quotes.push(body); return {action_id: 'ticket' + quotes.length, max_cost: cost};}
+        sent.push(body);
+        if (failure) throw new Error('The response was interrupted.');
+        return {valid_for_ms: 9000, hits: [], profiles: {}, library: {}, views: {}, steps: {},
+          search_step: {cost: {}, rejected: 0, stop: null}, more: false, retry: false};
+      }},
+    }, {window: browser});
+    host.mount(() => finder.default({}));
+    const tree = () => nodes(host.render());
+    return {stop: () => host.stop(), first: () => tree().find(n => n.type === 'form').props.onSubmit({preventDefault() {}}),
+      button: label => tree().find(n => n.type === 'button' && n.props.children === label)};
+  }
+  const before = loadFinder(); before.first(); await flush();
+  assert.equal(storage.size, 1); assert.equal(before.button('Search YouTube').props.disabled, true);
+  before.stop();
+  const after = loadFinder();
+  after.first(); await flush(); assert.equal(quotes.length, 1); assert.equal(sent.length, 1);
+  after.button('Resume original search').props.onClick(); await flush();
+  assert.deepEqual(sent[1], sent[0]); assert.equal(storage.size, 1);
+  failure = false;
+  after.button('Resume original search').props.onClick(); await flush();
+  assert.deepEqual(sent[2], sent[0]); assert.equal(storage.size, 0); assert.equal(quotes.length, 1);
+  failure = true; after.first(); await flush();
+  after.button('Discard request').props.onClick(); await flush();
+  assert.equal(storage.size, 0); assert.equal(quotes.length, 2); assert.equal(sent.length, 4);
+  after.stop();
+}
+
 // The channel list's reads. A read asked for during another is not dropped (exactly one more follows), and a
 // local change (a channel added, a folder or label made or assigned) keeps an older, slower answer off the page.
 {
@@ -411,12 +577,16 @@ const homeStub = loaders => ({HOME_PACE_HELP: 'pace help', ...loaders,
   // Calls during a read (Library opened, window focused, a folder renamed) are not dropped: exactly one read follows.
   {
     const h = harness();
-    void h.reader.load(); void h.reader.load(); void h.reader.load();
+    let refreshed = false;
+    void h.reader.load(); void h.reader.load();
+    const followup = h.reader.load().then(() => { refreshed = true; });
     assert.equal(h.reads.length, 1, 'one read at a time');
     h.reads[0].resolve(list('UCa')); await flush();
     assert.deepEqual(h.shown, [list('UCa')], 'nothing changed locally: the running answer is shown');
     assert.equal(h.reads.length, 2, 'and one more read, not two');
-    h.reads[1].resolve(list('UCa', 'UCb')); await flush();
+    assert.equal(refreshed, false, 'a recovery queued behind an older read still awaits the new result');
+    h.reads[1].resolve(list('UCa', 'UCb')); await followup;
+    assert.equal(refreshed, true);
     assert.deepEqual(h.shown.at(-1), list('UCa', 'UCb'));
     assert.equal(h.reads.length, 2);
   }
@@ -446,7 +616,7 @@ const homeStub = loaders => ({HOME_PACE_HELP: 'pace help', ...loaders,
   assert.doesNotMatch(app, /sidebarReading|sidebarRequestRef/);
   for (const write of ['assignExplorerChannelFolder(channelId, folderId)', 'createExplorerFolder(name)', 'createExplorerLabel(name)',
     'assignExplorerChannelLabel(channelId, labelKey, enabled)']) {
-    const at = app.indexOf(`await ${write}`);
+    const at = app.indexOf(`await organizationWrite(() => ${write}, refreshOrganization)`);
     assert.ok(at > 0, write);
     assert.match(app.slice(at, app.indexOf('setSidebarState', at)), /sidebarReader\.changedLocally\(\);/, write);
   }

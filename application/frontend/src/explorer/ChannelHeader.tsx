@@ -471,12 +471,11 @@ export function useChannelHeader(
   const handleFolderChange = async (folderId: string): Promise<boolean> => {
     if (!onAssignFolder || folderSaving) return false;
     if (folderId === folderDraftId) return true;
-    const previousFolderId = folderDraftId;
-    setFolderDraftId(folderId);
     setFolderSaving(true);
     setFolderError('');
     try {
       await onAssignFolder(channelId, folderId);
+      setFolderDraftId(folderId);
       const selectedFolder = folders.find((folder) => folder.id === folderId);
       setAnnouncement(
         folderId
@@ -485,9 +484,9 @@ export function useChannelHeader(
       );
       return true;
     } catch (error) {
-      setFolderDraftId(previousFolderId);
-      setFolderError(error instanceof Error ? error.message : String(error));
-      setAnnouncement('Folder assignment failed.');
+      const message = error instanceof Error ? error.message : String(error);
+      setFolderError(message);
+      setAnnouncement(message);
       return false;
     } finally {
       setFolderSaving(false);
@@ -519,12 +518,9 @@ export function useChannelHeader(
         : `${createdFolder.name || name} folder created and assigned.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      setFolderError(
-        createdFolder?.id
-          ? `Folder created, but the channel could not be assigned. ${message}`
-          : message,
-      );
-      setAnnouncement(createdFolder?.id ? 'Folder assignment failed.' : 'Folder creation failed.');
+      const detail = createdFolder?.id ? `Folder ${createdFolder.name || name} is available. ${message}` : message;
+      setFolderError(detail);
+      setAnnouncement(detail);
     } finally {
       setFolderSaving(false);
     }
@@ -546,8 +542,9 @@ export function useChannelHeader(
       await onAssignLabel(channelId, labelKey, enabled);
       setAnnouncement(enabled ? 'Label added.' : 'Label removed.');
     } catch (error) {
-      setLabelError(error instanceof Error ? error.message : String(error));
-      setAnnouncement('Label update failed.');
+      const message = error instanceof Error ? error.message : String(error);
+      setLabelError(message);
+      setAnnouncement(message);
     } finally {
       setLabelSavingKey('');
     }
@@ -567,8 +564,9 @@ export function useChannelHeader(
         ? `The existing ${label.name} label was added.`
         : `${label.name} label created and added.`);
     } catch (error) {
-      setLabelError(error instanceof Error ? error.message : String(error));
-      setAnnouncement('Label creation failed.');
+      const message = error instanceof Error ? error.message : String(error);
+      setLabelError(message);
+      setAnnouncement(message);
     } finally {
       setLabelSavingKey('');
     }

@@ -28,7 +28,7 @@ import json
 import re
 
 from typed_playlist import VIDEO_ID_RE
-from youtube_source_fields import parse_dt, youtube_counter_integer, youtube_duration_seconds
+from youtube_source_fields import parse_dt, youtube_counter_integer, youtube_duration_seconds, youtube_unsigned_long
 
 from .errors import ResponseInvalid
 from .families import policy
@@ -131,6 +131,9 @@ def scalar(field, raw):
     """One value by the registry wire type and its owning rule."""
     if raw is None:
         return known(ValueState.NULL_REPORTED)
+    if field.value_kind == "uint64_milliseconds":
+        millis = youtube_unsigned_long(raw)
+        return INVALID if millis is None else known(ValueState.KNOWN, millis)
     if field.json_type == "string":
         if not isinstance(raw, str):
             return INVALID
@@ -271,8 +274,10 @@ REJECT_ROW = object()   # returned by a family hook: the row breaks its row-kind
 def check_envelope(method, payload, *, id_batch):
     if not isinstance(payload, dict) or "error" in payload:
         raise ResponseInvalid("response_envelope_invalid")
-    if method.envelope_kind and payload.get("kind") != method.envelope_kind:
-        raise ResponseInvalid("response_kind_invalid")
+    if method.envelope_kind:
+        kind = payload.get("kind")
+        if kind != method.envelope_kind and kind not in method.envelope_kind_aliases:
+            raise ResponseInvalid("response_kind_invalid")
     if method.row_path == "":
         return [payload]     # a single resource (Reporting jobs.get, jobs.reports.get)
     container = (method.row_path or "").removesuffix("[]")
@@ -311,7 +316,7 @@ def parse_page(method, plan, payload, *, page_index, hook, targets=()):
     rows, returned, rejected = [], [], 0
     requested = set(targets)
     hooked = set()
-    for item in items:
+    for source_position, item in enumerate(items, start=1):
         if identity is None:
             # Rows without one identity path (search hits): the family hook decides.
             resolved = hook.row_identity(method, item)
@@ -325,7 +330,8 @@ def parse_page(method, plan, payload, *, page_index, hook, targets=()):
             fields = {field.path: field_value(field, item) for field in selected}
             fields = hook.finish_row(method, item, fields)
             unknown_paths(item, known_paths, prefixes, out=unknown)
-            rows.append(Row(unit=method.row_unit, identity=resolved, fields=fields, page_index=page_index))
+            rows.append(Row(unit=method.row_unit, identity=resolved, fields=fields, page_index=page_index,
+                            source_position=source_position if method.id == "youtube.search.list" else None))
             continue
         raw_id = item.get(identity.path)
         valid_id = isinstance(raw_id, str) and (pattern is None or pattern.fullmatch(raw_id) is not None)

@@ -122,7 +122,7 @@ class DefinitionTests(unittest.TestCase):
                         "db/reads/research_aggregate.py", "db/reads/research_query.py", "db/reads/research_sql.py", "db/reads/research_observations.py", "db/reads/research_growth.py", "web/research.py",
                         "saved_work.py", "db/user_work/user_work_restore.py",
                         # Owns the process frozen-result store for the invalidation hooks.
-                        "web/cache.py"}):
+                        "web/cache.py", "alerts.py", "web/alerts.py"}):
                 continue
             tree = ast.parse(path.read_text(encoding="utf-8"))
             for node in ast.walk(tree):
@@ -155,6 +155,29 @@ class WireTests(unittest.TestCase):
         for value in invalid:
             with self.subTest(value=value), self.assertRaises(ValidationError):
                 wire.QueryRequest.model_validate(value)
+
+    def test_ordered_list_is_complete_or_withheld_never_cut(self):
+        ids = "".join("a%010d" % i for i in range(3))
+        for order in ({"total_count": 3, "ids": ids, "limit": 5}, {"total_count": 0, "ids": "", "limit": 5},
+                      {"total_count": 6, "ids": None, "limit": 5}):
+            with self.subTest(order=order):
+                data = result()
+                data["page"]["order"] = order
+                self.assertEqual(wire.QueryResult.model_validate(data).model_dump(mode="json")["page"]["order"], order)
+        for order in ({"total_count": 3, "ids": ids[:-1], "limit": 5},      # a cut ID
+                      {"total_count": 4, "ids": ids, "limit": 5},           # a missing ID
+                      {"total_count": 3, "ids": None, "limit": 5},          # withheld within the limit
+                      {"total_count": 6, "ids": ids * 2, "limit": 5},       # listed beyond the limit
+                      {"total_count": 3, "ids": ids.replace("a", "!", 1), "limit": 5},
+                      {"total_count": 3, "ids": ids, "limit": 0}, {"total_count": -1, "ids": "", "limit": 5},
+                      {"total_count": 3, "ids": ids}):
+            with self.subTest(order=order), self.assertRaises(ValidationError):
+                wire.OrderResult.model_validate(order)
+        # Current pages only, and absent unless asked for.
+        self.assertNotIn("order", wire.QueryResult.model_validate(result()).model_dump(mode="json")["page"])
+        with self.assertRaises(ValidationError):
+            wire.PageResult.model_validate({"has_more": False, "next_cursor": None, "previous_cursor": None, "start_index": 0,
+                                            "total_count": 3, "order": {"total_count": 3, "ids": ids, "limit": 5}})
 
     def test_shape_acceptance_does_not_claim_registry_admission(self):
         # Must reject this BEFORE execution; a parsed DTO is not authorization.

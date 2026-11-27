@@ -27,7 +27,6 @@ This module holds no SQL, no I/O and no credentials; nothing is persisted.
 from __future__ import annotations
 
 from collections import OrderedDict
-from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import json
@@ -35,6 +34,7 @@ import threading
 import time
 from types import MappingProxyType
 
+from .admission import ReadAdmission
 from .validation import QueryRejected, canonical
 
 FROZEN_TTL_SECONDS = 600
@@ -190,8 +190,11 @@ class FrozenStore:
         self.monotonic, self.clock, self.auto_prune = monotonic, clock, auto_prune
         self._sessions: OrderedDict[str, FrozenSession] = OrderedDict()
         self._bytes = 0
+        self._facet_cache = {}
         self._lock = threading.RLock()
-        self._builds = threading.BoundedSemaphore(max_builds)
+        # Reserve one full result budget per active build; waiters hold no rows.
+        build_capacity = min(max_builds, self.max_bytes // self.session_limit_bytes)
+        self._builds = ReadAdmission(concurrency=build_capacity)
         self._revision = 0
         self._timer = None
 
@@ -199,16 +202,8 @@ class FrozenStore:
     def session_limit_bytes(self):
         return min(self.max_session_bytes, self.max_bytes)
 
-    @contextmanager
-    def build_slot(self):
-        # A third concurrent build is refused at once, never queued: it would
-        # hold memory for a result its caller may already have abandoned.
-        if not self._builds.acquire(blocking=False):
-            raise QueryRejected("query_busy")
-        try:
-            yield
-        finally:
-            self._builds.release()
+    def build_slot(self, *, deadline, cancelled):
+        return self._builds.enter(deadline=deadline, cancelled=cancelled)
 
     def generation(self):
         """Taken before a build reads; any invalidation since voids the build."""
@@ -218,10 +213,35 @@ class FrozenStore:
     def _expired(self, entry):
         return self.monotonic() >= entry.deadline or self.clock() >= entry.valid_before
 
+    def _remove_locked(self, key):
+        self._bytes -= self._sessions.pop(key).size
+        self._facet_cache.pop(key, None)
+
+    def _facet_bytes(self):
+        # One bytes object and one dictionary slot per optional entry.
+        return sum(len(entry) + 256 for entry in self._facet_cache.values())
+
+    def remember_facets(self, session, values):
+        if values is None:
+            return
+        with self._lock:
+            if self._sessions.get(session.session_id) is not session:
+                return
+            cost = len(values) + 256
+            if (cost <= self.session_limit_bytes - session.size
+                    and cost <= self.max_bytes - self._bytes - self._facet_bytes()):
+                self._facet_cache[session.session_id] = values
+
+    def facet_values(self, session):
+        with self._lock:
+            if self._sessions.get(session.session_id) is session:
+                return self._facet_cache.get(session.session_id)
+            return None
+
     def _purge_locked(self):
         for key, entry in list(self._sessions.items()):
             if self._expired(entry):
-                self._bytes -= self._sessions.pop(key).size
+                self._remove_locked(key)
 
     def _schedule_locked(self):
         # Releases memory of an abandoned result; access also purges.
@@ -251,8 +271,11 @@ class FrozenStore:
             session = replace(session, deadline=self.monotonic() + remaining)
             while self._sessions and (len(self._sessions) >= self.max_sessions
                                       or self._bytes + session.size > self.max_bytes):
-                _, removed = self._sessions.popitem(last=False)
-                self._bytes -= removed.size
+                self._remove_locked(next(iter(self._sessions)))
+            # Optional facet data yields to ordinary sessions. It never changes
+            # a memory refusal or evicts a session that otherwise would fit.
+            if self._bytes + session.size + self._facet_bytes() > self.max_bytes:
+                self._facet_cache.clear()
             self._sessions[session.session_id] = session
             self._bytes += session.size
             self._schedule_locked()
@@ -276,7 +299,7 @@ class FrozenStore:
     def discard(self, session):
         with self._lock:
             if self._sessions.get(session.session_id) is session:
-                self._bytes -= self._sessions.pop(session.session_id).size
+                self._remove_locked(session.session_id)
 
     def invalidate_channel(self, channel_id):
         """A visibility, trash or video-type decision on one channel.
@@ -288,13 +311,14 @@ class FrozenStore:
             self._revision += 1
             for key, entry in list(self._sessions.items()):
                 if channel_id in entry.channel_ids:
-                    self._bytes -= self._sessions.pop(key).size
+                    self._remove_locked(key)
 
     def invalidate_all(self):
         """Runtime suspension or cache clear: every frozen result expires."""
         with self._lock:
             self._revision += 1
             self._sessions.clear()
+            self._facet_cache.clear()
             self._bytes = 0
             if self._timer is not None:
                 self._timer.cancel()
@@ -303,4 +327,4 @@ class FrozenStore:
     def usage(self):
         with self._lock:
             self._purge_locked()
-            return {"sessions": len(self._sessions), "bytes": self._bytes}
+            return {"sessions": len(self._sessions), "bytes": self._bytes + self._facet_bytes()}

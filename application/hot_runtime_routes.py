@@ -6,6 +6,14 @@ import re
 # Local user work never requires the API/collection gate. Any database query
 # still requires a live database and the exact installed schema.
 ROUTE_ACCESS = {
+    'GET /research/alerts/capabilities': 'user_work',
+    'GET /research/alerts/rules': 'user_work',
+    'POST /research/alerts/rules': 'api_read',
+    'PATCH /research/alerts/rules/{rule_id}': 'api_read',
+    'DELETE /research/alerts/rules/{rule_id}': 'user_work',
+    'POST /research/alerts/preview': 'api_read',
+    'GET /research/alerts/inbox': 'api_read',
+    'POST /research/alerts/inbox/{item_id}/read': 'api_read',
     'GET /research/capabilities': 'user_work',
     'GET /research/contracts': 'user_work',
     'GET /research/sources': 'user_work',
@@ -23,6 +31,7 @@ ROUTE_ACCESS = {
     'POST /mcp': 'user_work',
     'GET /mcp': 'user_work',
     'DELETE /mcp': 'user_work',
+    'GET /agent-setup/{client}': 'user_work',
     'GET /agent-keys': 'user_work',
     'POST /agent-keys': 'user_work',
     'DELETE /agent-keys/{key_id}': 'user_work',
@@ -36,6 +45,8 @@ ROUTE_ACCESS = {
     'GET /sources/acquisitions/status': 'user_work',
     'POST /sources/acquisitions/preview': 'user_work',
     'POST /sources/acquisitions/execute': 'api_read',
+    'POST /sources/channel-search/preview': 'user_work',
+    'POST /sources/channel-search/execute': 'api_read',
     'GET /saved/collections/{collection_id}/member-identities': 'user_work',
     'DELETE /folders/{folder_id}': 'user_work',
     'DELETE /labels/{label_key}': 'user_work',

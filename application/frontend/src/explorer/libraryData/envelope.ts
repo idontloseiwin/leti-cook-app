@@ -26,8 +26,8 @@ export type FrozenSessionSource = {
   total_count?: unknown;
 };
 
-/** Strictly read the identity of a frozen page or of a frozen-ids reply. */
-export function frozenSessionIdentity(value: FrozenSessionSource, maximumRows = 50_000): FrozenSessionIdentity {
+/** The server clock and query identity common to current and frozen responses. */
+export function pageClocks(value: FrozenSessionSource) {
   const root = openObject(value, 'result');
   const fingerprint = text(root.query_fingerprint, 'result.query_fingerprint', 64);
   if (!/^[a-f0-9]{64}$/.test(fingerprint)) contractError('result.query_fingerprint', 'expected a fingerprint.');
@@ -37,11 +37,16 @@ export function frozenSessionIdentity(value: FrozenSessionSource, maximumRows = 
   if (instantMilliseconds(valid) <= instantMilliseconds(evaluated)) {
     contractError('result.context.valid_before', 'the session must end after it was evaluated.');
   }
+  return { query_fingerprint: fingerprint, evaluated_at: evaluated, valid_before: valid };
+}
+
+export function frozenSessionIdentity(value: FrozenSessionSource, maximumRows = 50_000): FrozenSessionIdentity {
+  const root = openObject(value, 'result');
   // A page carries the total in `page`; the frozen-ids reply carries it at the top level.
   const total = root.page !== undefined
     ? count(openObject(root.page, 'result.page').total_count, 'result.page.total_count', maximumRows)
     : count(root.total_count, 'result.total_count', maximumRows);
-  return { query_fingerprint: fingerprint, evaluated_at: evaluated, valid_before: valid, total_count: total };
+  return { ...pageClocks(root), total_count: total };
 }
 
 /** `session_key = query_fingerprint + "\n" + evaluated_at + "\n" + valid_before + "\n" + total_count`. */

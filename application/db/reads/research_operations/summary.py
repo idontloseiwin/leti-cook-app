@@ -27,16 +27,31 @@ def compile_sql(plan, sql, params):
     return sql + SQL, params
 
 
+# Adjacent numeric edges partition the metric into disjoint segments. Counting
+# each segment once preserves overlapping intervals without grouping individual values.
+HISTOGRAM_CTES = """bucket_defs AS MATERIALIZED (
+ SELECT * FROM jsonb_to_recordset(%(buckets)s::jsonb)
+ b(metric text,key text,label text,lower numeric,upper numeric,ordinal integer)),
+metric_edges AS MATERIALIZED (
+ SELECT b.metric, coalesce(array_agg(DISTINCT edge ORDER BY edge) FILTER (WHERE edge IS NOT NULL), ARRAY[]::numeric[]) AS edges
+ FROM bucket_defs b CROSS JOIN LATERAL (VALUES (b.lower), (b.upper)) ends(edge) GROUP BY b.metric),
+segment_counts AS MATERIALIZED (
+ SELECT v.metric, width_bucket(v.value,e.edges) AS segment, count(*) AS frequency
+ FROM metric_values v JOIN metric_edges e USING(metric) WHERE v.value IS NOT NULL
+ GROUP BY v.metric, width_bucket(v.value,e.edges)),
+buckets AS MATERIALIZED (
+ SELECT b.metric,b.key,b.label,b.ordinal,coalesce(sum(s.frequency),0)::bigint AS count
+ FROM bucket_defs b JOIN metric_edges e USING(metric)
+ LEFT JOIN segment_counts s ON s.metric=b.metric AND (b.lower IS NULL OR s.segment >= width_bucket(b.lower,e.edges))
+ AND (b.upper IS NULL OR s.segment < width_bucket(b.upper,e.edges))
+ GROUP BY b.metric,b.key,b.label,b.ordinal)"""
+
+
 def summary_ctes(rows):
     """Statistics CTEs over the relation `rows` (one row per video, population columns)."""
     return view_definition(rows) + ',\n' + metric_values("""('duration_seconds',p.duration_seconds),('likes',p.likes),
  ('comments',p.comments),('title_length',char_length(p.title)::numeric),
- ('tag_count',cardinality(p.tags)::numeric)""", rows) + ',\n' + SUMMARIES + """,
-buckets AS (
- SELECT b.metric,b.key,b.label,b.ordinal,
- (SELECT count(*) FROM metric_values v WHERE v.metric=b.metric AND
- (b.lower IS NULL OR v.value>=b.lower) AND (b.upper IS NULL OR v.value<b.upper)) AS count
- FROM jsonb_to_recordset(%(buckets)s::jsonb) b(metric text,key text,label text,lower numeric,upper numeric,ordinal integer))"""
+ ('tag_count',cardinality(p.tags)::numeric)""", rows) + ',\n' + SUMMARIES + ',\n' + HISTOGRAM_CTES
 
 
 # Known values of views left out by the definition rule (zero for other metrics).

@@ -15,6 +15,20 @@ function compiled(relative, imports) {
   return exports;
 }
 
+const healthApi = compiled('../application/frontend/src/api.ts', {'./sourceLifetime.ts': {}});
+const websubPayload = JSON.parse(readFileSync(new URL('./fixtures/websub_health_wire.json', import.meta.url), 'utf8'));
+assert.equal(healthApi.parseWebSubStatus(websubPayload), websubPayload);
+for (const off of [{configured: false}, {configured: false, setting_error: 'websub_callback_url_invalid'}]) {
+  assert.equal(healthApi.parseWebSubStatus(off), off);
+}
+for (const invalid of [null, {}, {configured: 'false'}, {configured: false, summary: {}}, {configured: true},
+  {...websubPayload, summary: null}, ...[{deliveries_24h: true}, {events_24h: []},
+    {subscriptions: {verified: -1}}, {events_pending: 0.1}, {last_delivery_at: 'yesterday'},
+    {ramp_stage: '0'}, {breaker_open: 1}].map(change =>
+      ({...websubPayload, summary: {...websubPayload.summary, ...change}}))]) {
+  assert.throws(() => healthApi.parseWebSubStatus(invalid), /Invalid WebSub/);
+}
+
 const explanation = compiled('../application/frontend/src/collectionExplanation.ts', {});
 const presentation = compiled('../application/frontend/src/pipelineHealthPresentation.ts', {
   './collectionExplanation': explanation,

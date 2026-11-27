@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'application'), str(ROOT/'tests')]
 from unittest.mock import patch
 from research_query import frozen_service, service as service_module
-from research_query.admission import ReadAdmission
+from research_query.admission import LimitedReadAdmission, ReadAdmission
 from research_query.frozen import FrozenStore
 from research_query.validation import QueryRejected, canonical
 from test_research_query_service import Repository, QueryService, CONTEXT, NOW
@@ -119,6 +119,82 @@ class FrozenWaitBudgetTests(unittest.TestCase):
         with self.assertRaises(QueryRejected) as caught:
             call()
         return caught.exception.payload()
+
+    def wait_for_build_queue(self, count):
+        end = time.monotonic() + 1
+        while time.monotonic() < end:
+            with self.store._builds._condition:
+                if len(self.store._builds._waiting) == count:
+                    return
+            time.sleep(.002)
+        self.fail('unexpected number of queued builds')
+
+    def test_builds_wait_in_order_without_borrowing_a_read_slot(self):
+        # A peer MCP read may occupy one shared slot. A queued owner build
+        # still leaves the second slot available to an ordinary owner read.
+        shared = ReadAdmission(concurrency=2)
+        self.service.admission = shared
+        agent = LimitedReadAdmission(shared, concurrency=1)
+        self.store = FrozenStore(max_bytes=1000000, max_session_bytes=750000,
+                                 clock=lambda: frozen_fixture.NOW, auto_prune=False)
+        self.service.frozen = self.store
+        self.limits(wait=3, work=2)
+        order = []
+        local = threading.local()
+        self.repo.on_read = lambda: order.append(local.index)
+        def build(index):
+            local.index = index
+            return self.build()
+        gate = dict(deadline=time.monotonic()+3, cancelled=lambda: False)
+        with agent.enter(**gate):
+            with self.store.build_slot(**gate):
+                builds = []
+                for index in (1, 2):
+                    builds.append(self.pool.submit(build, index))
+                    self.wait_for_build_queue(index)
+                self.assertEqual(self.repo.reads, 0)
+                with shared.enter(**gate):
+                    self.assertEqual(shared._active, 2)
+            self.assertEqual([job.result(2)['page']['total_count'] for job in builds], [120, 120])
+        self.assertEqual(order, [1, 2])
+
+    def test_build_and_read_admission_share_the_total_wait_deadline(self):
+        # Capture absolute deadlines. The shared slot may use only the time
+        # left after waiting for build capacity.
+        self.limits(wait=2, work=3)
+        received = []
+        original = self.admission.enter
+        @contextmanager
+        def read_slot(*, deadline, cancelled):
+            received.append(deadline)
+            with original(deadline=deadline, cancelled=cancelled):
+                yield
+        self.admission.enter = read_slot
+        gate = dict(deadline=time.monotonic()+4, cancelled=lambda: False)
+        with patch.object(frozen_service, 'FROZEN_BUILD_QUEUE_SECONDS', 1):
+            with self.store.build_slot(**gate), self.store.build_slot(**gate):
+                started = time.monotonic()
+                job = self.pool.submit(self.build)
+                self.wait_for_build_queue(1)
+            self.assertEqual(job.result(2)['page']['total_count'], 120)
+        self.assertGreaterEqual(received[0], started+1)
+        self.assertLess(received[0], started+1.3)
+        self.assertGreater(received[1], received[0]+1)
+
+    def test_cancelled_build_has_no_rows_and_releases_its_queue_position(self):
+        self.limits(wait=3, work=2)
+        cancel = threading.Event()
+        gate = dict(deadline=time.monotonic()+3, cancelled=lambda: False)
+        with self.store.build_slot(**gate), self.store.build_slot(**gate):
+            future = self.pool.submit(self.service.execute, canonical(frozen_fixture.frozen_query()), cancelled=cancel.is_set)
+            self.wait_for_build_queue(1)
+            cancel.set()
+            with self.assertRaisesRegex(QueryRejected, 'query_budget_exceeded'):
+                future.result(1)
+            self.assertEqual(self.repo.reads, 0)
+            self.assertEqual(self.store.usage()['sessions'], 0)
+            self.assertEqual(len(self.store._builds._waiting), 0)
+        self.assertEqual(self.build()['page']['total_count'], 120)
 
     def test_work_budget_starts_when_the_slot_is_granted(self):
         self.limits(wait=2.0, work=1.5)

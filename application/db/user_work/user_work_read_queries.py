@@ -36,7 +36,8 @@ SELECT
  (SELECT count(*) FROM (SELECT 1 FROM readable.video_type_user_work c WHERE
   c.decision_type IS NOT NULL OR EXISTS(SELECT 1 FROM public.video_type_review_history h WHERE h.case_id=c.case_id)
   LIMIT 1001) x) AS reviews,
- (SELECT count(*) FROM (SELECT 1 FROM public.video_type_review_history LIMIT 10001) x) AS history
+ (SELECT count(*) FROM (SELECT 1 FROM public.video_type_review_history LIMIT 10001) x) AS history,
+ (SELECT count(*) FROM (SELECT 1 FROM readable.alert_rules LIMIT 101) x) AS alert_rules
 """
 _STATUS_CAPACITY = """
 SELECT
@@ -45,8 +46,18 @@ SELECT
  (SELECT count(*) FROM (SELECT 1 FROM public.folders LIMIT 1001) x) AS folders
 """
 
-_EXPORT_ESTIMATE = """
+_ALERT_EXPORT = """SELECT jsonb_build_object('definition',r.definition,'enabled',r.enabled,'source_ref',
+ CASE WHEN r.definition->'scope'->>'kind' IN ('folder','label') THEN
+      CASE WHEN r.source_available THEN r.definition->'scope'->>'id' END
+      WHEN EXISTS(SELECT 1 FROM readable.channel_user_work c WHERE c.user_work_id=r.scope_owner
+                  AND (r.definition->'scope'->>'kind'='video' OR c.channel_id=r.definition->'scope'->>'id'))
+        OR EXISTS(SELECT 1 FROM public.user_channel_restore_items p WHERE p.id=r.scope_owner)
+      THEN r.scope_owner::text END) AS value FROM readable.alert_rules r"""
+
+_EXPORT_ESTIMATE = f"""
 SELECT coalesce(sum(n),0) AS total_bytes FROM (
+ SELECT coalesce(sum(octet_length(value::text)+2),0) n FROM ({_ALERT_EXPORT}) projected
+ UNION ALL
 SELECT coalesce(sum(octet_length(value::text)+2),0) n FROM (SELECT jsonb_build_object('id',f.id,'name',f.name,'created_at',f.created_at) AS value FROM public.folders f) projected
  UNION ALL
  SELECT coalesce(sum(octet_length(value::text)+2),0) n FROM (SELECT jsonb_build_object('label_key',l.label_key,'name',l.name,'label_type',l.label_type,'created_at',l.created_at) AS value FROM public.channel_labels l) projected
@@ -68,9 +79,10 @@ SELECT coalesce(sum(octet_length(value::text)+2),0) n FROM (SELECT jsonb_build_o
 ) sizes
 """
 
-_EXPORT_DOCUMENT = """
+_EXPORT_DOCUMENT = f"""
 WITH document AS MATERIALIZED (SELECT jsonb_build_object(
-'field_preferences',(SELECT coalesce(pending_import,document) FROM public.research_preferences WHERE workspace_id='installation'),
+'alert_rules',(SELECT coalesce(jsonb_agg(value ORDER BY value),'[]'::jsonb) FROM ({_ALERT_EXPORT}) projected),
+'field_preferences',(SELECT coalesce(pending_import,document) FROM readable.research_preferences WHERE workspace_id='installation'),
 'folders',(WITH projected AS MATERIALIZED (SELECT jsonb_build_object('id',f.id,'name',f.name,'created_at',f.created_at) AS value FROM public.folders f) SELECT coalesce(jsonb_agg(value ORDER BY value->>'id'),'[]'::jsonb) FROM projected),
  'labels',(WITH projected AS MATERIALIZED (SELECT jsonb_build_object('label_key',l.label_key,'name',l.name,'label_type',l.label_type,'created_at',l.created_at) AS value FROM public.channel_labels l) SELECT coalesce(jsonb_agg(value ORDER BY value->>'label_key'),'[]'::jsonb) FROM projected),
  'channels',(WITH projected AS MATERIALIZED (SELECT jsonb_build_object('channel_id',c.channel_id,'user_work_id',c.user_work_id,'user_input',c.user_input,'folder_id',c.folder_id,'parent_channel_id',c.parent_channel_id,'is_hidden',coalesce(control.is_hidden,true),'hidden_at',control.hidden_at,'added_at',c.added_at) AS value FROM readable.channel_user_work c LEFT JOIN readable.channel_control control ON control.channel_id=c.channel_id) SELECT coalesce(jsonb_agg(value ORDER BY value->>'user_work_id'),'[]'::jsonb) FROM projected),
@@ -90,7 +102,7 @@ from sized
 
 _STATUS_DOCUMENT = """
 SELECT jsonb_build_object('can_restore',
-  NOT EXISTS(SELECT 1 FROM readable.channel_user_work) AND NOT EXISTS(SELECT 1 FROM public.folders)
+  NOT EXISTS(SELECT 1 FROM readable.alert_rules) AND NOT EXISTS(SELECT 1 FROM readable.channel_user_work) AND NOT EXISTS(SELECT 1 FROM public.folders)
   AND NOT EXISTS(SELECT 1 FROM public.channel_labels WHERE label_key<>'monetized' OR name<>'Monetized' OR label_type<>'preset')
   AND NOT EXISTS(SELECT 1 FROM public.channel_label_assignments) AND NOT EXISTS(SELECT 1 FROM public.saved_objects WHERE deleted_at IS NULL)
   AND NOT EXISTS(SELECT 1 FROM public.saved_collection_members)
@@ -133,6 +145,7 @@ def _capacity(row, *, export):
         or row["members"] > 100000
         or row["reviews"] > 1000
         or row["history"] > 10000
+        or row["alert_rules"] > 100
     ):
         _limit()
 

@@ -2,8 +2,8 @@
 
 The backup repository delegates binding here. Intrinsic owner-binding and
 backup-limit guards stay authoritative; all native validation, locks and writes
-share one bounded transaction. The two ownership updates require separately
-reviewed column grants on Saved members and review cases. No provider calls or
+share one bounded transaction. The ownership updates require grants on Saved
+members, review cases and alert rules. No provider calls or
 retained business-function delegation.
 """
 from __future__ import annotations
@@ -46,6 +46,14 @@ def _transfer(tx,identity,user_work_id,*,adopt):
                'WHERE restore_owner_ref=%s::uuid',(args['owner'],args['id']))
     tx.execute('UPDATE public.video_type_review_cases SET user_channel_ref=%s::uuid,restore_owner_ref=NULL '
                'WHERE restore_owner_ref=%s::uuid',(args['owner'],args['id']))
+    if args['owner'] != args['id']:
+        # Reconnection can merge a pending channel into an already tracked one.
+        # The source becomes eligible only after this confirmed ownership change.
+        tx.execute("""UPDATE public.alert_rules r SET scope_owner=c.user_work_id,restored_scope_since=clock_timestamp()
+            FROM public.channels c WHERE c.user_work_id=%s::uuid AND r.scope_owner=%s::uuid AND r.deleted_at IS NULL
+            AND (r.definition->'scope'->>'kind'='video' OR
+                (r.definition->'scope'->>'kind'='channel' AND r.definition->'scope'->>'id'=c.channel_id))""",
+            (args['owner'],args['id']))
 
 
 def adopt_restored_channel_user_work(database,identity,*,transaction=None):

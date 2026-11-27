@@ -17,14 +17,17 @@ from types import MappingProxyType
 
 from pydantic import ValidationError
 
+from .cell_layout import frozen_video_columns
 from .contracts import MAX_BODY_BYTES, MAX_FROZEN_ROWS, MAX_RESPONSE_BYTES, FrozenIdsResult, QueryResult
 from .frozen import (FROZEN_TTL_SECONDS, ROW_OVERHEAD_BYTES, FrozenReference, FrozenSession,
                      compact_cells, expand_row)
 from .registry import CHANNEL_SOURCE_ID
 from .service import (FROZEN_BUILD_SECONDS, FROZEN_WAIT_SECONDS, coverage_from, instant, result_context,
-                      shape_cells, wire_row)
+                      iter_cells, wire_row)
 from .validation import QueryRejected, _json_budget, _pairs, _reject_constant, canonical, check_budget
 
+# The build queue must cover one full work window for the preceding pair of builds.
+FROZEN_BUILD_QUEUE_SECONDS = FROZEN_BUILD_SECONDS
 WARNING = "frozen_values_as_of_evaluated_at"
 # Room for a page's own cursors, reference and envelope beyond its rows.
 _PAGE_ENVELOPE_BYTES = 16 * 1024
@@ -68,7 +71,39 @@ def _recheck(service, session, deadline, cancelled):
     store.require(session)
 
 
-def _freeze(service, plan, context, data):
+def _json_rows(text, expected):
+    """Decode one packed row at a time from PostgreSQL's JSON array."""
+    decoder = json.JSONDecoder()
+    offset = 0
+
+    def skip():
+        nonlocal offset
+        while offset < len(text) and text[offset] in " \r\n\t":
+            offset += 1
+
+    def take(token):
+        nonlocal offset
+        skip()
+        if not text.startswith(token, offset):
+            raise ValueError("invalid packed rows")
+        offset += 1
+
+    take("[")
+    for index in range(expected):
+        if index:
+            take(",")
+        skip()
+        row, offset = decoder.raw_decode(text, offset)
+        if not isinstance(row, list):
+            raise ValueError("invalid packed row")
+        yield row
+    take("]")
+    skip()
+    if offset != len(text):
+        raise ValueError("invalid packed rows")
+
+
+def _freeze(service, plan, context, data, facet_values=None, *, deadline=None, cancelled=lambda: False):
     request = plan.request
     try:
         count, source_rows = data["frozen_count"], data["rows"]
@@ -76,22 +111,47 @@ def _freeze(service, plan, context, data):
             raise ValueError()
         if count > MAX_FROZEN_ROWS or source_rows is None:
             raise QueryRejected("query_budget_exceeded", "consistency", limit="rows")
-        if not isinstance(source_rows, list) or len(source_rows) != count:
+        if data.get("packed_video_rows") and isinstance(source_rows, str):
+            source_rows = _json_rows(source_rows, count)
+        elif not isinstance(source_rows, list) or len(source_rows) != count:
             raise ValueError()
         evaluated, fresh_until = instant(data["evaluated_at"]), instant(data["fresh_until"])
         if not evaluated < fresh_until <= evaluated + timedelta(seconds=FROZEN_TTL_SECONDS):
             raise ValueError()
-        # Cells as tuples in CELL_KEYS order: no wire dict per cell.
-        ids, rows, provenance = shape_cells(request, source_rows)
-        # Only admitted sources bound the lifetime. SQL admits a value or row
-        # only when it outlives fresh_until, so this is fresh_until unless a
-        # clock disagrees; rows and values it withheld never shorten it.
+        columns = tuple(request.select)
+        if data.get("packed_video_rows"):
+            layout = frozen_video_columns(request)
+            sources = (dict(zip(layout, row, strict=True)) for row in source_rows)
+        else:
+            sources = source_rows
+        ids, encoded, provenance, known = [], [], {}, set()
+        expired_values = 0
+        delta = 0
+        row_bytes = 0
+        fixed_bytes = len(plan.encoded) + count * ROW_OVERHEAD_BYTES
+        limit = service.frozen.session_limit_bytes
+        if fixed_bytes > limit:
+            raise QueryRejected("query_budget_exceeded", "consistency", limit="memory")
+        for row_id, cells, type_expiry in iter_cells(request, sources, provenance):
+            if len(ids) % 128 == 0 and deadline is not None:
+                _in_budget(deadline, cancelled)
+            row = compact_cells(row_id, cells)
+            row_bytes += len(row)
+            if fixed_bytes + row_bytes > limit:
+                raise QueryRejected("query_budget_exceeded", "consistency", limit="memory")
+            if facet_values is not None:
+                facet_values.add(cells)
+            if not ids:
+                delta = len(canonical(wire_row(columns, row_id, cells))) - len(row)
+            ids.append(row_id)
+            encoded.append(row)
+            known.update(cell[4] for cell in cells if cell[0] == "known" and cell[4] is not None)
+            if type_expiry is not None:
+                known.add(type_expiry)
+            expired_values += any(cell[0] == "expired" for cell in cells)
         valid_before = fresh_until
-        known = {cell[4] for row in rows for cell in row if cell[0] == "known" and cell[4] is not None}
-        known.update(source["type_expiry"] for source in source_rows if source.get("type_expiry") is not None)
         for value in known:
             valid_before = min(valid_before, instant(value))
-        expired_values = sum(1 for row in rows if any(cell[0] == "expired" for cell in row))
         coverage = coverage_from(data, request, (("source_rows_expiring", data["expiring_rows"]),
                                                  ("rows_with_expired_values", expired_values)))
         channels = data["scope_channels"]
@@ -100,11 +160,8 @@ def _freeze(service, plan, context, data):
         ids = tuple(ids)
         if len(set(ids)) != len(ids) or any(type(i) is not str for i in ids):
             raise ValueError()
-        columns = tuple(request.select)
-        encoded = tuple(compact_cells(row_id, cells) for row_id, cells in zip(ids, rows))
-        # A page's wire row is its compact row plus the same keys for every row.
-        if rows:
-            delta = len(canonical(wire_row(columns, ids[0], rows[0]))) - len(encoded[0])
+        encoded = tuple(encoded)
+        if encoded:
             budget = MAX_RESPONSE_BYTES - _PAGE_ENVELOPE_BYTES - len(canonical(provenance))
             per_page = request.page.size
             for start in range(0, len(encoded), per_page):
@@ -112,8 +169,7 @@ def _freeze(service, plan, context, data):
                     raise QueryRejected("query_budget_exceeded", "page", limit="response")
         wire_context = result_context(request, context, evaluated, valid_before, plan, consistency="frozen")
         metadata = canonical({"context": wire_context, "coverage": coverage, "provenance": provenance})
-        size = (len(metadata) + len(plan.encoded) + sum(map(len, encoded))
-                + len(encoded) * ROW_OVERHEAD_BYTES + 64 * len(channels))
+        size = len(metadata) + fixed_bytes + row_bytes + 64 * len(channels)
     except QueryRejected:
         raise
     except (KeyError, ValueError, TypeError, OverflowError, ValidationError):
@@ -174,9 +230,10 @@ def execute_frozen(service, plan, context, *, started, cancelled):
     """`started`: the request's arrival (time.monotonic()).
 
     A page of a stored result has FROZEN_BUILD_SECONDS from arrival, its slot
-    wait included. A new build waits at most FROZEN_WAIT_SECONDS from arrival
-    for a read slot (query_busy after that) and then has FROZEN_BUILD_SECONDS
-    from getting it: read, shaping and the scope recheck, whose slot wait is
+    wait included. A new build has a total admission budget of FROZEN_BUILD_QUEUE_SECONDS.
+    Once it can start building, its shared read slot wait is capped at FROZEN_WAIT_SECONDS
+    within the remaining admission budget. FROZEN_BUILD_SECONDS cover read, shaping and
+    the scope recheck after the initial read slot is granted. The recheck's slot wait is
     part of that work (query_busy) like the read's own limit (time)."""
     request = plan.request
     store = service.frozen
@@ -199,8 +256,10 @@ def execute_frozen(service, plan, context, *, started, cancelled):
         video_source = request.source.id != CHANNEL_SOURCE_ID
         if video_source:
             service.preparation_check()
-        with store.build_slot():
-            with _slot(service, started + FROZEN_WAIT_SECONDS, cancelled):
+        wait_until = started + FROZEN_BUILD_QUEUE_SECONDS
+        with store.build_slot(deadline=wait_until, cancelled=cancelled):
+            read_until = min(wait_until, time.monotonic() + FROZEN_WAIT_SECONDS)
+            with _slot(service, read_until, cancelled):
                 # Time spent behind other reads was not this build's work.
                 deadline = time.monotonic() + FROZEN_BUILD_SECONDS
                 # Access may have been revoked while waiting outside the DB pool.
@@ -210,7 +269,16 @@ def execute_frozen(service, plan, context, *, started, cancelled):
                 generation = store.generation()
                 data = service.repository.read_frozen(plan, deadline=deadline, cancelled=cancelled)
             # Shaping every row is CPU work: it holds no read admission slot.
-            session = _freeze(service, plan, context, data)
+            facet_bytes = None
+            if (video_source and request.scope.kind == "channel"
+                    and {"video.views", "video.title", "video.category_id"}.issubset(request.select)):
+                from .operation_kinds.facets import FrozenFacetValues
+                facet_values = FrozenFacetValues(request.select)
+                session = _freeze(service, plan, context, data, facet_values, deadline=deadline, cancelled=cancelled)
+                facet_bytes = facet_values.encode()
+                del facet_values
+            else:
+                session = _freeze(service, plan, context, data, deadline=deadline, cancelled=cancelled)
             del data
             _in_budget(deadline, cancelled)
             with _slot(service, deadline, cancelled):
@@ -219,6 +287,7 @@ def execute_frozen(service, plan, context, *, started, cancelled):
                 _same_context(service, context.fingerprint())
             _in_budget(deadline, cancelled)
             session = store.insert(session, generation)
+            store.remember_facets(session, facet_bytes)
         anchor = request.page.anchor_id
         index = session.positions.get(anchor) if anchor is not None else None
         output = _page(service, session, 0 if index is None else index // session.page_size * session.page_size)

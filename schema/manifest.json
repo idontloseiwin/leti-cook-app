@@ -15,13 +15,22 @@
   "files": {
     "baseline/schema.sql": "70f9af54a8ea29f350b48e97abc0a674da976226fd6b6992436e8d246c1a4eac",
     "configuration-seeds.sql": "f283d89f1491f302b795c51e4f906938f9bda0cb043169251ce5cb7c015c7bcb",
-    "schema.sql": "0106b0238c6be9e89dfadfe1e1dbe931e5b37200c8f6eb3e88e2985b750dcb98",
-    "steps/0052-video-engagement-observations.sql": "613df491eb7250d5a1e23d43780573ced80489c5098b338cb54ca17d98ac5f02"
+    "schema.sql": "016ea60646465fb8a33a48b44f91c93b308d4a5db48c0cb9ceca9e4acf333cad",
+    "steps/0052-video-engagement-observations.sql": "613df491eb7250d5a1e23d43780573ced80489c5098b338cb54ca17d98ac5f02",
+    "steps/0053-collection-health-per-part.sql": "66d4f2894f295144263c0f497d4aca5d8bfeb976bdb3a5c32708bcfeb12005ce",
+    "steps/0054-owner-alerts.sql": "758adbe0330b94bd0c83ca7bc4abb815be6c4432c21e66f15000fd225031419d",
+    "steps/0055-channel-subscriber-alert-identity.sql": "f1f69eae29af95e77bd3036d01fae35fbb2808055d9698b0cea246cc5b155549",
+    "steps/0056-alert-observation-retries.sql": "26185239a2b56084c28f86188c26c946e672af335709ddaf1d564b5f5b48c535",
+    "steps/0057-alert-queue-candidates.sql": "4ee9c273fc677164a9665efef52cfe7dea467cf0b7c4add0b2f45a02116ed7d8",
+    "steps/0058-alert-rule-removal.sql": "e247f9c7c47bd9ce8e479591b007c69f3c66c4c89589f7dbc442ded53767677f",
+    "steps/0059-shared-alert-observations.sql": "bb461470ba3103d40ff88138bb51e34d2dc329ba19ffc9bcefaf07e1e654d096",
+    "steps/0060-alert-channel-indexes.sql": "404d94a0c52c1c41500fac9f3aae80dedbdff293d3d88016e4ce1f3ff1541954",
+    "steps/0061-alert-scope-and-coverage.sql": "b9d1465fdcb7a1526bc8b87d81cbc0ab28960632087ae0d313c56b0b126e9ae3"
   },
   "format": "leti-cook-self-hosted-schema",
   "fresh_database_only": true,
   "postgres_major": 17,
-  "schema_version": 52,
+  "schema_version": 61,
   "schemas": [
     "public",
     "operator_private"
@@ -31,6 +40,51 @@
       "version": 52,
       "file": "steps/0052-video-engagement-observations.sql",
       "sha256": "613df491eb7250d5a1e23d43780573ced80489c5098b338cb54ca17d98ac5f02"
+    },
+    {
+      "version": 53,
+      "file": "steps/0053-collection-health-per-part.sql",
+      "sha256": "66d4f2894f295144263c0f497d4aca5d8bfeb976bdb3a5c32708bcfeb12005ce"
+    },
+    {
+      "version": 54,
+      "file": "steps/0054-owner-alerts.sql",
+      "sha256": "758adbe0330b94bd0c83ca7bc4abb815be6c4432c21e66f15000fd225031419d"
+    },
+    {
+      "version": 55,
+      "file": "steps/0055-channel-subscriber-alert-identity.sql",
+      "sha256": "f1f69eae29af95e77bd3036d01fae35fbb2808055d9698b0cea246cc5b155549"
+    },
+    {
+      "version": 56,
+      "file": "steps/0056-alert-observation-retries.sql",
+      "sha256": "26185239a2b56084c28f86188c26c946e672af335709ddaf1d564b5f5b48c535"
+    },
+    {
+      "version": 57,
+      "file": "steps/0057-alert-queue-candidates.sql",
+      "sha256": "4ee9c273fc677164a9665efef52cfe7dea467cf0b7c4add0b2f45a02116ed7d8"
+    },
+    {
+      "version": 58,
+      "file": "steps/0058-alert-rule-removal.sql",
+      "sha256": "e247f9c7c47bd9ce8e479591b007c69f3c66c4c89589f7dbc442ded53767677f"
+    },
+    {
+      "version": 59,
+      "file": "steps/0059-shared-alert-observations.sql",
+      "sha256": "bb461470ba3103d40ff88138bb51e34d2dc329ba19ffc9bcefaf07e1e654d096"
+    },
+    {
+      "version": 60,
+      "file": "steps/0060-alert-channel-indexes.sql",
+      "sha256": "404d94a0c52c1c41500fac9f3aae80dedbdff293d3d88016e4ce1f3ff1541954"
+    },
+    {
+      "version": 61,
+      "file": "steps/0061-alert-scope-and-coverage.sql",
+      "sha256": "b9d1465fdcb7a1526bc8b87d81cbc0ab28960632087ae0d313c56b0b126e9ae3"
     }
   ],
   "user_work_rows": 0,

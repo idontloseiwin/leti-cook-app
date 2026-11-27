@@ -1,7 +1,6 @@
 """Inspector values, endpoints, exclusions and response contracts."""
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
-import hashlib
 import os
 from pathlib import Path
 import re
@@ -15,6 +14,7 @@ from db.reads.research_aggregate import compile_operation
 from research_query import aggregate
 from db.reads.research_operations import launch_comparison as launch_comparison_sql, lifetime_baseline as lifetime_baseline_sql
 from db.reads.research_operations import observed_history as observed_history_sql, summary as summary_sql
+from db.reads.research_operations.population_stats import SUMMARIES, VIEW_DEFINITION
 from research_query.operation_kinds import (OPERATION_KINDS, inspection, launch_comparison, lifetime_baseline,
                                             observed_history, static_details, summary)
 from research_query.operation_kinds.kind import Binding
@@ -102,16 +102,13 @@ class SqlTests(unittest.TestCase):
                     self.assertEqual(sql.count('inspector_args AS MATERIALIZED'), 1)
                     self.assertNotIn('as_of-make_interval', sql)
 
-    def test_summary_statement_is_unchanged_by_the_shared_statistics(self):
-        # sha256 of video.summary.v1's SQL with explicit definition evidence (one value without a recorded definition is left
-        # out and counted).
-        self.assertEqual(hashlib.sha256(summary_sql.SQL.encode()).hexdigest(),
-                         '4a587ca037f8ae4ef1f27feacdc9d3c895032074a2619c11ae7361708ed4f385')
-        self.assertIn(inspection.WINDOW_HOURS, (672,))
-        baseline = lifetime_baseline_sql.SQL
-        for part in ('view_definitions AS MATERIALIZED', 'view_definition AS (', 'summaries AS ('):
-            self.assertEqual(baseline.count(part), 1)
-            self.assertEqual(summary_sql.SQL.count(part), 1)
+    def test_summary_and_inspector_share_definition_evidence_and_exact_quantiles(self):
+        self.assertEqual(inspection.WINDOW_HOURS, 672)
+        for statement in (summary_sql.SQL, lifetime_baseline_sql.SQL):
+            self.assertEqual(statement.count(VIEW_DEFINITION), 1)
+            self.assertEqual(statement.count(SUMMARIES), 1)
+        self.assertIn("'unknown_definition_epoch_count'", summary_sql.SQL)
+        self.assertIn("'missing_count',(SELECT count(*) FROM population)-coalesce(s.known_count,0)", summary_sql.SQL)
 
     def test_launch_reads_one_timestamp_per_target(self):
         sql = launch_comparison_sql.SQL
@@ -148,7 +145,7 @@ class PolicyTests(unittest.TestCase):
 def static_row(**changes):
     row = dict(video_id=VIDEO, identity_clock=instant(1), identity_expiry=(NOW + timedelta(hours=600)).isoformat(),
                checked_at=instant(2), metadata_checked_at=instant(3), title='Straße \U0001F600', title_state='known',
-               thumbnail_url='https://img.youtube.com/vi/a0000000001/mqdefault.jpg', thumbnail_url_state='known',
+               thumbnail_url='https://img.youtube.com/vi/a0000000001/hqdefault.jpg', thumbnail_url_state='known',
                duration_seconds='93784', duration_seconds_state='known', views='3', views_state='known',
                likes='1', likes_state='known', comments='0', comments_state='known', published_at=instant(30),
                published_at_state='known', category_id='22', category_id_state='known', tags=['a', 'b'], tags_state='known',

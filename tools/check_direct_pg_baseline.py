@@ -24,7 +24,7 @@ MAX_ROWS = 1000
 LOCK_ID = 962106004
 # All tables are fixed identifiers, never supplied by a DSN, SQL result or CLI.
 DOMAIN_TABLES = tuple("public." + name for name in (
-    "youtube_category_reference",
+    "youtube_category_reference", "alert_rules", "alert_observations", "alert_inbox",
     "operator_jobs", "operator_job_inventory_chains", "channel_video_inventory_scans", "video_collection_state",
     "channel_collection_state", "channels", "channel_playlist_state",
     "channel_label_assignments", "channel_snapshots", "folders", "video_inventory",

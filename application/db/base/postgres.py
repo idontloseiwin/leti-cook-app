@@ -36,7 +36,7 @@ _USER_WORK_IMPORT_LOCK = """LOCK TABLE
  public.channel_label_assignments, public.saved_objects,
  public.saved_collection_members, public.saved_collection_commands,
  public.video_type_review_cases, public.video_type_review_history,
- public.user_channel_restore_items, public.research_preferences IN SHARE ROW EXCLUSIVE MODE NOWAIT"""
+ public.user_channel_restore_items, public.research_preferences, public.alert_rules IN SHARE ROW EXCLUSIVE MODE NOWAIT"""
 
 
 # Exact canonical-repair lock order from the retained repair protocol. The
@@ -1409,9 +1409,9 @@ class PostgresDatabase:
         with self.transaction(Operation(operation, read_only=True, disable_jit=disable_jit)) as tx:
             return application_value(tx.fetch_all(statement, parameters, max_rows=max_rows))
 
-    def read_row(self, operation, statement, parameters=()):
+    def read_row(self, operation, statement, parameters=(), *, disable_jit=False):
         from .sql_values import application_value
-        with self.transaction(Operation(operation, read_only=True)) as tx:
+        with self.transaction(Operation(operation, read_only=True, disable_jit=disable_jit)) as tx:
             return application_value(tx.fetch_one(statement, parameters))
 
     def write(self, operation, statement, parameters=(), *, error_codes=frozenset()):
