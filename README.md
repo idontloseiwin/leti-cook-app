@@ -45,7 +45,7 @@ installation. Version 0.3.0 does not update a 0.1.0 installation; see
 ## The ambition
 
 Leti Cook aims to bring the useful research capabilities people seek across
-**vidIQ, ViewStats, Social Blade, 1of10, TubeBuddy** and other tools into one
+**vidIQ, NexLev, Social Blade, 1of10, TubeBuddy** and other tools into one
 open-source platform.
 
 ## What it's being built for
